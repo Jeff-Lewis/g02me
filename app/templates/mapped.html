@@ -1,0 +1,28 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+<head>
+<title>G02.ME - {{title}}</title>
+<script>
+function checkTopFrame()
+{
+	if (frames && frames[0] && frames[0].document)
+		{
+		try
+			{
+			frames[0].document.domain;
+			}
+		catch(e)
+			{
+			location = "/error";
+			}
+		self.setTimeout('checkTopFrame()', 3000);
+		}
+}
+self.setTimeout('checkTopFrame()', 3000);
+</script>
+</head><frameset rows="137,*">
+<frame src="/info?id={{id}}" scrolling=no marginwidth=0 marginheight=0 onload="var d = frames[0].document;var l = d.links[0];if (d.getElementById &&d.getElementById('logo')) {l = d.getElementById('logo');}l.target='_top';">
+<frame src="{{url}}">
+<noframes>Your browser does not support frames.  Your can visit the target page at {{ url }}</noframes>
+</frameset>
+</html>
