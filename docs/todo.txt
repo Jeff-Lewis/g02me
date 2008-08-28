@@ -1,0 +1,5 @@
+- Hello, world
+- 
+- Domain registration - map
+- Analytics setup
+- Page title customization
