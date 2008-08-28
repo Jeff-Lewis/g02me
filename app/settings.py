@@ -1,4 +1,4 @@
-# Django settings for PageForest AppEngine project.
+# Django settings for G02.ME AppEngine project.
 
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG

@@ -1,5 +1,6 @@
-- Hello, world
-- 
-- Domain registration - map
-- Analytics setup
-- Page title customization
+
+
+X Domain registration - map
+X Analytics setup
+X Page title customization
+X Test deployment
