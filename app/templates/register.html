@@ -1,0 +1,9 @@
+{% extends "master.html" %}
+
+{% block left-column %}
+{% if fSuccess %}
+<h2>Thank you for registering your email.</h2>
+{% else %}
+<h2>Email registration failed:  {{ reason }}</h2>
+{% endif %}
+{% endblock %}
