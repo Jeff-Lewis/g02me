@@ -7,5 +7,4 @@ urlpatterns = patterns('',
     (r'^map.*', map.MakeAlias),
     (r'^(\d+)', map.FrameSet),
     (r'^info.*', map.Head),
-    
 )

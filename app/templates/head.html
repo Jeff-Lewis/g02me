@@ -2,5 +2,6 @@
 {% block subTitle %}{{title}}{% endblock %}
 {% block body %}
 <h1>{{title}}</h1>
-<h2>{{id}} -> {{url}}</h2>
+<p>URL: <a target="_top" href="{{url}}">{{url|escape}}</a></p>
+
 {% endblock %}
