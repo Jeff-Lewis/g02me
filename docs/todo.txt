@@ -1,4 +1,23 @@
+Tasks:
 
+- Bookmarklet
+- Head formatting
+- Head:
+  - Homepage link
+  - Link to users
+  - User comments
+- Tags
+- User pages
+- Tag pages
+- Design and styling
+- mailto tag
+- Lock top pane on navigation?
+- Test on NYT site
+- Tests
+- JSON API
+- domain redirection for http://g02.me (what is pageforest doing???)
+- URL names not conflict with commands
+- base64
 
 X Domain registration - map
 X Analytics setup
@@ -29,7 +48,8 @@ GET:
 / -> Home
 /xxx -> Get Alias Page
 /map?url=&title=
-/
+/head?url=
+/info?url=
 
 
 POST:

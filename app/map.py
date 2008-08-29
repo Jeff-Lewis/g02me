@@ -58,6 +58,7 @@ def Head(req):
     return render_to_response('head.html', {'id':map.id, 'url':map.url, 'title':map.title})
 
 def FrameSet(req, id):
+    logging.info(id)
     map = Map.Lookup(int(id))
     if map == None:
         return render_to_response('error.html', {'strError' : "No such id: %s" % id})
