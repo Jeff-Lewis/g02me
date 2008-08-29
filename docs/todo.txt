@@ -4,3 +4,36 @@ X Domain registration - map
 X Analytics setup
 X Page title customization
 X Test deployment
+
+Models:
+
+- URL:
+  - id
+  - url
+  - title
+  - dateCreated
+  - views
+  - upVotes
+  - downVotes
+  - tags
+  
+- Comments:
+  - vote
+  - note
+  - bans
+
+URL Scheme
+http://g02.me...
+
+GET:
+/ -> Home
+/xxx -> Get Alias Page
+/map?url=&title=
+/
+
+
+POST:
+/map: url=&title=
+
+  
+- 

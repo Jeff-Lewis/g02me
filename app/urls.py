@@ -4,5 +4,8 @@ import map
 
 urlpatterns = patterns('',
     (r'^$', views.Home),
-    (r'^map.*', map.Lookup)
+    (r'^map.*', map.MakeAlias),
+    (r'^/([0-9]*)', map.FrameSet),
+    (r'^info.*', map.Head),
+    
 )

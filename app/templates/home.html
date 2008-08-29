@@ -1,6 +1,18 @@
 {% extends "master.html" %}
 {% block subTitle %}Community URL Sharing Service{% endblock %}
 {% block body %}
-Hello, World
+<h1>G02.ME - Community URL Sharing Service</h1>
+<form action="/map" method="get">
+<p>
+<label for="url">URL:</label>
+<input type="text" name="url">
+</p>
+<p>
+<label for="title">Title:</label>
+<input type="text" name="title">
+</p>
+<p>
+<input type="submit" value="G02.ME">
+</p>
+</form>
 {% endblock %}
-
