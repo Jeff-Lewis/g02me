@@ -1,14 +1,18 @@
 Tasks:
 
-- Bookmarklet
-- Head formatting
+X Bookmarklet
 - Head:
+  - Link to source (remove frame)
   - Homepage link
   - Link to users
   - User comments
-- Tags
+- Home
+  - Number of pages
+  - Number of views
+  - Number of people
 - User pages
 - Tag pages
+- Tags
 - Design and styling
 - mailto tag
 - Lock top pane on navigation?
@@ -17,7 +21,15 @@ Tasks:
 - JSON API
 - domain redirection for http://g02.me (what is pageforest doing???)
 - URL names not conflict with commands
-- base64
+X base64 encode ids
+- get metadata from page?  (description)
+- get micro-formats from page
+- redirect www.g02.me to g02.me
+- Performance
+  - Shard counter(s) - pages, visitors
+- Scoring by views and votes
+- Google AdSense
+
 
 X Domain registration - map
 X Analytics setup
