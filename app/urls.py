@@ -3,8 +3,8 @@ import views
 import map
 
 urlpatterns = patterns('',
-    (r'^$', views.Home),
-    (r'^map.*', map.MakeAlias),
-    (r'^(\d+)', map.FrameSet),
-    (r'^info.*', map.Head),
+    (r'^$', map.Home),
+    (r'^!map.*', map.MakeAlias),
+    (r'^!info.*', map.Head),
+    (r'^([0-9A-Za-z-_]+)', map.FrameSet),
 )
