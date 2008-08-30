@@ -2,7 +2,7 @@ Tasks:
 
 X Bookmarklet
 - Head:
-  - Link to source (remove frame)
+  X Link to source (remove frame)
   - Homepage link
   - Link to users
   - User comments
@@ -19,8 +19,8 @@ X Bookmarklet
 - Test on NYT site
 - Tests
 - JSON API
-- domain redirection for http://g02.me (what is pageforest doing???)
-- URL names not conflict with commands
+X domain redirection for http://g02.me (what is pageforest doing???)
+X URL names not conflict with commands
 X base64 encode ids
 - get metadata from page?  (description)
 - get micro-formats from page
@@ -29,8 +29,11 @@ X base64 encode ids
   - Shard counter(s) - pages, visitors
 - Scoring by views and votes
 - Google AdSense
-- Unicode in title
+X Unicode in title
 - special case g02.me urls -> just redirect back to them - don't alias them
+- cookies for user accounts
+- Should child page links remove the upper frame (can I track changes?)
+- Change date to DateTime
 
 
 X Domain registration - map
