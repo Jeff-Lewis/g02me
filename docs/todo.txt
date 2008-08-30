@@ -14,7 +14,9 @@ X Bookmarklet
 - Tag pages
 - Tags
 - Design and styling
+- favicon
 - mailto tag
+- twitter, fave, friendfeed options [roy]
 - Lock top pane on navigation?
 - Test on NYT site
 - Tests

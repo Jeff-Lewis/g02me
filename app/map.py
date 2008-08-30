@@ -72,7 +72,7 @@ def MakeAlias(req):
 def Head(req):
     InitReq(req)
     id = req.GET["id"]
-    map = Map.Lookup(int(id))
+    map = Map.Lookup(id)
     if map == None:
         return render_to_response('error.html', {'strError' : "No such id: %s" % id})
     return render_to_response('head.html', map.GetDict())
