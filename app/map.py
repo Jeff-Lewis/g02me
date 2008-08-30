@@ -65,11 +65,6 @@ def MakeAlias(req):
         if req.has_key("title"):
             title = req.GET["title"] or ""
         id = Globals.IdNext()
-        logging.info("ID: %s" % id)
-        logging.info("Type: %s" % type(unicode(title, 'utf8')))
-        logging.info("Title: %s" % unicode(title, 'utf8'))
-        for ch in title:
-            logging.info("Ch: %s" % ord(ch))
         map = Map(key_name="K:%s"%id, url=url, title=unicode(title, 'utf8'))
         map.put()
     return HttpResponseRedirect("/%s" % map.GetId())
