@@ -29,6 +29,8 @@ X base64 encode ids
   - Shard counter(s) - pages, visitors
 - Scoring by views and votes
 - Google AdSense
+- Unicode in title
+- special case g02.me urls -> just redirect back to them - don't alias them
 
 
 X Domain registration - map
