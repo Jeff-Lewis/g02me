@@ -36,12 +36,16 @@ X Unicode in title
 - cookies for user accounts
 - Should child page links remove the upper frame (can I track changes?)
 - Change date to DateTime
-
+- Error page for non-existant URL - should be home page display with error message (Or custom file not found page! 404)
+- 301 redirect www.g02.me to g02.me - use Django middleware?
+- Get truncate templatetags working - I think I need an installed application - restructure files to
+  an app folder, add to INSTALLED_APPS?
 
 X Domain registration - map
 X Analytics setup
 X Page title customization
 X Test deployment
+
 
 Models:
 

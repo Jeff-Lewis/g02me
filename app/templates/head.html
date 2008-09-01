@@ -1,6 +1,12 @@
 {% extends "master.html" %}
+{% block head %}
+{% endblock %}
 {% block subTitle %}{{title}}{% endblock %}
 {% block body %}
-<h1>{{title}}</h1>
-<p>URL: <a target="_top" href="{{url}}">{{url|escape}}</a></p>
+<img class="logo" src="/images/logo.png">
+<div class="ur">
+<a target="_top" href="{{url}}">Close [x]</a>
+</div>
+<h1><a target="_top" href="{{url}}">{{title|escape}}</a></h1>
+<p>url:{{url|escape}}</p>
 {% endblock %}
