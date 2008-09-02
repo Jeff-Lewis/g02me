@@ -10,11 +10,12 @@ X Bookmarklet
   - Number of pages
   - Number of views
   - Number of people
+  - IE instructions for creating bookmark
 - User pages
 - Tag pages
 - Tags
 - Design and styling
-- favicon
+X favicon
 - mailto tag
 - twitter, fave, friendfeed options [roy]
 - Lock top pane on navigation?
@@ -43,6 +44,7 @@ X Unicode in title
 - A/B Testing on home page and header?
 X Get trailing slash off of urls!
 - Document rest API's - link to google code Wiki Page
+
 
 X Domain registration - map
 X Analytics setup
