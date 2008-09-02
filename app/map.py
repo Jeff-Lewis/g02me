@@ -74,7 +74,7 @@ def Head(req):
     id = req.GET["id"]
     map = Map.Lookup(id)
     if map == None:
-        return render_to_response('error.html', {'strError' : "No such id: %s" % id})
+        return render_to_response('error.html', {'strError' : "The G02.ME page, http://g02.me/%s does not exist" % id})
     return render_to_response('head.html', map.GetDict())
 
 def FrameSet(req, id):
@@ -82,7 +82,7 @@ def FrameSet(req, id):
     logging.info(id)
     map = Map.Lookup(id)
     if map == None:
-        return render_to_response('error.html', {'strError' : "No such id: %s" % id})
+        return render_to_response('error.html', {'strError' : "The G02.ME page, http://g02.me/%s does not exist" % id})
     return render_to_response('mapped.html', map.GetDict())
 
 def InitReq(req):

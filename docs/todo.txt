@@ -3,9 +3,9 @@ Tasks:
 X Bookmarklet
 - Head:
   X Link to source (remove frame)
-  - Homepage link
+  X Homepage link
   - Link to users
-  - User comments
+  ! User comments
 - Home
   - Number of pages
   - Number of views
@@ -18,9 +18,7 @@ X Bookmarklet
 - mailto tag
 - twitter, fave, friendfeed options [roy]
 - Lock top pane on navigation?
-- Test on NYT site
-- Tests
-- JSON API
+- JSON API?
 X domain redirection for http://g02.me (what is pageforest doing???)
 X URL names not conflict with commands
 X base64 encode ids
@@ -30,7 +28,7 @@ X base64 encode ids
 - Performance
   - Shard counter(s) - pages, visitors
 - Scoring by views and votes
-- Google AdSense
+- Google AdSense - OR - sponsored links (use AdManager!)
 X Unicode in title
 - special case g02.me urls -> just redirect back to them - don't alias them
 - cookies for user accounts
@@ -42,6 +40,9 @@ X Unicode in title
   an app folder, add to INSTALLED_APPS?
 - Restructure files to Django standards - application dir, models.py, views.py...
 - Figure out if there is a work-around for NYT pages that don't like to be shown inside a frameset.
+- A/B Testing on home page and header?
+X Get trailing slash off of urls!
+- Document rest API's - link to google code Wiki Page
 
 X Domain registration - map
 X Analytics setup

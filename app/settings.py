@@ -4,7 +4,7 @@ DEBUG = True
 TEMPLATE_DEBUG = DEBUG
 
 ADMINS = (
-    ('Mike Koss', 'admin@g02.me'),
+    ('Mike Koss', 'mckoss@gmail.com'),
 )
 
 MANAGERS = ADMINS
@@ -46,6 +46,7 @@ MEDIA_URL = ''
 # trailing slash.
 # Examples: "http://foo.com/media/", "/media/".
 ADMIN_MEDIA_PREFIX = '/media/'
+APPEND_SLASH = False
 
 # Make this unique, and don't share it with anybody.
 SECRET_KEY = '_+jvrot$u%lxey5#^6mufvzveqz1k7q1wk)t!$fdh24m4n^l^b'
