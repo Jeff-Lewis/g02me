@@ -29,7 +29,7 @@ def Head(req):
     id = req.GET["id"]
     map = Map.Lookup(id)
     if map == None:
-        return render_to_response('error.html', {'strError' : "The G02.ME page, http://g02.me/%s does not exist" % id})
+        return render_to_response('error.html', {'strError' : "The G02.ME page, <i>http://g02.me/%s</i>, does not exist" % id})
     map.viewCount = map.viewCount + 1
     map.put()
     return render_to_response('head.html', {'map': map})
@@ -38,8 +38,8 @@ def FrameSet(req, id):
     InitReq(req)
     map = Map.Lookup(id)
     if map == None:
-        return render_to_response('error.html', {'strError' : "The G02.ME page, http://g02.me/%s does not exist" % id})
-    return render_to_response('mapped.html', map.GetDict())
+        return render_to_response('error.html', {'strError' : "The G02.ME page, <i>http://g02.me/%s</i>, does not exist" % id})
+    return render_to_response('mapped.html', {'map':map})
 
 def InitReq(req):
     # Store the http request for URI generation, in a thread local
