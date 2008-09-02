@@ -5,7 +5,6 @@ from google.appengine.api import memcache
 import util
 
 import logging
-import threading
 from sys import exc_info
 
 class Map(db.Model):
@@ -35,7 +34,7 @@ class Map(db.Model):
         return self.key().name()[2:]
     
     def GetDict(self):
-        return {'host':local.stHost,
+        return {'host':util.local.stHost,
                 'id':self.GetId(),
                 'url':self.url,
                 'title':self.title
@@ -53,41 +52,4 @@ class Globals(db.Model):
         glob.put()
         return util.IntToS64(id)
 
-def Home(req):
-    InitReq(req)
-    host = local.stHost
-    return render_to_response('home.html', locals())
-
-def MakeAlias(req):
-    url = req.GET["url"]
-    map = Map.FindUrl(url)
-    if map == None:
-        if req.has_key("title"):
-            title = req.GET["title"] or ""
-        id = Globals.IdNext()
-        map = Map(key_name="K:%s"%id, url=url, title=unicode(title, 'utf8'))
-        map.put()
-    return HttpResponseRedirect("/%s" % map.GetId())
-
-def Head(req):
-    InitReq(req)
-    id = req.GET["id"]
-    map = Map.Lookup(id)
-    if map == None:
-        return render_to_response('error.html', {'strError' : "The G02.ME page, http://g02.me/%s does not exist" % id})
-    return render_to_response('head.html', map.GetDict())
-
-def FrameSet(req, id):
-    InitReq(req)
-    logging.info(id)
-    map = Map.Lookup(id)
-    if map == None:
-        return render_to_response('error.html', {'strError' : "The G02.ME page, http://g02.me/%s does not exist" % id})
-    return render_to_response('mapped.html', map.GetDict())
-
-def InitReq(req):
-    # Store the http request for URI generation, in a thread local
-    local.stHost = "http://" + req.META["HTTP_HOST"] + "/"
-
-local = threading.local()
     

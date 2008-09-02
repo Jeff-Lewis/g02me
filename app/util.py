@@ -1,3 +1,5 @@
+import threading
+
 s64 = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz-_"
 def IntToS64(i):
     # Convert int to "base 64" string - not compatible with Base64 string standard
@@ -13,6 +15,9 @@ def NormalizeUrl(url):
 
 def TrimString(st):
     return st.strip()
+
+# We save request info in a thread-global
+local = threading.local()
 
 import unittest
 
