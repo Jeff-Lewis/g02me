@@ -3,10 +3,16 @@
 {% endblock %}
 {% block subTitle %}{{title}}{% endblock %}
 {% block body %}
-<img class="logo" src="/images/logo.png">
+<a target="_top" href="/"><img class="logo" src="/images/logo.png"></a>
 <div class="ur">
 <a target="_top" href="{{url}}">Close [x]</a>
+<p>Viewed: {{cViews}}</p>
+<p>Shared: {{cShared}}</p>
 </div>
 <h1><a target="_top" href="{{url}}">{{title|escape}}</a></h1>
-<p>url:{{url|escape}}</p>
+<p>{{url|escape}}</p>
+<div style="clear:both;width:700px;">
+  <label for="comment">Comment: </label><input style="width:500px;" type="text" id="comment">&nbsp;<input type="button" value="Post">
+  <br/><i>Example: "username: type your comment here [tag1, tag2, ...]"</i>
+</div>
 {% endblock %}

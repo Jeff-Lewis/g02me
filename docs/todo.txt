@@ -40,6 +40,8 @@ X Unicode in title
 - 301 redirect www.g02.me to g02.me - use Django middleware?
 - Get truncate templatetags working - I think I need an installed application - restructure files to
   an app folder, add to INSTALLED_APPS?
+- Restructure files to Django standards - application dir, models.py, views.py...
+- Figure out if there is a work-around for NYT pages that don't like to be shown inside a frameset.
 
 X Domain registration - map
 X Analytics setup

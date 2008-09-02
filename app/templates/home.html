@@ -1,23 +1,21 @@
 {% extends "master.html" %}
 {% block subTitle %}Community URL Sharing Service{% endblock %}
 {% block body %}
-<h1>G02.ME - Community URL Sharing Service</h1>
-<form action="/+map" method="get">
+<a target="_top" href="/"><img title="G02.ME" class="logo" src="/images/logo.png"></a>
+<h1 style="padding-top: 40px;">Community URL Sharing Service</h1>
 <p>
-<label for="url">URL:</label>
-<input type="text" name="url">
+Just drag this bookmarklet to your toolbar:
+<p style="margin-left: 200px;">
+<a style="font-size: 24px;" title="G02.ME Bookmarket - drag to your toolbar" href="javascript:location.href='{{host}}+map?url='+encodeURIComponent(location)+'&title='+encodeURIComponent(document.title);">G02.ME</a>
 </p>
-<p>
-<label for="title">Title:</label>
-<input type="text" name="title">
-</p>
-<p>
-<input type="submit" value="G02.ME">
-</p>
-<p>
-Drag this bookmarklet
-<a href="javascript:location.href='{{host}}+map?url='+encodeURIComponent(location)+'&title='+encodeURIComponent(document.title);">G02.ME</a>
-to your toolbar to share a G02.ME page directly from your browser.
+<ul>
+<li>G02.ME is free for everyone - no need to create an account.</li>
+<li>Shrink the URL address of any web page to be just 18 characters or less (e.g. http://g02.me/xxxx)</li>
+<li>Send your new G02.ME URL to your friends in instant messages or twitter tweets.</li>
+<li>G02.ME will add a frame at the top of your shared page where you can exchange comments.</li>
+<li>See how ofter your page is being viewed - each G02.ME page displays the number of viewers
+directly on the page.</li>
+</ul> 
 </p>
 </form>
 {% endblock %}
