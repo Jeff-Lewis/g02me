@@ -11,6 +11,8 @@ class Map(db.Model):
     url = db.StringProperty(required=True, validator=util.NormalizeUrl)
     title = db.StringProperty(validator=util.TrimString)
     dateCreated = db.DateProperty(auto_now=True)
+    viewCount = db.IntegerProperty(default=0)
+    shareCount = db.IntegerProperty(default=0)
     
     @classmethod
     def KeyFromId(self, id):
@@ -52,4 +54,6 @@ class Globals(db.Model):
         glob.put()
         return util.IntToS64(id)
 
+class Comment(db.Model):
+    username = db.StringProperty()
     

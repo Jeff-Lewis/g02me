@@ -43,9 +43,10 @@ X Unicode in title
   an app folder, add to INSTALLED_APPS?
 - Restructure files to Django standards - application dir, models.py, views.py...
 - Figure out if there is a work-around for NYT pages that don't like to be shown inside a frameset.
-- A/B Testing on home page and header?
+- A/B Testing on home page and header?  Google Website optimizer
 X Get trailing slash off of urls!
 - Document rest API's - link to google code Wiki Page
+- Widget showing number of views and shares of the current url.
 
 
 X Domain registration - map

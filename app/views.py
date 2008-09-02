@@ -20,7 +20,8 @@ def MakeAlias(req):
             title = req.GET["title"] or ""
         id = Globals.IdNext()
         map = Map(key_name="K:%s"%id, url=url, title=unicode(title, 'utf8'))
-        map.put()
+    map.shareCount = map.shareCount + 1
+    map.put()
     return HttpResponseRedirect("/%s" % map.GetId())
 
 def Head(req):
@@ -29,7 +30,9 @@ def Head(req):
     map = Map.Lookup(id)
     if map == None:
         return render_to_response('error.html', {'strError' : "The G02.ME page, http://g02.me/%s does not exist" % id})
-    return render_to_response('head.html', map.GetDict())
+    map.viewCount = map.viewCount + 1
+    map.put()
+    return render_to_response('head.html', {'map': map})
 
 def FrameSet(req, id):
     InitReq(req)
