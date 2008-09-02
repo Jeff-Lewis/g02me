@@ -10,7 +10,7 @@ X Bookmarklet
   - Number of pages
   - Number of views
   - Number of people
-  - IE instructions for creating bookmark
+  X IE instructions for creating bookmark
 - User pages
 - Tag pages
 - Tags
@@ -31,6 +31,7 @@ X base64 encode ids
   - Shard counter(s) - pages, visitors
 - Scoring by views and votes
 - Google AdSense - OR - sponsored links (use AdManager!)
+- Paypal donation
 X Unicode in title
 - special case g02.me urls -> just redirect back to them - don't alias them
 - cookies for user accounts
