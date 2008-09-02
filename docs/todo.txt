@@ -16,6 +16,7 @@ X Bookmarklet
 - Tags
 - Design and styling
 X favicon
+- favicon cached?  Can't see new one!
 - mailto tag
 - twitter, fave, friendfeed options [roy]
 - Lock top pane on navigation?
