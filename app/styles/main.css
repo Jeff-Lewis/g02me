@@ -35,3 +35,8 @@ line-height: 18px;
 p {
 margin: 3px 0px;
 }
+
+div.comments p
+{
+color: #AAA;
+}

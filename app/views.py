@@ -2,6 +2,7 @@ from google.appengine.ext import db
 from django.shortcuts import render_to_response
 from django.http import HttpResponse, HttpResponseRedirect
 from google.appengine.api import memcache
+import re
 import util
 from models import *
 
@@ -24,6 +25,24 @@ def MakeAlias(req):
     map.put()
     return HttpResponseRedirect("/%s" % map.GetId())
 
+def MakeComment(req):
+    id = req.GET.get('id', '').strip()
+    comment = req.GET.get('comment', '').strip()
+    
+    map = Map.Lookup(id)
+    reg = re.compile(r"^( *([a-zA-Z0-9_\.\-+]+) *: *)?([^\[]*) *(\[(.*)\])? *$")
+    m = reg.match(comment)
+    logging.info("c: %s m: %s map: %s" % (comment, m, map))
+    if m == None or map == None:
+        return render_to_response('error.html', {'strError' : "The G02.ME page, <i>http://g02.me/%s</i>, does not exist" % id})
+    username = m.group(2)
+    comment = m.group(3)
+    tags = m.group(5)
+    logging.info("u: %s c: %s t: %s" % (username, comment, tags))
+    comm = Comment(map=map, username=username, comment=comment, tags=tags)
+    comm.put()
+    return HttpResponseRedirect("/+info?id=%s" % map.GetId())
+
 def Head(req):
     InitReq(req)
     id = req.GET["id"]
@@ -32,7 +51,8 @@ def Head(req):
         return render_to_response('error.html', {'strError' : "The G02.ME page, <i>http://g02.me/%s</i>, does not exist" % id})
     map.viewCount = map.viewCount + 1
     map.put()
-    return render_to_response('head.html', {'map': map})
+    comments = map.comment_set.fetch(100)
+    return render_to_response('head.html', {'map': map, 'comments':comments})
 
 def FrameSet(req, id):
     InitReq(req)
@@ -40,6 +60,14 @@ def FrameSet(req, id):
     if map == None:
         return render_to_response('error.html', {'strError' : "The G02.ME page, <i>http://g02.me/%s</i>, does not exist" % id})
     return render_to_response('mapped.html', {'map':map})
+
+def UserHistory(req, username):
+    InitReq(req)
+    return render_to_response('error.html', {'strError' : "User view yet implemented: %s" % username})
+
+def TagHistory(req, tagname):
+    InitReq(req)
+    return render_to_response('error.html', {'strError' : "Tag view yet implemented: %s" % tagname})
 
 def InitReq(req):
     # Store the http request for URI generation, in a thread local

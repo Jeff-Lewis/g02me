@@ -10,7 +10,7 @@ from sys import exc_info
 class Map(db.Model):
     url = db.StringProperty(required=True, validator=util.NormalizeUrl)
     title = db.StringProperty(validator=util.TrimString)
-    dateCreated = db.DateProperty(auto_now=True)
+    dateCreated = db.DateTimeProperty(auto_now=True)
     viewCount = db.IntegerProperty(default=0)
     shareCount = db.IntegerProperty(default=0)
     
@@ -41,6 +41,9 @@ class Map(db.Model):
                 'url':self.url,
                 'title':self.title
                 }
+        
+    def CommentCount(self):
+        return self.comment_set.count();
 
 # TODO: Use a sharded counter - see Google I/O video     
 class Globals(db.Model):
@@ -55,5 +58,12 @@ class Globals(db.Model):
         return util.IntToS64(id)
 
 class Comment(db.Model):
-    username = db.StringProperty()
+    username = db.StringProperty(validator=util.TrimString)
+    comment = db.StringProperty(validator=util.TrimString)
+    tags = db.StringProperty(validator=util.TrimString)
+    map = db.ReferenceProperty(Map)
+    dateCreated = db.DateTimeProperty(auto_now=True)
+    
+    def TagList(self):
+        return self.tags.split(",")
     

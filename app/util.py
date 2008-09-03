@@ -14,6 +14,8 @@ def NormalizeUrl(url):
     return url.strip()
 
 def TrimString(st):
+    if st == None:
+        st = ''
     return st.strip()
 
 # We save request info in a thread-global

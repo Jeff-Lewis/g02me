@@ -47,6 +47,7 @@ X Unicode in title
 X Get trailing slash off of urls!
 - Document rest API's - link to google code Wiki Page
 - Widget showing number of views and shares of the current url.
+- Use google safebrowsing api to warn about viewing of unsafe urls
 
 
 X Domain registration - map

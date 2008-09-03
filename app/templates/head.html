@@ -4,15 +4,36 @@
 {% block subTitle %}{{map.title}}{% endblock %}
 {% block body %}
 <a target="_top" href="/"><img class="logo" src="/images/logo.png"></a>
+
 <div class="ur">
 <a target="_top" href="{{map.url}}">Close [x]</a>
 <p>Viewed: {{map.viewCount}}</p>
 <p>Shared: {{map.shareCount}}</p>
+<p>Comments: {{map.CommentCount}}</p>
 </div>
+
 <h1><a target="_top" href="{{map.url}}">{{map.title|escape}}</a></h1>
 <p>{{map.url|escape}}</p>
+
+<div class="comments">
+{% for comment in comments %}
+	{% spaceless %}<p>
+    {% if comment.username %}<a href="/user/{{comment.username}}">{{comment.username}}</a>:{% endif %}{{comment.comment}}
+    {% if comment.tags %}
+    	[
+    	{% for tag in comment.TagList %}<a href="/tag/{{tag}}">{{tag}}</a>{% if not forloop.last %},{% endif %}{% endfor %}
+    	]
+    {% endif %}
+    </p>{% endspaceless %}
+{% endfor %}
+</div>
+
 <div style="clear:both;width:700px;">
-  <label for="comment">Comment: </label><input style="width:500px;" type="text" id="comment">&nbsp;<input type="button" value="Post">
+  <form action="/+comment" method="get">
+  <input type="hidden" name="id" value="{{map.GetId}}"/>
+  <label for="comment">Comment: </label>
+  <input style="width:500px;" type="text" name="comment">&nbsp;<input type="submit" value="Post"/>
   <br/><i>Example: "username: type your comment here [tag1, tag2, ...]"</i>
+  </form>
 </div>
 {% endblock %}
