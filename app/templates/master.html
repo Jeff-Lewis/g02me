@@ -4,9 +4,13 @@
 <link rel="stylesheet" type="text/css" href="/styles/main.css"/>
 <link rel="icon" type="image/png" href="/images/favicon.png">
 <title>G02.ME - {% block subTitle %}{% endblock %}</title>
-{% block head %}{% endblock %}
+{% block head %}
+<script>
+function Loaded() {}
+</script>
+{% endblock %}
 </head>
-<body>
+<body onload="Loaded();">
 {% block body %}{% endblock %}
 <script type="text/javascript">
 var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");

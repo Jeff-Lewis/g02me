@@ -1,17 +1,23 @@
-Tasks:
+ToDo:
 
 X Bookmarklet
-- Head:
+- Info Panel:
   X Link to source (remove frame)
   X Homepage link
-  - Link to users
-  ! User comments
+  X Link to users
+  X User comments
+  - Design (see delicious page: http://delicious.com/url/6e4e9fc8547418f22ac89a5f7558e58b?show=notes_only, for inspiration)
 - Home
   - Number of pages
   - Number of views
   - Number of people
   X IE instructions for creating bookmark
 - User pages
+  - Claim your account
+  - Most recent comments showing page titles, dates, tags
+- User Settings
+  - Profile image
+  - Enable anonymous creation of new comments (for "shared" user accounts)
 - Tag pages
 - Tags
 - Design and styling
@@ -33,27 +39,30 @@ X base64 encode ids
 - Google AdSense - OR - sponsored links (use AdManager!)
 - Paypal donation
 X Unicode in title
-- special case g02.me urls -> just redirect back to them - don't alias them
-- cookies for user accounts
+! special case g02.me urls -> just redirect back to them - don't alias them
+! cookies for user accounts
 - Should child page links remove the upper frame (can I track changes?)
-- Change date to DateTime
+X Change date to DateTime
 - Error page for non-existant URL - should be home page display with error message (Or custom file not found page! 404)
 - 301 redirect www.g02.me to g02.me - use Django middleware?
 - Get truncate templatetags working - I think I need an installed application - restructure files to
   an app folder, add to INSTALLED_APPS?
-- Restructure files to Django standards - application dir, models.py, views.py...
-- Figure out if there is a work-around for NYT pages that don't like to be shown inside a frameset.
+X Restructure files to Django standards - application dir, models.py, views.py...
+! Figure out if there is a work-around for NYT pages that don't like to be shown inside a frameset.
 - A/B Testing on home page and header?  Google Website optimizer
 X Get trailing slash off of urls!
 - Document rest API's - link to google code Wiki Page
-- Widget showing number of views and shares of the current url.
+- Widget showing number of views and shares of the current url - click to share
 - Use google safebrowsing api to warn about viewing of unsafe urls
-
-
+- refactor - Trap all exceptions to univeral error page
+- Claim your account
+- edit own comments
+- edit/delete anonymous comments
 X Domain registration - map
 X Analytics setup
 X Page title customization
 X Test deployment
+- rss feeds for users, tags, all
 
 
 Models:

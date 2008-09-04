@@ -15,12 +15,19 @@ a {
 color: #4cc6ed;
 }
 
+img {
+border: 0;
+}
+
 img.logo {
 width: 85px;
 height: 85px;
 float: left;
 margin-right: 10px;
-border: 0;
+}
+
+img.x:hover {
+cursor: pointer;
 }
 
 div.ur {
