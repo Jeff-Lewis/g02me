@@ -63,7 +63,20 @@ X Analytics setup
 X Page title customization
 X Test deployment
 - rss feeds for users, tags, all
-
+- User account
+  - Claim a username by signing in
+  - Require login to comment using a claimed username
+  - Protects your comments from being edited or deleted by others
+  - Ability to delete and edit your older comments
+  - Ability to delete and edit anonymous comments
+  - Ability to mark even claimed comments as "spam/bad"
+    - two (independent) votes will hide that comment from all but the author of the comment.
+  - Mark URL as Spam - info-mode only AND prominently flagged as SPAM
+  - Mark URL as Adult - require login and affirmation of over 18 and OK to view adult content
+- Detect or mark problem domains as info-mode pages (frameset unfriendly).
+- Per-user cookie to open all URLs in info-mode
+- Info bar horizontal/vertical option
+- Pull web page image from Sphere or Alexa?
 
 Models:
 
