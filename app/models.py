@@ -3,11 +3,19 @@ from django.shortcuts import render_to_response
 from django.http import HttpResponse, HttpResponseRedirect
 from google.appengine.api import memcache
 import util
+from timescore.models import ScoreSet
 
 import logging
 from sys import exc_info
 
 class Map(db.Model):
+    ss = ScoreSet.GetSet("map")
+    
+    # Relative scores for user interactions
+    scoreComment = 2
+    scoreView = 1
+    scoreShare = 3
+    
     url = db.StringProperty(required=True, validator=util.NormalizeUrl)
     title = db.StringProperty(validator=util.TrimString)
     dateCreated = db.DateTimeProperty(auto_now=True)
@@ -42,10 +50,26 @@ class Map(db.Model):
                 'title':self.title
                 }
         
+    def AddComment(self, username, comment, tags):
+        comm = Comment(map=self, username=username, comment=comment, tags=tags)
+        comm.put()
+        self.ss.Update(self, self.scoreComment)
+        
     def CommentCount(self):
+        # TODO: Inefficient for large comment streams - loads all in memory
         return self.comment_set.count();
-
-# TODO: Use a sharded counter - see Google I/O video     
+    
+    def Shared(self):
+        self.shareCount = self.shareCount + 1
+        self.put()
+        self.ss.Update(self, self.scoreShare)
+        
+    def Viewed(self):
+        self.viewCount = self.viewCount + 1
+        self.put()
+        self.ss.Update(self, self.scoreView)
+        
+# TODO: Use a sharded counter   
 class Globals(db.Model):
     idNext = db.IntegerProperty(default=1)
     

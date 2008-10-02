@@ -21,8 +21,7 @@ def MakeAlias(req):
             title = req.GET["title"] or ""
         id = Globals.IdNext()
         map = Map(key_name="K:%s"%id, url=url, title=unicode(title, 'utf8'))
-    map.shareCount = map.shareCount + 1
-    map.put()
+    map.Shared();
     return HttpResponseRedirect("/%s" % map.GetId())
 
 def MakeComment(req):
@@ -39,8 +38,7 @@ def MakeComment(req):
     comment = m.group(3)
     tags = m.group(5)
     logging.info("u: %s c: %s t: %s" % (username, comment, tags))
-    comm = Comment(map=map, username=username, comment=comment, tags=tags)
-    comm.put()
+    map.AddComment(username=username, comment=comment, tags=tags)
     return HttpResponseRedirect("/+info?id=%s" % map.GetId())
 
 def Head(req):
@@ -49,8 +47,7 @@ def Head(req):
     map = Map.Lookup(id)
     if map == None:
         return render_to_response('error.html', {'strError' : "The G02.ME page, <i>http://g02.me/%s</i>, does not exist" % id})
-    map.viewCount = map.viewCount + 1
-    map.put()
+    map.Viewed()
     comments = map.comment_set.fetch(100)
     return render_to_response('head.html', {'map': map, 'comments':comments})
 

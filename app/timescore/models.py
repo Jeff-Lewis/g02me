@@ -1,5 +1,7 @@
 from google.appengine.ext import db
 from datetime import datetime
+import logging
+import math
 
 class ScoreSet(db.Model):
     """ Configuration object for a collection of (comparable) scores.
@@ -10,37 +12,44 @@ class ScoreSet(db.Model):
     name = db.StringProperty(required=True)
     halfLives = db.ListProperty(int)
     
-    if halfLives == None:
-        halfLives = [hrsDay, hrsWeek, hrsMonth, hrsYear]
+    def __init__(self, *args, **kw):
+        db.Model.__init__(self, *args, **kw)
+        if len(self.halfLives) == 0:
+            self.halfLives = [hrsDay, hrsWeek, hrsMonth, hrsYear]
     
     @classmethod
     def GetSet(cls, name):
         ss = ScoreSet.get_or_insert(name, name=name)
         return ss
     
-    def Update(self, model, dt, value):
-        scores = Score.gql('WHERE name = :name AND model = :model', name=name, model=model)
+    def Update(self, model, value, dt=datetime.now()):
+        logging.info("SS - Update")
+        scores = Score.gql('WHERE name = :name AND model = :model', name=self.name, model=model)
         if scores.count() == 0:
             for hrs in self.halfLives:
-                s = Score(name=name, hrsHalf=hrs, model=model)
-                s.Update(dt, value)
+                logging.info("SS - creating %d" % hrs)
+                s = Score(name=self.name, hrsHalf=hrs, model=model)
+                s.Update(value, dt)
             return
         
+        logging.info("SS - updating scores")
+        
         for s in scores:
-            s.Update(dt, value)
+            s.Update(value, dt)
 
 class Score(db.Model):
-    dtBase = datetime.datetime(2000,1,1)
+    dtBase = datetime(2000,1,1)
 
-    name = dbStringProperty(required=True)
-    hrsHalf = db.IntegerProperty(required)
-    S = db.FloatProperty(default=1)
-    LogS = db.FloatProperty(default=0)
-    hrsLast = db.DateTimeProperty(auto_now=True)
+    name = db.StringProperty(required=True)
+    hrsHalf = db.IntegerProperty(required=True)
+    S = db.FloatProperty(default=1.0)
+    LogS = db.FloatProperty(default=0.0)
+    hrsLast = db.FloatProperty(default=0.0)
     model = db.ReferenceProperty(required=True)
     
-    def Update(self, dt, value):
-        k = 0.5 ** (1.0/hrsHalf)
+    def Update(self, value, dt=datetime.now()):
+        value = float(value)
+        k = 0.5 ** (1.0/self.hrsHalf)
         
         hrs = Score.Hours(dt)
         
@@ -50,8 +59,10 @@ class Score(db.Model):
         else:
             self.S += (1-k) * (k ** (self.hrsLast - hrs)) * value
             
-        """ Todo: handle positive and negative values
-        self.LogS = math.log(self.S)/math.log(2) + this.hrsLast/self.hrsHalf
+        logging.info("Score: %f " % self.S)
+            
+        # Todo: handle positive and negative values
+        self.LogS = math.log(self.S)/math.log(2) + self.hrsLast/self.hrsHalf
         self.put()
     
     @classmethod    
@@ -63,8 +74,11 @@ class Score(db.Model):
 # Constants
 hrsDay = 24
 hrsWeek = 7*24
-hrsMonth = 30*24
-hrsYear = 365*24
+hrsYear = 365*24+6
+hrsMonth = hrsYear/12
+
+
+
 
 
     

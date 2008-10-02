@@ -32,11 +32,10 @@ X URL names not conflict with commands
 X base64 encode ids
 - get metadata from page?  (description)
 - get micro-formats from page
-- redirect www.g02.me to g02.me
 - Performance
   - Shard counter(s) - pages, visitors
-- Scoring by views and votes
-- Google AdSense - OR - sponsored links (use AdManager!)
+! Scoring by views and votes
+- Google AdSense - OR - sponsored links (use AdManager)
 - Paypal donation
 X Unicode in title
 ! special case g02.me urls -> just redirect back to them - don't alias them
@@ -54,7 +53,7 @@ X Get trailing slash off of urls!
 - Document rest API's - link to google code Wiki Page
 - Widget showing number of views and shares of the current url - click to share
 - Use google safebrowsing api to warn about viewing of unsafe urls
-- refactor - Trap all exceptions to univeral error page
+- refactor - Trap all exceptions to universal error page
 - Claim your account
 - edit own comments
 - edit/delete anonymous comments
@@ -77,6 +76,14 @@ X Test deployment
 - Per-user cookie to open all URLs in info-mode
 - Info bar horizontal/vertical option
 - Pull web page image from Sphere or Alexa?
+- Should not update view count when comments are added
+- Add scroll bar when there are more comments than fit the head frame (or scale frame to fit)
+- Use memcache
+! Unit tests
+
+Future:
+
+
 
 Models:
 
