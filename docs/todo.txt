@@ -18,6 +18,7 @@ X Bookmarklet
 - User Settings
   - Profile image
   - Enable anonymous creation of new comments (for "shared" user accounts)
+  - Friend feed and twitter account info
 - Tag pages
 - Tags
 - Design and styling
@@ -34,7 +35,7 @@ X base64 encode ids
 - get micro-formats from page
 - Performance
   - Shard counter(s) - pages, visitors
-! Scoring by views and votes
+X Scoring by views, votes, and comments
 - Google AdSense - OR - sponsored links (use AdManager)
 - Paypal donation
 X Unicode in title

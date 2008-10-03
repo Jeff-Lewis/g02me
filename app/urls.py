@@ -1,12 +1,13 @@
 from django.conf.urls.defaults import *
-import views
+from views import *
 
 urlpatterns = patterns('',
-    (r'^$', views.Home),
-    (r'^user/([0-9A-Za-z-_]+)', views.UserHistory),    
-    (r'^tag/([0-9A-Za-z-_ ]+)', views.TagHistory),
-    (r'^\+map.*', views.MakeAlias),
-    (r'^\+comment.*', views.MakeComment),
-    (r'^\+info.*', views.Head),
-    (r'^([0-9A-Za-z-_]+)', views.FrameSet),
+    (r'^$', Home),
+    (r'^([0-9A-Za-z-_]+)$', FrameSet),
+    (r'^info/([0-9A-Za-z-_]+)$', Head),
+    (r'^user/([0-9A-Za-z-_]+)$', UserHistory),    
+    (r'^tag/([0-9A-Za-z-_ ]+)$', TagHistory),
+    (r'^map/', MakeAlias),
+    (r'^comment/', MakeComment),
+
 )
