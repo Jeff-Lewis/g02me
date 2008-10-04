@@ -11,7 +11,7 @@ from sys import exc_info
 
 def Home(req):
     InitReq(req)
-    return render_to_response('home.html', {'host':util.local.stHost})
+    return render_to_response('home.html', {'host':util.local.stHost, 'pages':Map.TopPages()})
 
 def MakeAlias(req):
     url = req.GET["url"]
@@ -39,11 +39,10 @@ def MakeComment(req):
     tags = m.group(5)
     logging.info("u: %s c: %s t: %s" % (username, comment, tags))
     map.AddComment(username=username, comment=comment, tags=tags)
-    return HttpResponseRedirect("/+info?id=%s" % map.GetId())
+    return HttpResponseRedirect("/info/%s" % map.GetId())
 
-def Head(req):
+def Head(req, id):
     InitReq(req)
-    id = req.GET["id"]
     map = Map.Lookup(id)
     if map == None:
         return render_to_response('error.html', {'strError' : "The G02.ME page, <i>http://g02.me/%s</i>, does not exist" % id})

@@ -36,6 +36,12 @@ class ScoreSet(db.Model):
         
         for s in scores:
             s.Update(value, dt)
+            
+    def Best(self, hrsHalf=24):
+        logging.info("best")
+        scores = Score.gql('WHERE name = :name AND hrsHalf = :hrsHalf ORDER BY LogS DESC', name=self.name, hrsHalf=hrsHalf)
+        logging.info("best: %d" % scores.count())
+        return scores
 
 class Score(db.Model):
     dtBase = datetime(2000,1,1)

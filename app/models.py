@@ -40,6 +40,10 @@ class Map(db.Model):
         map = query.get()
         return map
     
+    @classmethod
+    def TopPages(cls):
+        return cls.ss.Best();
+    
     def GetId(self):
         return self.key().name()[2:]
     

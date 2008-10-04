@@ -37,6 +37,7 @@ margin-left: 10px;
 
 li {
 line-height: 18px;
+margin-left: -5px;
 }
 
 p {
@@ -46,4 +47,33 @@ margin: 3px 0px;
 div.comments p
 {
 color: #AAA;
+}
+
+div.page
+{
+width: 910px;
+margin: auto;
+}
+
+div.left
+{
+clear: left;
+width: 400px;
+float: left;
+}
+
+div.right
+{
+float: right;
+width: 450px;
+}
+
+table.scores th
+{
+text-align: left;
+}
+
+table.scores td.num
+{
+text-align: center;
 }

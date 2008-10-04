@@ -1,31 +1,56 @@
 {% extends "master.html" %}
 {% block subTitle %}Community URL Sharing Service{% endblock %}
 {% block body %}
+<div class="page">
+
 <a target="_top" href="/"><img title="G02.ME" class="logo" src="/images/logo.png"></a>
 <h1 style="padding-top: 40px;">Community URL Sharing Service</h1>
-<p style="clear:both;">
-Just drag this bookmarklet to your toolbar*:
-</p>
-<p style="margin: 10px 200px;">
+
+
+<div class="left">
+<h2>Install the bookmarket</h2>
+<p>Just drag this bookmarklet to your toolbar*:</p>
+<p style="margin: 10px 100px;">
 <a style="font-size: 24px;" title="G02.ME" href="javascript:location.href='{{host}}map/?url='+encodeURIComponent(location)+'&title='+encodeURIComponent(document.title);">G02.ME</a>
 </p>
+
+<h2>What is G02.ME?</h2>
 <ul>
-<li>G02.ME is free for everyone - and no need to create an account.</li>
-<li>Shrink the URL address of any web page to be just 15 characters (e.g. <a title="G02.ME URL to Google.com" href="/G">http://g02.me/G)</a>
-<br/><i>(for comparison, new <a href="http://tinyurl.com">tinyurl.com</a> URLS are now 25 characters long)</i></li>
-<li>Send your new G02.ME URL to your friends in instant messages or twitter tweets.</li>
-<li>G02.ME will add a frame at the top of your shared page where you can exchange comments.</li>
-<li>See how often your page is being viewed - each G02.ME page displays the number of viewers
-directly on the page.</li>
+	<li>G02.ME is free URL shortening service - use it to turn any URL into a short one.</li>
+	<li>G02.ME URL's are only 16 characters long - perfect for embedding in <a href="http://twitter.com">Twitter</a> or IM
+	(e.g., <a href="http://g02.me/G">http://g02.me/G</a>)
+	<br/><i>(for comparison, tinyurl URL's are 25 characters long)</i></li>
+	<li>Exchange comments at the top of any shared G02.ME page.</li>
+	<li>Each G02.ME page displays the number of viewers	so you can see how often your link has been viewed.</li>
 </ul>
+
 <i>
-Installation instructions for Internet Explorer:
+* Installation instructions for Internet Explorer:
 <ul>
-<li>Right click on the G02.ME link (above)</li>
-<li>Select "Add to Favorites..."</li>
-<li>Click "Yes" when you see the Security Alert.</li>
-<li>Select "Links" in the "Create In" dropdown.</li>
-<li>Click "Add"</li>
+	<li>Right click on the G02.ME link (above)</li>
+	<li>Select "Add to Favorites..."</li>
+	<li>Click "Yes" when you see the Security Alert.</li>
+	<li>Select "Links" in the "Create In" dropdown.</li>
+	<li>Click "Add"</li>
 </ul>
 </i>
+
+</div>
+
+<div class="right">
+<h2>Recently popular pages</h2>
+<table class="scores">
+<tr><th>Title</th><th>Shared</th><th>Viewed</th><th>Comments</th></tr>
+{% for page in pages %}
+	<tr>
+		<td><a href="/{{page.model.GetId}}">{{page.model.title}}</a></td>
+		<td class="num">{{page.model.shareCount}}</td>
+		<td class="num">{{page.model.viewCount}}</td>
+		<td class="num">{{page.model.CommentCount}}</td>
+	</tr>
+{% endfor %}
+</table>
+</div>
+
+</div>
 {% endblock %}

@@ -7,7 +7,7 @@ urlpatterns = patterns('',
     (r'^info/([0-9A-Za-z-_]+)$', Head),
     (r'^user/([0-9A-Za-z-_]+)$', UserHistory),    
     (r'^tag/([0-9A-Za-z-_ ]+)$', TagHistory),
-    (r'^map/', MakeAlias),
-    (r'^comment/', MakeComment),
-
+    (r'^map/$', MakeAlias),
+    (r'^\+map$', MakeAlias), # Original bookmarklet - backward compatible
+    (r'^comment/?', MakeComment),
 )

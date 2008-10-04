@@ -46,7 +46,7 @@ function DeleteComment(id)
 </div>
 
 <div style="clear:both;width:700px;">
-  <form action="/+comment" method="get">
+  <form action="/comment/" method="get">
   <input type="hidden" name="id" value="{{map.GetId}}"/>
   <label for="comment">Comment: </label>
   <input style="width:500px;" type="text" id="comment" name="comment">&nbsp;<input type="submit" value="Post"/>
