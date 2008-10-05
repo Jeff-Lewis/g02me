@@ -18,7 +18,37 @@ def TrimString(st):
         st = ''
     return st.strip()
 
-# We save request info in a thread-global
+from simplejson import JSONEncoder
+from simplejson.encoder import Atomic
+from datetime import datetime
+
+class JavaScriptEncoder(JSONEncoder):
+    def default(self, obj):
+        if isinstance(obj, datetime):
+            return JSDate(obj)
+        return JSONEncoder.default(self, obj)
+    
+class JSDate(Atomic):
+    def __init__(self, dt):
+        self.dt = dt
+        
+    def __str__(self):
+        # new Date("10/4/2008 19:54 GMT")
+        return 'new Date("%d/%d/%4d %2d:%2d GMT")' % (
+              self.dt.month, self.dt.day, self.dt.year, self.dt.hour, self.dt.minute
+              ) 
+    
+class JavaScript(Atomic):
+    def __init__(self, st):
+        self.st = st;
+        
+    def __str__(self):
+        return self.st;
+    
+# Global strings
+sISO = "PF.ISO.ToDate(\"%sZ\")"
+
+# Save request info in a thread-global
 local = threading.local()
 
 import unittest

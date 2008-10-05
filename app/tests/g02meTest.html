@@ -1,0 +1,59 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>G02ME Unit Test</title>
+<script src="unit.js"></script>
+<script src="firebug/firebugx.js"></script>
+</head>
+<body onload="ts.Run();ts.Report();">
+<h1><script>document.write(document.title);</script></h1>
+
+<script>
+var ts = new UT.TestSuite();
+ts.DWOutputDiv();
+
+ts.AddTest("JSON Call", function(ut)
+{
+	var cShared;
+
+	ut.AsyncSequence([
+		function(ut)
+			{
+			new UT.ScriptData("/map/").Call({url:"http://google.com"}, function(obj) {
+				ut.AssertEq(obj.url, "http://google.com");
+				ut.AssertContains(obj, {status:"OK", url:"http://google.com", id:1, viewed:0});
+				cShared = obj.shared;					
+				ut.NextFn();
+				});
+			},
+		function(ut)
+			{
+			new UT.ScriptData("/map/").Call({url:"http://google.com"}, function(obj) {
+				ut.AssertEq(obj.url, "http://google.com");
+				ut.AssertContains(obj,
+					{status:"OK", url:"http://google.com", id:1, viewed:0, shared:cShared+1});
+				ut.NextFn();
+				});
+			},
+		function(ut)
+			{
+			var img = document.createElement("img");
+			img.src = "/1";
+			document.body.appendChild(img);
+			tm = new UT.Timer(ut.NextFn.FnMethod(ut), 500).Active(true);
+			},
+		function(ut)
+			{
+			new UT.ScriptData("/map/").Call({url:"http://google.com"}, function(obj) {
+				ut.AssertEq(obj.url, "http://google.com");
+				ut.AssertContains(obj,
+					{status:"OK", url:"http://google.com", id:1, viewed:1, shared:cShared+2});
+				cShared = obj.shared;					
+				ut.NextFn();
+				});
+			},
+			
+		]);
+}).Async(true);
+</script>
+</body>

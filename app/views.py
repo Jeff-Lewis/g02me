@@ -7,6 +7,7 @@ import util
 from models import *
 
 import logging
+import simplejson
 from sys import exc_info
 
 def Home(req):
@@ -19,9 +20,17 @@ def MakeAlias(req):
     if map == None:
         if req.has_key("title"):
             title = req.GET["title"] or ""
+        else:
+            title = url
         id = Globals.IdNext()
-        map = Map(key_name="K:%s"%id, url=url, title=unicode(title, 'utf8'))
+        map = Map(key_name="K:%s" % id, url=url, title=unicode(title, 'utf8'))
     map.Shared();
+    if req.has_key("callback"):
+        obj = {'status':'OK', 'url':url, 'id':map.GetId(), 'viewed':map.viewCount, 'shared':map.shareCount,
+               'created':map.dateCreated}
+        resp = HttpResponse("%s(%s);" % (req.GET["callback"], simplejson.dumps(obj, cls=util.JavaScriptEncoder)))
+        # TODO: Set mime type
+        return resp
     return HttpResponseRedirect("/%s" % map.GetId())
 
 def MakeComment(req):

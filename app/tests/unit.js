@@ -1,8 +1,8 @@
 // unit.js - Unit testing framework
-// Copyright (c) 2007-2008, Mike Koss (mckoss@pageforest.com)
+// Copyright (c) 2007-2008, Mike Koss (mckoss@startpad.org)
 //
 // Usage:
-// ts = new pf.TestSuite("Suite Name");
+// ts = new UT.TestSuite("Suite Name");
 // ts.DWOutputDiv();
 // ts.AddTest("Test Name", function(ut) { ... ut.Assert() ... });
 // ...
@@ -14,22 +14,253 @@
 // UnitTest - Each unit test calls a function which in turn calls
 // back Assert's on the unit test object.
 
-PF.UnitTest = function (stName, fn)
+Function.prototype.FnMethod = function(obj)
+{
+	var _fn = this;
+	return function () { return _fn.apply(obj, arguments); };
+};
+
+Function.prototype.FnArgs = function()
+{
+	var _fn = this;
+	var _args = [];
+	for (var i = 0; i < arguments.length; i++)
+		_args.push(arguments[i]);
+
+	return function () {
+		var args = [];
+		// In case this is a method call, preserve the "this" variable
+		var self = this;
+
+		for (var i = 0; i < arguments.length; i++)
+			args.push(arguments[i]);
+		for (i = 0; i < _args.length; i++)
+			args.push(_args[i]);
+
+		return _fn.apply(self, args);
+	};	
+};
+
+var UT = {
+
+// Extend(dest, src1, src2, ... )
+// Shallow copy properties in turn into dest object
+Extend: function(dest)
+	{
+	for (var i = 1; i < arguments.length; i++)
+		{
+		var src = arguments[i];
+		for (var prop in src)
+			{
+			if (src.hasOwnProperty(prop))
+				dest[prop] = src[prop];
+			}
+		}
+	},
+
+DW: function(st) {document.write(st);},
+
+Browser:
+	{
+	version: parseInt(navigator.appVersion),
+	fIE: navigator.appName.indexOf("Microsoft") != -1
+	},
+	
+// Convert all top-level object properties into a URL query string.
+// {a:1, b:"hello, world"} -> "?a=1&b=hello%2C%20world"
+StParams: function(obj)
+	{
+	if (obj == undefined || obj == null)
+		return "";
+		
+	var stDelim = "?";
+	var stParams = "";
+	for (var prop in obj)
+		{
+		if (!obj.hasOwnProperty(prop) || prop == "_anchor")
+			continue;
+		stParams += stDelim;
+		stParams += encodeURIComponent(prop);
+		// BUG: This is a bit bogus to encode a query param in JSON
+		if (typeof obj[prop] == "object")
+			stParams += "=" + encodeURIComponent(PF.EncodeJSON(obj[prop], true));
+		else if (obj[prop] != null)
+			stParams += "=" + encodeURIComponent(obj[prop]);
+		stDelim = "&";
+		}
+	if (obj._anchor)
+		stParams += "#" + encodeURIComponent(obj._anchor);
+	return stParams;
+	}
+};  // UT
+
+UT.Timer = function(fnCallback, ms)
+{
+	this.ms = ms;
+	this.fnCallback = fnCallback;
+	return this;
+};
+
+UT.Timer.prototype = {
+	constructor: UT.Timer,
+	fActive: false,
+	fRepeat: false,
+	fInCallback: false,
+	fReschedule: false,
+
+Repeat: function(f)
+{
+	if (f == undefined)
+		f = true;
+	this.fRepeat = f;
+	return this;
+},
+
+Ping: function()
+{
+	// In case of race condition - don't call function if deactivated
+	if (!this.fActive)
+		return;
+
+	// Eliminate re-entrancy - is this possible?
+	if (this.fInCallback)
+		{
+		this.fReschedule = true;
+		return;
+		}
+
+	this.fInCallback = true;
+	this.fnCallback();
+	this.fInCallback = false;
+
+	if (this.fActive && (this.fRepeat || this.fReschedule))
+		this.Active(true);
+},
+
+// Calling Active resets the timer so that next call to Ping will be in this.ms milliseconds from NOW
+Active: function(fActive)
+{
+	if (fActive == undefined)
+		fActive = true;
+	this.fActive = fActive;
+	this.fReschedule = false;
+
+	if (this.iTimer)
+		{
+		clearTimeout(this.iTimer);
+		this.iTimer = undefined;
+		}
+
+	if (fActive)
+		this.iTimer = setTimeout(this.Ping.FnMethod(this), this.ms);
+
+	return this;
+}
+}; // UT.Timer
+
+UT.ScriptData = function(stURL)
+{
+    this.stURL = stURL;
+    return this;
+};
+
+UT.ScriptData.ActiveCalls = [];
+UT.ScriptData.ridNext = 1;
+UT.ScriptData.stMsg = {
+    errBusy: "Call made while another call is in progress.",
+    errUnmatched: "Callback received for inactive call: ",
+    errTimeout: "Server did not respond before timeout."
+    };
+
+UT.ScriptData.prototype = {
+	constructor:UT.ScriptData,
+	rid: 0,
+	msTimeout: 2000, 
+
+Call: function(objParams, fnCallback)
+	{
+    if (this.rid != 0)
+        throw(new Error(UT.ScriptData.stMsg.errBusy));
+
+	this.fResponse = false;
+	this.objResponse = undefined;
+	this.ridResponse = 0;
+   	this.rid = UT.ScriptData.ridNext++;
+    UT.ScriptData.ActiveCalls[this.rid] = this;
+
+	if (fnCallback)
+		this.fnCallback = fnCallback;
+            
+    if (objParams === undefined)
+            objParams = {};
+    objParams.callback = "UT.ScriptData.ActiveCalls[" + this.rid + "].fnCallback";
+    this.script = document.createElement("script");
+    this.script.src = this.stURL + UT.StParams(objParams);
+    this.tm = new UT.Timer(UT.ScriptData.Cancel.FnArgs(this.rid), this.msTimeout).Active(true);
+    document.body.appendChild(this.script);
+    console.log("script:" + this.script.src);
+    return this;
+	},
+	
+Callback: function()
+	{
+	// Ignore callbacks for canceled/timed out or old calls
+	if (this.rid != rid)
+		return;
+	this.fResponse = true;
+	this.ridResponse = this.rid;
+    this.Cancel();
+    console.log("(" + rid + ") -> ", arguments);
+    this.fnCallback.apply(undefined, arguments);
+	},
+	
+Timeout: function(rid)
+	{
+	if (rid != this.rid)
+		return;
+	this.Cancel();
+    console.log("(" + rid + ") -> TIMEOUT");
+    this.fnCallback({status:"Fail/Timeout"});
+	},
+	
+// ScriptData can be re-used once complete
+Cancel: function()
+	{
+	UT.ScriptData.Cancel(this.rid);
+	}
+}; //UT.ScriptData
+
+UT.ScriptData.Cancel = function(rid)
+{
+	if (rid == 0)
+		return;
+	var sd = UT.ScriptData.ActiveCalls[rid];
+	UT.ScriptData.ActiveCalls[rid] = undefined;
+	// Guard against multiple calls to Cancel (after sd may be reused)
+	if (sd && sd.rid == rid)
+		{
+		sd.rid = 0;
+		sd.tm.Active(false);
+		}
+};
+
+
+UT.UnitTest = function (stName, fn)
 {
     this.stName = stName;
     this.fn = fn;
     this.rgres = [];
 };
 
-PF.UnitTest.states = {
+UT.UnitTest.states = {
     created: 0,
     running: 1,
     completed: 2
 };
 
-PF.UnitTest.prototype = {
-constructor: PF.UnitTest,
-    state: PF.UnitTest.states.created,
+UT.UnitTest.prototype = {
+constructor: UT.UnitTest,
+    state: UT.UnitTest.states.created,
     cErrors: 0,
     cErrorsExpected: 0,
     cAsserts: 0,
@@ -48,10 +279,10 @@ Run: function(ts)
 
     if (!this.fEnable)
         return;
-    this.state = PF.UnitTest.states.running;
+    this.state = UT.UnitTest.states.running;
 
     if (this.cAsync)
-        this.tm = new PF.Timer(this.Timeout.FnCallback(this), this.msTimeout).Active();
+        this.tm = new UT.Timer(this.Timeout.FnMethod(this), this.msTimeout).Active();
 
     try
         {
@@ -81,12 +312,12 @@ Run: function(ts)
         this.Assert(false, "Missing expected Exception: " + this.stThrows);
 
     if (!this.cAsync)
-        this.state = PF.UnitTest.states.completed;
+        this.state = UT.UnitTest.states.completed;
     },
     
 IsComplete: function()
     {
-    return !this.fEnable || this.state == PF.UnitTest.states.completed;
+    return !this.fEnable || this.state == UT.UnitTest.states.completed;
     },
 
 AssertThrown: function()
@@ -124,7 +355,7 @@ Async: function(dc, msTimeout)
     	{
 		// Don't call assert unless we have a failure - would mess up user counts for numbers
 		// of Asserts expected.
-    	if (this.cAsync != 0 || this.state == PF.UnitTest.states.running)
+    	if (this.cAsync != 0 || this.state == UT.UnitTest.states.running)
     		this.Assert(false, "Test error: Async timeout only allowed at test initialization.");
     	this.msTimeout = msTimeout;
     	}
@@ -139,8 +370,8 @@ Async: function(dc, msTimeout)
     	}
 
 	// When cAsync goes to zero, the aynchronous test is complete
-    if (this.cAsync == 0 && this.state == PF.UnitTest.states.running)
-        this.state = PF.UnitTest.states.completed;
+    if (this.cAsync == 0 && this.state == UT.UnitTest.states.running)
+        this.state = UT.UnitTest.states.completed;
         
     this.CheckValid();
     return this;
@@ -202,7 +433,7 @@ Assert: function(f, stNote, stNote2)
     if (!f && (this.cBreakOn == -1 || this.cBreakOn == this.cAsserts+1))
     		this.Breakpoint(stNote);
     
-    var res = new PF.TestResult(f, this, stNote);
+    var res = new UT.TestResult(f, this, stNote);
     this.rgres.push(res);
     if (!res.f)
         this.cErrors++;
@@ -381,7 +612,7 @@ NextFn: function()
 
 // TestResult - a single result from the test
 
-PF.TestResult = function (f, ut, stNote)
+UT.TestResult = function (f, ut, stNote)
 {
     this.f = f;
     this.ut = ut;
@@ -392,7 +623,7 @@ PF.TestResult = function (f, ut, stNote)
 // Test Suite - Holds, executes, and reports on a collection of unit tests.
 // ------------------------------------------------------------------------
 
-PF.TestSuite = function (stName)
+UT.TestSuite = function (stName)
 {
     this.stName = stName;
     this.rgut = [];
@@ -400,8 +631,8 @@ PF.TestSuite = function (stName)
 };
 
 
-PF.TestSuite.prototype = {
-constructor: PF.TestSuite,
+UT.TestSuite.prototype = {
+constructor: UT.TestSuite,
     cFailures: 0,
     iReport: -1,
     fStopFail: false,
@@ -410,7 +641,7 @@ constructor: PF.TestSuite,
 
 AddTest: function(stName, fn)
     {
-    var ut = new PF.UnitTest(stName, fn);
+    var ut = new UT.UnitTest(stName, fn);
     this.rgut.push(ut);
     
     // Global setting - stop all unit tests on first failure.
@@ -438,7 +669,7 @@ SkipTo: function(iut)
 Run: function()
     {
     // BUG: should this be Active(false) - since we do first iteration immediately?
-    this.tmRun = new PF.Timer(this.RunNext.FnCallback(this), 100).Repeat().Active(true);
+    this.tmRun = new UT.Timer(this.RunNext.FnMethod(this), 100).Repeat().Active(true);
 
     this.iCur = 0;
     // Don't wait for timer - start right away.
@@ -457,15 +688,15 @@ loop:
         var ut = this.rgut[this.iCur];
         var state = ut.state;
         if (!ut.fEnable || this.fTerminateAll || this.iCur < this.iutNext)
-            state = PF.UnitTest.states.completed;
+            state = UT.UnitTest.states.completed;
         switch(state)
             {
-        case PF.UnitTest.states.created:
+        case UT.UnitTest.states.created:
             ut.Run();
             break;
-        case PF.UnitTest.states.running:
+        case UT.UnitTest.states.running:
             break loop;
-        case PF.UnitTest.states.completed:
+        case UT.UnitTest.states.completed:
             this.iCur++;
             this.ReportWhenReady();
             // Skip all remaining tests on failure if StopFail
@@ -484,7 +715,7 @@ AllComplete: function()
     
 DWOutputDiv: function()
     {
-    PF.DW("<DIV style=\"font-family: Courier;border:1px solid red;\" id=\"divUnit\">Unit Test Output</DIV>");
+    UT.DW("<DIV style=\"font-family: Courier;border:1px solid red;\" id=\"divUnit\">Unit Test Output</DIV>");
     },
 
 Out: function(st)
@@ -558,10 +789,10 @@ ReportOne: function(i)
 
     switch (ut.state)
         {
-    case PF.UnitTest.states.created:
+    case UT.UnitTest.states.created:
         this.Out("N/A");
         break;
-    case PF.UnitTest.states.running:
+    case UT.UnitTest.states.running:
         if (ut.cAsync > 0)
             this.Out("RUNNING");
         else
@@ -570,7 +801,7 @@ ReportOne: function(i)
             }
         this.cFailures++;
         break;
-    case PF.UnitTest.states.completed:
+    case UT.UnitTest.states.completed:
         if (ut.cErrors == ut.cErrorsExpected &&
             (ut.cTestsExpected == undefined || ut.cTestsExpected == ut.cAsserts))
             this.Out("PASS");
@@ -586,7 +817,7 @@ ReportOne: function(i)
     this.OutRef(ut.stName, ut.urlRef);
     this.Out("] ");
 
-    if (ut.state != PF.UnitTest.states.created)
+    if (ut.state != UT.UnitTest.states.created)
         {
         this.Out(ut.cErrors + " errors " + "out of " + ut.cAsserts + " tests");
         if (ut.cTestsExpected && ut.cTestsExpected != ut.cAsserts)
@@ -624,7 +855,7 @@ ReportOut: function()
     
 AddSubTest: function(stPath)
     {
-    var ut = this.AddTest(stPath, this.RunSubTest.FnCallback(this)).Async(true).Reference(stPath);
+    var ut = this.AddTest(stPath, this.RunSubTest.FnMethod(this)).Async(true).Reference(stPath);
     ut.stPath = stPath;
     ut.iUnit = this.rgut.length-1;
     return ut;
@@ -638,7 +869,7 @@ RunSubTest: function(ut)
         stName += " from " + window.name;
     ut.win = window.open(ut.stPath, "Unit_" + ut.iUnit);
     if (window.MasterTest == undefined)
-        window.MasterTest = this.MasterTest.FnCallback(this);
+        window.MasterTest = this.MasterTest.FnMethod(this);
     },
     
 MasterTest: function(iUnit, cErrors, cTests)
