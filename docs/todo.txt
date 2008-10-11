@@ -81,6 +81,9 @@ X Test deployment
 - Add scroll bar when there are more comments than fit the head frame (or scale frame to fit)
 - Use memcache
 ! Unit tests
+- Store key instead of model in timescore - don't have problem of ModelExists needing to be called
+- Admin routine to clean up scores for non-existant (delted) models
+- don't allow links to g02.me pages
 
 Future:
 
