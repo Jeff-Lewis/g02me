@@ -38,9 +38,8 @@ class ScoreSet(db.Model):
             s.Update(value, dt)
             
     def Best(self, hrsHalf=24):
-        logging.info("best")
         scores = Score.gql('WHERE name = :name AND hrsHalf = :hrsHalf ORDER BY LogS DESC', name=self.name, hrsHalf=hrsHalf)
-        logging.info("best: %d" % scores.count())
+        logging.info("Best: %d" % scores.count())
         return scores
 
 class Score(db.Model):
@@ -76,6 +75,12 @@ class Score(db.Model):
         ddt = dt1 - Score.dtBase
         hrs = ddt.days*24 + float(ddt.seconds)/60/60
         return hrs
+    
+    def ModelExists(self):
+        obj = db.get(Score.model.get_value_for_datastore(self))
+        if obj == None:
+            logging.error("Model for deleted key: %s" % Score.model.get_value_for_datastore(self))
+        return obj != None
 
 # Constants
 hrsDay = 24

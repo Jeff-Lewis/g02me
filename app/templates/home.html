@@ -42,12 +42,14 @@
 <table class="scores">
 <tr><th>Title</th><th>Shared</th><th>Viewed</th><th>Comments</th></tr>
 {% for page in pages %}
+	{% if page.ModelExists %}
 	<tr>
 		<td><a href="/{{page.model.GetId}}">{{page.model.title}}</a></td>
 		<td class="num">{{page.model.shareCount}}</td>
 		<td class="num">{{page.model.viewCount}}</td>
 		<td class="num">{{page.model.CommentCount}}</td>
 	</tr>
+	{% endif %}
 {% endfor %}
 </table>
 </div>
