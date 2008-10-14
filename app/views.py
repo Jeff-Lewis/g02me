@@ -15,66 +15,100 @@ def Home(req):
     return render_to_response('home.html', {'host':util.local.stHost, 'pages':Map.TopPages()})
 
 def MakeAlias(req):
-    url = req.GET["url"]
-    map = Map.FindUrl(url)
-    if map == None:
-        if req.has_key("title"):
-            title = req.GET["title"] or ""
-        else:
-            title = url
-        id = Globals.IdNext()
-        map = Map(key_name="K:%s" % id, url=url, title=unicode(title, 'utf8'))
-    map.Shared();
-    if req.has_key("callback"):
-        obj = {'status':'OK', 'url':url, 'id':map.GetId(), 'viewed':map.viewCount, 'shared':map.shareCount,
-               'created':map.dateCreated}
-        resp = HttpResponse("%s(%s);" % (req.GET["callback"], simplejson.dumps(obj, cls=util.JavaScriptEncoder)))
-        # TODO: Set mime type
-        return resp
-    return HttpResponseRedirect("/%s" % map.GetId())
+    try:
+        url = req.GET["url"]
+        map = Map.FindUrl(url)
+        if map == None:
+            title = ""
+            if req.has_key("title"):
+                title = req.GET["title"] or ""
+            id = Globals.IdNext()
+            map = Map(key_name="K:%s" % id, url=url, title=title)
+        map.Shared()
+        if req.has_key("callback"):
+            return HttpJSON(req, obj=map.JSON())
+        return HttpResponseRedirect("/%s" % map.GetId())
+    except util.Error, e:
+        return HttpError(req, e.obj['message'], obj=e.obj)
 
 def MakeComment(req):
-    id = req.GET.get('id', '').strip()
-    comment = req.GET.get('comment', '').strip()
+    try:
+        id = req.GET.get('id', '').strip()
+        comment = req.GET.get('comment', '').strip()
+        
+        map = Map.Lookup(id)
+        reg = re.compile(r"^( *([a-zA-Z0-9_\.\-+]+) *: *)?([^\[]*) *(\[(.*)\])? *$")
+        m = reg.match(comment)
     
-    map = Map.Lookup(id)
-    reg = re.compile(r"^( *([a-zA-Z0-9_\.\-+]+) *: *)?([^\[]*) *(\[(.*)\])? *$")
-    m = reg.match(comment)
-    logging.info("c: %s m: %s map: %s" % (comment, m, map))
-    if m == None or map == None:
-        return render_to_response('error.html', {'strError' : "The G02.ME page, <i>http://g02.me/%s</i>, does not exist" % id})
-    username = m.group(2)
-    comment = m.group(3)
-    tags = m.group(5)
-    logging.info("u: %s c: %s t: %s" % (username, comment, tags))
-    map.AddComment(username=username, comment=comment, tags=tags)
-    return HttpResponseRedirect("/info/%s" % map.GetId())
+        if m == None:
+            raise Error("Could not parse comment", obj={'id':id})
+    
+        if map == None:
+            RaiseNotFound(id)
+    
+        username = m.group(2)
+        comment = m.group(3)
+        tags = m.group(5)
+        map.AddComment(username=username, comment=comment, tags=tags)
+        if req.has_key("callback"):
+            return HttpJSON(req, obj=map.JSON())
+        return HttpResponseRedirect("/info/%s" % map.GetId())
+    except util.Error, e:
+        return HttpError(req, e.obj['message'], obj=e.obj)
 
 def Head(req, id):
-    InitReq(req)
-    map = Map.Lookup(id)
-    if map == None:
-        return render_to_response('error.html', {'strError' : "The G02.ME page, <i>http://g02.me/%s</i>, does not exist" % id})
-    map.Viewed()
-    comments = map.comment_set.fetch(100)
-    return render_to_response('head.html', {'map': map, 'comments':comments})
+    try:
+        InitReq(req)
+        map = Map.Lookup(id)
+        if map == None:
+            RaiseNotFound(id)
+        map.Viewed()
+        if req.has_key("callback"):
+            return HttpJSON(req, obj=map.JSON())
+        return render_to_response('head.html', {'map': map})
+    except util.Error, e:
+        return HttpError(req, e.obj['message'], obj=e.obj)
 
 def FrameSet(req, id):
-    InitReq(req)
-    map = Map.Lookup(id)
-    if map == None:
-        return render_to_response('error.html', {'strError' : "The G02.ME page, <i>http://g02.me/%s</i>, does not exist" % id})
-    return render_to_response('mapped.html', {'map':map})
+    try:
+        InitReq(req)
+        map = Map.Lookup(id)
+        if map == None:
+            RaiseNotFound(id)
+        if req.has_key("callback"):
+            map.Viewed()
+            return HttpJSON(req, obj=map.JSON())
+        return render_to_response('mapped.html', {'map':map})
+    except util.Error, e:
+        return HttpError(req, e.obj['message'], obj=e.obj)
 
 def UserHistory(req, username):
     InitReq(req)
-    return render_to_response('error.html', {'strError' : "User view yet implemented: %s" % username})
+    return HttpError(req, "User view not yet implemented: %s" % username)
 
 def TagHistory(req, tagname):
     InitReq(req)
-    return render_to_response('error.html', {'strError' : "Tag view yet implemented: %s" % tagname})
+    return HttpError(req, "Tag view not yet implemented: %s" % tagname)
 
 def InitReq(req):
     # Store the http request for URI generation, in a thread local
     # TODO: Put in MiddleWare?
     util.local.stHost = "http://" + req.META["HTTP_HOST"] + "/"
+
+def RaiseNotFound(id):
+    raise util.Error("The G02.ME page, http://g02.me/%s, does not exist" % id, obj={'id':id, 'status':'Fail/NotFound'})
+
+def HttpError(req, stError, obj={}):
+    if req.has_key("callback"):
+        if not 'status' in obj:
+            obj['status'] = 'Fail'
+        obj['message'] = stError
+        return HttpJSON(req, obj=obj)
+    return render_to_response('error.html', {'strError' : stError})
+
+def HttpJSON(req, obj={}):
+    if not 'status' in obj:
+        obj['status'] = 'OK'
+    resp = HttpResponse("%s(%s);" % (req.GET["callback"], simplejson.dumps(obj, cls=util.JavaScriptEncoder)))
+    # TODO: Set mime type
+    return resp

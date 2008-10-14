@@ -33,7 +33,7 @@ function DeleteComment(id)
 <p>{{map.url|escape}}</p>
 
 <div class="comments">
-{% for comment in comments %}
+{% for comment in map.Comments %}
 	{% spaceless %}<p>
     {% if comment.username %}<a href="/user/{{comment.username}}">{{comment.username}}</a>:{% endif %}
     {{comment.comment}}

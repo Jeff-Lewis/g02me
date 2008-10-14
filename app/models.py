@@ -16,11 +16,21 @@ class Map(db.Model):
     scoreView = 1
     scoreShare = 3
     
-    url = db.StringProperty(required=True, validator=util.NormalizeUrl)
-    title = db.StringProperty(validator=util.TrimString)
+    url = db.StringProperty(required=True)
+    title = db.StringProperty()
     dateCreated = db.DateTimeProperty(auto_now=True)
     viewCount = db.IntegerProperty(default=0)
     shareCount = db.IntegerProperty(default=0)
+    
+    def __init__(self, *args, **kw):
+        db.Model.__init__(self, *args, **kw)
+        
+        # Validator functions DON'T allow for re-writing the values (contrary to documentation)
+        self.url = util.NormalizeUrl(self.url)
+        self.title = util.TrimString(self.title)
+        if not self.title:
+            self.title = self.url 
+        self.title = unicode(self.title, 'utf8')
     
     @classmethod
     def KeyFromId(self, id):
@@ -35,6 +45,7 @@ class Map(db.Model):
     @classmethod
     def FindUrl(cls, url):
         url = util.NormalizeUrl(url)
+        logging.info("FindURL: %s" % url)
         query = db.Query(Map)
         query.filter('url =', url)
         map = query.get()
@@ -63,6 +74,9 @@ class Map(db.Model):
         # TODO: Inefficient for large comment streams - loads all in memory
         return self.comment_set.count();
     
+    def Comments(self):
+        return self.comment_set.fetch(100)
+    
     def Shared(self):
         self.shareCount = self.shareCount + 1
         self.put()
@@ -73,6 +87,21 @@ class Map(db.Model):
         self.put()
         self.ss.Update(self, self.scoreView)
         
+    def JSON(self):
+        obj = {'url':self.url, 'id':self.GetId(), 'title':self.title,
+               'viewed':self.viewCount, 'shared':self.shareCount, 'created':self.dateCreated}
+        rgComments = [];
+        for comment in self.Comments():
+            c = {'comment': comment.comment}
+            if comment.username:
+                c['user'] = comment.username
+            if comment.tags:
+                c['tags'] = comment.tags
+            rgComments.append(c)
+        if len(rgComments) > 0: 
+            obj['comments'] = rgComments
+        return obj
+
 # TODO: Use a sharded counter   
 class Globals(db.Model):
     idNext = db.IntegerProperty(default=1)
@@ -86,12 +115,19 @@ class Globals(db.Model):
         return util.IntToS64(id)
 
 class Comment(db.Model):
-    username = db.StringProperty(validator=util.TrimString)
-    comment = db.StringProperty(validator=util.TrimString)
-    tags = db.StringProperty(validator=util.TrimString)
+    username = db.StringProperty()
+    comment = db.StringProperty()
+    tags = db.StringProperty()
     map = db.ReferenceProperty(Map)
     dateCreated = db.DateTimeProperty(auto_now=True)
     
+    def __init__(self, *args, **kw):
+        db.Model.__init__(self, *args, **kw)
+        
+        self.username = util.TrimString(self.username)
+        self.comment = util.TrimString(self.comment)
+        self.tags = util.TrimString(self.tags)
+        
     def TagList(self):
         return self.tags.split(",")
     

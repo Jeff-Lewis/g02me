@@ -12,48 +12,57 @@
 var ts = new UT.TestSuite();
 ts.DWOutputDiv();
 
-ts.AddTest("JSON Call", function(ut)
+ts.AddTest("JSON Calls", function(ut)
 {
-	var cShared;
+	var objInit;
 
 	ut.AsyncSequence([
 		function(ut)
 			{
 			new UT.ScriptData("/map/").Call({url:"http://google.com"}, function(obj) {
-				ut.AssertEq(obj.url, "http://google.com");
-				ut.AssertContains(obj, {status:"OK", url:"http://google.com", id:1, viewed:0});
-				cShared = obj.shared;					
+				ut.AssertContains(obj, {status:"OK", url:"http://google.com"});
+				objInit = obj;
 				ut.NextFn();
 				});
 			},
 		function(ut)
 			{
 			new UT.ScriptData("/map/").Call({url:"http://google.com"}, function(obj) {
-				ut.AssertEq(obj.url, "http://google.com");
 				ut.AssertContains(obj,
-					{status:"OK", url:"http://google.com", id:1, viewed:0, shared:cShared+1});
+					{status:"OK", url:"http://google.com", id:objInit.id, viewed:objInit.viewed, shared:objInit.shared+1});
 				ut.NextFn();
 				});
 			},
 		function(ut)
 			{
-			var img = document.createElement("img");
-			img.src = "/1";
-			document.body.appendChild(img);
+			var frame = document.createElement("iframe");
+			frame.src = "/" + objInit.id;
+			document.body.appendChild(frame);
 			tm = new UT.Timer(ut.NextFn.FnMethod(ut), 500).Active(true);
 			},
 		function(ut)
 			{
 			new UT.ScriptData("/map/").Call({url:"http://google.com"}, function(obj) {
-				ut.AssertEq(obj.url, "http://google.com");
 				ut.AssertContains(obj,
-					{status:"OK", url:"http://google.com", id:1, viewed:1, shared:cShared+2});
-				cShared = obj.shared;					
+					{status:"OK", url:"http://google.com", id:objInit.id, viewed:objInit.viewed+1, shared:objInit.shared+2});
 				ut.NextFn();
 				});
-			},
-			
+			}
 		]);
 }).Async(true);
+
+ts.AddTest("JSON Calls", function(ut)
+{
+	ut.AsyncSequence([
+		function (ut)
+			{
+			new UT.ScriptData("/map/").Call({url:"http://g02.me"}, function (obj) {
+				ut.AssertContains(obj, {status:"Fail/Domain"});
+				ut.NextFn();
+				});
+			}
+		]);
+}).Async(true);
+
 </script>
 </body>

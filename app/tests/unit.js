@@ -529,7 +529,7 @@ AssertContains: function(objAll, objSome)
         {
         if (!objSome.hasOwnProperty(prop))
             continue;
-        this.AssertEq(objAll[prop], objSome[prop]);
+        this.AssertEq(objAll[prop], objSome[prop], "prop: " + prop);
         }
     },
     

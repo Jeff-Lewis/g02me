@@ -1,4 +1,6 @@
 import threading
+from urlparse import urlsplit, urlunsplit
+import logging
 
 s64 = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz-_"
 def IntToS64(i):
@@ -11,11 +13,20 @@ def IntToS64(i):
     return ''.join(s)
 
 def NormalizeUrl(url):
-    return url.strip()
+    rgURL = urlsplit(url)
+    if rgURL[0] != "http" and rgURL != "https":
+        url = r"http://%s" % url
+        logging.info("url: %s" % url)
+        rgURL = urlsplit(url)
+    if not rgURL[1]:        
+        raise Error("Invalid URL: %s" % urlunsplit(rgURL))
+    logging.info("Normalized URL: %s" % urlunsplit(rgURL))
+    return urlunsplit(rgURL)
 
 def TrimString(st):
     if st == None:
         st = ''
+    st = str(st)
     return st.strip()
 
 from simplejson import JSONEncoder
@@ -45,6 +56,13 @@ class JavaScript(Atomic):
     def __str__(self):
         return self.st;
     
+class Error(Exception):
+    def __init__(self, message, status='Fail', obj={}):
+        if not 'status' in obj:
+            obj['status'] = status
+        obj['message'] = message
+        self.obj = obj
+
 # Global strings
 sISO = "PF.ISO.ToDate(\"%sZ\")"
 
