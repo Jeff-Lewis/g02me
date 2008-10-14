@@ -19,7 +19,9 @@ def NormalizeUrl(url):
         url = r"http://%s" % url
         rgURL = urlsplit(url)
     if rgURL[0] != "http" and rgURL[0] != "https":
-        raise Error("Invalild protocol: %s" % rgURL[0]) 
+        foo = Error("Invalid protocol: %s" % rgURL[0], "Fail/Foo")
+        bar = Error("Invalid protocol: %s" % rgURL[0])
+        raise bar 
     if not rgURL[1]:        
         raise Error("Invalid URL: %s" % urlunsplit(rgURL))
     return urlunsplit(rgURL)
@@ -58,12 +60,13 @@ class JavaScript(Atomic):
         return self.st;
     
 class Error(Exception):
-    def __init__(self, message, status='Fail', obj={}):
+    def __init__(self, message, status='Fail', obj=None):
+        if obj == None:
+            obj = {}
         if not 'status' in obj:
             obj['status'] = status
         obj['message'] = message
         self.obj = obj
-        logging.info("Error: %s [%s]" % (message, obj['status']))
 
 # Global strings
 sISO = "PF.ISO.ToDate(\"%sZ\")"

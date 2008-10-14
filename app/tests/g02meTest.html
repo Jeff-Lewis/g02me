@@ -12,7 +12,7 @@
 var ts = new UT.TestSuite();
 ts.DWOutputDiv();
 
-ts.AddTest("Map Calls", function(ut)
+ts.AddTest("Map", function(ut)
 {
 	var objInit;
 
@@ -78,7 +78,6 @@ ts.AddTest("Map Calls", function(ut)
 ts.AddTest("Errors", function(ut)
 {
 	ut.AsyncSequence([
-	/*
 		function (ut)
 			{
 			new UT.ScriptData("/map/").Call({url:"http://g02.me"}, function (obj) {
@@ -93,7 +92,6 @@ ts.AddTest("Errors", function(ut)
 				ut.NextFn();
 				});
 			},
-	*/
 		function (ut)
 			{
 			new UT.ScriptData("/map/").Call({url:"script://google.com"}, function (obj) {
@@ -101,6 +99,70 @@ ts.AddTest("Errors", function(ut)
 				ut.NextFn();
 				});
 			}
+		]);
+}).Async(true);
+
+ts.AddTest("Info", function(ut)
+{
+	var objInit;
+
+	ut.AsyncSequence([
+		function(ut)
+			{
+			new UT.ScriptData("/map/").Call({url:"http://google.com"}, function(obj) {
+				ut.AssertContains(obj, {status:"OK", url:"http://google.com"});
+				objInit = obj;
+				ut.NextFn();
+				});
+			},
+		function (ut)
+			{
+			new UT.ScriptData("/info/" + objInit.id).Call({}, function (obj) {
+				ut.AssertContains(obj, {status:"OK", url:"http://google.com"});
+				ut.NextFn();
+				});
+			},
+		function (ut)
+			{
+			new UT.ScriptData("/info/99").Call({}, function (obj) {
+				ut.AssertContains(obj, {status:"Fail/NotFound"});
+				ut.NextFn();
+				});
+			}
+		]);
+}).Async(true);
+
+ts.AddTest("Comment", function(ut)
+{
+	var objInit;
+	var cComment;
+
+	ut.AsyncSequence([
+		function(ut)
+			{
+			new UT.ScriptData("/map/").Call({url:"http://google.com"}, function(obj) {
+				ut.AssertContains(obj, {status:"OK", url:"http://google.com"});
+				objInit = obj;
+				ut.NextFn();
+				});
+			},
+		function(ut)
+			{
+			new UT.ScriptData("/comment/").Call({id:objInit.id, comment:"hello"}, function (obj) {
+				ut.AssertContains(obj, {status:"OK", url:"http://google.com"});
+				ut.AssertContains(obj.comments[0], {comment:"hello"});
+				cComment = obj.comments.length;
+				ut.NextFn();
+				});
+			},
+		function(ut)
+			{
+			new UT.ScriptData("/info/" + objInit.id).Call({}, function (obj) {
+				ut.AssertContains(obj, {status:"OK", url:"http://google.com"});
+				ut.AssertEq(obj.comments.length, cComment);
+				ut.NextFn();
+				});
+			} 
 		]);
 }).Async(true);
 

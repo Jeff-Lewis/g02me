@@ -38,7 +38,7 @@ class Map(db.Model):
         
         rg = urlsplit(self.url)
         if rg[1] in Map.blackList:
-            raise util.Error("Can't create link to domain: %s" % rg[1], "Fail/Domain")
+            raise util.Error("Can't create link to domain: %s" % rg[1], status="Fail/Domain")
     
     @classmethod
     def KeyFromId(self, id):
