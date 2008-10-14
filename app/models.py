@@ -7,6 +7,7 @@ from timescore.models import ScoreSet
 
 import logging
 from sys import exc_info
+from urlparse import urlsplit
 
 class Map(db.Model):
     ss = ScoreSet.GetSet("map")
@@ -15,6 +16,9 @@ class Map(db.Model):
     scoreComment = 2
     scoreView = 1
     scoreShare = 3
+    
+    # TODO: Add a database model for blacklisted domains
+    blackList = {'g02.me':True, 'www.g02.me': True}
     
     url = db.StringProperty(required=True)
     title = db.StringProperty()
@@ -31,6 +35,10 @@ class Map(db.Model):
         if not self.title:
             self.title = self.url 
         self.title = unicode(self.title, 'utf8')
+        
+        rg = urlsplit(self.url)
+        if rg[1] in Map.blackList:
+            raise util.Error("Can't create link to domain: %s" % rg[1], "Fail/Domain")
     
     @classmethod
     def KeyFromId(self, id):
@@ -45,7 +53,6 @@ class Map(db.Model):
     @classmethod
     def FindUrl(cls, url):
         url = util.NormalizeUrl(url)
-        logging.info("FindURL: %s" % url)
         query = db.Query(Map)
         query.filter('url =', url)
         map = query.get()

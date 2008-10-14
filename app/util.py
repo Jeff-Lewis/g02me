@@ -13,14 +13,15 @@ def IntToS64(i):
     return ''.join(s)
 
 def NormalizeUrl(url):
+    url = url.strip()
     rgURL = urlsplit(url)
-    if rgURL[0] != "http" and rgURL != "https":
+    if rgURL[0] == '':
         url = r"http://%s" % url
-        logging.info("url: %s" % url)
         rgURL = urlsplit(url)
+    if rgURL[0] != "http" and rgURL[0] != "https":
+        raise Error("Invalild protocol: %s" % rgURL[0]) 
     if not rgURL[1]:        
         raise Error("Invalid URL: %s" % urlunsplit(rgURL))
-    logging.info("Normalized URL: %s" % urlunsplit(rgURL))
     return urlunsplit(rgURL)
 
 def TrimString(st):
@@ -62,6 +63,7 @@ class Error(Exception):
             obj['status'] = status
         obj['message'] = message
         self.obj = obj
+        logging.info("Error: %s [%s]" % (message, obj['status']))
 
 # Global strings
 sISO = "PF.ISO.ToDate(\"%sZ\")"

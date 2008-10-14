@@ -12,7 +12,7 @@
 var ts = new UT.TestSuite();
 ts.DWOutputDiv();
 
-ts.AddTest("JSON Calls", function(ut)
+ts.AddTest("Map Calls", function(ut)
 {
 	var objInit;
 
@@ -35,6 +35,22 @@ ts.AddTest("JSON Calls", function(ut)
 			},
 		function(ut)
 			{
+			new UT.ScriptData("/map/").Call({url:"google.com"}, function(obj) {
+				ut.AssertContains(obj,
+					{status:"OK", url:"http://google.com", id:objInit.id, viewed:objInit.viewed, shared:objInit.shared+2});
+				ut.NextFn();
+				});
+			},
+		function(ut)
+			{
+			new UT.ScriptData("/map/").Call({url:" http://google.com "}, function(obj) {
+				ut.AssertContains(obj,
+					{status:"OK", url:"http://google.com", id:objInit.id, viewed:objInit.viewed, shared:objInit.shared+3});
+				ut.NextFn();
+				});
+			},
+		function(ut)
+			{
 			var frame = document.createElement("iframe");
 			frame.src = "/" + objInit.id;
 			document.body.appendChild(frame);
@@ -44,20 +60,44 @@ ts.AddTest("JSON Calls", function(ut)
 			{
 			new UT.ScriptData("/map/").Call({url:"http://google.com"}, function(obj) {
 				ut.AssertContains(obj,
-					{status:"OK", url:"http://google.com", id:objInit.id, viewed:objInit.viewed+1, shared:objInit.shared+2});
+					{status:"OK", url:"http://google.com", id:objInit.id, viewed:objInit.viewed+1, shared:objInit.shared+4});
+				ut.NextFn();
+				});
+			},
+		function(ut)
+			{
+			new UT.ScriptData("/map/").Call({url:"https://google.com"}, function(obj) {
+				ut.AssertContains(obj,
+					{status:"OK", url:"https://google.com"});
 				ut.NextFn();
 				});
 			}
 		]);
 }).Async(true);
 
-ts.AddTest("JSON Calls", function(ut)
+ts.AddTest("Errors", function(ut)
 {
 	ut.AsyncSequence([
+	/*
 		function (ut)
 			{
 			new UT.ScriptData("/map/").Call({url:"http://g02.me"}, function (obj) {
 				ut.AssertContains(obj, {status:"Fail/Domain"});
+				ut.NextFn();
+				});
+			},
+		function (ut)
+			{
+			new UT.ScriptData("/map/").Call({url:"http://www.g02.me"}, function (obj) {
+				ut.AssertContains(obj, {status:"Fail/Domain"});
+				ut.NextFn();
+				});
+			},
+	*/
+		function (ut)
+			{
+			new UT.ScriptData("/map/").Call({url:"script://google.com"}, function (obj) {
+				ut.AssertContains(obj, {status:"Fail"});
 				ut.NextFn();
 				});
 			}

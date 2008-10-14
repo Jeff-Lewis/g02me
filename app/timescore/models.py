@@ -23,7 +23,6 @@ class ScoreSet(db.Model):
         return ss
     
     def Update(self, model, value, dt=datetime.now()):
-        logging.info("SS - Update")
         scores = Score.gql('WHERE name = :name AND model = :model', name=self.name, model=model)
         if scores.count() == 0:
             for hrs in self.halfLives:
@@ -31,8 +30,6 @@ class ScoreSet(db.Model):
                 s = Score(name=self.name, hrsHalf=hrs, model=model)
                 s.Update(value, dt)
             return
-        
-        logging.info("SS - updating scores")
         
         for s in scores:
             s.Update(value, dt)
@@ -64,7 +61,7 @@ class Score(db.Model):
         else:
             self.S += (1-k) * (k ** (self.hrsLast - hrs)) * value
             
-        logging.info("Score: %f " % self.S)
+        #logging.info("Score: %f " % self.S)
             
         # Todo: handle positive and negative values
         self.LogS = math.log(self.S)/math.log(2) + self.hrsLast/self.hrsHalf

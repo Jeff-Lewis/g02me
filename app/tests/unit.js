@@ -193,22 +193,20 @@ Call: function(objParams, fnCallback)
             
     if (objParams === undefined)
             objParams = {};
-    objParams.callback = "UT.ScriptData.ActiveCalls[" + this.rid + "].fnCallback";
+    objParams.callback = "UT.ScriptData.ActiveCalls[" + this.rid + "].Callback";
     this.script = document.createElement("script");
     this.script.src = this.stURL + UT.StParams(objParams);
     this.tm = new UT.Timer(UT.ScriptData.Cancel.FnArgs(this.rid), this.msTimeout).Active(true);
     document.body.appendChild(this.script);
-    console.log("script:" + this.script.src);
+    console.log("script[" + this.rid + "]: " + this.script.src);
     return this;
 	},
 	
 Callback: function()
 	{
 	// Ignore callbacks for canceled/timed out or old calls
-	if (this.rid != rid)
-		return;
 	this.fResponse = true;
-	this.ridResponse = this.rid;
+	var rid = this.rid;
     this.Cancel();
     console.log("(" + rid + ") -> ", arguments);
     this.fnCallback.apply(undefined, arguments);
