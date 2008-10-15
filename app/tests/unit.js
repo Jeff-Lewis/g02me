@@ -471,29 +471,45 @@ AssertEval: function(stEval)
 // v1 is the quantity to be tested against the "known" quantity, v2.
 AssertEq: function(v1, v2, stNote)
     {
-    if (typeof v2 != "object")
-        {
-        this.Assert(v1 == v2, v1 + " == " + v2, stNote);
-        return;
-        }
-
-    if (typeof v1 != "object")
-        {
-        this.Assert(false, "Expected Object for comparison: " + typeof v1);
-        return;
-        }
-
-    this.AssertContains(v1, v2);
-    var cProp1 = this.PropCount(v1);
-    var cProp2 = this.PropCount(v2);
-    this.Assert(cProp1 == cProp2, "Objects have different property counts (" + cProp1 + " != " + cProp2 + ")");
-    
-    // Make sure Dates match
-    if (v1.constructor == Date)
+    if (typeof v1 != typeof v2)
     	{
-	    this.AssertEq(v2.constructor, Date);   	
-    	if (v2.constructor == Date)
-    		this.AssertEq(v1.toString(), v2.toString());
+    	this.Assert(false, "Comparing values of different type: " + typeof v1 + ", " + typeof v2, stNote);
+    	return;
+    	}
+    	
+    switch (typeof v1)
+    	{
+    case "string":
+    	pos = "";
+    	if (v1 != v2)
+    		for (var i = 0; i < v2.length; i++)
+    			{
+    			if (v1[i] != v2[i])
+    				{
+    				pos += "@" + i + " x" + v1.charCodeAt(i).toString(16) + " != x" + v2.charCodeAt(i).toString(16) + ", "
+					break;    				
+    				}
+    			}
+        this.Assert(v1 == v2, "\"" + v1 + "\" == \"" + v2 + "\" (" + pos + "len: " + v1.length + ", " + v2.length + ")", stNote);
+        break;
+
+    case "object":
+        this.AssertContains(v1, v2);
+	    var cProp1 = this.PropCount(v1);
+	    var cProp2 = this.PropCount(v2);
+	    this.Assert(cProp1 == cProp2, "Objects have different property counts (" + cProp1 + " != " + cProp2 + ")");
+	    
+	    // Make sure Dates match
+	    if (v1.constructor == Date)
+	    	{
+		    this.AssertEq(v2.constructor, Date);   	
+	    	if (v2.constructor == Date)
+	    		this.AssertEq(v1.toString(), v2.toString());
+	    	}
+	    break;
+    default:
+        this.Assert(v1 == v2, v1 + " == " + v2 + " (type: " + typeof v1 + ")", stNote);
+        break;
     	}
     },
 

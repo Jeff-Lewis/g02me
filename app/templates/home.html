@@ -44,7 +44,7 @@
 {% for page in pages %}
 	{% if page.ModelExists %}
 	<tr>
-		<td><a href="/{{page.model.GetId}}">{{page.model.title}}</a></td>
+		<td><a href="/{{page.model.GetId}}">{{page.model.title|escape}}</a></td>
 		<td class="num">{{page.model.shareCount}}</td>
 		<td class="num">{{page.model.viewCount}}</td>
 		<td class="num">{{page.model.CommentCount}}</td>

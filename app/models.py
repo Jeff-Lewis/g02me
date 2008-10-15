@@ -8,6 +8,7 @@ from timescore.models import ScoreSet
 import logging
 from sys import exc_info
 from urlparse import urlsplit
+import re
 
 class Map(db.Model):
     ss = ScoreSet.GetSet("map")
@@ -18,7 +19,7 @@ class Map(db.Model):
     scoreShare = 3
     
     # TODO: Add a database model for blacklisted domains
-    blackList = {'g02.me':True, 'www.g02.me': True}
+    blackList = {'g02.me':True, 'www.g02.me': True, 'localhost:8080': True}
     
     url = db.StringProperty(required=True)
     title = db.StringProperty()
@@ -26,23 +27,23 @@ class Map(db.Model):
     viewCount = db.IntegerProperty(default=0)
     shareCount = db.IntegerProperty(default=0)
     
-    def __init__(self, *args, **kw):
-        db.Model.__init__(self, *args, **kw)
-        
-        # Validator functions DON'T allow for re-writing the values (contrary to documentation)
-        self.url = util.NormalizeUrl(self.url)
-        self.title = util.TrimString(self.title)
-        if not self.title:
-            self.title = self.url 
-        self.title = unicode(self.title, 'utf8')
-        
-        rg = urlsplit(self.url)
-        if rg[1] in Map.blackList:
-            raise util.Error("Can't create link to domain: %s" % rg[1], status="Fail/Domain")
+    @classmethod
+    def KeyFromId(cls, id):
+        return "K:%s" % id
     
     @classmethod
-    def KeyFromId(self, id):
-        return "K:%s" % id
+    def Create(cls, url, title):
+        url = util.NormalizeUrl(url)
+        title = util.TrimString(title)
+        if not title:
+            title = url
+        rg = urlsplit(url)
+        if rg[1] in Map.blackList:
+            raise util.Error("Can't create link to domain: %s" % rg[1], status="Fail/Domain")
+        title = unicode(title, 'utf8')
+        id = Globals.IdNext()
+        map = Map(key_name=Map.KeyFromId(id), url=url, title=title)
+        return map
 
     @classmethod
     def Lookup(cls, id):
@@ -56,6 +57,14 @@ class Map(db.Model):
         query = db.Query(Map)
         query.filter('url =', url)
         map = query.get()
+        return map
+    
+    @classmethod
+    def FindOrCreateUrl(cls, url, title):
+        map = Map.FindUrl(url)
+        if map == None:
+            map = Map.Create(url, title)
+        map.Shared()
         return map
     
     @classmethod
@@ -73,7 +82,7 @@ class Map(db.Model):
                 }
         
     def AddComment(self, username, comment, tags):
-        comm = Comment(map=self, username=username, comment=comment, tags=tags)
+        comm = Comment.Create(map=self, username=username, comment=comment, tags=tags)
         comm.put()
         self.ss.Update(self, self.scoreComment)
         
@@ -82,7 +91,9 @@ class Map(db.Model):
         return self.comment_set.count();
     
     def Comments(self):
-        return self.comment_set.fetch(100)
+        comments = self.comment_set
+        comments.order('dateCreated')
+        return comments.fetch(100)
     
     def Shared(self):
         self.shareCount = self.shareCount + 1
@@ -128,12 +139,32 @@ class Comment(db.Model):
     map = db.ReferenceProperty(Map)
     dateCreated = db.DateTimeProperty(auto_now=True)
     
-    def __init__(self, *args, **kw):
-        db.Model.__init__(self, *args, **kw)
+    @classmethod
+    def Create(cls, map, username="", comment="", tags=""):
+        username = util.TrimString(username)
+        comment = util.TrimString(comment)
+        tags = util.TrimString(tags)
+        com = Comment(map=map, username=username, comment=comment, tags=tags)
+        return com
+    
+    @classmethod
+    def Parse(cls, st):
+        reg = re.compile(r"^( *([a-zA-Z0-9_\.\-+]+) *: *)?([^\[]*) *(\[(.*)\])? *$")
+        m = reg.match(st)
+    
+        if m == None:
+            raise Error("Could not parse comment")
         
-        self.username = util.TrimString(self.username)
-        self.comment = util.TrimString(self.comment)
-        self.tags = util.TrimString(self.tags)
+        
+        if m.group(5):
+            reg = re.compile(r" *, *")
+            tags = reg.sub(",", m.group(5)).strip()
+        else:
+            tags = ""
+
+        return {'username':m.group(2),
+                'comment': m.group(3),
+                'tags': tags}
         
     def TagList(self):
         return self.tags.split(",")

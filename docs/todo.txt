@@ -84,6 +84,10 @@ X Test deployment
 - Store key instead of model in timescore - don't have problem of ModelExists needing to be called
 - Admin routine to clean up scores for non-existant (delted) models
 - don't allow links to g02.me pages
+- prune empty commments
+- don't recognize http: as a user name
+- auto-hyperlink http addresses -> convert to g02me links
+- comments ordered
 
 Future:
 

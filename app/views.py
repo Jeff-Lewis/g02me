@@ -2,7 +2,6 @@ from google.appengine.ext import db
 from django.shortcuts import render_to_response
 from django.http import HttpResponse, HttpResponseRedirect
 from google.appengine.api import memcache
-import re
 import util
 from models import *
 
@@ -16,15 +15,7 @@ def Home(req):
 
 def MakeAlias(req):
     try:
-        url = req.GET["url"]
-        map = Map.FindUrl(url)
-        if map == None:
-            title = ""
-            if req.has_key("title"):
-                title = req.GET["title"] or ""
-            id = Globals.IdNext()
-            map = Map(key_name="K:%s" % id, url=url, title=title)
-        map.Shared()
+        map = Map.FindOrCreateUrl(req.GET.get('url', ""), req.GET.get('title', ""))
         if req.has_key("callback"):
             return HttpJSON(req, obj=map.JSON())
         return HttpResponseRedirect("/%s" % map.GetId())
@@ -33,23 +24,15 @@ def MakeAlias(req):
 
 def MakeComment(req):
     try:
-        id = req.GET.get('id', '').strip()
-        comment = req.GET.get('comment', '').strip()
+        id = req.GET.get('id', "").strip()
         
         map = Map.Lookup(id)
-        reg = re.compile(r"^( *([a-zA-Z0-9_\.\-+]+) *: *)?([^\[]*) *(\[(.*)\])? *$")
-        m = reg.match(comment)
-    
-        if m == None:
-            raise Error("Could not parse comment", obj={'id':id})
-    
         if map == None:
             RaiseNotFound(id)
-    
-        username = m.group(2)
-        comment = m.group(3)
-        tags = m.group(5)
-        map.AddComment(username=username, comment=comment, tags=tags)
+            
+        parts = Comment.Parse(req.GET.get('comment', ""))
+
+        map.AddComment(username=parts['username'], comment=parts['comment'], tags=parts['tags'])
         if req.has_key("callback"):
             return HttpJSON(req, obj=map.JSON())
         return HttpResponseRedirect("/info/%s" % map.GetId())
@@ -57,6 +40,7 @@ def MakeComment(req):
         return HttpError(req, e.obj['message'], obj=e.obj)
 
 def Head(req, id):
+    # http://g02me/info/N
     try:
         InitReq(req)
         map = Map.Lookup(id)
@@ -70,6 +54,7 @@ def Head(req, id):
         return HttpError(req, e.obj['message'], obj=e.obj)
 
 def FrameSet(req, id):
+    # http://g02me/N
     try:
         InitReq(req)
         map = Map.Lookup(id)

@@ -34,10 +34,9 @@ class ScoreSet(db.Model):
         for s in scores:
             s.Update(value, dt)
             
-    def Best(self, hrsHalf=24):
+    def Best(self, hrsHalf=24, limit=100):
         scores = Score.gql('WHERE name = :name AND hrsHalf = :hrsHalf ORDER BY LogS DESC', name=self.name, hrsHalf=hrsHalf)
-        logging.info("Best: %d" % scores.count())
-        return scores
+        return scores.fetch(limit)
 
 class Score(db.Model):
     dtBase = datetime(2000,1,1)
@@ -76,7 +75,7 @@ class Score(db.Model):
     def ModelExists(self):
         obj = db.get(Score.model.get_value_for_datastore(self))
         if obj == None:
-            logging.error("Model for deleted key: %s" % Score.model.get_value_for_datastore(self))
+            logging.warning("Model for deleted key: %s" % Score.model.get_value_for_datastore(self))
         return obj != None
 
 # Constants

@@ -18,7 +18,7 @@ function DeleteComment(id)
 }
 </script>
 {% endblock %}
-{% block subTitle %}{{map.title}}{% endblock %}
+{% block subTitle %}{{map.title|escape}}{% endblock %}
 {% block body %}
 <a target="_top" href="/"><img class="logo" src="/images/logo.png"></a>
 
@@ -35,10 +35,10 @@ function DeleteComment(id)
 <div class="comments">
 {% for comment in map.Comments %}
 	{% spaceless %}<p>
-    {% if comment.username %}<a href="/user/{{comment.username}}">{{comment.username}}</a>:{% endif %}
-    {{comment.comment}}
+    {% if comment.username %}<a href="/user/{{comment.username}}">{{comment.username|escape}}</a>:{% endif %}
+    {{comment.comment|escape}}
     {% if comment.tags %}
-    	[{% for tag in comment.TagList %}<a href="/tag/{{tag}}">{{tag}}</a>{% if not forloop.last %},{% endif %}{% endfor %}]
+    	[{% for tag in comment.TagList %}<a href="/tag/{{tag|slugify}}">{{tag|escape}}</a>{% if not forloop.last %}, {% endif %}{% endfor %}]
     {% endif %}
     <img class="x" onclick="DeleteComment({{comment.id}});" src="/images/x.png"/>
     </p>{% endspaceless %}
