@@ -68,6 +68,13 @@ float: right;
 width: 450px;
 }
 
+div.bottom
+{
+clear:both;
+text-align:center;
+margin-top: 15px;
+}
+
 table.scores th
 {
 text-align: left;

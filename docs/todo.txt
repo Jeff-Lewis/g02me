@@ -21,13 +21,14 @@ X Bookmarklet
   - Friend feed and twitter account info
 - Tag pages
 - Tags
-- Design and styling
+X Design and styling
 X favicon
-- favicon cached?  Can't see new one!
+X favicon cached?  Can't see new one!
 - mailto tag
 - twitter, fave, friendfeed options [roy]
-- Lock top pane on navigation?
-- JSON API?
+X Lock top pane on navigation? -> Don't know how
+X JSON API
+- JSON documentation - link from home
 X domain redirection for http://g02.me (what is pageforest doing???)
 X URL names not conflict with commands
 X base64 encode ids
@@ -87,7 +88,7 @@ X Test deployment
 - prune empty commments
 - don't recognize http: as a user name
 - auto-hyperlink http addresses -> convert to g02me links
-- comments ordered
+X comments ordered
 
 Future:
 

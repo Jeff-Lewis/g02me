@@ -36,7 +36,7 @@ function DeleteComment(id)
 {% for comment in map.Comments %}
 	{% spaceless %}<p>
     {% if comment.username %}<a href="/user/{{comment.username}}">{{comment.username|escape}}</a>:{% endif %}
-    {{comment.comment|escape}}
+    {{comment.comment|escape|urlize}}
     {% if comment.tags %}
     	[{% for tag in comment.TagList %}<a href="/tag/{{tag|slugify}}">{{tag|escape}}</a>{% if not forloop.last %}, {% endif %}{% endfor %}]
     {% endif %}
