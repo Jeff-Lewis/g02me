@@ -1,5 +1,5 @@
 from google.appengine.ext import db
-from datetime import datetime
+from datetime import datetime, timedelta
 import logging
 import math
 
@@ -37,7 +37,12 @@ class ScoreSet(db.Model):
     def Best(self, hrsHalf=24, limit=100):
         scores = Score.gql('WHERE name = :name AND hrsHalf = :hrsHalf ORDER BY LogS DESC', name=self.name, hrsHalf=hrsHalf)
         return scores.fetch(limit)
-
+    
+    def Broken(self, limit=1000):
+        # Return the broken links
+        scores = Score.gql('WHERE name = :name ORDER BY hrsLast DESC', name=self.name)
+        return [score for score in scores.fetch(limit) if not score.ModelExists()]
+        
 class Score(db.Model):
     dtBase = datetime(2000,1,1)
 
@@ -72,11 +77,21 @@ class Score(db.Model):
         hrs = ddt.days*24 + float(ddt.seconds)/60/60
         return hrs
     
+    def DateLast(self):
+        logging.info("DateLast...")
+        ddt = timedelta(self.hrsLast/24)
+        dt = Score.dtBase + ddt
+        logging.info("Date %s" % dt)
+        return dt
+    
     def ModelExists(self):
-        obj = db.get(Score.model.get_value_for_datastore(self))
+        obj = db.get(self.ModelKey())
         if obj == None:
-            logging.warning("Model for deleted key: %s" % Score.model.get_value_for_datastore(self))
-        return obj != None
+            logging.warning("Model for deleted key: %s" % self.ModelKey())
+        return not obj is None
+    
+    def ModelKey(self):
+        return Score.model.get_value_for_datastore(self)
 
 # Constants
 hrsDay = 24

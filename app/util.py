@@ -67,6 +67,10 @@ class Error(Exception):
             obj['status'] = status
         obj['message'] = message
         self.obj = obj
+        
+class DirectResponse(Exception):
+    def __init__(self, resp):
+        self.resp = resp
 
 # Global strings
 sISO = "PF.ISO.ToDate(\"%sZ\")"
