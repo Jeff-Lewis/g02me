@@ -2,7 +2,7 @@ from google.appengine.ext import db
 from django.shortcuts import render_to_response
 from django.http import HttpResponse, HttpResponseRedirect
 from google.appengine.api import memcache
-import util
+from util import *
 from timescore.models import ScoreSet
 
 import logging
@@ -33,13 +33,13 @@ class Map(db.Model):
     
     @classmethod
     def Create(cls, url, title):
-        url = util.NormalizeUrl(url)
-        title = util.TrimString(title)
+        url = NormalizeUrl(url)
+        title = TrimString(title)
         if not title:
             title = url
         rg = urlsplit(url)
         if rg[1] in Map.blackList:
-            raise util.Error("Can't create link to domain: %s" % rg[1], status="Fail/Domain")
+            raise Error("Can't create link to domain: %s" % rg[1], status="Fail/Domain")
         title = unicode(title, 'utf8')
         id = Globals.IdNext()
         map = Map(key_name=Map.KeyFromId(id), url=url, title=title)
@@ -53,7 +53,7 @@ class Map(db.Model):
     
     @classmethod
     def FindUrl(cls, url):
-        url = util.NormalizeUrl(url)
+        url = NormalizeUrl(url)
         query = db.Query(Map)
         query.filter('url =', url)
         map = query.get()
@@ -75,7 +75,7 @@ class Map(db.Model):
         return self.key().name()[2:]
     
     def GetDict(self):
-        return {'host':util.local.stHost,
+        return {'host':local.stHost,
                 'id':self.GetId(),
                 'url':self.url,
                 'title':self.title
@@ -130,7 +130,7 @@ class Globals(db.Model):
         id = glob.idNext
         glob.idNext = glob.idNext + 1
         glob.put()
-        return util.IntToS64(id)
+        return IntToS64(id)
 
 class Comment(db.Model):
     username = db.StringProperty()
@@ -141,9 +141,9 @@ class Comment(db.Model):
     
     @classmethod
     def Create(cls, map, username="", comment="", tags=""):
-        username = util.TrimString(username)
-        comment = util.TrimString(comment)
-        tags = util.TrimString(tags)
+        username = TrimString(username)
+        comment = TrimString(comment)
+        tags = TrimString(tags)
         com = Comment(map=map, username=username, comment=comment, tags=tags)
         return com
     

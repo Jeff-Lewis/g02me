@@ -10,8 +10,14 @@ X Bookmarklet
 - Home
   - Number of pages
   - Number of views
-  - Number of people
+  - Number of people (unique IP?)
   X IE instructions for creating bookmark
+  X Recently popular pages
+  - JSON api for most popular
+  - Tag cloud
+- Info Header
+	- Info bar horizontal/vertical option
+	- Pull web page image from Sphere or Alexa?
 - User pages
   - Claim your account
   - Most recent comments showing page titles, dates, tags
@@ -19,32 +25,38 @@ X Bookmarklet
   - Profile image
   - Enable anonymous creation of new comments (for "shared" user accounts)
   - Friend feed and twitter account info
-- Tag pages
 - Tags
+	- Record tags scores for top 10 tags each URL
+	- Recently popular tag pages (Today AND Year)
 X Design and styling
 X favicon
 X favicon cached?  Can't see new one!
-- mailto tag
-- twitter, fave, friendfeed options [roy]
+- Sharing options
+  - Twitter
+  - Friendfeed
+  - Faves
+  - MailTo
 X Lock top pane on navigation? -> Don't know how
 X JSON API
-- JSON documentation - link from home
+! JSON documentation - link from home
 X domain redirection for http://g02.me (what is pageforest doing???)
 X URL names not conflict with commands
 X base64 encode ids
-- get metadata from page?  (description)
-- get micro-formats from page
+- In-page JSCRIPT bookmaklet
+  - get metadata from page?  (description)
+  - get micro-formats from page
 - Performance
   - Shard counter(s) - pages, visitors
 X Scoring by views, votes, and comments
-- Google AdSense - OR - sponsored links (use AdManager)
-- Paypal donation
+- Monetization
+  - AdSense
+  - Sponsored links (AdManager)
+  - PayPal donation (or GooglePayments)
 X Unicode in title
-! special case g02.me urls -> just redirect back to them - don't alias them
-! cookies for user accounts
-- Should child page links remove the upper frame (can I track changes?)
+X special case g02.me urls -> just redirect back to them - don't alias them
+X Should child page links remove the upper frame (can I track changes?)
 X Change date to DateTime
-- Error page for non-existant URL - should be home page display with error message (Or custom file not found page! 404)
+X Error page for non-existant URL - should be home page display with error message (Or custom file not found page! 404)
 - 301 redirect www.g02.me to g02.me - use Django middleware?
 - Get truncate templatetags working - I think I need an installed application - restructure files to
   an app folder, add to INSTALLED_APPS?
@@ -52,13 +64,14 @@ X Restructure files to Django standards - application dir, models.py, views.py..
 ! Figure out if there is a work-around for NYT pages that don't like to be shown inside a frameset.
 - A/B Testing on home page and header?  Google Website optimizer
 X Get trailing slash off of urls!
-- Document rest API's - link to google code Wiki Page
 - Widget showing number of views and shares of the current url - click to share
+  - Need JSON call for lookup by url (but don't increase share count)
 - Use google safebrowsing api to warn about viewing of unsafe urls
-- refactor - Trap all exceptions to universal error page
-- Claim your account
-- edit own comments
-- edit/delete anonymous comments
+! refactor - Trap all exceptions to universal error page
+- delete comments enabled
+  - Just hide non-anonymous comments - based on vote threshold
+! Username cookie (suggest for comments)
+- Per-user cookie to open all URLs in info-mode
 X Domain registration - map
 X Analytics setup
 X Page title customization
@@ -75,20 +88,22 @@ X Test deployment
   - Mark URL as Spam - info-mode only AND prominently flagged as SPAM
   - Mark URL as Adult - require login and affirmation of over 18 and OK to view adult content
 - Detect or mark problem domains as info-mode pages (frameset unfriendly).
-- Per-user cookie to open all URLs in info-mode
-- Info bar horizontal/vertical option
-- Pull web page image from Sphere or Alexa?
 - Should not update view count when comments are added
 - Add scroll bar when there are more comments than fit the head frame (or scale frame to fit)
 - Use memcache
 ! Unit tests
-- Store key instead of model in timescore - don't have problem of ModelExists needing to be called
-- Admin routine to clean up scores for non-existant (delted) models
-- don't allow links to g02.me pages
+X Store key instead of model in timescore - don't have problem of ModelExists needing to be called - punt
+X Admin routine to clean up scores for non-existant (delted) models
+X don't allow links to g02.me pages
 - prune empty commments
 - don't recognize http: as a user name
 - auto-hyperlink http addresses -> convert to g02me links
 X comments ordered
+- Throttle scoring for a given user, or IP address
+- Require dev key for jscript calls (registered user)
+- About Page
+- AppEngine Logo
+- Blog
 
 Future:
 
