@@ -1,0 +1,38 @@
+{% extends "master.html" %}
+{% block subTitle %}Administration{% endblock %}
+{% block body %}
+<div class="page">
+
+<a target="_top" href="/"><img title="G02.ME" class="logo" src="/images/logo.png"></a>
+<h1 style="padding-top: 40px;">Community URL Sharing Service</h1>
+
+
+<div class="left">
+Welcome, {{ user.nickname }}
+
+</div> <!-- left -->
+
+<div class="right">
+<h2>Broken Scores: {{ Broken|length }}</h2>
+<table class="scores">
+<tr><th>name</th><th>hrsHalf</th><th>S</th><th>LogS</th><th>hrsLast</th></tr>
+{% for score in Broken %}
+	<tr>
+		<td>{{score.name}}</td>
+		<td class="num">{{score.hrsHalf}}</td>
+		<td class="num">{{score.S}}</td>
+		<td class="num">{{score.LogS}}</td>
+		<td class="num">{{score.DateLast}}</td>
+	</tr>
+{% endfor %}
+</table>
+
+</div> <!-- right -->
+
+<div class="bottom">
+<a href="{{ logout }}">Logout</a>
+</div> <!-- bottom -->
+
+
+</div> <!-- page -->
+{% endblock %}
