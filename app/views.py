@@ -76,9 +76,19 @@ def TagHistory(req, tagname):
     InitReq(req)
     return HttpError(req, "Tag view not yet implemented: %s" % tagname)
 
-def Admin(req):
+def Admin(req, command=None):
     try:
         user = RequireAdmin(req)
+        
+        if command:
+            logging.info("admin command: %s" % command)
+            if command == "clean-broken":
+                scores = Map.ss.Broken()
+                logging.info("Removing %d broken scores" % len(scores))
+                for score in scores:
+                    score.delete()
+            return HttpResponseRedirect("/admin")
+
         return render_to_response('admin.html',
               {'user':user,
                'req':req,

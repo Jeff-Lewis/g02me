@@ -78,16 +78,12 @@ class Score(db.Model):
         return hrs
     
     def DateLast(self):
-        logging.info("DateLast...")
         ddt = timedelta(self.hrsLast/24)
         dt = Score.dtBase + ddt
-        logging.info("Date %s" % dt)
         return dt
     
     def ModelExists(self):
         obj = db.get(self.ModelKey())
-        if obj == None:
-            logging.warning("Model for deleted key: %s" % self.ModelKey())
         return not obj is None
     
     def ModelKey(self):
