@@ -67,8 +67,8 @@ X Get trailing slash off of urls!
 - Widget showing number of views and shares of the current url - click to share
   - Need JSON call for lookup by url (but don't increase share count)
 - Use google safebrowsing api to warn about viewing of unsafe urls
-! refactor - Trap all exceptions to universal error page
-- delete comments enabled
+! refactor - Trap all exceptions to universal error page - use django middleware
+! delete comments enabled
   - Just hide non-anonymous comments - based on vote threshold
 ! Username cookie (suggest for comments)
 - Per-user cookie to open all URLs in info-mode
