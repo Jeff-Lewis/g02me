@@ -19,7 +19,11 @@ handlers:
 - url: /favicon.ico
   static_files: images/favicon.ico
   upload: images/favicon.ico
-  mime_type: image/vnd.microsoft.icon 
+  mime_type: image/vnd.microsoft.icon
+  
+- url: /google9eab28331a1ab405.html
+  static_files: misc/google9eab28331a1ab405.html
+  upload: misc/google9eab28331a1ab405.html
 
 - url: /.*
   script: main.py
