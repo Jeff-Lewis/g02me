@@ -1,6 +1,10 @@
+from django.http import HttpResponse
+from django.shortcuts import render_to_response
+
 import threading
 from urlparse import urlsplit, urlunsplit
 import logging
+import simplejson
 
 s64 = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz-_"
 def IntToS64(i):
@@ -59,6 +63,39 @@ class JavaScript(Atomic):
     def __str__(self):
         return self.st;
     
+class ReqFilter(object):
+    """
+    Setup global (thread local) variables for the request and handle exceptions thrown
+    in the views.
+    """
+    def process_request(self, req):
+        logging.info("request")
+        local.stHost = "http://" + req.META["HTTP_HOST"] + "/"
+        local.req = req
+        
+    def process_response(self, req, resp):
+        logging.info("response")
+        return resp
+        
+    def process_exception(self, req, e):
+        logging.info("exception")
+        if isinstance(e, DirectResponse):
+            logging.info("Caught direct response")
+            return e.resp
+        if isinstance(e, Error):
+            logging.info("Caught Error")
+            return HttpError(req, e.obj['message'], obj=e.obj)
+
+def HttpError(req, stError, obj={}):
+    if req.has_key("callback"):
+        if not 'status' in obj:
+            obj['status'] = 'Fail'
+        obj['message'] = stError
+        logging.info('JSON Error: %(message)s (%(status)s)' % obj)
+        return HttpJSON(req, obj=obj)
+    logging.info('UI Error: %s' % stError)
+    return render_to_response('error.html', {'strError' : stError})
+
 class Error(Exception):
     def __init__(self, message, status='Fail', obj=None):
         if obj == None:
@@ -71,9 +108,28 @@ class Error(Exception):
 class DirectResponse(Exception):
     def __init__(self, resp):
         self.resp = resp
+        
+def RequireAdmin(req):
+    user = RequireUser(req)
+    if not users.is_current_user_admin():
+        raise DirectResponse(HttpResponseRedirect(users.create_logout_url(req.get_full_path())))
+    return user
+    
+def RequireUser(req):
+    user = users.get_current_user()
+    if not user:
+        raise DirectResponse(HttpResponseRedirect(users.create_login_url(req.get_full_path())))
+    return user
+    
+def RaiseNotFound(id):
+    raise Error("The G02.ME page, http://g02.me/%s, does not exist" % id, obj={'id':id, 'status':'Fail/NotFound'})
 
-# Global strings
-sISO = "PF.ISO.ToDate(\"%sZ\")"
+def HttpJSON(req, obj={}):
+    if not 'status' in obj:
+        obj['status'] = 'OK'
+    resp = HttpResponse("%s(%s);" % (req.GET["callback"], simplejson.dumps(obj, cls=JavaScriptEncoder)))
+    # TODO: Set mime type
+    return resp
 
 # Save request info in a thread-global
 local = threading.local()

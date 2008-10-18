@@ -1,5 +1,4 @@
 # Django settings for G02.ME AppEngine project.
-
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
 
@@ -60,6 +59,7 @@ TEMPLATE_LOADERS = (
 
 MIDDLEWARE_CLASSES = (
     'django.middleware.common.CommonMiddleware',
+    'util.ReqFilter',
 #    'django.contrib.sessions.middleware.SessionMiddleware',
 #    'django.contrib.auth.middleware.AuthenticationMiddleware',
 #    'django.middleware.doc.XViewMiddleware',
