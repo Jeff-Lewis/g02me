@@ -126,14 +126,23 @@ class Globals(db.Model):
     
     @classmethod
     def IdNext(cls):
-        glob = cls.get_or_insert("current")
+        return IntToS64(cls.IdNameNext("current"))
+    
+    @classmethod
+    def IdUserNext(cls):
+        return cls.IdNameNext("user")
+        
+    @classmethod
+    def IdNameNext(cls, name):
+        glob = cls.get_or_insert(name)
         id = glob.idNext
         glob.idNext = glob.idNext + 1
         glob.put()
-        return IntToS64(id)
+        return glob.idNext
 
 class Comment(db.Model):
     username = db.StringProperty()
+    userid = db.IntegerProperty()
     comment = db.StringProperty()
     tags = db.StringProperty()
     map = db.ReferenceProperty(Map)
@@ -142,9 +151,13 @@ class Comment(db.Model):
     @classmethod
     def Create(cls, map, username="", comment="", tags=""):
         username = TrimString(username)
+        userid = local.userid
+        logging.info("assign comment to id %s" % local.userid)
         comment = TrimString(comment)
         tags = TrimString(tags)
-        com = Comment(map=map, username=username, comment=comment, tags=tags)
+        com = Comment(map=map, username=username, userid=userid, comment=comment, tags=tags)
+        if username:
+            local.username = username
         return com
     
     @classmethod

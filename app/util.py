@@ -5,8 +5,10 @@ import threading
 from urlparse import urlsplit, urlunsplit
 import logging
 import simplejson
+from hashlib import sha1
 
 s64 = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz-_"
+
 def IntToS64(i):
     # Convert int to "base 64" string - not compatible with Base64 string standard
     s = []
@@ -69,22 +71,35 @@ class ReqFilter(object):
     in the views.
     """
     def process_request(self, req):
-        logging.info("request")
         local.stHost = "http://" + req.META["HTTP_HOST"] + "/"
         local.req = req
+        if 'userid' in req.COOKIES:
+            local.userid = int(req.COOKIES['userid'])
+        else:
+            import models
+            local.userid = models.Globals.IdUserNext()
+            logging.info("New userid %s" % local.userid)
+        local.username = req.COOKIES.get('username', '')
         
     def process_response(self, req, resp):
-        logging.info("response")
+        resp.set_cookie('userid', local.userid, max_age=60*60*24*30)
+        resp.set_cookie('username', local.username, max_age=60*60*24*30)
         return resp
         
     def process_exception(self, req, e):
-        logging.info("exception")
         if isinstance(e, DirectResponse):
             logging.info("Caught direct response")
             return e.resp
         if isinstance(e, Error):
             logging.info("Caught Error")
             return HttpError(req, e.obj['message'], obj=e.obj)
+
+def GenerateSid(stUser, seq):
+    """ Session id format is:
+        user-seq-H(Sk-user-seq)
+    """
+    hash = sha1(sidSep.join((stServerKey, stUser, str(seq)))).hexdigest()
+    return sidSep.join((stUser, str(seq), hash))   
 
 def HttpError(req, stError, obj={}):
     if req.has_key("callback"):

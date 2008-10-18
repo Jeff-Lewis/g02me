@@ -40,7 +40,7 @@ def Head(req, id):
     map.Viewed()
     if req.has_key("callback"):
         return HttpJSON(req, obj=map.JSON())
-    return render_to_response('head.html', {'map': map})
+    return render_to_response('head.html', {'map': map, 'username':local.username})
 
 def FrameSet(req, id):
     # http://g02me/N
