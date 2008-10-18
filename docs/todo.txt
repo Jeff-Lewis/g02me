@@ -100,9 +100,12 @@ X don't allow links to g02.me pages
 - auto-hyperlink http addresses -> convert to g02me links
 X comments ordered
 - Throttle scoring for a given user, or IP address
+  - Drop userid cookie on user
+  - Throttling middleware
+  - Use memcache to set rates
 - Require dev key for jscript calls (registered user)
-- About Page
-- AppEngine Logo
+X About Page
+X AppEngine Logo
 - Blog
 
 Future:

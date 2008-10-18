@@ -1,4 +1,5 @@
-from django.http import HttpResponse
+from google.appengine.api import users
+from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render_to_response
 
 import threading
