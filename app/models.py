@@ -1,6 +1,5 @@
 from google.appengine.ext import db
 from django.shortcuts import render_to_response
-from google.appengine.api import memcache
 from util import *
 from timescore.models import ScoreSet
 
@@ -8,6 +7,7 @@ import logging
 from sys import exc_info
 from urlparse import urlsplit
 import re
+from datetime import datetime
 
 class Map(db.Model):
     ss = ScoreSet.GetSet("map")
@@ -22,7 +22,7 @@ class Map(db.Model):
     
     url = db.StringProperty(required=True)
     title = db.StringProperty()
-    dateCreated = db.DateTimeProperty(auto_now=True)
+    dateCreated = db.DateTimeProperty()
     viewCount = db.IntegerProperty(default=0)
     shareCount = db.IntegerProperty(default=0)
     
@@ -40,8 +40,9 @@ class Map(db.Model):
         if rg[1] in Map.blackList:
             raise Error("Can't create link to domain: %s" % rg[1], status="Fail/Domain")
         title = unicode(title, 'utf8')
+        dateCreated = datetime.now()
         id = Globals.IdNext()
-        map = Map(key_name=Map.KeyFromId(id), url=url, title=title)
+        map = Map(key_name=Map.KeyFromId(id), url=url, title=title, dateCreated=dateCreated)
         return map
 
     @classmethod
@@ -140,7 +141,7 @@ class Comment(db.Model):
     comment = db.StringProperty()
     tags = db.StringProperty()
     map = db.ReferenceProperty(Map)
-    dateCreated = db.DateTimeProperty(auto_now=True)
+    dateCreated = db.DateTimeProperty()
     
     @classmethod
     def Create(cls, map, username="", comment="", tags=""):
@@ -149,7 +150,8 @@ class Comment(db.Model):
         logging.info("assign comment to id %s" % local.userid)
         comment = TrimString(comment)
         tags = TrimString(tags)
-        com = Comment(map=map, username=username, userid=userid, comment=comment, tags=tags)
+        dateCreated = datetime.now()
+        com = Comment(map=map, username=username, userid=userid, comment=comment, tags=tags, dateCreated=dateCreated)
         if username:
             local.username = username
         return com

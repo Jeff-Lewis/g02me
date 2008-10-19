@@ -1,5 +1,5 @@
 from google.appengine.ext import db
-from google.appengine.api import users, memcache
+from google.appengine.api import users
 from django.shortcuts import render_to_response
 from django.http import HttpResponseRedirect
 
@@ -39,7 +39,10 @@ def Head(req, id):
     map.Viewed()
     if req.has_key("callback"):
         return HttpJSON(req, obj=map.JSON())
-    return render_to_response('head.html', {'map': map, 'username':local.username})
+    t = loader.get_template('head.html')
+    resp = HttpResponse(t.render(Context({'map': map, 'username':local.username})))
+    resp['Cache-Control'] = 'no-cache'
+    return resp
 
 def FrameSet(req, id):
     # http://g02me/N
