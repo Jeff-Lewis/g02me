@@ -73,7 +73,8 @@ class ReqFilter(object):
     in the views.
     """
     def process_request(self, req):
-        local.stHost = "http://" + req.META["HTTP_HOST"] + "/"
+        host = req.META["HTTP_HOST"]
+        local.stHost = "http://" + host + "/"
         local.req = req
         if 'userid' in req.COOKIES:
             local.userid = int(req.COOKIES['userid'])
@@ -82,6 +83,9 @@ class ReqFilter(object):
             local.userid = models.Globals.IdUserNext()
             logging.info("New userid %s" % local.userid)
         local.username = req.COOKIES.get('username', '')
+        
+        if host.startswith('www.'):
+            return HttpResponseRedirect('http://%s%s' % (host[4:], req.path))
         
     def process_response(self, req, resp):
         resp.set_cookie('userid', local.userid, max_age=60*60*24*30)

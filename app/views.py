@@ -41,7 +41,7 @@ def Head(req, id):
         return HttpJSON(req, obj=map.JSON())
     t = loader.get_template('head.html')
     resp = HttpResponse(t.render(Context({'map': map, 'username':local.username})))
-    resp['Cache-Control'] = 'no-cache'
+    resp['Expires'] = '0'
     return resp
 
 def FrameSet(req, id):

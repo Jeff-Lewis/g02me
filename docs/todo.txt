@@ -18,6 +18,7 @@ X Bookmarklet
 - Info Header
 	- Info bar horizontal/vertical option
 	- Pull web page image from Sphere or Alexa?
+	X Move comment bar to top - comments rev-chron below
 - User pages
   - Claim your account
   - Most recent comments showing page titles, dates, tags
@@ -57,7 +58,7 @@ X special case g02.me urls -> just redirect back to them - don't alias them
 X Should child page links remove the upper frame (can I track changes?)
 X Change date to DateTime
 X Error page for non-existant URL - should be home page display with error message (Or custom file not found page! 404)
-- 301 redirect www.g02.me to g02.me - use Django middleware?
+X 301 redirect www.g02.me to g02.me - use Django middleware?
 - Get truncate templatetags working - I think I need an installed application - restructure files to
   an app folder, add to INSTALLED_APPS?
 X Restructure files to Django standards - application dir, models.py, views.py...
@@ -67,10 +68,10 @@ X Get trailing slash off of urls!
 - Widget showing number of views and shares of the current url - click to share
   - Need JSON call for lookup by url (but don't increase share count)
 - Use google safebrowsing api to warn about viewing of unsafe urls
-! refactor - Trap all exceptions to universal error page - use django middleware
+X refactor - Trap all exceptions to universal error page - use django middleware
 ! delete comments enabled
   - Just hide non-anonymous comments - based on vote threshold
-! Username cookie (suggest for comments)
+X Username cookie (suggest for comments)
 - Per-user cookie to open all URLs in info-mode
 X Domain registration - map
 X Analytics setup
@@ -89,15 +90,16 @@ X Test deployment
   - Mark URL as Adult - require login and affirmation of over 18 and OK to view adult content
 - Detect or mark problem domains as info-mode pages (frameset unfriendly).
 - Should not update view count when comments are added
-- Add scroll bar when there are more comments than fit the head frame (or scale frame to fit)
+X Add scroll bar when there are more comments than fit the head frame (or scale frame to fit)
 - Use memcache
-! Unit tests
+X Unit tests
 X Store key instead of model in timescore - don't have problem of ModelExists needing to be called - punt
 X Admin routine to clean up scores for non-existant (delted) models
 X don't allow links to g02.me pages
 - prune empty commments
 - don't recognize http: as a user name
-- auto-hyperlink http addresses -> convert to g02me links
+X auto-hyperlink http addresses in comments
+  - convert to g02me links automatically?
 X comments ordered
 - Throttle scoring for a given user, or IP address
   - Drop userid cookie on user
@@ -109,7 +111,8 @@ X AppEngine Logo
 - Blog
 - Don't count views by web crawlers
   - If no userid cookie - don't count it!  (note that Frame will set cookie, and head will then count!)
-- Page not found should be a 404 page
+X Page not found should be a 404 page
+X add expires meta http header to fix google cache bug
 
 Future:
 
