@@ -32,6 +32,15 @@ function DeleteComment(id)
 <h1><a target="_top" href="{{map.url}}">{{map.title|escape}}</a></h1>
 <p>{{map.url|escape}}</p>
 
+<div class="entry">
+  <form action="/comment/" method="get">
+  <input type="hidden" name="id" value="{{map.GetId}}"/>
+  <label for="comment">Comment: </label>
+  <input style="width:500px;" type="text" id="comment" name="comment" value="{% if username %}{{username|escape}}: {% endif %}"/>&nbsp;<input type="submit" value="Post"/>
+  <br/><i>Example: "username: what do you think of this page [tag1, tag2, ...]"</i>
+  </form>
+</div>
+
 <div class="comments">
 {% for comment in map.Comments %}
 	{% spaceless %}<p>
@@ -45,12 +54,4 @@ function DeleteComment(id)
 {% endfor %}
 </div>
 
-<div style="clear:both;width:700px;">
-  <form action="/comment/" method="get">
-  <input type="hidden" name="id" value="{{map.GetId}}"/>
-  <label for="comment">Comment: </label>
-  <input style="width:500px;" type="text" id="comment" name="comment" value="{% if username %}{{username|escape}}: {% endif %}"/>&nbsp;<input type="submit" value="Post"/>
-  <br/><i>Example: "username: type your comment here [tag1, tag2, ...]"</i>
-  </form>
-</div>
 {% endblock %}

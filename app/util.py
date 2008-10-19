@@ -1,6 +1,7 @@
 from google.appengine.api import users
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render_to_response
+from django.template import loader, Context, Template
 
 import threading
 from urlparse import urlsplit, urlunsplit
@@ -94,6 +95,8 @@ class ReqFilter(object):
         if isinstance(e, Error):
             logging.info("Caught Error")
             return HttpError(req, e.obj['message'], obj=e.obj)
+        logging.info("Uncaught exception")
+        return HttpError(req, "Application Error", {'status': 'Fail'})
 
 def GenerateSid(stUser, seq):
     """ Session id format is:
@@ -103,14 +106,22 @@ def GenerateSid(stUser, seq):
     return sidSep.join((stUser, str(seq), hash))   
 
 def HttpError(req, stError, obj={}):
+    if not 'status' in obj:
+        obj['status'] = 'Fail'
+    obj['message'] = stError
     if req.has_key("callback"):
-        if not 'status' in obj:
-            obj['status'] = 'Fail'
-        obj['message'] = stError
         logging.info('JSON Error: %(message)s (%(status)s)' % obj)
         return HttpJSON(req, obj=obj)
     logging.info('UI Error: %s' % stError)
-    return render_to_response('error.html', {'strError' : stError})
+
+    http_status = 200
+    if obj['status'] == 'Fail/NotFound':
+        http_status = 404  
+    t = loader.get_template('error.html')
+    logging.info("Error: %r" % obj)
+    resp = HttpResponse(t.render(Context(obj)))
+    resp.status_code = http_status
+    return resp
 
 class Error(Exception):
     def __init__(self, message, status='Fail', obj=None):
@@ -143,7 +154,7 @@ def RaiseNotFound(id):
 def HttpJSON(req, obj={}):
     if not 'status' in obj:
         obj['status'] = 'OK'
-    resp = HttpResponse("%s(%s);" % (req.GET["callback"], simplejson.dumps(obj, cls=JavaScriptEncoder)))
+    resp = HttpResponse("%s(%s);" % (req.GET["callback"], simplejson.dumps(obj, cls=JavaScriptEncoder)), mimetype="application/x-javascript")
     # TODO: Set mime type
     return resp
 

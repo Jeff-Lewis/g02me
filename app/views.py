@@ -1,13 +1,12 @@
 from google.appengine.ext import db
-from google.appengine.api import users
+from google.appengine.api import users, memcache
 from django.shortcuts import render_to_response
-from django.http import HttpResponse, HttpResponseRedirect
-from google.appengine.api import memcache
+from django.http import HttpResponseRedirect
+
 from util import *
 from models import *
 
 import logging
-from sys import exc_info
 
 def Home(req):
     return render_to_response('home.html', {'host':local.stHost, 'pages':Map.TopPages()})

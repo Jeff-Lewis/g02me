@@ -1,5 +1,4 @@
-# Django settings for G02.ME AppEngine project.
-DEBUG = True
+DEBUG = False
 TEMPLATE_DEBUG = DEBUG
 
 ADMINS = (

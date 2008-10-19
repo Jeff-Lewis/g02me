@@ -20,7 +20,8 @@ ts.AddTest("Map", function(ut)
 		function(ut)
 			{
 			new UT.ScriptData("/map/").Call({url:"http://google.com"}, function(obj) {
-				ut.AssertContains(obj, {status:"OK", url:"http://google.com"});
+				ut.AssertContains(obj, {status:"OK", url:"http://google.com", title:"http://google.com"});
+				ut.AssertType(obj.created, Date);
 				objInit = obj;
 				ut.NextFn();
 				});
@@ -131,7 +132,7 @@ ts.AddTest("Info", function(ut)
 			},
 		function (ut)
 			{
-			new UT.ScriptData("/info/99").Call({}, function (obj) {
+			new UT.ScriptData("/info/9999").Call({}, function (obj) {
 				ut.AssertContains(obj, {status:"Fail/NotFound"});
 				ut.NextFn();
 				});
@@ -158,6 +159,7 @@ ts.AddTest("Comment", function(ut)
 			new UT.ScriptData("/comment/").Call({id:objInit.id, comment:"hello"}, function (obj) {
 				ut.AssertContains(obj, {status:"OK", url:"http://google.com"});
 				ut.AssertContains(obj.comments[0], {comment:"hello"});
+				ut.AssertType(obj.comments[0].user, "number");
 				cComment = obj.comments.length;
 				ut.NextFn();
 				});
@@ -166,6 +168,7 @@ ts.AddTest("Comment", function(ut)
 			{
 			new UT.ScriptData("/info/" + objInit.id).Call({}, function (obj) {
 				ut.AssertContains(obj, {status:"OK", url:"http://google.com"});
+				ut.AssertContains(obj.comments[0], {comment:"hello"});
 				ut.AssertEq(obj.comments.length, cComment);
 				ut.NextFn();
 				});
@@ -174,7 +177,9 @@ ts.AddTest("Comment", function(ut)
 			{
 			new UT.ScriptData("/comment/").Call({id:objInit.id, comment:"mckoss :  This is a test  [tag1,  tag2]"}, function (obj) {
 				ut.AssertContains(obj, {status:"OK", url:"http://google.com"});
-				ut.AssertContains(obj.comments[0], {comment:"hello"});
+				ut.AssertContains(obj.comments[0], {comment:"This is a test", tags:"tag1,tag2", user:"mckoss"});
+				ut.AssertType(obj.comments[0].created, Date);
+				ut.AssertEq(obj.comments.length, cComment+1);
 				ut.NextFn();
 				});
 			},
@@ -183,7 +188,7 @@ ts.AddTest("Comment", function(ut)
 			new UT.ScriptData("/info/" + objInit.id).Call({}, function (obj) {
 				ut.AssertContains(obj, {status:"OK", url:"http://google.com"});
 				ut.AssertEq(obj.comments.length, cComment+1);
-				com = obj.comments[obj.comments.length-1];
+				com = obj.comments[0];
 				ut.AssertContains(com, {comment:"This is a test", user:"mckoss", tags:"tag1,tag2"});
 				ut.NextFn();
 				});

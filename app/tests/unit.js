@@ -523,6 +523,17 @@ PropCount: function(obj)
         }
     return cProp;
     },
+    
+AssertType: function(v1, type, stNote)
+	{
+	if (typeof type == "function")
+		{
+		this.AssertEq(typeof v1, "object", stNote);
+		this.Assert(v1 instanceof type, stNote, "incorrect instance");
+		return;
+		}
+	this.AssertEq(typeof v1, type);
+	},
 
 // Assert that objAll contains all the (top level) properties of objSome
 AssertContains: function(objAll, objSome)

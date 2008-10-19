@@ -44,6 +44,11 @@ p {
 margin: 3px 0px;
 }
 
+div.entry {
+width: 700px;
+margin-left: 90px;
+}
+
 div.comments p
 {
 color: #AAA;

@@ -2,5 +2,22 @@
 
 {% block body %}
 <a target="_top" href="/"><img title="G02.ME" class="logo" src="/images/logo.png"></a>
-<h2>Error: {{ strError|escape }}.</h2>
+<h2>Error: {{ message|escape }}.</h2>
+<p>Status: {{status}}</p>
+{% ifequal status "Fail/NotFound" %} 
+<style type="text/css">
+  #goog-wm { }
+  #goog-wm h3.closest-match { }
+  #goog-wm h3.closest-match a { }
+  #goog-wm h3.other-things { }
+  #goog-wm ul li { }
+  #goog-wm li.search-goog { display: block; }
+</style>
+<script type="text/javascript">
+  var GOOG_FIXURL_LANG = 'en';
+  var GOOG_FIXURL_SITE = 'http://g02.me/';
+</script>
+<script type="text/javascript" 
+    src="http://linkhelp.clients.google.com/tbproxy/lh/wm/fixurl.js"></script>
+{% endifequal %}
 {% endblock %}

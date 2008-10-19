@@ -1,6 +1,5 @@
 from google.appengine.ext import db
 from django.shortcuts import render_to_response
-from django.http import HttpResponse, HttpResponseRedirect
 from google.appengine.api import memcache
 from util import *
 from timescore.models import ScoreSet
@@ -92,7 +91,7 @@ class Map(db.Model):
     
     def Comments(self):
         comments = self.comment_set
-        comments.order('dateCreated')
+        comments.order('-dateCreated')
         return comments.fetch(100)
     
     def Shared(self):
@@ -110,12 +109,7 @@ class Map(db.Model):
                'viewed':self.viewCount, 'shared':self.shareCount, 'created':self.dateCreated}
         rgComments = [];
         for comment in self.Comments():
-            c = {'comment': comment.comment}
-            if comment.username:
-                c['user'] = comment.username
-            if comment.tags:
-                c['tags'] = comment.tags
-            rgComments.append(c)
+            rgComments.append(comment.JSON())
         if len(rgComments) > 0: 
             obj['comments'] = rgComments
         return obj
@@ -182,3 +176,13 @@ class Comment(db.Model):
     def TagList(self):
         return self.tags.split(",")
     
+    def JSON(self):
+        c = {'comment': self.comment}
+        if self.username:
+            c['user'] = self.username
+        else:
+            c['user'] = self.userid
+        if self.tags:
+            c['tags'] = self.tags
+        c['created'] = self.dateCreated
+        return c

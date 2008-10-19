@@ -107,6 +107,9 @@ X comments ordered
 X About Page
 X AppEngine Logo
 - Blog
+- Don't count views by web crawlers
+  - If no userid cookie - don't count it!  (note that Frame will set cookie, and head will then count!)
+- Page not found should be a 404 page
 
 Future:
 
