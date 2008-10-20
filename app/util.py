@@ -169,7 +169,8 @@ def HttpJSON(req, obj={}):
     if not 'status' in obj:
         obj['status'] = 'OK'
     resp = HttpResponse("%s(%s);" % (req.GET["callback"], simplejson.dumps(obj, cls=JavaScriptEncoder)), mimetype="application/x-javascript")
-    # TODO: Set mime type
+    resp['Cache-Control'] = 'no-cache'
+    resp['Expires'] = '0'
     return resp
 
 # Save request info in a thread-global
