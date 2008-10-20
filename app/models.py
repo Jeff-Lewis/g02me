@@ -91,13 +91,13 @@ class Map(db.Model):
         self.ss.Update(self, self.scoreComment)
         
     def CommentCount(self):
-        # TODO: Inefficient for large comment streams - loads all in memory
-        return self.comment_set.count();
+        # BUG: Will max out at 100 comments
+        return len(self.Comments())
     
     def Comments(self, limit=100):
         # Just return "true" comments (not sharing events) - and prune comments for deleted models
         comments = self.comment_set.order('-dateCreated').fetch(limit)
-        return [comment for comment in comments if comment.MapExists() and comment.comment != '__share']
+        return [comment for comment in comments if comment.MapExists() and not comment.comment.startswith('__')]
     
     def Shared(self):
         self.shareCount = self.shareCount + 1

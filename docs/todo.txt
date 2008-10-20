@@ -39,7 +39,7 @@ X favicon cached?  Can't see new one!
   - MailTo
 X Lock top pane on navigation? -> Don't know how
 X JSON API
-! JSON documentation - link from home
+X JSON documentation - link from home
 X domain redirection for http://g02.me (what is pageforest doing???)
 X URL names not conflict with commands
 X base64 encode ids
@@ -62,15 +62,14 @@ X 301 redirect www.g02.me to g02.me - use Django middleware?
 - Get truncate templatetags working - I think I need an installed application - restructure files to
   an app folder, add to INSTALLED_APPS?
 X Restructure files to Django standards - application dir, models.py, views.py...
-! Figure out if there is a work-around for NYT pages that don't like to be shown inside a frameset.
+X Figure out if there is a work-around for NYT pages that don't like to be shown inside a frameset.
 - A/B Testing on home page and header?  Google Website optimizer
 X Get trailing slash off of urls!
 - Widget showing number of views and shares of the current url - click to share
   - Need JSON call for lookup by url (but don't increase share count)
 - Use google safebrowsing api to warn about viewing of unsafe urls
 X refactor - Trap all exceptions to universal error page - use django middleware
-! delete comments enabled
-  - Just hide non-anonymous comments - based on vote threshold
+X delete comments enabled
 X Username cookie (suggest for comments)
 - Per-user cookie to open all URLs in info-mode
 X Domain registration - map
@@ -82,6 +81,7 @@ X Test deployment
   - Claim a username by signing in
   - Require login to comment using a claimed username
   - Protects your comments from being edited or deleted by others
+  - Just hide non-anonymous comments - based on vote threshold
   - Ability to delete and edit your older comments
   - Ability to delete and edit anonymous comments
   - Ability to mark even claimed comments as "spam/bad"
@@ -109,51 +109,13 @@ X comments ordered
 X About Page
 X AppEngine Logo
 - Blog
+- G02.ME email accounts for admin email from address
 - Don't count views by web crawlers
-  - If no userid cookie - don't count it!  (note that Frame will set cookie, and head will then count!)
+  - If no userid cookie - don't count it! (note that Frame will set cookie, and head will then count!)
 X Page not found should be a 404 page
 X add expires meta http header to fix google cache bug
 X URL's with tailing "/" are not normalized to the non-trailing versions leading to duplicates
 - Is it possible to implement info/Close box so that currently navigated page is retained?
   - See if window.location.href is accessible from parent frameset
-- Fix comment counts
+X Fix comment counts
 X Cache broken again?
-- 
-
-Future:
-
-
-
-Models:
-
-- URL:
-  - id
-  - url
-  - title
-  - dateCreated
-  - views
-  - upVotes
-  - downVotes
-  - tags
-  
-- Comments:
-  - vote
-  - note
-  - bans
-
-URL Scheme
-http://g02.me...
-
-GET:
-/ -> Home
-/xxx -> Get Alias Page
-/map?url=&title=
-/head?url=
-/info?url=
-
-
-POST:
-/map: url=&title=
-
-  
-- 
