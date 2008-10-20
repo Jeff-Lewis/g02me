@@ -23,8 +23,12 @@ handlers:
 
 # For Google Webmaster Tools domain validation  
 - url: /google9eab28331a1ab405.html
-  static_files: misc/google9eab28331a1ab405.html
-  upload: misc/google9eab28331a1ab405.html
+  static_files: static/google9eab28331a1ab405.html
+  upload: static/google9eab28331a1ab405.html
+  
+- url: /robots.txt
+  static_files: static/robots.txt
+  upload: static/robots.txt
 
 # Python Shell for administrative tasks
 # See http://code.google.com/p/google-app-engine-samples/source/browse/trunk/shell

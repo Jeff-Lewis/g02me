@@ -33,7 +33,12 @@ def main():
   application = django.core.handlers.wsgi.WSGIHandler()
 
   # Run the WSGI CGI handler with that application.
-  util.run_wsgi_app(application)
+  try:
+      util.run_wsgi_app(application)
+  except:
+      print 'Content-Type: text/plain'
+      print ''
+      print 'Resource not found'
 
 if __name__ == '__main__':
   main()

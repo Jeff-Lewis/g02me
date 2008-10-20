@@ -108,7 +108,7 @@ class ReqFilter(object):
         if isinstance(e, Error):
             logging.info("Caught Error")
             return HttpError(req, e.obj['message'], obj=e.obj)
-        logging.info("Uncaught exception")
+        logging.error("Uncaught exception")
         if not settings.DEBUG:
             return HttpError(req, "Application Error", {'status': 'Fail'})
 
