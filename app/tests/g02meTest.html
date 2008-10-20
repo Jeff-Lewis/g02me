@@ -229,5 +229,19 @@ ts.AddTest("Popular", function(ut)
 		]);
 }).Async(true);
 
+ts.AddTest("User", function(ut)
+{
+	ut.AsyncSequence([
+		function(ut)
+			{
+			new UT.ScriptData("/user/mckoss").Call({}, function(obj) {
+				ut.AssertContains(obj, {status:"OK"});
+				ut.Assert(obj.urls.length > 0, "non-empty user list");
+				ut.NextFn();
+				});
+			},
+		]);
+}).Async(true);
+
 </script>
 </body>

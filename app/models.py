@@ -1,7 +1,7 @@
 from google.appengine.ext import db
 from django.shortcuts import render_to_response
 from util import *
-from timescore.models import ScoreSet
+from timescore.models import ScoreSet, hrsMonth
 
 import logging
 from sys import exc_info
@@ -85,7 +85,7 @@ class Map(db.Model):
                 'title':self.title
                 }
         
-    def AddComment(self, username, comment, tags):
+    def AddComment(self, username='', comment='', tags=''):
         comm = Comment.Create(map=self, username=username, comment=comment, tags=tags)
         comm.put()
         self.ss.Update(self, self.scoreComment)
@@ -94,15 +94,17 @@ class Map(db.Model):
         # TODO: Inefficient for large comment streams - loads all in memory
         return self.comment_set.count();
     
-    def Comments(self):
-        comments = self.comment_set
-        comments.order('-dateCreated')
-        return comments.fetch(100)
+    def Comments(self, limit=100):
+        comments = self.comment_set.order('-dateCreated').fetch(limit)
+        # Just return "true" comments (not sharing events)
+        return [comment for comment in comments if comment.comment != '__share']
     
     def Shared(self):
         self.shareCount = self.shareCount + 1
         self.put()
         self.ss.Update(self, self.scoreShare)
+        # Overload the comment to record when a (registered user) shares a URL
+        self.AddComment(username=local.username, comment="__share")
         
     def Viewed(self):
         self.viewCount = self.viewCount + 1
@@ -114,7 +116,7 @@ class Map(db.Model):
                'viewed':self.viewCount, 'shared':self.shareCount, 'created':self.dateCreated,
                'scores':self.ss.ScoresJSON(self)
                }
-        rgComments = [];
+        rgComments = []
         for comment in self.Comments():
             rgComments.append(comment.JSON())
         if len(rgComments) > 0: 
@@ -153,7 +155,6 @@ class Comment(db.Model):
     def Create(cls, map, username='', comment='', tags=''):
         username = TrimString(username)
         userid = local.userid
-        logging.info("assign comment to id %s" % local.userid)
         comment = TrimString(comment)
         tags = TrimString(tags)
         dateCreated = datetime.now()
@@ -184,6 +185,33 @@ class Comment(db.Model):
         return {'username':m.group(2),
                 'comment': m.group(3),
                 'tags': tags}
+        
+    @classmethod
+    def ForUser(cls, username):
+        comments = Comment.gql("WHERE username = :username ORDER BY dateCreated DESC", username=username)
+        clist = []
+        dup = set()
+        for comment in comments:
+            if not comment.MapExists:
+                continue
+            key = comment.map.GetId()
+            if key in dup:
+                continue
+            dup.add(key)
+            clist.append(comment)
+        return clist
+    
+    @classmethod
+    def ForUserJSON(cls, username):
+        obj = {'user':username}
+        rg = [comment.map.JSON() for comment in cls.ForUser(username)]
+        if len(rg) > 0: 
+            obj['urls'] = rg
+        return obj
+    
+    def MapExists(self):
+        obj = db.get(Comment.map.get_value_for_datastore(self))
+        return not obj is None
         
     def TagList(self):
         return self.tags.split(",")

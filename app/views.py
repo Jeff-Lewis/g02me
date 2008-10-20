@@ -59,10 +59,7 @@ def Head(req, id):
     map.Viewed()
     if IsJSON():
         return HttpJSON(req, obj=map.JSON())
-    t = loader.get_template('head.html')
-    resp = HttpResponse(t.render(Context({'map': map, 'username':local.username})))
-    resp['Expires'] = '0'
-    return resp
+    return render_to_response('head.html', {'map': map, 'username':local.username})
 
 def FrameSet(req, id):
     # http://g02me/N
@@ -75,7 +72,10 @@ def FrameSet(req, id):
     return render_to_response('mapped.html', {'map':map})
 
 def UserHistory(req, username):
-    raise Error("User view not yet implemented: %s" % username)
+    if IsJSON():
+        return HttpJSON(req, obj=Comment.ForUserJSON(username))
+    comments = Comment.ForUser(username)
+    return render_to_response('user.html', {'username':username, 'comments':comments})
 
 def TagHistory(req, tagname):
     raise Error("Tag view not yet implemented: %s" % tagname)

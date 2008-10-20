@@ -1,0 +1,38 @@
+{% extends "master.html" %}
+{% block subTitle %}{{username}}'s G02.ME URLs{% endblock %}
+{% block body %}
+<div class="page">
+<a target="_top" href="/"><img title="G02.ME" class="logo" src="/images/logo.png"></a>
+<h1 style="padding-top: 40px;">{{username}}'s URLs</h1>
+
+<h2>Recently shared (and commented) URLs</h2>
+<table class="scores">
+<tr><th>Title</th><th>Shared</th><th>Viewed</th><th>Comments</th></tr>
+{% for comment in comments %}
+	{% if comment.MapExists %}
+	<tr>
+		<td><a href="/{{comment.map.GetId}}">{{comment.map.title|escape}}</a>
+		{% if comment.comment or comment.tags %}<br/>
+			{% ifequal comment.comment "__share" %}<i>Shared</i>{% else %}{{comment.comment|escape|urlize}}{% endifequal %}
+			{% if comment.tags %}
+	    		[{% for tag in comment.TagList %}<a target="_top" href="/tag/{{tag|slugify}}">{{tag|escape}}</a>{% if not forloop.last %}, {% endif %}{% endfor %}]
+	    	{% endif %}
+	    	- <i>{{ comment.dateCreated|date:"D, m/d/y" }}</i>
+	    {% endif %}
+		</td>
+		<td class="num">{{comment.map.shareCount}}</td>
+		<td class="num">{{comment.map.viewCount}}</td>
+		<td class="num">{{comment.map.CommentCount}}</td>
+	</tr>
+	{% endif %}
+{% endfor %}
+</table>
+
+<div class="bottom">
+<a href="http://code.google.com/p/g02me/wiki/AboutUs">About Us</a> |
+<a href="http://code.google.com/p/g02me/wiki/API">Developers</a> |
+<a href="http://code.google.com/p/g02me/wiki/TermsOfService">Terms of Service</a>
+</div>
+
+</div>
+{% endblock %}

@@ -12,14 +12,11 @@ class ScoreSet(db.Model):
     name = db.StringProperty(required=True)
     halfLives = db.ListProperty(int)
     
-    def __init__(self, *args, **kw):
-        db.Model.__init__(self, *args, **kw)
-        if len(self.halfLives) == 0:
-            self.halfLives = [hrsDay, hrsWeek, hrsMonth, hrsYear]
-    
     @classmethod
-    def GetSet(cls, name):
-        ss = ScoreSet.get_or_insert(name, name=name)
+    def GetSet(cls, name, halfLives=None):
+        if halfLives is None:
+            halfLives = [hrsDay, hrsWeek, hrsMonth, hrsYear]
+        ss = ScoreSet.get_or_insert(name, name=name, halfLives=halfLives)
         return ss
     
     def Update(self, model, value, dt=datetime.now()):
@@ -34,8 +31,11 @@ class ScoreSet(db.Model):
         for s in scores:
             s.Update(value, dt)
             
-    def Best(self, hrsHalf=24, limit=100):
-        scores = Score.gql('WHERE name = :name AND hrsHalf = :hrsHalf ORDER BY LogS DESC', name=self.name, hrsHalf=hrsHalf)
+    def Best(self, hrsHalf=24, limit=100, tag=None):
+        if tag:
+            scores = Score.gql('WHERE name = :name AND hrsHalf = :hrsHalf AND tag = :tag ORDER BY LogS DESC', name=self.name, hrsHalf=hrsHalf, tag=tag)
+        else:
+            scores = Score.gql('WHERE name = :name AND hrsHalf = :hrsHalf ORDER BY LogS DESC', name=self.name, hrsHalf=hrsHalf)
         return scores.fetch(limit)
     
     def Broken(self, limit=1000):
@@ -66,6 +66,7 @@ class Score(db.Model):
     LogS = db.FloatProperty(default=0.0)
     hrsLast = db.FloatProperty(default=0.0)
     model = db.ReferenceProperty(required=True)
+    tag = db.StringListProperty()
     
     def Update(self, value, dt=datetime.now()):
         value = float(value)
