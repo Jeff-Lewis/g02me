@@ -17,19 +17,31 @@ def MakeAlias(req):
         return HttpJSON(req, obj=map.JSON())
     return HttpResponseRedirect("/%s" % map.GetId())
 
-def MakeComment(req):
-    id = req.GET.get('id', "").strip()
-    
-    map = Map.Lookup(id)
-    if map == None:
-        RaiseNotFound(id)
+def DoComment(req, command=None):
+    if command == 'delete':
+        cid = req.GET.get('cid', '').strip()
+        comment = Comment.get_by_id(int(cid))
+        map = comment.map
+        comment.delete();
         
-    parts = Comment.Parse(req.GET.get('comment', ""))
+    if command is None:
+        id = req.GET.get('id', "").strip()
+        
+        map = Map.Lookup(id)
+        if map == None:
+            RaiseNotFound(id)
+            
+        parts = Comment.Parse(req.GET.get('comment', ""))
+    
+        try:
+            map.AddComment(username=parts['username'], comment=parts['comment'], tags=parts['tags'])
+        except:
+            pass
 
-    map.AddComment(username=parts['username'], comment=parts['comment'], tags=parts['tags'])
     if req.has_key("callback"):
         return HttpJSON(req, obj=map.JSON())
     return HttpResponseRedirect("/info/%s" % map.GetId())
+    
 
 def Head(req, id):
     # http://g02me/info/N
@@ -65,16 +77,24 @@ def Admin(req, command=None):
     
     if command:
         logging.info("admin command: %s" % command)
-        if command == "clean-broken":
+        if command == 'clean-broken':
             scores = Map.ss.Broken()
             logging.info("Removing %d broken scores" % len(scores))
             for score in scores:
                 score.delete()
-        return HttpResponseRedirect("/admin")
+                
+        if command == 'clean-comments':
+            comments = Comment.BadComments()
+            logging.info("Removing %d empty comments" % len(comments))
+            for comment in comments:
+                comment.delete()
+
+        return HttpResponseRedirect("/admin/")
 
     return render_to_response('admin.html',
           {'user':user,
            'req':req,
            'logout':users.create_logout_url(req.get_full_path()),
            'Broken':Map.ss.Broken(),
+           'BadComments':Comment.BadComments(),
            })

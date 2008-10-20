@@ -15,7 +15,7 @@ function CloseFrame()
 
 function DeleteComment(id)
 {
-	alert("NYI");
+	window.location.href = '/comment/delete?cid=' + id;
 }
 </script>
 {% endblock %}
@@ -50,7 +50,7 @@ function DeleteComment(id)
     {% if comment.tags %}
     	[{% for tag in comment.TagList %}<a href="/tag/{{tag|slugify}}">{{tag|escape}}</a>{% if not forloop.last %}, {% endif %}{% endfor %}]
     {% endif %}
-    <img class="x" onclick="DeleteComment({{comment.id}});" src="/images/x.png"/>
+    <img class="x" onclick="DeleteComment({{comment.key.id}});" src="/images/x.png"/>
     </p>{% endspaceless %}
 {% endfor %}
 </div>

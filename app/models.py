@@ -144,13 +144,17 @@ class Comment(db.Model):
     dateCreated = db.DateTimeProperty()
     
     @classmethod
-    def Create(cls, map, username="", comment="", tags=""):
+    def Create(cls, map, username='', comment='', tags=''):
         username = TrimString(username)
         userid = local.userid
         logging.info("assign comment to id %s" % local.userid)
         comment = TrimString(comment)
         tags = TrimString(tags)
         dateCreated = datetime.now()
+        
+        if tags == '' and comment == '':
+            raise Error("Empty comment")
+        
         com = Comment(map=map, username=username, userid=userid, comment=comment, tags=tags, dateCreated=dateCreated)
         if username:
             local.username = username
@@ -187,4 +191,10 @@ class Comment(db.Model):
         if self.tags:
             c['tags'] = self.tags
         c['created'] = self.dateCreated
+        c['cid'] = self.key().id()
         return c
+    
+    @classmethod
+    def BadComments(cls):
+        comments = Comment.gql("WHERE comment = '' AND tags = ''")
+        return comments.fetch(100)

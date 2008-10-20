@@ -10,6 +10,7 @@
 <div class="left">
 <h2>Welcome, {{ user.nickname }}</h2>
 <a href="/admin/clean-broken">Remove Broken Scores</a>
+<br/><a href="/admin/clean-comments">Remove Empty Comments</a>
 </div> <!-- left -->
 
 <div class="right">
@@ -26,6 +27,7 @@
 	</tr>
 {% endfor %}
 </table>
+<h2>Bad Comments: {{BadComments|length}}</h2>
 
 </div> <!-- right -->
 

@@ -151,6 +151,7 @@ ts.AddTest("Comment", function(ut)
 {
 	var objInit;
 	var cComment;
+	var com;
 
 	ut.AsyncSequence([
 		function(ut)
@@ -197,6 +198,13 @@ ts.AddTest("Comment", function(ut)
 				ut.AssertEq(obj.comments.length, cComment+1);
 				com = obj.comments[0];
 				ut.AssertContains(com, {comment:"This is a test", user:"mckoss", tags:"tag1,tag2"});
+				ut.NextFn();
+				});
+			},
+		function(ut)
+			{
+			new UT.ScriptData("/comment/delete").Call({cid:com.cid}, function(obj) {
+				ut.AssertEq(obj.comments.length, cComment);
 				ut.NextFn();
 				});
 			}
