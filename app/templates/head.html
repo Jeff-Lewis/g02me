@@ -1,33 +1,11 @@
 {% extends "master.html" %}
 {% block head %}
 <script>
-msLoaded = new Date().getTime();
 
 function Loaded()
 {
 	document.getElementById("comment").focus();
 }
-
-function BeforeUnload(evt)
-{
-	msUnloading = new Date().getTime();
-	
-	if (msUnloading - msLoaded < 3000)
-		{
-		evt = evt || window.event || {};
-		evt.returnValue = "Click CANCEL to keep the G02.ME header at the top of the page.";
-		return evt.returnValue;
-		}
-}
-
-window.onbeforeunload = BeforeUnload;
-
-function Click()
-{
-	msLoaded = 0;
-}
-
-window.onclick = Click;
 
 function CloseFrame()
 {
@@ -45,9 +23,13 @@ function DeleteComment(id)
 		window.location.href = '/comment/delete?cid=' + id;
 }
 
+function Click()
+{
+	if (window.parent && window.parent.Click)
+		window.parent.Click();
+}
 
-
-
+window.onclick = Click;
 </script>
 {% endblock %}
 {% block subTitle %}{{map.title|escape}}{% endblock %}

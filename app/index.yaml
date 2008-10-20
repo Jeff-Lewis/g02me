@@ -16,14 +16,14 @@ indexes:
   - name: map
   - name: dateCreated
 
-# Used 24 times in query history.
+# Used 31 times in query history.
 - kind: Comment
   properties:
   - name: map
   - name: dateCreated
     direction: desc
 
-# Used 2 times in query history.
+# Used 3 times in query history.
 - kind: Score
   properties:
   - name: hrsHalf

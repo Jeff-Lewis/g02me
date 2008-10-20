@@ -1,6 +1,31 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html>
 <head>
+<script>
+msLoaded = new Date().getTime();
+
+function BeforeUnload(evt)
+{
+	msUnloading = new Date().getTime();
+	
+	if (msUnloading - msLoaded < 3000)
+		{
+		evt = evt || window.event || {};
+		evt.returnValue = "Click CANCEL to keep the G02.ME header at the top of the page.";
+		return evt.returnValue;
+		}
+}
+
+window.onbeforeunload = BeforeUnload;
+
+function Click()
+{
+	msLoaded = 0;
+}
+
+window.onclick = Click;
+</script>
+
 <link rel="icon" type="image/png" href="/images/favicon.png">
 <title>G02.ME - {{map.title}}</title>
 </head>
@@ -9,7 +34,7 @@
 <frame src="{{map.url}}"/>
 <noframes>
 <body>
-Your browser does not support frames.  Your can visit the target page at {{ map.url }}
+Your browser does not support frames.  Your can visit the target page at {{ map.url|escape }}
 </body>
 </noframes>
 </frameset>
