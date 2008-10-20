@@ -1,4 +1,14 @@
-DEBUG = True
+ENVIRONMENT = "unknown"
+try:
+    import os
+    if os.environ["SERVER_SOFTWARE"].lower().startswith("dev"):
+        ENVIRONMENT = "local"
+    elif os.environ["SERVER_SOFTWARE"].lower().startswith("google apphosting"):
+        ENVIRONMENT = "hosted"
+except:
+    pass
+
+DEBUG = (ENVIRONMENT == "local")
 TEMPLATE_DEBUG = DEBUG
 
 ADMINS = (

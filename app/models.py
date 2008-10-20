@@ -18,7 +18,7 @@ class Map(db.Model):
     scoreShare = 3
     
     # TODO: Add a database model for blacklisted domains
-    blackList = {'g02.me':True, 'www.g02.me': True, 'localhost:8080': True}
+    blackList = {'g02.me':True, 'www.g02.me': True, 'localhost:8080': True, 'tinyurl.com': True}
     
     url = db.StringProperty(required=True)
     title = db.StringProperty()

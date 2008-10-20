@@ -3,6 +3,8 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render_to_response
 from django.template import loader, Context, Template
 
+import settings
+
 import threading
 from urlparse import urlsplit, urlunsplit
 import logging
@@ -22,16 +24,23 @@ def IntToS64(i):
 
 def NormalizeUrl(url):
     url = url.strip()
-    rgURL = urlsplit(url)
+    rgURL = list(urlsplit(url))
     if rgURL[0] == '':
         url = r"http://%s" % url
-        rgURL = urlsplit(url)
+        rgURL = list(urlsplit(url))
+    # Invalid protocol
     if rgURL[0] != "http" and rgURL[0] != "https":
         foo = Error("Invalid protocol: %s" % rgURL[0], "Fail/Foo")
         bar = Error("Invalid protocol: %s" % rgURL[0])
         raise bar 
+    # Invalid domain
     if not rgURL[1]:        
         raise Error("Invalid URL: %s" % urlunsplit(rgURL))
+    rgURL[1] = rgURL[1].lower()
+    
+    # Always end naked domains with a trailing slash as canonical
+    if rgURL[2] == '':
+        rgURL[2] = '/';
     return urlunsplit(rgURL)
 
 def TrimString(st):
@@ -100,7 +109,8 @@ class ReqFilter(object):
             logging.info("Caught Error")
             return HttpError(req, e.obj['message'], obj=e.obj)
         logging.info("Uncaught exception")
-        return HttpError(req, "Application Error", {'status': 'Fail'})
+        if not settings.DEBUG:
+            return HttpError(req, "Application Error", {'status': 'Fail'})
 
 def GenerateSid(stUser, seq):
     """ Session id format is:
@@ -180,8 +190,8 @@ class TestIntToS64(unittest.TestCase):
         
 class TestNormalizeUrl(unittest.TestCase):
     def test(self):
-        self.assertEqual(NormalizeUrl("http://hello"), "http://hello")
-        self.assertEqual(NormalizeUrl("  http://hello  "), "http://hello")
+        self.assertEqual(NormalizeUrl("http://hello"), "http://hello/")
+        self.assertEqual(NormalizeUrl("  http://hello  "), "http://hello/")
 
 if __name__ == '__main__':
   unittest.main()

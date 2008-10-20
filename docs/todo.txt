@@ -113,6 +113,9 @@ X AppEngine Logo
   - If no userid cookie - don't count it!  (note that Frame will set cookie, and head will then count!)
 X Page not found should be a 404 page
 X add expires meta http header to fix google cache bug
+- URL's with tailing "/" are not normalized to the non-trailing versions leading to duplicates
+  - Ability to merge two URL's?
+  - 
 
 Future:
 

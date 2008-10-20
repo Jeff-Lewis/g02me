@@ -20,7 +20,7 @@ ts.AddTest("Map", function(ut)
 		function(ut)
 			{
 			new UT.ScriptData("/map/").Call({url:"http://google.com"}, function(obj) {
-				ut.AssertContains(obj, {status:"OK", url:"http://google.com", title:"http://google.com"});
+				ut.AssertContains(obj, {status:"OK", url:"http://google.com/", title:"http://google.com/"});
 				ut.AssertType(obj.created, Date);
 				objInit = obj;
 				ut.NextFn();
@@ -30,7 +30,7 @@ ts.AddTest("Map", function(ut)
 			{
 			new UT.ScriptData("/map/").Call({url:"http://google.com"}, function(obj) {
 				ut.AssertContains(obj,
-					{status:"OK", url:"http://google.com", id:objInit.id, viewed:objInit.viewed, shared:objInit.shared+1});
+					{status:"OK", url:"http://google.com/", id:objInit.id, viewed:objInit.viewed, shared:objInit.shared+1});
 				ut.NextFn();
 				});
 			},
@@ -38,7 +38,7 @@ ts.AddTest("Map", function(ut)
 			{
 			new UT.ScriptData("/map/").Call({url:"google.com"}, function(obj) {
 				ut.AssertContains(obj,
-					{status:"OK", url:"http://google.com", id:objInit.id, viewed:objInit.viewed, shared:objInit.shared+2});
+					{status:"OK", url:"http://google.com/", id:objInit.id, viewed:objInit.viewed, shared:objInit.shared+2});
 				ut.NextFn();
 				});
 			},
@@ -46,7 +46,7 @@ ts.AddTest("Map", function(ut)
 			{
 			new UT.ScriptData("/map/").Call({url:" http://google.com "}, function(obj) {
 				ut.AssertContains(obj,
-					{status:"OK", url:"http://google.com", id:objInit.id, viewed:objInit.viewed, shared:objInit.shared+3});
+					{status:"OK", url:"http://google.com/", id:objInit.id, viewed:objInit.viewed, shared:objInit.shared+3});
 				ut.NextFn();
 				});
 			},
@@ -61,7 +61,7 @@ ts.AddTest("Map", function(ut)
 			{
 			new UT.ScriptData("/map/").Call({url:"http://google.com"}, function(obj) {
 				ut.AssertContains(obj,
-					{status:"OK", url:"http://google.com", id:objInit.id, viewed:objInit.viewed+1, shared:objInit.shared+4});
+					{status:"OK", url:"http://google.com/", id:objInit.id, viewed:objInit.viewed+1, shared:objInit.shared+4});
 				ut.NextFn();
 				});
 			},
@@ -69,7 +69,7 @@ ts.AddTest("Map", function(ut)
 			{
 			new UT.ScriptData("/map/").Call({url:"https://google.com"}, function(obj) {
 				ut.AssertContains(obj,
-					{status:"OK", url:"https://google.com"});
+					{status:"OK", url:"https://google.com/"});
 				ut.NextFn();
 				});
 			}
@@ -102,6 +102,13 @@ ts.AddTest("Errors", function(ut)
 			},
 		function (ut)
 			{
+			new UT.ScriptData("/map/").Call({url:"http://G02.ME"}, function (obj) {
+				ut.AssertContains(obj, {status:"Fail/Domain"});
+				ut.NextFn();
+				});
+			},
+		function (ut)
+			{
 			new UT.ScriptData("/map/").Call({url:"script://google.com"}, function (obj) {
 				ut.AssertContains(obj, {status:"Fail"});
 				ut.NextFn();
@@ -118,7 +125,7 @@ ts.AddTest("Info", function(ut)
 		function(ut)
 			{
 			new UT.ScriptData("/map/").Call({url:"http://google.com"}, function(obj) {
-				ut.AssertContains(obj, {status:"OK", url:"http://google.com"});
+				ut.AssertContains(obj, {status:"OK", url:"http://google.com/"});
 				objInit = obj;
 				ut.NextFn();
 				});
@@ -126,7 +133,7 @@ ts.AddTest("Info", function(ut)
 		function (ut)
 			{
 			new UT.ScriptData("/info/" + objInit.id).Call({}, function (obj) {
-				ut.AssertContains(obj, {status:"OK", url:"http://google.com"});
+				ut.AssertContains(obj, {status:"OK", url:"http://google.com/"});
 				ut.NextFn();
 				});
 			},
@@ -149,7 +156,7 @@ ts.AddTest("Comment", function(ut)
 		function(ut)
 			{
 			new UT.ScriptData("/map/").Call({url:"http://google.com"}, function(obj) {
-				ut.AssertContains(obj, {status:"OK", url:"http://google.com"});
+				ut.AssertContains(obj, {status:"OK", url:"http://google.com/"});
 				objInit = obj;
 				ut.NextFn();
 				});
@@ -157,7 +164,7 @@ ts.AddTest("Comment", function(ut)
 		function(ut)
 			{
 			new UT.ScriptData("/comment/").Call({id:objInit.id, comment:"hello"}, function (obj) {
-				ut.AssertContains(obj, {status:"OK", url:"http://google.com"});
+				ut.AssertContains(obj, {status:"OK", url:"http://google.com/"});
 				ut.AssertContains(obj.comments[0], {comment:"hello"});
 				ut.AssertType(obj.comments[0].user, "number");
 				cComment = obj.comments.length;
@@ -167,7 +174,7 @@ ts.AddTest("Comment", function(ut)
 		function(ut)
 			{
 			new UT.ScriptData("/info/" + objInit.id).Call({}, function (obj) {
-				ut.AssertContains(obj, {status:"OK", url:"http://google.com"});
+				ut.AssertContains(obj, {status:"OK", url:"http://google.com/"});
 				ut.AssertContains(obj.comments[0], {comment:"hello"});
 				ut.AssertEq(obj.comments.length, cComment);
 				ut.NextFn();
@@ -176,7 +183,7 @@ ts.AddTest("Comment", function(ut)
 		function(ut)
 			{
 			new UT.ScriptData("/comment/").Call({id:objInit.id, comment:"mckoss :  This is a test  [tag1,  tag2]"}, function (obj) {
-				ut.AssertContains(obj, {status:"OK", url:"http://google.com"});
+				ut.AssertContains(obj, {status:"OK", url:"http://google.com/"});
 				ut.AssertContains(obj.comments[0], {comment:"This is a test", tags:"tag1,tag2", user:"mckoss"});
 				ut.AssertType(obj.comments[0].created, Date);
 				ut.AssertEq(obj.comments.length, cComment+1);
@@ -186,7 +193,7 @@ ts.AddTest("Comment", function(ut)
 		function(ut)
 			{
 			new UT.ScriptData("/info/" + objInit.id).Call({}, function (obj) {
-				ut.AssertContains(obj, {status:"OK", url:"http://google.com"});
+				ut.AssertContains(obj, {status:"OK", url:"http://google.com/"});
 				ut.AssertEq(obj.comments.length, cComment+1);
 				com = obj.comments[0];
 				ut.AssertContains(com, {comment:"This is a test", user:"mckoss", tags:"tag1,tag2"});
