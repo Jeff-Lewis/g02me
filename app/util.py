@@ -97,6 +97,8 @@ class ReqFilter(object):
     def process_response(self, req, resp):
         resp.set_cookie('userid', local.userid, max_age=60*60*24*30)
         resp.set_cookie('username', local.username, max_age=60*60*24*30)
+        resp['Cache-Control'] = 'no-cache'
+        resp['Expires'] = '0'
         return resp
         
     def process_exception(self, req, e):
@@ -170,8 +172,6 @@ def HttpJSON(req, obj={}):
     if not 'status' in obj:
         obj['status'] = 'OK'
     resp = HttpResponse("%s(%s);" % (req.GET["callback"], simplejson.dumps(obj, cls=JavaScriptEncoder)), mimetype="application/x-javascript")
-    resp['Cache-Control'] = 'no-cache'
-    resp['Expires'] = '0'
     return resp
 
 # Save request info in a thread-global

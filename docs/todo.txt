@@ -116,6 +116,9 @@ X add expires meta http header to fix google cache bug
 X URL's with tailing "/" are not normalized to the non-trailing versions leading to duplicates
 - Is it possible to implement info/Close box so that currently navigated page is retained?
   - See if window.location.href is accessible from parent frameset
+- Fix comment counts
+X Cache broken again?
+- 
 
 Future:
 
