@@ -23,7 +23,7 @@ class ScoreSet(db.Model):
         return ss
     
     def Update(self, model, value, dt=datetime.now()):
-        scores = Score.gql('WHERE name = :name AND model = :model', name=self.name, model=model)
+        scores = self.ScoresForModel(model)
         if scores.count() == 0:
             for hrs in self.halfLives:
                 logging.info("SS - creating %d" % hrs)
@@ -42,6 +42,20 @@ class ScoreSet(db.Model):
         # Return the broken links
         scores = Score.gql('WHERE name = :name ORDER BY hrsLast DESC', name=self.name)
         return [score for score in scores.fetch(limit) if not score.ModelExists()]
+
+    def ScoresForModel(self, model):
+        return Score.gql('WHERE name = :name AND model = :model', name=self.name, model=model)
+    
+    def ScoresJSON(self, model):
+        scores = self.ScoresForModel(model)
+        obj = {}
+        for score in scores:
+            obj[self.HalfName(score.hrsHalf)] = score.ScoreNow()
+        return obj
+    
+    @classmethod
+    def HalfName(cls, hrs):
+        return {hrsDay:'day', hrsWeek:'week', hrsMonth:'month', hrsYear:'year'}.get(hrs, str(hrs))
         
 class Score(db.Model):
     dtBase = datetime(2000,1,1)
@@ -70,6 +84,11 @@ class Score(db.Model):
         # Todo: handle positive and negative values
         self.LogS = math.log(self.S)/math.log(2) + self.hrsLast/self.hrsHalf
         self.put()
+        
+    def ScoreNow(self, dt=datetime.now()):
+        hrs = Score.Hours(dt)
+        k = 0.5 ** (1.0/self.hrsHalf)
+        return (k ** (hrs - self.hrsLast)) * self.S
     
     @classmethod    
     def Hours(cls, dt1):
@@ -88,6 +107,7 @@ class Score(db.Model):
     
     def ModelKey(self):
         return Score.model.get_value_for_datastore(self)
+        
 
 # Constants
 hrsDay = 24

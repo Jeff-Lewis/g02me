@@ -69,7 +69,11 @@ class Map(db.Model):
     
     @classmethod
     def TopPages(cls):
-        return cls.ss.Best();
+        return cls.ss.Best()
+    
+    @classmethod
+    def TopJSON(cls):
+        return {'popular':[score.model.JSON() for score in cls.ss.Best() if score.ModelExists]}
     
     def GetId(self):
         return self.key().name()[2:]
@@ -107,7 +111,9 @@ class Map(db.Model):
         
     def JSON(self):
         obj = {'url':self.url, 'id':self.GetId(), 'title':self.title,
-               'viewed':self.viewCount, 'shared':self.shareCount, 'created':self.dateCreated}
+               'viewed':self.viewCount, 'shared':self.shareCount, 'created':self.dateCreated,
+               'scores':self.ss.ScoresJSON(self)
+               }
         rgComments = [];
         for comment in self.Comments():
             rgComments.append(comment.JSON())

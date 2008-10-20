@@ -123,7 +123,7 @@ def HttpError(req, stError, obj={}):
     if not 'status' in obj:
         obj['status'] = 'Fail'
     obj['message'] = stError
-    if req.has_key("callback"):
+    if IsJSON():
         logging.info('JSON Error: %(message)s (%(status)s)' % obj)
         return HttpJSON(req, obj=obj)
     logging.info('UI Error: %s' % stError)
@@ -164,6 +164,9 @@ def RequireUser(req):
     
 def RaiseNotFound(id):
     raise Error("The G02.ME page, http://g02.me/%s, does not exist" % id, obj={'id':id, 'status':'Fail/NotFound'})
+
+def IsJSON():
+    return local.req.has_key("callback")
 
 def HttpJSON(req, obj={}):
     if not 'status' in obj:

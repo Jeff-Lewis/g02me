@@ -21,6 +21,7 @@ ts.AddTest("Map", function(ut)
 			{
 			new UT.ScriptData("/map/").Call({url:"http://google.com"}, function(obj) {
 				ut.AssertContains(obj, {status:"OK", url:"http://google.com/", title:"http://google.com/"});
+				ut.AssertGT(obj.scores.day, 0);
 				ut.AssertType(obj.created, Date);
 				objInit = obj;
 				ut.NextFn();
@@ -208,6 +209,23 @@ ts.AddTest("Comment", function(ut)
 				ut.NextFn();
 				});
 			}
+		]);
+}).Async(true);
+
+ts.AddTest("Popular", function(ut)
+{
+	ut.AsyncSequence([
+		function(ut)
+			{
+			new UT.ScriptData("/").Call({}, function(obj) {
+				ut.AssertContains(obj, {status:"OK"});
+				ut.Assert(obj.popular.length > 0, "non-empty popular list");
+				var url = obj.popular[0];
+				for (var prop in {day:0,week:0,month:0,year:0})
+					ut.AssertGT(url.scores[prop], 0, prop);
+				ut.NextFn();
+				});
+			},
 		]);
 }).Async(true);
 

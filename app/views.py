@@ -9,6 +9,8 @@ from models import *
 import logging
 
 def Home(req):
+    if IsJSON():
+        return HttpJSON(req, Map.TopJSON())
     return render_to_response('home.html', {'host':local.stHost, 'pages':Map.TopPages()})
 
 def MakeAlias(req):
@@ -38,7 +40,7 @@ def DoComment(req, command=None):
         except:
             pass
 
-    if req.has_key("callback"):
+    if IsJSON():
         return HttpJSON(req, obj=map.JSON())
     return HttpResponseRedirect("/info/%s" % map.GetId())
     
@@ -49,7 +51,7 @@ def Head(req, id):
     if map == None:
         RaiseNotFound(id)
     map.Viewed()
-    if req.has_key("callback"):
+    if IsJSON():
         return HttpJSON(req, obj=map.JSON())
     t = loader.get_template('head.html')
     resp = HttpResponse(t.render(Context({'map': map, 'username':local.username})))
@@ -61,7 +63,7 @@ def FrameSet(req, id):
     map = Map.Lookup(id)
     if map == None:
         RaiseNotFound(id)
-    if req.has_key("callback"):
+    if IsJSON():
         map.Viewed()
         return HttpJSON(req, obj=map.JSON())
     return render_to_response('mapped.html', {'map':map})

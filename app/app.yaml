@@ -41,5 +41,6 @@ handlers:
   expiration: 1d
 
 # Django handler
+# Note that paths not designated in urls.py will throw a FileNotFound exception
 - url: /.*
   script: main.py
