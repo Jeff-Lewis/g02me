@@ -6,12 +6,10 @@ msLoaded = new Date().getTime();
 function Loaded()
 {
 	document.getElementById("comment").focus();
-	//window.onunload = function() {window.open("/info/{{map.GetId}}", "_blank");}
 }
 
 function BeforeUnload(evt)
 {
-	console.log("before unload");
 	msUnloading = new Date().getTime();
 	
 	if (msUnloading - msLoaded < 3000)
