@@ -96,6 +96,12 @@ def Admin(req, command=None):
             logging.info("Removing %d empty comments" % len(comments))
             for comment in comments:
                 comment.delete()
+                
+        if command == 'clean-broken-comments':
+            comments = Comment.Broken()
+            logging.info("Removing %d broken comments" % len(comments))
+            for comment in comments:
+                comment.delete()
 
         return HttpResponseRedirect("/admin/")
 
@@ -105,4 +111,5 @@ def Admin(req, command=None):
            'logout':users.create_logout_url(req.get_full_path()),
            'Broken':Map.ss.Broken(),
            'BadComments':Comment.BadComments(),
+           'BrokenComments':Comment.Broken(),
            })

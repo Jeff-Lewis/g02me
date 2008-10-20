@@ -9,7 +9,6 @@
 <table class="scores">
 <tr><th>Title</th><th>Shared</th><th>Viewed</th><th>Comments</th></tr>
 {% for comment in comments %}
-	{% if comment.MapExists %}
 	<tr>
 		<td><a href="/{{comment.map.GetId}}">{{comment.map.title|escape}}</a>
 		{% if comment.comment or comment.tags %}<br/>
@@ -24,7 +23,6 @@
 		<td class="num">{{comment.map.viewCount}}</td>
 		<td class="num">{{comment.map.CommentCount}}</td>
 	</tr>
-	{% endif %}
 {% endfor %}
 </table>
 

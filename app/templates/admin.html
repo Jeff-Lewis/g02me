@@ -11,6 +11,7 @@
 <h2>Welcome, {{ user.nickname }}</h2>
 <a href="/admin/clean-broken">Remove Broken Scores</a>
 <br/><a href="/admin/clean-comments">Remove Empty Comments</a>
+<br/><a href="/admin/clean-broken-comments">Remove Broken Comments</a>
 </div> <!-- left -->
 
 <div class="right">
@@ -27,8 +28,19 @@
 	</tr>
 {% endfor %}
 </table>
-<h2>Bad Comments: {{BadComments|length}}</h2>
 
+<h2>Bad Comments: {{BadComments|length}}</h2>
+<h2>Broken Comments: {{ BrokenComments|length }} </h2>
+<table class="scores">
+<tr><th>comment</th><th>dateCreated</th><th>MapKey</th></tr>
+{% for comment in BrokenComments %}
+	<tr>
+		<td>{{comment.comment|escape}}</td>
+		<td class="num">{{comment.dateCreated}}</td>
+		<td class="num">{{comment.MapKey}}</td>
+	</tr>
+{% endfor %}
+</table>
 </div> <!-- right -->
 
 <div class="bottom">

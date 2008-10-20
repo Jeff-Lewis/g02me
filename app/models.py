@@ -95,9 +95,9 @@ class Map(db.Model):
         return self.comment_set.count();
     
     def Comments(self, limit=100):
+        # Just return "true" comments (not sharing events) - and prune comments for deleted models
         comments = self.comment_set.order('-dateCreated').fetch(limit)
-        # Just return "true" comments (not sharing events)
-        return [comment for comment in comments if comment.comment != '__share']
+        return [comment for comment in comments if comment.MapExists() and comment.comment != '__share']
     
     def Shared(self):
         self.shareCount = self.shareCount + 1
@@ -192,7 +192,7 @@ class Comment(db.Model):
         clist = []
         dup = set()
         for comment in comments:
-            if not comment.MapExists:
+            if not comment.MapExists():
                 continue
             key = comment.map.GetId()
             if key in dup:
@@ -210,8 +210,11 @@ class Comment(db.Model):
         return obj
     
     def MapExists(self):
-        obj = db.get(Comment.map.get_value_for_datastore(self))
+        obj = db.get(self.MapKey())
         return not obj is None
+    
+    def MapKey(self):
+        return Comment.map.get_value_for_datastore(self)
         
     def TagList(self):
         return self.tags.split(",")
@@ -232,3 +235,9 @@ class Comment(db.Model):
     def BadComments(cls):
         comments = Comment.gql("WHERE comment = '' AND tags = ''")
         return comments.fetch(100)
+    
+    @classmethod
+    def Broken(cls, limit=1000):
+        # Return the broken links
+        comments = db.Query(Comment).order('-dateCreated')
+        return [comment for comment in comments.fetch(limit) if not comment.MapExists()]
