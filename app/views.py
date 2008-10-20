@@ -22,7 +22,13 @@ def MakeAlias(req):
 def DoComment(req, command=None):
     if command == 'delete':
         cid = req.GET.get('cid', '').strip()
+        try:
+            cid = int(cid)
+        except:
+            raise Error("Invalid comment id: %s" % cid)
         comment = Comment.get_by_id(int(cid))
+        if comment is None:
+            raise Error("Comment id=%d does not exists" % cid, 'Fail/NotFound')
         map = comment.map
         comment.delete();
         

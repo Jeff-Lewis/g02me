@@ -30,9 +30,7 @@ def NormalizeUrl(url):
         rgURL = list(urlsplit(url))
     # Invalid protocol
     if rgURL[0] != "http" and rgURL[0] != "https":
-        foo = Error("Invalid protocol: %s" % rgURL[0], "Fail/Foo")
-        bar = Error("Invalid protocol: %s" % rgURL[0])
-        raise bar 
+        raise Error("Invalid protocol: %s" % rgURL[0]) 
     # Invalid domain
     if not rgURL[1]:        
         raise Error("Invalid URL: %s" % urlunsplit(rgURL))
