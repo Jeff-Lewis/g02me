@@ -36,6 +36,11 @@ window.onclick = Click;
 <p>Viewed: {{map.viewCount}}</p>
 <p>Shared: {{map.shareCount}}</p>
 <p>Comments: {{map.CommentCount}}</p>
+<p>Tags: 
+{% for tag in TopTags %}
+	<a target="_top" href="/tag/{{tag|slugify}}">{{tag|escape}}</a>{% if not forloop.last %}, {% endif %}
+{% endfor %}
+</p>
 </div>
 
 <h1><a target="_top" href="{{map.url}}">{{map.title|escape}}</a></h1>

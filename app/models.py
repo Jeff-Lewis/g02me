@@ -8,6 +8,7 @@ from sys import exc_info
 from urlparse import urlsplit
 import re
 from datetime import datetime
+import pickle
 
 class Map(db.Model):
     ss = ScoreSet.GetSet("map")
@@ -25,6 +26,7 @@ class Map(db.Model):
     dateCreated = db.DateTimeProperty()
     viewCount = db.IntegerProperty(default=0)
     shareCount = db.IntegerProperty(default=0)
+    sTags = db.TextProperty()
     
     @classmethod
     def KeyFromId(cls, id):
@@ -43,8 +45,40 @@ class Map(db.Model):
         dateCreated = datetime.now()
         id = Globals.IdNext()
         map = Map(key_name=Map.KeyFromId(id), url=url, title=title, dateCreated=dateCreated)
+        map.x = 1
         return map
+    
+    def put(self):
+        self.ReifyTags()
+        self.sTags = unicode(pickle.dumps(self.tags), 'ascii')
+        db.Model.put(self)
+        
+    def ReifyTags(self):
+        if hasattr(self, 'tags'):
+            return;
 
+        try:
+            self.tags = pickle.loads(str(self.sTags))
+        except:
+            self.tags = {}
+        
+    def AddTags(self, rgTags):
+        self.ReifyTags()
+        for tag in rgTags:
+            if not tag in self.tags:
+                self.tags[tag] = 0
+            self.tags[tag] = self.tags[tag] + 1
+        self.put()
+        
+    def TopTags(self, limit=10):
+        # Return to top 10 tags (by use) for this url
+        self.ReifyTags()
+        a = [(tag, self.tags[tag]) for tag in self.tags]
+        a.sort(lambda x,y: y[1]-x[1])
+        aT = [a[i][0] for i in range(min(len(a), limit))]
+        aT.sort()
+        return aT
+            
     @classmethod
     def Lookup(cls, id):
         # just use id as key - more frequent than url lookup

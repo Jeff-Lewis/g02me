@@ -15,7 +15,15 @@ def Home(req):
 
 def MakeAlias(req):
     map = Map.FindOrCreateUrl(req.GET.get('url', ""), req.GET.get('title', ""))
-    if req.has_key("callback"):
+    if IsJSON():
+        return HttpJSON(req, obj=map.JSON())
+    return HttpResponseRedirect("/%s" % map.GetId())
+
+def Lookup(req):
+    map = Map.FindUrl(req.GET.get('url', ""))
+    if map is None:
+        return Error("No shortened url exists", "Fail/NotFound")
+    if IsJSON():
         return HttpJSON(req, obj=map.JSON())
     return HttpResponseRedirect("/%s" % map.GetId())
 
@@ -43,6 +51,7 @@ def DoComment(req, command=None):
     
         try:
             map.AddComment(username=parts['username'], comment=parts['comment'], tags=parts['tags'])
+            map.AddTags(parts['tags'].split(','))
         except:
             pass
 
@@ -59,7 +68,7 @@ def Head(req, id):
     map.Viewed()
     if IsJSON():
         return HttpJSON(req, obj=map.JSON())
-    return render_to_response('head.html', {'map': map, 'username':local.username})
+    return render_to_response('head.html', {'map': map, 'username':local.username, 'TopTags':map.TopTags()})
 
 def FrameSet(req, id):
     # http://g02me/N

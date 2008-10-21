@@ -8,6 +8,7 @@ urlpatterns = patterns('',
     (r'^user/([0-9A-Za-z-_]+)$', UserHistory),    
     (r'^tag/([0-9A-Za-z-_]+)$', TagHistory),
     (r'^map/$', MakeAlias),
+    (r'^lookup/$', Lookup),    
     (r'^comment/(?P<command>[a-z\-]+)?$', DoComment),
     (r'^admin/(?P<command>[a-z\-]+)?$', Admin),
 )

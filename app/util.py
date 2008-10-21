@@ -103,10 +103,8 @@ class ReqFilter(object):
         
     def process_exception(self, req, e):
         if isinstance(e, DirectResponse):
-            logging.info("Caught direct response")
             return e.resp
         if isinstance(e, Error):
-            logging.info("Caught Error")
             return HttpError(req, e.obj['message'], obj=e.obj)
         logging.error("Uncaught exception")
         if not settings.DEBUG:

@@ -29,6 +29,14 @@ ts.AddTest("Map", function(ut)
 			},
 		function(ut)
 			{
+			new UT.ScriptData("/lookup/").Call({url:"http://google.com"}, function(obj) {
+				ut.AssertContains(obj,
+					{status:"OK", url:"http://google.com/", id:objInit.id, viewed:objInit.viewed, shared:objInit.shared});
+				ut.NextFn();
+				});
+			},
+		function(ut)
+			{
 			new UT.ScriptData("/map/").Call({url:"http://google.com"}, function(obj) {
 				ut.AssertContains(obj,
 					{status:"OK", url:"http://google.com/", id:objInit.id, viewed:objInit.viewed, shared:objInit.shared+1});
@@ -225,7 +233,7 @@ ts.AddTest("Popular", function(ut)
 					ut.AssertGT(url.scores[prop], 0, prop);
 				ut.NextFn();
 				});
-			},
+			}
 		]);
 }).Async(true);
 
@@ -236,10 +244,53 @@ ts.AddTest("User", function(ut)
 			{
 			new UT.ScriptData("/user/mckoss").Call({}, function(obj) {
 				ut.AssertContains(obj, {status:"OK"});
+				ut.AssertType(obj.urls, Array);
 				ut.Assert(obj.urls.length > 0, "non-empty user list");
 				ut.NextFn();
 				});
+			}
+		]);
+}).Async(true);
+
+ts.AddTest("Tag", function(ut)
+{
+	var objInit;
+
+	ut.AsyncSequence([
+		function(ut)
+			{
+			new UT.ScriptData("/lookup/").Call({url:"http://google.com"}, function(obj) {
+				ut.AssertContains(obj, {status:"OK", url:"http://google.com/"});
+				objInit = obj;
+				ut.NextFn();
+				});
 			},
+		function(ut)
+			{
+			new UT.ScriptData("/comment/").Call({id:objInit.id, comment:"Testing tags [search, multi word]"}, function (obj) {
+				ut.AssertContains(obj, {status:"OK", url:"http://google.com/"});
+				ut.AssertGT(obj.comments.length, 0);
+				ut.AssertContains(obj.comments[0], {comment:"Testing tags", tags: "search,multi word"});
+				ut.NextFn();
+				});
+			},
+		function(ut)
+			{
+			new UT.ScriptData("/tag/search").Call({}, function (obj) {
+				ut.AssertContains(obj, {status:"OK"});
+				ut.AssertType(obj.urls, Array);
+				ut.NextFn();
+				});
+			},
+		function(ut)
+			{
+			new UT.ScriptData("/tag/no-such-tag").Call({}, function (obj) {
+				ut.AssertContains(obj, {status:"OK"});
+				ut.AssertType(obj.urls, Array);
+				ut.AssertEq(obj.urls.length, 0);
+				ut.NextFn();
+				});
+			}
 		]);
 }).Async(true);
 

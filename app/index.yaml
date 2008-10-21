@@ -22,21 +22,21 @@ indexes:
   - name: map
   - name: dateCreated
 
-# Used 45 times in query history.
+# Used 29 times in query history.
 - kind: Comment
   properties:
   - name: map
   - name: dateCreated
     direction: desc
 
-# Used 3 times in query history.
+# Unused in query history -- copied from input.
 - kind: Comment
   properties:
   - name: username
   - name: dateCreated
     direction: desc
 
-# Used 5 times in query history.
+# Used once in query history.
 - kind: Score
   properties:
   - name: hrsHalf
