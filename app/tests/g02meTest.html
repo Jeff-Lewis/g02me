@@ -15,7 +15,7 @@ ts.DWOutputDiv();
 ts.AddTest("Map", function(ut)
 {
 	var objInit;
-
+	
 	ut.AsyncSequence([
 		function(ut)
 			{
@@ -267,6 +267,7 @@ ts.AddTest("Tag", function(ut)
 			},
 		function(ut)
 			{
+			console.log("comment");
 			new UT.ScriptData("/comment/").Call({id:objInit.id, comment:"Testing tags [search, multi word]"}, function (obj) {
 				ut.AssertContains(obj, {status:"OK", url:"http://google.com/"});
 				ut.AssertGT(obj.comments.length, 0);
@@ -276,20 +277,21 @@ ts.AddTest("Tag", function(ut)
 			},
 		function(ut)
 			{
-			new UT.ScriptData("/tag/search").Call({}, function (obj) {
+			new UT.ScriptData("/tag/search").Call({}, ut.FnWrap(function (obj) {
 				ut.AssertContains(obj, {status:"OK"});
 				ut.AssertType(obj.urls, Array);
+				ut.AssertGT(obj.urls.length, 0);
 				ut.NextFn();
-				});
+				}));
 			},
 		function(ut)
 			{
-			new UT.ScriptData("/tag/no-such-tag").Call({}, function (obj) {
+			new UT.ScriptData("/tag/no-such-tag").Call({}, ut.FnWrap(function (obj) {
 				ut.AssertContains(obj, {status:"OK"});
 				ut.AssertType(obj.urls, Array);
 				ut.AssertEq(obj.urls.length, 0);
 				ut.NextFn();
-				});
+				}));
 			}
 		]);
 }).Async(true);

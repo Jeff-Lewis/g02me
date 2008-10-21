@@ -266,7 +266,7 @@ constructor: UT.UnitTest,
     cAsync: 0,
     fThrows: false,
     cThrows: 0,
-    msTimeout: 20000,
+    msTimeout: 10000,
     stTrace: "",
     cBreakOn: 0,
     fStopFail: false,
@@ -292,18 +292,7 @@ Run: function(ts)
         this.fStopFail = false;		// Avoid recursive asserts
         this.e = e;
         this.Async(0)
-        if (this.fThrows)
-            this.AssertException(this.e, this.stThrows);
-        else
-            {
-            var stMsg = "Exception: " + e.name + " (" + e.message;
-            if (e.number != undefined)
-                stMsg += ", Error No:" + (e.number & 0xFFFF);
-            stMsg += ")";
-            if (e.lineNumber != undefined)
-                stMsg += " @ line " + e.lineNumber;
-            this.Assert(false, stMsg);
-            }
+        this.AssertException(this.e, this.stThrows, this.fThrows);
         }
     
     if (this.fThrows && !fCaught)
@@ -336,7 +325,7 @@ StopFail: function(f)
 	return this;
 	},
 
-// Change expected number async events running - test is finish at 0.
+// Change expected number async events running - test is finishd at 0.
 // Async(false) -> -1
 // Async(true) -> +1
 // Async(0) -> set cAsync to zero
@@ -602,18 +591,33 @@ AssertThrows: function(stExpected, fn)
 
 // Assert expected and caught exceptions
 // If stExpected != undefined, e.name or e.message must contain it
-AssertException: function(e, stExpected)
+AssertException: function(e, stExpected, fExpected)
     {
-    if (e.name) e.name = e.name.toLowerCase();
-    if (e.message) e.message = e.message.toLowerCase();
-    if (stExpected) stExpected = stExpected.toLowerCase();
-    this.Assert(!stExpected || e.name.indexOf(stExpected) != -1 ||
-        e.message.indexOf(stExpected) != -1,
-        "Exception: " + e.name + " (" + e.message + ")" +
-        (stExpected ? " Expecting: " + stExpected : ""));
-    this.cThrows++;
-    },
+    if (fExpected == undefined) fExpected = true;
     
+    if (fExpected)
+    	{
+	    if (e.name) e.name = e.name.toLowerCase();
+	    if (e.message) e.message = e.message.toLowerCase();
+	    if (stExpected) stExpected = stExpected.toLowerCase();
+	    this.Assert(!stExpected || e.name.indexOf(stExpected) != -1 ||
+	        e.message.indexOf(stExpected) != -1,
+	        "Exception: " + e.name + " (" + e.message + ")" +
+	        (stExpected ? " Expecting: " + stExpected : ""));
+	    this.cThrows++;
+    	}
+    else
+    	{
+	    var stMsg = "Exception: " + e.name + " (" + e.message;
+	    if (e.number != undefined)
+	        stMsg += ", Error No:" + (e.number & 0xFFFF);
+	    stMsg += ")";
+	    if (e.lineNumber != undefined)
+	        stMsg += " @ line " + e.lineNumber;
+	    this.Assert(false, stMsg);
+    	}
+	},
+
 // AsyncSequence - Run a sequence of asynchronous function calls
 // Each fn(ut) must call ut.NextFn() to advance
 // Last call to NextFn calls Async(false)
@@ -631,9 +635,34 @@ NextFn: function()
 		this.Async(false);
 		return;
 		}
-	this.rgfn[this.ifn++](this);
+	try
+		{
+		this.rgfn[this.ifn++](this);
+		}
+	catch (e)
+		{
+		this.AssertException(e, "", false)
+		}
+	},
+
+// Wrap asynchronous function calls so we can catch are report exception errors	
+FnWrap: function(fn)
+	{
+	var ut = this;
+
+	return (
+		function () {
+			try
+				{
+				fn.apply(undefined, arguments);
+				}
+			catch (e)
+				{
+				ut.AssertException(e, "", false);
+				}
+		});
 	}
-};
+}; // UT.UnitTest
 
 // TestResult - a single result from the test
 
