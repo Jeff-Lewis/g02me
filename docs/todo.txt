@@ -126,13 +126,13 @@ X Catch exceptions in AsyncSequence unit.js
 - Dates display in local time
 - Introduce memcache to improve performance of popularity pages
 ! Decrement map TopTags when deleting a comment
-! BUG: Emtpy tag showing up?
+! BUG: Empty tag showing up?
 - Log referers for a url! - display click sources ala YouTube Statistics
 - search
-! http://g02.me/tag/ - Python error dump
-! http://tag/search engine
+X http://g02.me/tag/ - Python error dump
+X http://tag/search engine - python dump
 - AdSense on tag pages
-! urls.py - CatchAll
+X urls.py - CatchAll
 - Auto-tag domains (nyt.com, e.g.)
 - Popularity flags
   - Up/Down Arrows
@@ -142,4 +142,5 @@ X Catch exceptions in AsyncSequence unit.js
 - Mobile
   - iPhone (bookmarklet)
   - Other
+- JSON Date format looks funny with 1 digit dates, hours, etc.
 

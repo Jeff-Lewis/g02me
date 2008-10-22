@@ -274,11 +274,12 @@ ts.AddTest("Tag", function(ut)
 			},
 		function(ut)
 			{
-			console.log("comment");
-			new UT.ScriptData("/comment/").Call({id:objInit.id, comment:"Testing tags [search, multi word]"}, function (obj) {
+			new UT.ScriptData("/comment/").Call({id:objInit.id, comment:"Testing tags [, ,search,, multi word]"}, function (obj) {
 				ut.AssertContains(obj, {status:"OK", url:"http://google.com/"});
 				ut.AssertGT(obj.comments.length, 0);
 				ut.AssertContains(obj.comments[0], {comment:"Testing tags", tags: "search,multi-word"});
+				obj.tags.sort();
+				ut.AssertEq(obj.tags, ["multi-word", "search", "tag1", "tag2"]); 
 				ut.NextFn();
 				});
 			},

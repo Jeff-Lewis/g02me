@@ -65,6 +65,9 @@ class Map(db.Model):
     def AddTags(self, rgTags):
         self.ReifyTags()
         for tag in rgTags:
+            # Ignore empty tags
+            if tag == '':
+                continue
             if not tag in self.tags:
                 self.tags[tag] = 0
             self.tags[tag] = self.tags[tag] + 1
@@ -149,7 +152,7 @@ class Map(db.Model):
     def JSON(self):
         obj = {'url':self.url, 'id':self.GetId(), 'title':self.title,
                'viewed':self.viewCount, 'shared':self.shareCount, 'created':self.dateCreated,
-               'scores':self.ss.ScoresJSON(self)
+               'scores':self.ss.ScoresJSON(self), 'tags':self.TopTags()
                }
         rgComments = []
         for comment in self.Comments():
@@ -214,7 +217,7 @@ class Comment(db.Model):
         if m.group(5):
             tags = re.sub(" *, *", ',', m.group(5)).strip()
             rTags = tags.split(',')
-            rTags = [Slugify(tag) for tag in rTags]
+            rTags = [Slugify(tag) for tag in rTags if tag != '']
             tags = ','.join(rTags)
         else:
             tags = ''
