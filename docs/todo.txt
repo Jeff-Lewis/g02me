@@ -119,5 +119,5 @@ X URL's with tailing "/" are not normalized to the non-trailing versions leading
   - See if window.location.href is accessible from parent frameset
 X Fix comment counts
 X Cache broken again?
-! Lookup function (map url only if it already exists)
-! Catch exceptions in AsyncSequence unit.js
+X Lookup function (return url only if it already exists)
+X Catch exceptions in AsyncSequence unit.js

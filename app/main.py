@@ -29,16 +29,16 @@ django.dispatch.dispatcher.disconnect(
     django.core.signals.got_request_exception)
 
 def main():
-  # Create a Django application for WSGI.
-  application = django.core.handlers.wsgi.WSGIHandler()
+    # Create a Django application for WSGI.
+    application = django.core.handlers.wsgi.WSGIHandler()
 
-  # Run the WSGI CGI handler with that application.
-  try:
-      util.run_wsgi_app(application)
-  except:
-      print 'Content-Type: text/plain'
-      print ''
-      print 'Resource not found'
+    # Run the WSGI CGI handler with that application.
+    #  try:
+    util.run_wsgi_app(application)
+    #except:
+    #print 'Content-Type: text/plain'
+    #      print ''
+    #      print 'Resource not found'
 
 if __name__ == '__main__':
   main()

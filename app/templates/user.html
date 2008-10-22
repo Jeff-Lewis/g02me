@@ -3,9 +3,8 @@
 {% block body %}
 <div class="page">
 <a target="_top" href="/"><img title="G02.ME" class="logo" src="/images/logo.png"></a>
-<h1 style="padding-top: 40px;">{{username}}'s URLs</h1>
-
-<h2>Recently shared (and commented) URLs</h2>
+<h1 style="padding-top: 40px;">{{username}}'s Recently shared and commented Pages</h1>
+<div style='clear:both;'></div>
 <table class="scores">
 <tr><th>Title</th><th>Shared</th><th>Viewed</th><th>Comments</th></tr>
 {% for comment in comments %}
@@ -14,7 +13,7 @@
 		{% if comment.comment or comment.tags %}<br/>
 			{% ifequal comment.comment "__share" %}<i>Shared</i>{% else %}{{comment.comment|escape|urlize}}{% endifequal %}
 			{% if comment.tags %}
-	    		[{% for tag in comment.TagList %}<a target="_top" href="/tag/{{tag|slugify}}">{{tag|escape}}</a>{% if not forloop.last %}, {% endif %}{% endfor %}]
+	    		[{% for tag in comment.TagList %}<a target="_top" href="/tag/{{tag}}">{{tag|escape}}</a>{% if not forloop.last %}, {% endif %}{% endfor %}]
 	    	{% endif %}
 	    	- <i>{{ comment.dateCreated|date:"D, m/d/y" }}</i>
 	    {% endif %}

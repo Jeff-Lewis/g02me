@@ -10,6 +10,7 @@ from urlparse import urlsplit, urlunsplit
 import logging
 import simplejson
 from hashlib import sha1
+import re
 
 s64 = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz-_"
 
@@ -46,6 +47,11 @@ def TrimString(st):
         st = ''
     st = str(st)
     return st.strip()
+
+def Slugify(s):
+    "Converts to lowercase, removes non-alpha chars and converts spaces to hyphens"
+    s = re.sub('[^\w\s-]', '', s).strip().lower()
+    return re.sub('[-\s]+', '-', s)
 
 from simplejson import JSONEncoder
 from simplejson.encoder import Atomic

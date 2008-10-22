@@ -102,12 +102,12 @@ class Map(db.Model):
         return map
     
     @classmethod
-    def TopPages(cls):
-        return cls.ss.Best()
+    def TopPages(cls, tag=None):
+        return cls.ss.Best(tag=tag)
     
     @classmethod
-    def TopJSON(cls):
-        return {'popular':[score.model.JSON() for score in cls.ss.Best() if score.ModelExists]}
+    def TopJSON(cls, tag=None):
+        return {'pages':[score.model.JSON() for score in cls.ss.Best(tag=tag) if score.ModelExists]}
     
     def GetId(self):
         return self.key().name()[2:]
@@ -122,7 +122,8 @@ class Map(db.Model):
     def AddComment(self, username='', comment='', tags=''):
         comm = Comment.Create(map=self, username=username, comment=comment, tags=tags)
         comm.put()
-        self.ss.Update(self, self.scoreComment)
+        self.AddTags(tags.split(','))
+        self.ss.Update(self, self.scoreComment, tags=self.TopTags())
         
     def CommentCount(self):
         # BUG: Will max out at 100 comments
@@ -136,14 +137,14 @@ class Map(db.Model):
     def Shared(self):
         self.shareCount = self.shareCount + 1
         self.put()
-        self.ss.Update(self, self.scoreShare)
+        self.ss.Update(self, self.scoreShare, tags=self.TopTags())
         # Overload the comment to record when a (registered user) shares a URL
         self.AddComment(username=local.username, comment="__share")
         
     def Viewed(self):
         self.viewCount = self.viewCount + 1
         self.put()
-        self.ss.Update(self, self.scoreView)
+        self.ss.Update(self, self.scoreView, tags=self.TopTags())
         
     def JSON(self):
         obj = {'url':self.url, 'id':self.GetId(), 'title':self.title,
@@ -211,10 +212,12 @@ class Comment(db.Model):
         
         
         if m.group(5):
-            reg = re.compile(r" *, *")
-            tags = reg.sub(",", m.group(5)).strip()
+            tags = re.sub(" *, *", ',', m.group(5)).strip()
+            rTags = tags.split(',')
+            rTags = [Slugify(tag) for tag in rTags]
+            tags = ','.join(rTags)
         else:
-            tags = ""
+            tags = ''
 
         return {'username':m.group(2),
                 'comment': m.group(3),

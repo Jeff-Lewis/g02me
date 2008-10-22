@@ -19,17 +19,16 @@ class ScoreSet(db.Model):
         ss = ScoreSet.get_or_insert(name, name=name, halfLives=halfLives)
         return ss
     
-    def Update(self, model, value, dt=datetime.now()):
+    def Update(self, model, value, dt=datetime.now(), tags=None):
         scores = self.ScoresForModel(model)
         if scores.count() == 0:
+            scores = []
             for hrs in self.halfLives:
-                logging.info("SS - creating %d" % hrs)
-                s = Score(name=self.name, hrsHalf=hrs, model=model)
-                s.Update(value, dt)
-            return
+                s = Score(name=self.name, hrsHalf=hrs, model=model, tags=tags)
+                scores.append(s)
         
         for s in scores:
-            s.Update(value, dt)
+            s.Update(value, dt, tags=tags)
             
     def Best(self, hrsHalf=24, limit=100, tag=None):
         if tag:
@@ -68,7 +67,8 @@ class Score(db.Model):
     model = db.ReferenceProperty(required=True)
     tag = db.StringListProperty()
     
-    def Update(self, value, dt=datetime.now()):
+    def Update(self, value, dt=datetime.now(), tags=None):
+        logging.info("update tags %s" % tags)
         value = float(value)
         k = 0.5 ** (1.0/self.hrsHalf)
         
@@ -84,6 +84,10 @@ class Score(db.Model):
             
         # Todo: handle positive and negative values
         self.LogS = math.log(self.S)/math.log(2) + self.hrsLast/self.hrsHalf
+        
+        if tags is not None:
+            self.tag = tags;
+        
         self.put()
         
     def ScoreNow(self, dt=datetime.now()):

@@ -22,9 +22,10 @@ def MakeAlias(req):
 def Lookup(req):
     map = Map.FindUrl(req.GET.get('url', ""))
     if map is None:
-        return Error("No shortened url exists", "Fail/NotFound")
+        raise Error("No shortened url exists", "Fail/NotFound")
     if IsJSON():
         return HttpJSON(req, obj=map.JSON())
+    logging.info("lookup")
     return HttpResponseRedirect("/%s" % map.GetId())
 
 def DoComment(req, command=None):
@@ -51,7 +52,6 @@ def DoComment(req, command=None):
     
         try:
             map.AddComment(username=parts['username'], comment=parts['comment'], tags=parts['tags'])
-            map.AddTags(parts['tags'].split(','))
         except:
             pass
 
@@ -80,14 +80,16 @@ def FrameSet(req, id):
         return HttpJSON(req, obj=map.JSON())
     return render_to_response('mapped.html', {'map':map})
 
-def UserHistory(req, username):
+def UserView(req, username):
     if IsJSON():
         return HttpJSON(req, obj=Comment.ForUserJSON(username))
     comments = Comment.ForUser(username)
     return render_to_response('user.html', {'username':username, 'comments':comments})
 
-def TagHistory(req, tagname):
-    raise Error("Tag view not yet implemented: %s" % tagname)
+def TagView(req, tag):
+    if IsJSON():
+        return HttpJSON(req, Map.TopJSON(tag=tag))
+    return render_to_response('tag.html', {'tag':tag, 'host':local.stHost, 'pages':Map.TopPages(tag=tag)})
 
 def Admin(req, command=None):
     user = RequireAdmin(req)
