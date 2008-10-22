@@ -11,4 +11,5 @@ urlpatterns = patterns('',
     (r'^lookup/$', Lookup),    
     (r'^comment/(?P<command>[a-z\-]+)?$', DoComment),
     (r'^admin/(?P<command>[a-z\-]+)?$', Admin),
+    (r'^.*$', CatchAll),
 )

@@ -8,13 +8,13 @@ X Bookmarklet
   X User comments
   - Design (see delicious page: http://delicious.com/url/6e4e9fc8547418f22ac89a5f7558e58b?show=notes_only, for inspiration)
 - Home
-  - Number of pages
+  ! Number of pages
   - Number of views
   - Number of people (unique IP?)
   X IE instructions for creating bookmark
   X Recently popular pages
   - JSON api for most popular
-  - Tag cloud
+  ! Tag cloud
 - Info Header
 	- Info bar horizontal/vertical option
 	- Pull web page image from Sphere or Alexa?
@@ -90,6 +90,7 @@ X Test deployment
   - Mark URL as Adult - require login and affirmation of over 18 and OK to view adult content
 - Detect or mark problem domains as info-mode pages (frameset unfriendly).
 - Should not update view count when comments are added
+  - Only update when referer is from another domain?
 X Add scroll bar when there are more comments than fit the head frame (or scale frame to fit)
 - Use memcache
 X Unit tests
@@ -108,7 +109,7 @@ X comments ordered
 - Require dev key for jscript calls (registered user)
 X About Page
 X AppEngine Logo
-- Blog
+! Blog - new features list
 - G02.ME email accounts for admin email from address
 - Don't count views by web crawlers
   - If no userid cookie - don't count it! (note that Frame will set cookie, and head will then count!)
@@ -121,3 +122,24 @@ X Fix comment counts
 X Cache broken again?
 X Lookup function (return url only if it already exists)
 X Catch exceptions in AsyncSequence unit.js
+- Display Dates in Comments in Head
+- Dates display in local time
+- Introduce memcache to improve performance of popularity pages
+! Decrement map TopTags when deleting a comment
+! BUG: Emtpy tag showing up?
+- Log referers for a url! - display click sources ala YouTube Statistics
+- search
+! http://g02.me/tag/ - Python error dump
+! http://tag/search engine
+- AdSense on tag pages
+! urls.py - CatchAll
+- Auto-tag domains (nyt.com, e.g.)
+- Popularity flags
+  - Up/Down Arrows
+  - "New" marker
+  - Base on 2x rate on next higher halfLife scale
+- Option to show /user/xxx sorted by popularity (not date of last comment) 
+- Mobile
+  - iPhone (bookmarklet)
+  - Other
+

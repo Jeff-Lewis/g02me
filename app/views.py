@@ -13,6 +13,9 @@ def Home(req):
         return HttpJSON(req, Map.TopJSON())
     return render_to_response('home.html', {'host':local.stHost, 'pages':Map.TopPages()})
 
+def CatchAll(req):
+    raise Error("Page not found", "Fail/NotFound")
+
 def MakeAlias(req):
     map = Map.FindOrCreateUrl(req.GET.get('url', ""), req.GET.get('title', ""))
     if IsJSON():
