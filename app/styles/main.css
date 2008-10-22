@@ -33,6 +33,7 @@ cursor: pointer;
 div.ur {
 float: right;
 margin-left: 10px;
+width: 150px;
 }
 
 li {
