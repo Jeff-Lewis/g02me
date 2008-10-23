@@ -133,9 +133,9 @@ class Map(db.Model):
         return len(self.Comments())
     
     def Comments(self, limit=100):
-        # Just return "true" comments (not sharing events) - and prune comments for deleted models
+        # Just return "true" comments (not sharing events)
         comments = self.comment_set.order('-dateCreated').fetch(limit)
-        return [comment for comment in comments if comment.MapExists() and not comment.comment.startswith('__')]
+        return [comment for comment in comments if not comment.comment.startswith('__')]
     
     def Shared(self):
         self.shareCount = self.shareCount + 1
@@ -161,7 +161,7 @@ class Map(db.Model):
             obj['comments'] = rgComments
         return obj
     
-    # Admin functions....
+    # Admin functions - for use in /shell
 
     @classmethod
     def FindEmptyTags(cls):
@@ -178,6 +178,35 @@ class Map(db.Model):
         for map in maps:
             del map.tags['']
             map.put()
+            
+    @classmethod
+    def FindBadTagCounts(cls):
+        maps = Map.all().fetch(1000)
+        et = []
+        for map in maps:
+            map.ReifyTags()
+            tags = map.RecalcTags()
+            if tags != map.tags:
+                et.append(map)
+                print "%r != %r" % (tags, map.tags)
+        return et
+    
+    def RecalcTags(self):
+        comments = self.comment_set.fetch(1000)
+        tags = {}
+        for c in comments:
+            try:
+                for t in c.TagList():
+                    t = t.encode('ascii')
+                    if t == '':
+                        continue
+                    if not t in tags:
+                        tags[t] = 0
+                    tags[t] = tags[t] + 1
+            except:
+                print "RT EX: %r" % c.tags
+        return tags
+    
 
 # TODO: Use a sharded counter   
 class Globals(db.Model):
@@ -275,7 +304,13 @@ class Comment(db.Model):
         return Comment.map.get_value_for_datastore(self)
         
     def TagList(self):
-        return self.tags.split(",")
+        logging.info('taglist %r' % self.tags)
+        if self.tags is None or self.tags == '':
+            return []
+        try:
+            return self.tags.split(',')
+        except:
+            return []
     
     def JSON(self):
         c = {'comment': self.comment}

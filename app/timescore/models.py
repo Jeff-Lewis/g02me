@@ -68,7 +68,6 @@ class Score(db.Model):
     tag = db.StringListProperty()
     
     def Update(self, value, dt=datetime.now(), tags=None):
-        logging.info("update tags %s" % tags)
         value = float(value)
         k = 0.5 ** (1.0/self.hrsHalf)
         
