@@ -160,6 +160,24 @@ class Map(db.Model):
         if len(rgComments) > 0: 
             obj['comments'] = rgComments
         return obj
+    
+    # Admin functions....
+
+    @classmethod
+    def FindEmptyTags(cls):
+        maps = Map.all().fetch(1000)
+        et = []
+        for map in maps:
+            map.ReifyTags()
+            if '' in map.tags:
+                et.append(map)
+        return et
+    
+    @classmethod
+    def FixEmptyTags(cls, maps):
+        for map in maps:
+            del map.tags['']
+            map.put()
 
 # TODO: Use a sharded counter   
 class Globals(db.Model):
