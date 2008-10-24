@@ -168,6 +168,8 @@ ts.AddTest("Comment", function(ut)
 	var objInit;
 	var cComment;
 	var com;
+	var com2;
+	var tagUniq;
 
 	ut.AsyncSequence([
 		function(ut)
@@ -199,11 +201,12 @@ ts.AddTest("Comment", function(ut)
 			},
 		function(ut)
 			{
-			new UT.ScriptData("/comment/").Call({id:objInit.id, comment:"mckoss :  This is a test  [tag1,  tag2]"}, function (obj) {
+			new UT.ScriptData("/comment/").Call({id:objInit.id, comment:"mckoss :  This is a test  [  ,,tag1,  tag2]"}, function (obj) {
 				ut.AssertContains(obj, {status:"OK", url:"http://google.com/"});
 				ut.AssertContains(obj.comments[0], {comment:"This is a test", tags:"tag1,tag2", user:"mckoss"});
 				ut.AssertType(obj.comments[0].created, Date);
 				ut.AssertEq(obj.comments.length, cComment+1);
+				ut.AssertContains(obj.tags, ["tag1", "tag2"]);
 				ut.NextFn();
 				});
 			},
@@ -219,7 +222,36 @@ ts.AddTest("Comment", function(ut)
 			},
 		function(ut)
 			{
+			tagUniq = "dm-" + Math.floor(Math.random()*1000);
+			new UT.ScriptData("/comment/").Call({id:objInit.id, comment:"mckoss :  [" + tagUniq + "]"}, function (obj) {
+				ut.AssertContains(obj, {status:"OK", url:"http://google.com/"});
+				ut.AssertContains(obj.comments[0], {comment:"", user:"mckoss", tags:tagUniq});
+				com2= obj.comments[0];
+				ut.AssertEq(obj.comments.length, cComment+2);
+				ut.AssertContains(obj.tags, ["tag1", "tag2", tagUniq]);
+				ut.NextFn();
+				});
+			},
+		function(ut)
+			{
+			new UT.ScriptData("/comment/delete").Call({cid:com2.cid}, function(obj) {
+				ut.AssertEq(obj.comments.length, cComment+1);
+				for (var i = 0; i < obj.tags.length; i++)
+					ut.AssertNEq(obj.tags[i], tagUniq);
+				ut.NextFn();
+				});
+			},
+		function(ut)
+			{
 			new UT.ScriptData("/comment/delete").Call({cid:com.cid}, function(obj) {
+				ut.AssertEq(obj.comments.length, cComment);
+				ut.NextFn();
+				});
+			},
+		function(ut)
+			{
+			new UT.ScriptData("/info/" + objInit.id).Call({}, function (obj) {
+				ut.AssertContains(obj, {status:"OK", url:"http://google.com/", tags:[]});
 				ut.AssertEq(obj.comments.length, cComment);
 				ut.NextFn();
 				});
@@ -278,8 +310,7 @@ ts.AddTest("Tag", function(ut)
 				ut.AssertContains(obj, {status:"OK", url:"http://google.com/"});
 				ut.AssertGT(obj.comments.length, 0);
 				ut.AssertContains(obj.comments[0], {comment:"Testing tags", tags: "search,multi-word"});
-				obj.tags.sort();
-				ut.AssertEq(obj.tags, ["multi-word", "search", "tag1", "tag2"]); 
+				ut.AssertContins(obj.tags, ["multi-word", "search"]); 
 				ut.NextFn();
 				});
 			},

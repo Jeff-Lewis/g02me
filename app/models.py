@@ -73,6 +73,17 @@ class Map(db.Model):
             self.tags[tag] = self.tags[tag] + 1
         self.put()
         
+    def RemoveTags(self, rgTags):
+        self.ReifyTags()
+        for tag in rgTags:
+            # Ignore empty or uncounted tags
+            if tag == '' or tag not in self.tags:
+                continue
+            self.tags[tag] = self.tags[tag] - 1
+            if self.tags[tag] <= 0:
+                del self.tags[tag]
+        self.put()
+        
     def TopTags(self, limit=10):
         # Return to top 10 tags (by use) for this url
         self.ReifyTags()
@@ -161,7 +172,9 @@ class Map(db.Model):
             obj['comments'] = rgComments
         return obj
     
-    # Admin functions - for use in /shell
+    # Admin functions - for use in /shell or /admin ------------------
+    # BUG: FindBadTagCounts does NOT WORK in shell - complains about undefined comment.tags property and
+    # can't catch with try: block???
 
     @classmethod
     def FindEmptyTags(cls):
@@ -188,8 +201,11 @@ class Map(db.Model):
             tags = map.RecalcTags()
             if tags != map.tags:
                 et.append(map)
-                print "%r != %r" % (tags, map.tags)
         return et
+    
+    def STagDiff(self):
+        self.ReifyTags()
+        return "(tags) %r != (recalc) %r" % (self.tags, self.RecalcTags())
     
     def RecalcTags(self):
         comments = self.comment_set.fetch(1000)
@@ -206,6 +222,12 @@ class Map(db.Model):
             except:
                 print "RT EX: %r" % c.tags
         return tags
+    
+    @classmethod
+    def FixTagCounts(cls, maps):
+        for map in maps:
+            map.tags = map.RecalcTags()
+            map.put()
     
 
 # TODO: Use a sharded counter   
@@ -251,6 +273,11 @@ class Comment(db.Model):
         if username:
             local.username = username
         return com
+    
+    def Delete(self):
+        # Delete the Comment and update the tag list in the Map
+        self.map.RemoveTags(self.tags.split(','))
+        self.delete();
     
     @classmethod
     def Parse(cls, st):
@@ -304,9 +331,6 @@ class Comment(db.Model):
         return Comment.map.get_value_for_datastore(self)
         
     def TagList(self):
-        logging.info('taglist %r' % self.tags)
-        if self.tags is None or self.tags == '':
-            return []
         try:
             return self.tags.split(',')
         except:
@@ -323,6 +347,8 @@ class Comment(db.Model):
         c['created'] = self.dateCreated
         c['cid'] = self.key().id()
         return c
+    
+    # Admin functions - used in /admin console -------------------
     
     @classmethod
     def BadComments(cls):

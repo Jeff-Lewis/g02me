@@ -12,6 +12,7 @@
 <a href="/admin/clean-broken">Remove Broken Scores</a>
 <br/><a href="/admin/clean-comments">Remove Empty Comments</a>
 <br/><a href="/admin/clean-broken-comments">Remove Broken Comments</a>
+<br/><a href="/admin/fix-tag-counts">Fix Tag Counts</a>
 </div> <!-- left -->
 
 <div class="right">
@@ -41,7 +42,16 @@
 	</tr>
 {% endfor %}
 </table>
+
+<h2>Bad Tag Counts: {{BadCounts|length}}</h2>
+<ol>
+{% for map in BadCounts %}
+	<li>(<a href="/info/{{map.GetId}}">info</a>): {{map.STagDiff|escape}}</li>
+{% endfor %}
+</ol>
 </div> <!-- right -->
+
+
 
 <div class="bottom">
 <a href="{{ logout }}">Logout</a>

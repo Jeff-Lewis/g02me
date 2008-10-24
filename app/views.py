@@ -42,7 +42,7 @@ def DoComment(req, command=None):
         if comment is None:
             raise Error("Comment id=%d does not exists" % cid, 'Fail/NotFound')
         map = comment.map
-        comment.delete();
+        comment.Delete()
         
     if command is None:
         id = req.GET.get('id', "").strip()
@@ -116,6 +116,11 @@ def Admin(req, command=None):
             logging.info("Removing %d broken comments" % len(comments))
             for comment in comments:
                 comment.delete()
+                
+        if command == 'fix-tag-counts':
+            maps = Map.FindBadTagCounts()
+            logging.info("Fixing %d bad tag counts" % len(maps))
+            Map.FixTagCounts(maps)
 
         return HttpResponseRedirect("/admin/")
 
@@ -126,4 +131,5 @@ def Admin(req, command=None):
            'Broken':Map.ss.Broken(),
            'BadComments':Comment.BadComments(),
            'BrokenComments':Comment.Broken(),
+           'BadCounts':Map.FindBadTagCounts(),
            })

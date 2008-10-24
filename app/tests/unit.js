@@ -527,18 +527,32 @@ AssertType: function(v1, type, stNote)
 // Assert that objAll contains all the (top level) properties of objSome
 AssertContains: function(objAll, objSome)
     {
-    if (typeof objAll != "object")
+    if (typeof objAll != "object" || typeof objSome != "object")
         {
-        this.Assert(false, "Expected Object for comparison: " + typeof objAll);
-        return;
-        }
-
-    if (typeof objSome != "object")
-        {
-        this.Assert(false, "Expected comparison to be Object: " + typeof objSome);
+        this.Assert(false, "AssertContains expects objects: " + typeof objAll + " ~ " + typeof objSome);
         return;
         }
     
+    // For arrays, just confirm that the elements of the 2nd array are included as members of the first    
+    if (objSome instanceof Array)
+    	{
+    	if (!(objAll instanceof Array))
+    		{
+    		this.Assert(false, "AssertContains unmatched Array: " + objAll.constructor);
+    		return;
+    		}
+    		
+    	var map1 = {}
+    	for (var prop in objAll)
+    		map1[objAll[prop]] = true;
+    	
+    	for (var prop in objSome)
+    		this.Assert(map1[objSome[prop]], "Missing array value: " + objSome[prop] +
+    			" (type: " + typeof(objSome[prop]) + ")");
+    		
+    	return;
+    	}
+
     for (var prop in objSome)
         {
         if (!objSome.hasOwnProperty(prop))
