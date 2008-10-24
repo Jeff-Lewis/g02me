@@ -276,7 +276,10 @@ class Comment(db.Model):
     
     def Delete(self):
         # Delete the Comment and update the tag list in the Map
-        self.map.RemoveTags(self.tags.split(','))
+        try:
+            self.map.RemoveTags(self.tags.split(','))
+        except:
+            pass
         self.delete();
     
     @classmethod

@@ -251,7 +251,7 @@ ts.AddTest("Comment", function(ut)
 		function(ut)
 			{
 			new UT.ScriptData("/info/" + objInit.id).Call({}, function (obj) {
-				ut.AssertContains(obj, {status:"OK", url:"http://google.com/", tags:[]});
+				ut.AssertContains(obj, {status:"OK", url:"http://google.com/"});
 				ut.AssertEq(obj.comments.length, cComment);
 				ut.NextFn();
 				});
@@ -310,7 +310,7 @@ ts.AddTest("Tag", function(ut)
 				ut.AssertContains(obj, {status:"OK", url:"http://google.com/"});
 				ut.AssertGT(obj.comments.length, 0);
 				ut.AssertContains(obj.comments[0], {comment:"Testing tags", tags: "search,multi-word"});
-				ut.AssertContins(obj.tags, ["multi-word", "search"]); 
+				ut.AssertContains(obj.tags, ["multi-word", "search"]); 
 				ut.NextFn();
 				});
 			},

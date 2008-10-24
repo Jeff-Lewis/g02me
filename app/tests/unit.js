@@ -649,6 +649,7 @@ NextFn: function()
 		this.Async(false);
 		return;
 		}
+	this.Trace("AsyncSeq: " + this.ifn);
 	try
 		{
 		this.rgfn[this.ifn++](this);

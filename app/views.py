@@ -109,13 +109,13 @@ def Admin(req, command=None):
             comments = Comment.BadComments()
             logging.info("Removing %d empty comments" % len(comments))
             for comment in comments:
-                comment.delete()
+                comment.Delete()
                 
         if command == 'clean-broken-comments':
             comments = Comment.Broken()
             logging.info("Removing %d broken comments" % len(comments))
             for comment in comments:
-                comment.delete()
+                comment.Delete()
                 
         if command == 'fix-tag-counts':
             maps = Map.FindBadTagCounts()
