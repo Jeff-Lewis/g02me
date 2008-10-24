@@ -13,15 +13,18 @@ from hashlib import sha1
 import re
 
 s64 = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz-_"
+s57 = "23456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghjkmnpqrstuvwxyz-_"
 
-def IntToS64(i):
+def IntToSBase(i):
     # Convert int to "base 64" string - not compatible with Base64 string standard
-    s = []
+    s = ''
     while i != 0:
         b = i % 64
-        s = [s64[b]] + s
+        s = s64[b] + s
         i = i/64
-    return ''.join(s)
+    return s
+
+def ParseBase
 
 def NormalizeUrl(url):
     url = url.strip()

@@ -92,7 +92,6 @@ X Test deployment
 - Should not update view count when comments are added
   - Only update when referer is from another domain?
 X Add scroll bar when there are more comments than fit the head frame (or scale frame to fit)
-- Use memcache
 X Unit tests
 X Store key instead of model in timescore - don't have problem of ModelExists needing to be called - punt
 X Admin routine to clean up scores for non-existant (delted) models
@@ -102,10 +101,13 @@ X don't allow links to g02.me pages
 X auto-hyperlink http addresses in comments
   - convert to g02me links automatically?
 X comments ordered
-- Throttle scoring for a given user, or IP address
+- Use memcache to reduce abuse:
+  - Throttle scoring for a given user, or IP address
   - Drop userid cookie on user
   - Throttling middleware
   - Use memcache to set rates
+  - beware crawlers (don't throttle Google!)
+  - Throttle single referer's?
 - Require dev key for jscript calls (registered user)
 X About Page
 X AppEngine Logo
@@ -125,6 +127,11 @@ X Catch exceptions in AsyncSequence unit.js
 - Display Dates in Comments in Head
 - Dates display in local time
 - Introduce memcache to improve performance of popularity pages
+  - info pages
+    - statistics (write through view counter)
+    - comments
+  - home page (keep for 60 seconds)
+  - tag pages (keep until url added to tag - age at 5 minutes)
 ! Decrement map TopTags when deleting a comment
 ! BUG: Empty tag showing up?
 - Log referers for a url! - display click sources ala YouTube Statistics
@@ -143,4 +150,31 @@ X urls.py - CatchAll
   - iPhone (bookmarklet)
   - Other
 - JSON Date format looks funny with 1 digit dates, hours, etc.
-
+- Replies page for users - show follow on comments on URL's user's have shared or commented on.
+  - Need "unfollow" capability to stop getting notified
+  - Plan:
+    - Use the most recent 100 comments by a user as their "following" list.
+    - Annotate Map with username (incl. anon) of most recent commenter (or comment seq #)
+    - Highlight all comments where last commenter is NOT yourself (or comment seq # > than user's comment)
+- Reduce duplication of URL's
+  - www.* vs *
+  - upper/lower case differences
+  - use initially seen URL as canonical?
+- Add analytics tracking code to frameset - missing referer on map
+- Feature: Star the info page (faster than leaving a comment - but puts it in your comment queue)
+  - Generate __Favorite comment
+  - Icons in user activity for Shared, Commented, Favorite
+- Feature: New activity indicator in /user/xxx
+  - Annotate Map with username (incl. anon) of most recent commenter (or comment seq #)
+  - When viewing Info for a Map I've already commented on, update the dateViewed in that comment
+  - Highlight comments (yellow background?) that have recent COMMENTS later than my last dateViewed.
+! Use a 64-character set that excludes homoglpyhs (Joe Hruska)
+  - 1 i I l (el) | o O 0 | - _ | rn m | cl d | vv w
+  - Safe characters to use are: 0-9, A-Z, a-z, -_  (original 64) PLUS: '()*.~  and MAYBE: <>|{}\^[]`
+  - Readbility option: ~(base34) A-Z, 2-9 (e.g., http://g02.me/~BFD9 or even http://pagesaves.com/BFD9)
+  - Global options: Replace characters 0O1Il with .~()*
+  - NO: Autohyperlink in email disallows parens, brackets and period!  Down to *~^ (for 0, 1, l)
+  - Change to base 57 (no 1iIloO0) -> and grandfather old base64 URL's for id's less than 256 (or some threshold)
+- Darken the light blue color a shade for readability (Kenshi Arasaki)
+- Add slash through the 0 in the G02.ME logo
+- And thousands sep for counts in analytics (info, home, tags, user)
