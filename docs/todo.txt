@@ -160,7 +160,7 @@ X urls.py - CatchAll
   - www.* vs *
   - upper/lower case differences
   - use initially seen URL as canonical?
-- Add analytics tracking code to frameset - missing referer on map
+X Add analytics tracking code to frameset - missing referer on map
 - Feature: Star the info page (faster than leaving a comment - but puts it in your comment queue)
   - Generate __Favorite comment
   - Icons in user activity for Shared, Commented, Favorite
@@ -168,7 +168,7 @@ X urls.py - CatchAll
   - Annotate Map with username (incl. anon) of most recent commenter (or comment seq #)
   - When viewing Info for a Map I've already commented on, update the dateViewed in that comment
   - Highlight comments (yellow background?) that have recent COMMENTS later than my last dateViewed.
-! Use a 64-character set that excludes homoglpyhs (Joe Hruska)
+X Use a 64-character set that excludes homoglpyhs (Joe Hruska)
   - 1 i I l (el) | o O 0 | - _ | rn m | cl d | vv w
   - Safe characters to use are: 0-9, A-Z, a-z, -_  (original 64) PLUS: '()*.~  and MAYBE: <>|{}\^[]`
   - Readbility option: ~(base34) A-Z, 2-9 (e.g., http://g02.me/~BFD9 or even http://pagesaves.com/BFD9)
@@ -178,3 +178,5 @@ X urls.py - CatchAll
 - Darken the light blue color a shade for readability (Kenshi Arasaki)
 - Add slash through the 0 in the G02.ME logo
 - And thousands sep for counts in analytics (info, home, tags, user)
+- Hitting back button after leaving a comment (or deleting comment) should not resubmit!
+

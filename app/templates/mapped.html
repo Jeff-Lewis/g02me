@@ -1,6 +1,9 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html>
 <head>
+<link rel="icon" type="image/png" href="/images/favicon.png">
+<title>G02.ME - {{map.title}}</title>
+<script src='http://www.google-analytics.com/ga.js'></script>
 <script>
 msLoaded = new Date().getTime();
 
@@ -24,10 +27,10 @@ function Click()
 }
 
 window.onclick = Click;
-</script>
 
-<link rel="icon" type="image/png" href="/images/favicon.png">
-<title>G02.ME - {{map.title}}</title>
+var pageTracker = _gat._getTracker("UA-5439059-1");
+pageTracker._trackPageview();
+</script>
 </head>
 <frameset rows="137,*">
 <frame src="/info/{{map.GetId}}" marginwidth="0" marginheight="0"/>
