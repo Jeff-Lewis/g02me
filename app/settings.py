@@ -16,6 +16,12 @@ ADMINS = (
     ('Mike Koss', 'mckoss@gmail.com'),
 )
 
+# G02.ME Specific Settings
+
+# Version 1 (base 64) started at 1
+# Version 5 (base 57) starts at '32' (since there is no 0 or 1 in the alphabet)
+idMapBase = 57
+
 MANAGERS = ADMINS
 
 DATABASE_ENGINE = ''           # 'postgresql_psycopg2', 'postgresql', 'mysql', 'sqlite3' or 'ado_mssql'.

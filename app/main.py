@@ -33,6 +33,10 @@ def main():
     application = django.core.handlers.wsgi.WSGIHandler()
 
     # Run the WSGI CGI handler with that application.
+    if settings.DEBUG:
+        util.run_wsgi_app(application)
+        return
+    
     try:
         util.run_wsgi_app(application)
     except:

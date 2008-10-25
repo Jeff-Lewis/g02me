@@ -29,6 +29,14 @@ ts.AddTest("Map", function(ut)
 			},
 		function(ut)
 			{
+			new UT.ScriptData("/map/").Call({url:"http://google.com?id=2"}, function(obj) {
+				ut.AssertContains(obj, {status:"OK", url:"http://google.com/?id=2", title:"http://google.com/?id=2"});
+				ut.AssertNEq(obj.id, objInit.id);
+				ut.NextFn();
+				});
+			},
+		function(ut)
+			{
 			new UT.ScriptData("/lookup/").Call({url:"http://google.com"}, function(obj) {
 				ut.AssertContains(obj,
 					{status:"OK", url:"http://google.com/", id:objInit.id, viewed:objInit.viewed, shared:objInit.shared});

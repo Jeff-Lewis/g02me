@@ -22,14 +22,14 @@ indexes:
   - name: map
   - name: dateCreated
 
-# Used 79 times in query history.
+# Used 33 times in query history.
 - kind: Comment
   properties:
   - name: map
   - name: dateCreated
     direction: desc
 
-# Used 3 times in query history.
+# Used once in query history.
 - kind: Comment
   properties:
   - name: username
