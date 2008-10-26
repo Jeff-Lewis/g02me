@@ -15,7 +15,7 @@
 			{% if comment.tags %}
 	    		[{% for tag in comment.TagList %}<a target="_top" href="/tag/{{tag}}">{{tag|escape}}</a>{% if not forloop.last %}, {% endif %}{% endfor %}]
 	    	{% endif %}
-	    	- <i>{{ comment.dateCreated|date:"D, m/d/y" }}</i>
+	    	- <i>{{ comment.Age }}</i>
 	    {% endif %}
 		</td>
 		<td class="num">{{comment.map.shareCount}}</td>

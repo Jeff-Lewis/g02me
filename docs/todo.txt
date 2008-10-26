@@ -179,4 +179,9 @@ X Use a 64-character set that excludes homoglpyhs (Joe Hruska)
 - Add slash through the 0 in the G02.ME logo
 - And thousands sep for counts in analytics (info, home, tags, user)
 - Hitting back button after leaving a comment (or deleting comment) should not resubmit!
+- Put all site-specific code in settings.py (analytics account number, G02.ME name, etc.)
+- Recursive attacks
+	- Block links to other URL shoteners (tinyurl.com, www.tinyurl.com, bit.ly, is.gd, etc.)
+	- Move from GET to PUT
+- Paging control for user activity pages
 

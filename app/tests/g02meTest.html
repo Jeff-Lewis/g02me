@@ -126,6 +126,13 @@ ts.AddTest("Errors", function(ut)
 			},
 		function (ut)
 			{
+			new UT.ScriptData("/map/").Call({url:"http://www.tinyurl.com"}, function (obj) {
+				ut.AssertContains(obj, {status:"Fail/Domain"}, "www.tinyurl.com");
+				ut.NextFn();
+				});
+			},
+		function (ut)
+			{
 			new UT.ScriptData("/map/").Call({url:"script://google.com"}, function (obj) {
 				ut.AssertContains(obj, {status:"Fail"});
 				ut.NextFn();

@@ -58,7 +58,7 @@ def Slugify(s):
 
 from simplejson import JSONEncoder
 from simplejson.encoder import Atomic
-from datetime import datetime
+from datetime import datetime, timedelta
 
 class JavaScriptEncoder(JSONEncoder):
     def default(self, obj):
@@ -72,9 +72,7 @@ class JSDate(Atomic):
         
     def __str__(self):
         # new Date("10/4/2008 19:54 GMT")
-        return 'new Date("%d/%d/%4d %2d:%2d GMT")' % (
-              self.dt.month, self.dt.day, self.dt.year, self.dt.hour, self.dt.minute
-              ) 
+        return 'new Date("%s")' % self.dt.strftime("%m/%d/%Y %H:%M GMT") 
     
 class JavaScript(Atomic):
     def __init__(self, st):
@@ -90,6 +88,11 @@ class ReqFilter(object):
     """
     def process_request(self, req):
         host = req.META["HTTP_HOST"]
+
+        # Enforce canonical URL's (w/o www)
+        if host.startswith('www.'):
+            return HttpResponseRedirect('http://%s%s' % (host[4:], req.path))
+        
         local.stHost = "http://" + host + "/"
         local.req = req
         if 'userid' in req.COOKIES:
@@ -99,9 +102,7 @@ class ReqFilter(object):
             local.userid = models.Globals.IdUserNext()
             logging.info("New userid %s" % local.userid)
         local.username = req.COOKIES.get('username', '')
-        
-        if host.startswith('www.'):
-            return HttpResponseRedirect('http://%s%s' % (host[4:], req.path))
+        local.dtNow = datetime.now()
         
     def process_response(self, req, resp):
         resp.set_cookie('userid', local.userid, max_age=60*60*24*30)
@@ -185,6 +186,28 @@ def RunInTransaction(func):
     def _transaction(*args, **kwargs):
         return db.run_in_transaction(func, *args, **kwargs)
     return _transaction
+
+def SAgeReq(dt):
+    # Return the age (time between time of request and a date) as a string
+    return SAgeDdt(local.dtNow - dt)
+
+def SAgeDdt(ddt):
+    if ddt.days < 0:
+        return ""
+    if ddt.days == 1:
+        return "yesterday"
+    if ddt.days > 1:
+        return "%d days ago" % ddt.days
+    hrs = round(ddt.seconds/60/60)
+    if hrs >= 1:
+        return "%d hour%s ago" % (hrs, SPlural(hrs))
+    minutes = round(ddt.seconds/60)
+    if minutes < 1:
+        return "seconds ago"
+    return "%d minute%s ago" % (minutes, SPlural(minutes))
+
+def SPlural(n, sPlural="s", sSingle=''):
+    return [sSingle, sPlural][n!=1]
 
 # Save request info in a thread-global
 local = threading.local()

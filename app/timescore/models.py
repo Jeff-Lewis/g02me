@@ -57,6 +57,7 @@ class ScoreSet(db.Model):
         return {hrsDay:'day', hrsWeek:'week', hrsMonth:'month', hrsYear:'year'}.get(hrs, str(hrs))
         
 class Score(db.Model):
+    # All date values must occur after this baseline date 1/1/2000
     dtBase = datetime(2000,1,1)
 
     name = db.StringProperty(required=True)

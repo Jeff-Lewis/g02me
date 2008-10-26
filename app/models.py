@@ -20,7 +20,9 @@ class Map(db.Model):
     scoreShare = 3
     
     # TODO: Add a database model for blacklisted domains
-    blackList = {'g02.me':True, 'www.g02.me': True, 'localhost:8080': True, 'tinyurl.com': True}
+    # Avoid self-referential and URL ping-pong with known URL redirection sites
+    blackList = set(['g02.me', 'www.g02.me', 'localhost:8080',
+                 'tinyurl.com', 'www.tinyurl.com', 'bit.ly', 'is.gd'])
     
     url = db.StringProperty(required=True)
     title = db.StringProperty()
@@ -160,6 +162,9 @@ class Map(db.Model):
         self.viewCount = self.viewCount + 1
         self.put()
         self.ss.Update(self, self.scoreView, tags=self.TopTags())
+        
+    def Age(self):
+        return SAgeReq(self.dateCreated)
         
     def JSON(self):
         obj = {'url':self.url, 'id':self.GetId(), 'title':self.title,
@@ -344,6 +349,9 @@ class Comment(db.Model):
             return self.tags.split(',')
         except:
             return []
+
+    def Age(self):
+        return SAgeReq(self.dateCreated)
     
     def JSON(self):
         c = {'comment': self.comment}

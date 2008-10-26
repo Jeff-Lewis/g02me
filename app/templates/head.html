@@ -63,6 +63,7 @@ window.onclick = Click;
     {% if comment.tags %}
     	[{% for tag in comment.TagList %}<a target="_top" href="/tag/{{tag}}">{{tag|escape}}</a>{% if not forloop.last %}, {% endif %}{% endfor %}]
     {% endif %}
+    - {{ comment.Age }}
     <img class="x" onclick="DeleteComment({{comment.key.id}});" src="/images/x.png"/>
     </p>{% endspaceless %}
 {% endfor %}
