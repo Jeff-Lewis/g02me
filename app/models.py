@@ -1,5 +1,7 @@
 from google.appengine.ext import db
+from google.appengine.api import memcache
 from django.shortcuts import render_to_response
+
 from util import *
 from timescore.models import ScoreSet, hrsMonth
 import settings
@@ -46,10 +48,14 @@ class Map(db.Model):
             raise Error("Can't create link to domain: %s" % rg[1], status="Fail/Domain")
         title = unicode(title, 'utf8')
         dateCreated = datetime.now()
-        id = Globals.IdNext()
+        id = Map.__IdNext()
         map = Map(key_name=Map.KeyFromId(id), url=url, title=title, dateCreated=dateCreated)
         map.x = 1
         return map
+    
+    @staticmethod
+    def __IdNext():
+        return IntToSID(Globals.IdNameNext(settings.sMapName, settings.idMapBase))
     
     def put(self):
         self.ReifyTags()
@@ -57,6 +63,7 @@ class Map(db.Model):
         db.Model.put(self)
         
     def ReifyTags(self):
+        # TODO: Implement tags as class PickeDict(db.Property)
         if hasattr(self, 'tags'):
             return;
 
@@ -156,7 +163,7 @@ class Map(db.Model):
         self.put()
         self.ss.Update(self, self.scoreShare, tags=self.TopTags())
         # Overload the comment to record when a (registered user) shares a URL
-        self.AddComment(username=local.username, comment="__share")
+        self.AddComment(username=local.cookies['username'], comment="__share")
         
     def Viewed(self):
         self.viewCount = self.viewCount + 1
@@ -239,14 +246,19 @@ class Map(db.Model):
 # TODO: Use a sharded counter   
 class Globals(db.Model):
     idNext = db.IntegerProperty(default=0)
+    s = db.StringProperty()
     
-    @classmethod
-    def IdNext(cls):
-        return IntToSID(cls.IdNameNext("map.2", settings.idMapBase))
-    
-    @classmethod
-    def IdUserNext(cls):
-        return cls.IdNameNext("user")
+    @staticmethod
+    def SGet(name, sDefault=""):
+        # Global strings are constant valued - can only be updated in the store
+        # via admin console 
+        s = memcache.get('global.%s' % name)
+        if s is not None:
+            return s
+        glob = Globals.get_or_insert(key_name=name, s=sDefault)
+        # Since we can't bounce the server, force refresh each 60 seconds
+        memcache.add('global.%s' % name, glob.s, time=60)
+        return glob.s
         
     @staticmethod
     @RunInTransaction
@@ -263,7 +275,7 @@ class Globals(db.Model):
 
 class Comment(db.Model):
     username = db.StringProperty()
-    userid = db.IntegerProperty()
+    userAuth = db.StringProperty()
     comment = db.StringProperty()
     tags = db.StringProperty()
     map = db.ReferenceProperty(Map)
@@ -272,7 +284,7 @@ class Comment(db.Model):
     @classmethod
     def Create(cls, map, username='', comment='', tags=''):
         username = TrimString(username)
-        userid = local.userid
+        userAuth = RequireUserAuth()
         comment = TrimString(comment)
         tags = TrimString(tags)
         dateCreated = datetime.now()
@@ -282,7 +294,7 @@ class Comment(db.Model):
         
         com = Comment(map=map, username=username, userid=userid, comment=comment, tags=tags, dateCreated=dateCreated)
         if username:
-            local.username = username
+            local.cookies['username'] = username
         return com
     
     def Delete(self):

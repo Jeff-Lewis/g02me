@@ -60,6 +60,10 @@ from simplejson import JSONEncoder
 from simplejson.encoder import Atomic
 from datetime import datetime, timedelta
 
+# --------------------------------------------------------------------
+# JSON encoder helpers
+# --------------------------------------------------------------------
+
 class JavaScriptEncoder(JSONEncoder):
     def default(self, obj):
         if isinstance(obj, datetime):
@@ -81,32 +85,42 @@ class JavaScript(Atomic):
     def __str__(self):
         return self.st;
     
+# --------------------------------------------------------------------
+# Django request filter middleware
+# --------------------------------------------------------------------
+    
 class ReqFilter(object):
     """
     Setup global (thread local) variables for the request and handle exceptions thrown
     in the views.
     """
+    asCookies =['userAuth', 'username']
+    
     def process_request(self, req):
+        import models
+
         host = req.META["HTTP_HOST"]
 
         # Enforce canonical URL's (w/o www)
         if host.startswith('www.'):
             return HttpResponseRedirect('http://%s%s' % (host[4:], req.path))
         
-        local.stHost = "http://" + host + "/"
+        # Initialize thread-local variables for this request
         local.req = req
-        if 'userid' in req.COOKIES:
-            local.userid = int(req.COOKIES['userid'])
-        else:
-            import models
-            local.userid = models.Globals.IdUserNext()
-            logging.info("New userid %s" % local.userid)
-        local.username = req.COOKIES.get('username', '')
+        local.stHost = "http://" + host + "/"
+        local.ipAddress = req.META['REMOTE_ADDR']
+        
+        # Copy the desired cookies into local.cookies dictionary
+        local.cookies = {}
+        for name in self.asCookies:
+            local.cookies[name] = req.COOKIES.get(name, '')
+
         local.dtNow = datetime.now()
+        local.sSecret = models.Globals.SGet(settings.sSecretName, "test server key")
         
     def process_response(self, req, resp):
-        resp.set_cookie('userid', local.userid, max_age=60*60*24*30)
-        resp.set_cookie('username', local.username, max_age=60*60*24*30)
+        for name in self.asCookies:
+            resp.set_cookie(name, local.cookies[name], max_age=60*60*24*30)
         resp['Cache-Control'] = 'no-cache'
         resp['Expires'] = '0'
         return resp
@@ -120,12 +134,9 @@ class ReqFilter(object):
         if not settings.DEBUG:
             return HttpError(req, "Application Error", {'status': 'Fail'})
 
-def GenerateSid(stUser, seq):
-    """ Session id format is:
-        user-seq-H(Sk-user-seq)
-    """
-    hash = sha1(sidSep.join((stServerKey, stUser, str(seq)))).hexdigest()
-    return sidSep.join((stUser, str(seq), hash))   
+# --------------------------------------------------------------------
+# Response object for error reporting - handles JSON calls as well
+# --------------------------------------------------------------------
 
 def HttpError(req, stError, obj={}):
     if not 'status' in obj:
@@ -146,6 +157,7 @@ def HttpError(req, stError, obj={}):
     return resp
 
 class Error(Exception):
+    # Default Error exception
     def __init__(self, message, status='Fail', obj=None):
         if obj == None:
             obj = {}
@@ -158,18 +170,6 @@ class DirectResponse(Exception):
     def __init__(self, resp):
         self.resp = resp
         
-def RequireAdmin(req):
-    user = RequireUser(req)
-    if not users.is_current_user_admin():
-        raise DirectResponse(HttpResponseRedirect(users.create_logout_url(req.get_full_path())))
-    return user
-    
-def RequireUser(req):
-    user = users.get_current_user()
-    if not user:
-        raise DirectResponse(HttpResponseRedirect(users.create_login_url(req.get_full_path())))
-    return user
-    
 def RaiseNotFound(id):
     raise Error("The G02.ME page, http://g02.me/%s, does not exist" % id, obj={'id':id, 'status':'Fail/NotFound'})
 
@@ -181,11 +181,40 @@ def HttpJSON(req, obj={}):
         obj['status'] = 'OK'
     resp = HttpResponse("%s(%s);" % (req.GET["callback"], simplejson.dumps(obj, cls=JavaScriptEncoder)), mimetype="application/x-javascript")
     return resp
+        
+# --------------------------------------------------------------------
+# Ensure user is signed in for request to procede
+# --------------------------------------------------------------------
+        
+def RequireAdmin():
+    user = RequireUser()
+    if not users.is_current_user_admin():
+        raise DirectResponse(HttpResponseRedirect(users.create_logout_url(local.req.get_full_path())))
+    return user
+    
+def RequireUser():
+    user = users.get_current_user()
+    if not user:
+        raise DirectResponse(HttpResponseRedirect(users.create_login_url(local.req.get_full_path())))
+    return user
 
+def RequireUserAuth():
+    # Raises exception if fails
+    s = SGetSigned(local.cookies['userAuth'])
+    return s
+
+def SUserAuth():
+    return "%s-%s" % (local.ipAddress, local.dtNow.strftime('%m/%d/%Y %H:%M'))
+    
 def RunInTransaction(func):
+    # Function decorator to wrap entire function in an App Engine transaction
     def _transaction(*args, **kwargs):
         return db.run_in_transaction(func, *args, **kwargs)
     return _transaction
+
+# --------------------------------------------------------------------
+# String utilities - format date as an "age"
+# --------------------------------------------------------------------
 
 def SAgeReq(dt):
     # Return the age (time between time of request and a date) as a string
@@ -193,12 +222,18 @@ def SAgeReq(dt):
 
 def SAgeDdt(ddt):
     if ddt.days < 0:
-        return ""
+        return "future?"
+    months = int(ddt.days*12/365)
+    years = int(ddt.days/365)
+    if years >= 1:
+        return "%d year%s ago" % (years, SPlural(years))
+    if months >= 3:
+        return "%d months ago" % months 
     if ddt.days == 1:
         return "yesterday"
     if ddt.days > 1:
         return "%d days ago" % ddt.days
-    hrs = round(ddt.seconds/60/60)
+    hrs = int(ddt.seconds/60/60)
     if hrs >= 1:
         return "%d hour%s ago" % (hrs, SPlural(hrs))
     minutes = round(ddt.seconds/60)
@@ -209,15 +244,27 @@ def SAgeDdt(ddt):
 def SPlural(n, sPlural="s", sSingle=''):
     return [sSingle, sPlural][n!=1]
 
-# Save request info in a thread-global
+# --------------------------------------------------------------------
+# Signed and verified strings can only come from the server
+# --------------------------------------------------------------------
+
+def SSign(s):
+    # Sign the string using the server secret key
+    hash = sha1('~'.join((s, local.sSecret))).hexdigest().upper()
+    return '~'.join((s, hash))
+
+def SGetSigned(s, sError="Failed authentication"):
+    # Throw exception if signed string does not match secret.  Returns
+    # original (unsigned) string if succeeds.
+    try:
+        (sOrig, hash) = s.split('~')
+        if SSign(sOrig) != s:
+            raise Exception
+        return sOrig
+    except:
+        raise Error(sError, 'Fail/Auth')
+
+# --------------------------------------------------------------------
+# Per-request global variables stored in this thread-local global
+# --------------------------------------------------------------------
 local = threading.local()
-
-import unittest
-
-class TestNormalizeUrl(unittest.TestCase):
-    def test(self):
-        self.assertEqual(NormalizeUrl("http://hello"), "http://hello/")
-        self.assertEqual(NormalizeUrl("  http://hello  "), "http://hello/")
-
-if __name__ == '__main__':
-  unittest.main()

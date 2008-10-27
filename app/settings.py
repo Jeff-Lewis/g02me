@@ -21,6 +21,8 @@ ADMINS = (
 # Version 1 (base 64) started at 1
 # Version 5 (base 57) starts at '32' (since there is no 0 or 1 in the alphabet)
 idMapBase = 57
+sMapName = "map.2"
+sSecretName = "secret.1"
 
 MANAGERS = ADMINS
 

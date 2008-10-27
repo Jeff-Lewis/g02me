@@ -32,6 +32,7 @@ def Lookup(req):
     return HttpResponseRedirect("/%s" % map.GetId())
 
 def DoComment(req, command=None):
+    RequireUserAuth()
     if command == 'delete':
         cid = req.GET.get('cid', '').strip()
         try:
@@ -53,10 +54,7 @@ def DoComment(req, command=None):
             
         parts = Comment.Parse(req.GET.get('comment', ""))
     
-        try:
-            map.AddComment(username=parts['username'], comment=parts['comment'], tags=parts['tags'])
-        except:
-            pass
+        map.AddComment(username=parts['username'], comment=parts['comment'], tags=parts['tags'])
 
     if IsJSON():
         return HttpJSON(req, obj=map.JSON())
@@ -71,7 +69,7 @@ def Head(req, id):
     map.Viewed()
     if IsJSON():
         return HttpJSON(req, obj=map.JSON())
-    return render_to_response('head.html', {'map': map, 'username':local.username, 'TopTags':map.TopTags()})
+    return render_to_response('head.html', {'map': map, 'username':local.cookies['username'], 'TopTags':map.TopTags()})
 
 def FrameSet(req, id):
     # http://g02me/N
@@ -95,7 +93,7 @@ def TagView(req, tag):
     return render_to_response('tag.html', {'tag':tag, 'host':local.stHost, 'pages':Map.TopPages(tag=tag)})
 
 def Admin(req, command=None):
-    user = RequireAdmin(req)
+    user = RequireAdmin()
     
     if command:
         logging.info("admin command: %s" % command)
