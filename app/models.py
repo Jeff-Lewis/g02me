@@ -28,6 +28,7 @@ class Map(db.Model):
     
     url = db.StringProperty(required=True)
     title = db.StringProperty()
+    userAuthFirst = db.StringProperty()
     dateCreated = db.DateTimeProperty()
     viewCount = db.IntegerProperty(default=0)
     shareCount = db.IntegerProperty(default=0)
@@ -41,6 +42,7 @@ class Map(db.Model):
     def Create(cls, url, title):
         url = NormalizeUrl(url)
         title = TrimString(title)
+        userAuthFirst = RequireUserAuth()
         if not title:
             title = url
         rg = urlsplit(url)
@@ -49,7 +51,8 @@ class Map(db.Model):
         title = unicode(title, 'utf8')
         dateCreated = datetime.now()
         id = Map.__IdNext()
-        map = Map(key_name=Map.KeyFromId(id), url=url, title=title, dateCreated=dateCreated)
+        map = Map(key_name=Map.KeyFromId(id), url=url, title=title, userAuthFirst=userAuthFirst,
+                  dateCreated=dateCreated)
         map.x = 1
         return map
     
