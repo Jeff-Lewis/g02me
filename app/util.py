@@ -270,8 +270,8 @@ regSigned = re.compile(r"^(\w+)~(.*)~[0-9A-F]{40}$")
 def SGetSigned(type, s, sError="Failed authentication"):
     # Raise exception if s is not a valid signed string of the correct type.  Returns
     # original (unsigned) string if succeeds.
-    m = regSigned.match(s)
     try:
+        m = regSigned.match(s)
         if SSign(m.group(1), m.group(2)) == s:
             return m.group(2)
     except:
