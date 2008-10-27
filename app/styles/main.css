@@ -90,3 +90,8 @@ table.scores td.num
 {
 text-align: center;
 }
+
+table.scored td.age
+{
+width: 14em;
+}

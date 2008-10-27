@@ -52,7 +52,7 @@ alt="Powered by Google App Engine" /></a>
 
 <h2>Recently popular pages</h2>
 <table class="scores">
-<tr><th>Title</th><th>Shared</th><th>Viewed</th><th>Comments</th><th style="width:12em;">Created</th></tr>
+<tr><th>Title</th><th>Shared</th><th>Viewed</th><th>Comments</th><th>Created</th></tr>
 {% for page in pages %}
 	{% if page.ModelExists %}
 	<tr>
@@ -60,7 +60,7 @@ alt="Powered by Google App Engine" /></a>
 		<td class="num">{{page.model.shareCount}}</td>
 		<td class="num">{{page.model.viewCount}}</td>
 		<td class="num">{{page.model.CommentCount}}</td>
-		<td>{{page.model.Age}}</td>
+		<td class="age">{{page.model.Age}}</td>
 	</tr>
 	{% endif %}
 {% endfor %}
