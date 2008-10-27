@@ -185,9 +185,11 @@ X Add slash through the 0 in the G02.ME logo (Tony Wright)
 - Add thousands sep for counts in analytics (info, home, tags, user)
 - Hitting back button after leaving a comment (or deleting comment) should not resubmit!
   - Chrome behavior only?
+  - 
 - Put all site-specific code in settings.py (analytics account number, G02.ME name, etc.)
 - Recursive attacks
 	X Block links to other URL shoteners (tinyurl.com, www.tinyurl.com, bit.ly, is.gd, etc.)
 	- Move from GET to PUT
 - Paging control for user activity pages
-
+- Require a request key for comments and all JSON requests
+- Disallow + is username?

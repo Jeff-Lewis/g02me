@@ -163,7 +163,8 @@ class Map(db.Model):
         self.put()
         self.ss.Update(self, self.scoreShare, tags=self.TopTags())
         # Overload the comment to record when a (registered user) shares a URL
-        self.AddComment(username=local.cookies['username'], comment="__share")
+        if local.cookies['username'] != '':
+            self.AddComment(username=local.cookies['username'], comment="__share")
         
     def Viewed(self):
         self.viewCount = self.viewCount + 1
@@ -292,7 +293,7 @@ class Comment(db.Model):
         if tags == '' and comment == '':
             raise Error("Empty comment")
         
-        com = Comment(map=map, username=username, userid=userid, comment=comment, tags=tags, dateCreated=dateCreated)
+        com = Comment(map=map, username=username, userAuth=userAuth, comment=comment, tags=tags, dateCreated=dateCreated)
         if username:
             local.cookies['username'] = username
         return com
@@ -369,8 +370,6 @@ class Comment(db.Model):
         c = {'comment': self.comment}
         if self.username:
             c['user'] = self.username
-        else:
-            c['user'] = self.userid
         if self.tags:
             c['tags'] = self.tags
         c['created'] = self.dateCreated

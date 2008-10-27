@@ -119,8 +119,18 @@ class ReqFilter(object):
         local.sSecret = models.Globals.SGet(settings.sSecretName, "test server key")
         
     def process_response(self, req, resp):
+        # If the user has no valid userAuth token, given them one for the next request
+        try:
+            RequireUserAuth()
+        except:
+            local.cookies['userAuth'] = SSign('au', SUserAuth())
+            logging.info("new auth: %s" % local.cookies['userAuth'])
+
         for name in self.asCookies:
-            resp.set_cookie(name, local.cookies[name], max_age=60*60*24*30)
+            if local.cookies[name] != '':
+                resp.set_cookie(name, local.cookies[name], max_age=60*60*24*30)
+            else:
+                resp.delete_cookie(name)
         resp['Cache-Control'] = 'no-cache'
         resp['Expires'] = '0'
         return resp
@@ -200,11 +210,11 @@ def RequireUser():
 
 def RequireUserAuth():
     # Raises exception if fails
-    s = SGetSigned(local.cookies['userAuth'])
+    s = SGetSigned('ua', local.cookies['userAuth'])
     return s
 
 def SUserAuth():
-    return "%s-%s" % (local.ipAddress, local.dtNow.strftime('%m/%d/%Y %H:%M'))
+    return "%s~%s" % (local.ipAddress, local.dtNow.strftime('%m/%d/%Y %H:%M'))
     
 def RunInTransaction(func):
     # Function decorator to wrap entire function in an App Engine transaction
@@ -248,21 +258,25 @@ def SPlural(n, sPlural="s", sSingle=''):
 # Signed and verified strings can only come from the server
 # --------------------------------------------------------------------
 
-def SSign(s):
+def SSign(type, s):
     # Sign the string using the server secret key
-    hash = sha1('~'.join((s, local.sSecret))).hexdigest().upper()
-    return '~'.join((s, hash))
+    # type is a short string that is used to distinguish one type of signed content vs. another
+    # (e.g. user auth from).
+    hash = sha1('~'.join((type, s, local.sSecret))).hexdigest().upper()
+    return '~'.join((type, s, hash))
 
-def SGetSigned(s, sError="Failed authentication"):
-    # Throw exception if signed string does not match secret.  Returns
+regSigned = re.compile(r"^(\w+)~(.*)~[0-9A-F]{40}$")
+
+def SGetSigned(type, s, sError="Failed authentication"):
+    # Raise exception if s is not a valid signed string of the correct type.  Returns
     # original (unsigned) string if succeeds.
+    m = regSigned.match(s)
     try:
-        (sOrig, hash) = s.split('~')
-        if SSign(sOrig) != s:
-            raise Exception
-        return sOrig
+        if SSign(m.group(1), m.group(2)) == s:
+            return m.group(2)
     except:
-        raise Error(sError, 'Fail/Auth')
+        pass
+    raise Error(sError, 'Fail/Auth')
 
 # --------------------------------------------------------------------
 # Per-request global variables stored in this thread-local global
