@@ -103,20 +103,20 @@ X auto-hyperlink http addresses in comments
 X comments ordered
 - Use memcache to reduce abuse:
   - Throttle scoring for a given user, or IP address
-  - Drop userid cookie on user
+  X Drop userid cookie on user
   - Throttling middleware
   - Use memcache to set rates
   - beware crawlers (don't throttle Google!)
   - Throttle single referer's?
-  - Set userid cookie only at home and mapped pages - require for updating views, and other edit operations
+  X Set userid cookie only at home and mapped pages - require for updating views, and other edit operations - punt
   - Limit one view per userid in stats
-  - Replace userid with crypto-secure verifiable hash (not forge-able)
+  X Replace userid with crypto-secure verifiable hash (not forge-able)
   - Record each user key in database
   - Enable expiration of user permissions
 - Require dev key for jscript calls (registered user)
 X About Page
 X AppEngine Logo
-! Blog - new features list
+X Blog - new features list
 - G02.ME email accounts for admin email from address
 - Don't count views by web crawlers
   - If no userid cookie - don't count it! (note that Frame will set cookie, and head will then count!)
@@ -193,3 +193,4 @@ X Add slash through the 0 in the G02.ME logo (Tony Wright)
 - Paging control for user activity pages
 - Require a request key for comments and all JSON requests
 - Disallow + is username?
+- Add random bits to userAuth token!  (1 minute resolution only now)
