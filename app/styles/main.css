@@ -66,12 +66,14 @@ div.left
 clear: left;
 width: 350px;
 float: left;
+padding-right: 5px;
+border-right: 1px solid #45AFD1;
 }
 
 div.right
 {
 float: right;
-width: 500px;
+width: 540px;
 }
 
 div.bottom
@@ -91,7 +93,8 @@ table.scores td.num
 text-align: center;
 }
 
-table.scored td.age
+table.scores td.age
 {
-width: 14em;
+width: 100px;
+white-space: nowrap;
 }
