@@ -1,16 +1,16 @@
 {% extends "master.html" %}
-{% block subTitle %}{{username}}'s G02.ME URLs{% endblock %}
+{% block subTitle %}Recently popular | {{tag|escape}}{% endblock %}
 {% block body %}
 <div class="page">
 <a target="_top" href="/"><img title="G02.ME" class="logo" src="/images/logo.png"></a>
-<h1 style="padding-top: 40px;">Most popular pages for tag '{{tag|escape}}'</h1>
+<h1 style="padding-top: 40px;">Recently popular | {{tag|escape}}</h1>
 <div style='clear:both;'></div>
 <table class="scores">
 <tr><th>Title</th><th>Shared</th><th>Viewed</th><th>Comments</th><th>Created</th></tr>
 {% for page in pages %}
 	{% if page.ModelExists %}
 	<tr>
-		<td><a href="/{{page.model.GetId}}">{{page.model.title|escape}}</a></td>
+		<td><a href="/{{page.model.GetId}}" title="{{page.model.url|escape}}">{{page.model.title|escape}}</a></td>
 		<td class="num">{{page.model.shareCount}}</td>
 		<td class="num">{{page.model.viewCount}}</td>
 		<td class="num">{{page.model.CommentCount}}</td>

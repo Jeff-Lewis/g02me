@@ -195,3 +195,6 @@ X Add slash through the 0 in the G02.ME logo (Tony Wright)
 - Disallow + is username?
 X Add random bits to userAuth token!  (1 minute resolution only now)
 - For soft authorization on Share - don't add to Score!
+X Add title attribute to links to display where they will go in a tooltip (home, user, tag pages)
+- Reorganize login permissions to treat it globally rather than ad-hoc per function
+- Centralize error messages and codes in one file

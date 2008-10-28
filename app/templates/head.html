@@ -29,16 +29,16 @@ window.onclick = Click;
 {% endblock %}
 {% block subTitle %}{{map.title|escape}}{% endblock %}
 {% block body %}
-<a target="_top" href="/"><img class="logo" src="/images/logo.png"></a>
+<a target="_top" href="/" title="G02.ME Home | Popular Pages"><img class="logo" src="/images/logo.png"></a>
 
 <div class="ur">
-<a target="_top" href="{{map.Href}}">Close</a> <img class="x" onclick="CloseFrame();" src="/images/x.png"/>
+<a target="_top" href="{{map.Href}}" title="Close Frame">Close</a> <img class="x" onclick="CloseFrame();" src="/images/x.png"/>
 <p>Viewed: {{map.viewCount}}</p>
 <p>Shared: {{map.shareCount}}</p>
 <p>Comments: {{map.CommentCount}}</p>
 <p>Tags: 
 {% for tag in TopTags %}
-	<a target="_top" href="/tag/{{tag}}">{{tag|escape}}</a>{% if not forloop.last %}, {% endif %}
+	<a target="_top" href="/tag/{{tag}}" title="Recently popular | {{tag}}">{{tag|escape}}</a>{% if not forloop.last %}, {% endif %}
 {% endfor %}
 </p>
 </div>
@@ -58,10 +58,10 @@ window.onclick = Click;
 <div class="comments">
 {% for comment in map.Comments %}
 	{% spaceless %}<p>
-    {% if comment.username %}<a target="_top" href="/user/{{comment.username}}">{{comment.username|escape}}</a>:{% endif %}
+    {% if comment.username %}<a target="_top" href="/user/{{comment.username}}" title="Recent activity | {{comment.username}}">{{comment.username}}</a>:{% endif %}
     {{comment.comment|escape|urlize}}
     {% if comment.tags %}
-    	[{% for tag in comment.TagList %}<a target="_top" href="/tag/{{tag}}">{{tag|escape}}</a>{% if not forloop.last %}, {% endif %}{% endfor %}]
+    	[{% for tag in comment.TagList %}<a target="_top" href="/tag/{{tag}}" title="Recently popular | {{tag}}">{{tag|escape}}</a>{% if not forloop.last %}, {% endif %}{% endfor %}]
     {% endif %}
     - {{ comment.Age }}
     <img class="x" onclick="DeleteComment({{comment.key.id}});" src="/images/x.png"/>

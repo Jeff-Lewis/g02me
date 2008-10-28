@@ -224,7 +224,7 @@ def RequireUserAuth(hard=False):
         return s
     except:
         if hard:
-            raise Error("Failed Authenticatio", "Fail/Auth")
+            raise Error("Failed Authentication", "Fail/Auth")
     th = MemThrottle("anon.%s" % local.ipAddress, 10, 60)
     th.Limit()
     return local.ipAddress
@@ -284,7 +284,7 @@ def SSign(type, s):
 
 regSigned = re.compile(r"^(\w+)~(.*)~[0-9A-F]{40}$")
 
-def SGetSigned(type, s, sError="Failed authentication"):
+def SGetSigned(type, s, sError="Failed Authentication"):
     # Raise exception if s is not a valid signed string of the correct type.  Returns
     # original (unsigned) string if succeeds.
     try:
