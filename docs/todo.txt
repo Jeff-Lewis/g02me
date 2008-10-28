@@ -197,4 +197,21 @@ X Add random bits to userAuth token!  (1 minute resolution only now)
 - For soft authorization on Share - don't add to Score!
 X Add title attribute to links to display where they will go in a tooltip (home, user, tag pages)
 - Reorganize login permissions to treat it globally rather than ad-hoc per function
+  - User permission levels:
+    - Blocked - by IP, for abuse
+    - read-only - for search engines (detect by IP and/or user agent?)
+    - throttle anonymous - per IP
+      - view counts 1/IP
+      - share counts 1/IP
+      - no commenting
+    - Authorized user - per cookie
+      - Throttle writes to 10/60
+      - Detect flag
 - Centralize error messages and codes in one file
+- Change comment and share to POST operations only
+  - Update API page
+- Integrate info page and frameset onto one page (IFRAME)
+  - One page for Google to crawl
+  - All links count to get info/content
+  - No more double counting analytics via /info
+  - Resizing/scrolling of info box

@@ -24,7 +24,8 @@ class Map(db.Model):
     # TODO: Add a database model for blacklisted domains
     # Avoid self-referential and URL ping-pong with known URL redirection sites
     blackList = set(['g02.me', 'www.g02.me', 'localhost:8080',
-                 'tinyurl.com', 'www.tinyurl.com', 'bit.ly', 'is.gd'])
+                 'tinyurl.com', 'www.tinyurl.com', 'bit.ly', 'is.gd', 'snurl.com',
+                 'short.to'])
     
     url = db.StringProperty(required=True)
     title = db.StringProperty()

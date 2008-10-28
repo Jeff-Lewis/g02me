@@ -7,11 +7,6 @@ function Loaded()
 	document.getElementById("comment").focus();
 }
 
-function CloseFrame()
-{
-	window.top.open("{{map.HRef}}");
-}
-
 function DeleteComment(id)
 {
 	if (confirm("Are you sure you want to delete this comment?"))
@@ -32,7 +27,8 @@ window.onclick = Click;
 <a target="_top" href="/" title="G02.ME Home | Popular Pages"><img class="logo" src="/images/logo.png"></a>
 
 <div class="ur">
-<a target="_top" href="{{map.Href}}" title="Close Frame">Close</a> <img class="x" onclick="CloseFrame();" src="/images/x.png"/>
+<a target="_top" href="{{map.Href}}" title="Close Frame">Close</a>
+<a target="_top" href="{{map.Href}}" title="Close Frame"><img class="x" src="/images/x.png"/></a>
 <p>Viewed: {{map.viewCount}}</p>
 <p>Shared: {{map.shareCount}}</p>
 <p>Comments: {{map.CommentCount}}</p>
