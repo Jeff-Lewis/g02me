@@ -122,6 +122,7 @@ def Admin(req, command=None):
 
         return HttpResponseRedirect("/admin/")
 
+    ms = memcache.get_stats()
     return render_to_response('admin.html',
           {'user':user,
            'req':req,
@@ -130,5 +131,5 @@ def Admin(req, command=None):
            'BadComments':Comment.BadComments(),
            'BrokenComments':Comment.Broken(),
            'BadCounts':Map.FindBadTagCounts(),
-     #      'MemCache':[{'key':key, 'value':x[key] for x in memcache.get_stats()],
+           'MemCache':[{'key':key, 'value':ms[key]} for key in ms.keys()],
            })

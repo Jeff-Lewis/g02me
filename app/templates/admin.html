@@ -52,7 +52,7 @@
 
 <h2>Memcache</h2>
 <ol>
-{% for pair in MemCache.items %}
+{% for pair in MemCache %}
 	<li>{{pair.key}}: {{pair.value|escape}}</li>
 {% endfor %}
 </ol>
