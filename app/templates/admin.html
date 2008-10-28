@@ -49,6 +49,13 @@
 	<li>(<a href="/info/{{map.GetId}}">info</a>): {{map.STagDiff|escape}}</li>
 {% endfor %}
 </ol>
+
+<h2>Memcache</h2>
+<ol>
+{% for pair in MemCache.items %}
+	<li>{{pair.key}}: {{pair.value|escape}}</li>
+{% endfor %}
+</ol>
 </div> <!-- right -->
 
 

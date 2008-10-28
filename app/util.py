@@ -6,6 +6,7 @@ from django.shortcuts import render_to_response
 from django.template import loader, Context, Template
 
 import settings
+from timescore.models import MemThrottle
 
 import threading
 from urlparse import urlsplit, urlunsplit
@@ -44,6 +45,11 @@ def NormalizeUrl(url):
     if rgURL[2] == '':
         rgURL[2] = '/';
     return urlunsplit(rgURL)
+
+def Href(url):
+    ich = url.find('//')
+    path = url[ich+2:].replace('"', '%22')
+    return url[0:ich+2] + path
 
 def TrimString(st):
     if st == None:
@@ -121,7 +127,7 @@ class ReqFilter(object):
     def process_response(self, req, resp):
         # If the user has no valid userAuth token, given them one for the next request
         try:
-            RequireUserAuth()
+            RequireUserAuth(True)
         except:
             local.cookies['userAuth'] = SSign('au', SUserAuth())
             logging.info("new auth: %s" % local.cookies['userAuth'])
@@ -208,13 +214,24 @@ def RequireUser():
         raise DirectResponse(HttpResponseRedirect(users.create_login_url(local.req.get_full_path())))
     return user
 
-def RequireUserAuth():
-    # Raises exception if fails
-    s = SGetSigned('ua', local.cookies['userAuth'])
-    return s
+def RequireUserAuth(hard=False):
+    # Tries to confirm signed authentication token
+    # If missing, will allow a limited number of authentications per unique IP
+    # Returns raw IP address for anonymous users as unique user key
+    # Returns IP~DateIssued~Rand for truly authenticated users
+    try:
+        s = SGetSigned('ua', local.cookies['userAuth'])
+        return s
+    except:
+        if hard:
+            raise Error("Failed Authenticatio", "Fail/Auth")
+    th = MemThrottle("anon.%s" % local.ipAddress, 10, 60)
+    th.Limit()
+    return local.ipAddress
 
 def SUserAuth():
-    return "%s~%s" % (local.ipAddress, local.dtNow.strftime('%m/%d/%Y %H:%M'))
+    import random
+    return "~".join((local.ipAddress, local.dtNow.strftime('%m/%d/%Y %H:%M'), str(random.randint(0, 10000))))
     
 def RunInTransaction(func):
     # Function decorator to wrap entire function in an App Engine transaction
@@ -276,6 +293,7 @@ def SGetSigned(type, s, sError="Failed authentication"):
             return m.group(2)
     except:
         pass
+    logging.warning("Signed failure: %s: %s" % (type, s))
     raise Error(sError, 'Fail/Auth')
 
 # --------------------------------------------------------------------

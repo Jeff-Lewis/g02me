@@ -53,7 +53,6 @@ class Map(db.Model):
         id = Map.__IdNext()
         map = Map(key_name=Map.KeyFromId(id), url=url, title=title, userAuthFirst=userAuthFirst,
                   dateCreated=dateCreated)
-        map.x = 1
         return map
     
     @staticmethod
@@ -150,7 +149,7 @@ class Map(db.Model):
         comm = Comment.Create(map=self, username=username, comment=comment, tags=tags)
         comm.put()
         self.AddTags(tags.split(','))
-        self.ss.Update(self, self.scoreComment, tags=self.TopTags())
+        self.ss.Update(self, self.scoreComment, dt=local.dtNow, tags=self.TopTags())
         
     def CommentCount(self):
         # BUG: Will max out at 100 comments
@@ -164,18 +163,28 @@ class Map(db.Model):
     def Shared(self):
         self.shareCount = self.shareCount + 1
         self.put()
-        self.ss.Update(self, self.scoreShare, tags=self.TopTags())
+        self.ss.Update(self, self.scoreShare, dt=local.dtNow, tags=self.TopTags())
         # Overload the comment to record when a (registered user) shares a URL
         if local.cookies['username'] != '':
             self.AddComment(username=local.cookies['username'], comment="__share")
         
     def Viewed(self):
+        try:
+            ua = RequireUserAuth(True)
+        except:
+            return
+        if memcache.get('view.%s.%s' % (self.GetId(), ua)):
+            return
+        memcache.set('view.%s.%s' % (self.GetId(), ua), True)
         self.viewCount = self.viewCount + 1
         self.put()
-        self.ss.Update(self, self.scoreView, tags=self.TopTags())
+        self.ss.Update(self, self.scoreView, dt=local.dtNow, tags=self.TopTags())
         
     def Age(self):
         return SAgeReq(self.dateCreated)
+    
+    def Href(self):
+        return Href(self.url)
         
     def JSON(self):
         obj = {'url':self.url, 'id':self.GetId(), 'title':self.title,
@@ -288,7 +297,7 @@ class Comment(db.Model):
     @classmethod
     def Create(cls, map, username='', comment='', tags=''):
         username = TrimString(username)
-        userAuth = RequireUserAuth()
+        userAuth = RequireUserAuth(True)
         comment = TrimString(comment)
         tags = TrimString(tags)
         dateCreated = datetime.now()

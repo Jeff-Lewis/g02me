@@ -2,7 +2,7 @@
 <html>
 <head>
 <link rel="icon" type="image/png" href="/images/favicon.png">
-<title>G02.ME - {{map.title}}</title>
+<title>G02.ME - {{map.title|escape}}</title>
 <script src='http://www.google-analytics.com/ga.js'></script>
 <script>
 msLoaded = new Date().getTime();
@@ -34,7 +34,7 @@ pageTracker._trackPageview();
 </head>
 <frameset rows="137,*">
 <frame src="/info/{{map.GetId}}" marginwidth="0" marginheight="0"/>
-<frame src="{{map.url}}"/>
+<frame src="{{map.Href}}"/>
 <noframes>
 <body>
 Your browser does not support frames.  Your can visit the target page at {{ map.url|escape }}

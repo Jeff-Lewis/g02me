@@ -1,5 +1,5 @@
 from google.appengine.ext import db
-from google.appengine.api import users
+from google.appengine.api import users, memcache
 from django.shortcuts import render_to_response
 from django.http import HttpResponseRedirect
 
@@ -32,7 +32,7 @@ def Lookup(req):
     return HttpResponseRedirect("/%s" % map.GetId())
 
 def DoComment(req, command=None):
-    RequireUserAuth()
+    RequireUserAuth(True)
     if command == 'delete':
         cid = req.GET.get('cid', '').strip()
         try:
@@ -130,4 +130,5 @@ def Admin(req, command=None):
            'BadComments':Comment.BadComments(),
            'BrokenComments':Comment.Broken(),
            'BadCounts':Map.FindBadTagCounts(),
+     #      'MemCache':[{'key':key, 'value':x[key] for x in memcache.get_stats()],
            })

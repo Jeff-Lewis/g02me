@@ -1,7 +1,11 @@
 from google.appengine.ext import db
+from google.appengine.api import memcache
+
 from datetime import datetime, timedelta
 import logging
 import math
+
+import util
 
 class ScoreSet(db.Model):
     """ Configuration object for a collection of (comparable) scores.
@@ -9,6 +13,7 @@ class ScoreSet(db.Model):
     
     Once initialized a ScoreSet should not be changed.
     """
+    # BUG: No need to persist ScoreSet's in the database!
     name = db.StringProperty(required=True)
     halfLives = db.ListProperty(int)
     
@@ -68,7 +73,9 @@ class Score(db.Model):
     model = db.ReferenceProperty(required=True)
     tag = db.StringListProperty()
     
-    def Update(self, value, dt=datetime.now(), tags=None):
+    def Update(self, value, dt=None, tags=None):
+        if dt is None:
+            dt = datetime.now()
         value = float(value)
         k = 0.5 ** (1.0/self.hrsHalf)
         
@@ -95,8 +102,8 @@ class Score(db.Model):
         k = 0.5 ** (1.0/self.hrsHalf)
         return (k ** (hrs - self.hrsLast)) * self.S
     
-    @classmethod    
-    def Hours(cls, dt1):
+    @staticmethod    
+    def Hours(dt1):
         ddt = dt1 - Score.dtBase
         hrs = ddt.days*24 + float(ddt.seconds)/60/60
         return hrs
@@ -112,16 +119,70 @@ class Score(db.Model):
     
     def ModelKey(self):
         return Score.model.get_value_for_datastore(self)
-        
-
+    
 # Constants
 hrsDay = 24
 hrsWeek = 7*24
 hrsYear = 365*24+6
 hrsMonth = hrsYear/12
 
+# --------------------------------------------------------------------
+# In-memory Throttle
+#
+# Returns true if exceeds c requests (on average) over secs.  
+# --------------------------------------------------------------------
+class Throttle(object):
+    # All date values must occur after this baseline date 1/1/2008
+    dtBase = datetime(2008,10,27)
 
+    def __init__(self, cMax, secs):
+        # Max rate allowed
+        self.SMax = float(cMax) / secs 
+        self.k = 0.5 ** (1.0/secs)
+        self.secsLast = 0
+        self.S = 0.0
+        
+    def Exceeded(self, value=1, dt=None):
+        if dt is None:
+            dt = datetime.now()
+        secs = self.Secs(dt)
+        
+        # Ignore times in the past
+        if secs < self.secsLast:
+            return;
 
-
-
+        self.S = (1-self.k) * value + (self.k ** (secs - self.secsLast)) * self.S
+        self.secsLast = secs
+        logging.info("Score: %s" % str(self.S))
+        
+        return self.S > self.SMax
+    
+    def Limit(self, value=1.0, dt=None):
+        if self.Exceeded(dt=None):
+            raise util.Error("Server Busy", "Fail/Busy")
+            
+    @staticmethod    
+    def Secs(dt1):
+        ddt = dt1 - Throttle.dtBase
+        secs = ddt.days*24*60*60 + ddt.seconds
+        return secs
+        
+class MemThrottle(Throttle):
+    def __init__(self, key, cMax, secs):
+        self.key = key
+        self.cMax = cMax
+        self.secs = secs
+        
+    def Exceeded(self, value=1, dt=None):
+        th = memcache.get('th.%s' % self.key)
+        if th is None:
+            th = Throttle(self.cMax, self.secs)
+        
+        f = th.Exceeded()
+        
+        memcache.set('th.%s' % self.key, th)
+        return f
+        
+        
+        
     
