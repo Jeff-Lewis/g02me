@@ -11,7 +11,8 @@ import logging
 def Home(req):
     if IsJSON():
         return HttpJSON(req, Map.TopJSON())
-    return render_to_response('home.html', {'host':local.stHost, 'pages':Map.TopPages()})
+    AddToResponse({'host':local.stHost, 'pages':Map.TopPages()})
+    return render_to_response('home.html', FinalResponse())
 
 def CatchAll(req):
     raise Error("Page not found", "Fail/NotFound")
@@ -85,12 +86,14 @@ def UserView(req, username):
     if IsJSON():
         return HttpJSON(req, obj=Comment.ForUserJSON(username))
     comments = Comment.ForUser(username)
-    return render_to_response('user.html', {'username':username, 'comments':comments})
+    AddToResponse({'username':username, 'comments':comments})
+    return render_to_response('user.html', FinalResponse())
 
 def TagView(req, tag):
     if IsJSON():
         return HttpJSON(req, Map.TopJSON(tag=tag))
-    return render_to_response('tag.html', {'tag':tag, 'host':local.stHost, 'pages':Map.TopPages(tag=tag)})
+    AddToResponse({'tag':tag, 'host':local.stHost, 'pages':Map.TopPages(tag=tag)})
+    return render_to_response('tag.html', FinalResponse())
 
 def Admin(req, command=None):
     user = RequireAdmin()

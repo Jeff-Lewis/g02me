@@ -123,6 +123,7 @@ class ReqFilter(object):
 
         local.dtNow = datetime.now()
         local.sSecret = models.Globals.SGet(settings.sSecretName, "test server key")
+        local.mpResponse = {}
         
     def process_response(self, req, resp):
         # If the user has no valid userAuth token, given them one for the next request
@@ -137,6 +138,7 @@ class ReqFilter(object):
                 resp.set_cookie(name, local.cookies[name], max_age=60*60*24*30)
             else:
                 resp.delete_cookie(name)
+        # BUG: Should allow client caching of home and /tag pages - 60 seconds
         resp['Cache-Control'] = 'no-cache'
         resp['Expires'] = '0'
         return resp
@@ -192,11 +194,26 @@ def RaiseNotFound(id):
 def IsJSON():
     return local.req.has_key("callback")
 
-def HttpJSON(req, obj={}):
+def HttpJSON(req, obj=None):
+    if obj is None:
+        obj = {}
     if not 'status' in obj:
         obj['status'] = 'OK'
     resp = HttpResponse("%s(%s);" % (req.GET["callback"], simplejson.dumps(obj, cls=JavaScriptEncoder)), mimetype="application/x-javascript")
     return resp
+
+def AddToResponse(mp):
+    local.mpResponse.update(mp)
+
+def FinalResponse():
+    local.mpResponse['elapsed'] = ResponseTime()
+    local.mpResponse['now'] = local.dtNow
+    return local.mpResponse
+    
+def ResponseTime():
+    ddt = datetime.now() - local.dtNow 
+    sec = ddt.seconds + float(ddt.microseconds)/1000000
+    return "%1.2f" % sec
         
 # --------------------------------------------------------------------
 # Ensure user is signed in for request to procede

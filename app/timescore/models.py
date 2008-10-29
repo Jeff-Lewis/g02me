@@ -24,7 +24,9 @@ class ScoreSet(db.Model):
         ss = ScoreSet.get_or_insert(name, name=name, halfLives=halfLives)
         return ss
     
-    def Update(self, model, value, dt=datetime.now(), tags=None):
+    def Update(self, model, value, dt=None, tags=None):
+        if dt is None:
+            dt = datetime.now()
         scores = self.ScoresForModel(model)
         if scores.count() == 0:
             scores = []
@@ -97,7 +99,9 @@ class Score(db.Model):
         
         self.put()
         
-    def ScoreNow(self, dt=datetime.now()):
+    def ScoreNow(self, dt=None):
+        if dt is None:
+            dt = datetime.now()
         hrs = Score.Hours(dt)
         k = 0.5 ** (1.0/self.hrsHalf)
         return (k ** (hrs - self.hrsLast)) * self.S
