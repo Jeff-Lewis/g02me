@@ -131,23 +131,23 @@ X Lookup function (return url only if it already exists)
 X Catch exceptions in AsyncSequence unit.js
 X Display Dates in Comments in Head
 X Dates display in local time - use relative age instead
-- Introduce memcache to improve performance of popularity pages
+- Use memcache to improve performance of popularity pages
   - info pages
     - statistics (write through view counter)
     - comments
   - home page (keep for 60 seconds)
   - tag pages (keep until url added to tag - age at 5 minutes)
-! Decrement map TopTags when deleting a comment
-! BUG: Empty tag showing up?
+X Decrement map TopTags when deleting a comment
+X BUG: Empty tag showing up?
 - Log referers for a url! - display click sources ala YouTube Statistics
-- search
+- search (google Search widget)
 X http://g02.me/tag/ - Python error dump
 X http://tag/search engine - python dump
-- AdSense on tag pages
+- AdSense
 X urls.py - CatchAll
 - Auto-tag domains (nyt.com, e.g.)
 - Popularity flags
-  - Up/Down Arrows
+  ! Up/Down Arrows
   - "New" marker
   - Base on 2x rate on next higher halfLife scale
 - Option to show /user/xxx sorted by popularity (not date of last comment) 
