@@ -76,14 +76,14 @@ div.left
 clear: left;
 width: 350px;
 float: left;
-padding-right: 5px;
-border-right: 1px solid #45AFD1;
 }
 
 div.right
 {
 float: right;
 width: 540px;
+padding-left: 10px;
+border-left: 1px solid #45AFD1;
 }
 
 div.bottom
