@@ -168,7 +168,7 @@ X JSON Date format looks funny with 1 digit dates, hours, etc.
   - use initially seen URL as canonical?
 X Add analytics tracking code to frameset - missing referer on map
 - Feature: Star the info page (faster than leaving a comment - but puts it in your comment queue)
-  - Generate __Favorite comment
+  - Generate __fave comment
   - Icons in user activity for Shared, Commented, Favorite
 - Feature: New activity indicator in /user/xxx
   - Annotate Map with username (incl. anon) of most recent commenter (or comment seq #)
@@ -222,8 +222,9 @@ X Add title attribute to links to display where they will go in a tooltip (home,
 - Link to My Links on home page for username cookie'd users
 - Disallow 'http' as a username (mistake in posting links)
 - Import bookmarks/faves
-! Elapsed time of response
-! Share limit by user (same as view limit)
+X Elapsed time of response - home, tag, user pages
+X Share limit by user (same as view limit)
+  - Sharing will then preclude a view count - good!
 - Hungarian for python doc
 - Viewing rates for pages (tag and home) (monthly page views extrapolation)
   - Calc view rate with 24 hour half life
@@ -233,4 +234,4 @@ X Add title attribute to links to display where they will go in a tooltip (home,
   - Sliding window of unique user counts (by minute)
   - show users in last 15 minutes as "current" (merge all windows)
   - update calc once each minute - memcache
--  
+- Unit test failing on empty database

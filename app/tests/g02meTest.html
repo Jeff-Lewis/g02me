@@ -47,7 +47,7 @@ ts.AddTest("Map", function(ut)
 			{
 			new UT.ScriptData("/map/").Call({url:"http://google.com"}, function(obj) {
 				ut.AssertContains(obj,
-					{status:"OK", url:"http://google.com/", id:objInit.id, viewed:objInit.viewed, shared:objInit.shared+1});
+					{status:"OK", url:"http://google.com/", id:objInit.id, viewed:objInit.viewed, shared:objInit.shared});
 				ut.NextFn();
 				});
 			},
@@ -55,7 +55,7 @@ ts.AddTest("Map", function(ut)
 			{
 			new UT.ScriptData("/map/").Call({url:"google.com"}, function(obj) {
 				ut.AssertContains(obj,
-					{status:"OK", url:"http://google.com/", id:objInit.id, viewed:objInit.viewed, shared:objInit.shared+2});
+					{status:"OK", url:"http://google.com/", id:objInit.id, viewed:objInit.viewed, shared:objInit.shared});
 				ut.NextFn();
 				});
 			},
@@ -63,7 +63,7 @@ ts.AddTest("Map", function(ut)
 			{
 			new UT.ScriptData("/map/").Call({url:" http://google.com "}, function(obj) {
 				ut.AssertContains(obj,
-					{status:"OK", url:"http://google.com/", id:objInit.id, viewed:objInit.viewed, shared:objInit.shared+3});
+					{status:"OK", url:"http://google.com/", id:objInit.id, viewed:objInit.viewed, shared:objInit.shared});
 				ut.NextFn();
 				});
 			},
@@ -78,7 +78,7 @@ ts.AddTest("Map", function(ut)
 			{
 			new UT.ScriptData("/map/").Call({url:"http://google.com"}, function(obj) {
 				ut.AssertContains(obj,
-					{status:"OK", url:"http://google.com/", id:objInit.id, viewed:objInit.viewed, shared:objInit.shared+4});
+					{status:"OK", url:"http://google.com/", id:objInit.id, viewed:objInit.viewed, shared:objInit.shared});
 				ut.NextFn();
 				});
 			},

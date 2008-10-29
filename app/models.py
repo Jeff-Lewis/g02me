@@ -162,25 +162,43 @@ class Map(db.Model):
         return [comment for comment in comments if not comment.comment.startswith('__')]
     
     def Shared(self):
-        self.shareCount = self.shareCount + 1
-        self.put()
-        self.ss.Update(self, self.scoreShare, dt=local.dtNow, tags=self.TopTags())
+        # Updates shared count if a unique user share
+        # ALWAYS - puts() the Map to the database as a side effect
+        if not self._FLimitStats():
+            self.shareCount = self.shareCount + 1
+            self.put()
+            self.ss.Update(self, self.scoreShare, dt=local.dtNow, tags=self.TopTags())
+            self._FLimitStats()
+        else:
+            self.put()
+
         # Overload the comment to record when a (registered user) shares a URL
         if local.cookies['username'] != '':
             self.AddComment(username=local.cookies['username'], comment="__share")
         
     def Viewed(self):
-        try:
-            ua = RequireUserAuth(True)
-        except:
+        if self._FLimitStats():
             return
-        if memcache.get('view.%s.%s' % (self.GetId(), ua)):
-            return
-        memcache.set('view.%s.%s' % (self.GetId(), ua), True)
         self.viewCount = self.viewCount + 1
         self.put()
         self.ss.Update(self, self.scoreView, dt=local.dtNow, tags=self.TopTags())
         
+    def _FLimitStats(self):
+        try:
+            ua = RequireUserAuth(True)
+        except:
+            return True
+        
+        try:
+            id = self.GetId()
+        except:
+            return False
+
+        if memcache.get('view.%s.%s' % (id, ua)):
+            return True
+        memcache.set('view.%s.%s' % (id, ua), True)
+        return False
+
     def Age(self):
         return SAgeReq(self.dateCreated)
     
