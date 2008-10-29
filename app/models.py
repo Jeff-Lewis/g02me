@@ -25,7 +25,7 @@ class Map(db.Model):
     # Avoid self-referential and URL ping-pong with known URL redirection sites
     blackList = set(['g02.me', 'www.g02.me', 'localhost:8080',
                  'tinyurl.com', 'www.tinyurl.com', 'bit.ly', 'is.gd', 'snurl.com',
-                 'short.to'])
+                 'short.to', 'cli.gs', 'snipurl.com', ])
     
     url = db.StringProperty(required=True)
     title = db.StringProperty()
@@ -295,15 +295,26 @@ class Globals(db.Model):
     @staticmethod
     @RunInTransaction
     def IdNameNext(name, idMin=1):
-        # Return a global counter - starts at idMin
+        # Increment and return a global counter - starts at idMin
+        glob = Globals._IdLookup(name, idMin)
+        glob.idNext = glob.idNext + 1
+        glob.put()
+        return glob.idNext
+    
+    @staticmethod
+    def IdGet(name, idMin=1):
+        # Return value of a global counter - starts at idMin
+        glob = Globals._IdLookup(name, idMin)
+        return glob.idNext
+    
+    @staticmethod
+    def _IdLookup(name, idMin):
         glob = Globals.get_by_key_name(name)
         if glob is None:
             glob = Globals(key_name=name)
-        glob.idNext = glob.idNext + 1
-        if glob.idNext < idMin:
-            glob.idNext = idMin
-        glob.put()
-        return glob.idNext
+        if glob.idNext < idMin-1:
+            glob.idNext = idMin-1
+        return glob        
 
 class Comment(db.Model):
     username = db.StringProperty()

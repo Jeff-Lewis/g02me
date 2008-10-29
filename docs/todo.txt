@@ -8,7 +8,7 @@ X Bookmarklet
   X User comments
   - Design (see delicious page: http://delicious.com/url/6e4e9fc8547418f22ac89a5f7558e58b?show=notes_only, for inspiration)
 - Home
-  ! Number of pages
+  ! Number of pages - calculate from ID
   - Number of views
   - Number of people (unique IP?)
   X IE instructions for creating bookmark

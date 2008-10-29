@@ -18,9 +18,10 @@ ADMINS = (
 
 # G02.ME Specific Settings
 
-# Version 1 (base 64) started at 1
+# Version 1 (base 64) started at 1 through 2V (about 159)
 # Version 5 (base 57) starts at '32' (since there is no 0 or 1 in the alphabet)
 idMapBase = 57
+cPagesExtra = 159
 sMapName = "map.2"
 sSecretName = "secret.1"
 

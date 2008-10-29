@@ -11,6 +11,16 @@ margin: 0;
 font-size: 18px;
 }
 
+h2 {
+margin: 0;
+font-size: 16px;
+}
+
+p.subhead {
+font-style: italic;
+margin-bottom: 15px;
+}
+
 a {
 color: #45AFD1;
 }

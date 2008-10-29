@@ -11,7 +11,11 @@ import logging
 def Home(req):
     if IsJSON():
         return HttpJSON(req, Map.TopJSON())
-    AddToResponse({'host':local.stHost, 'pages':Map.TopPages()})
+    AddToResponse({'host': local.stHost,
+                   'pages': Map.TopPages(),
+                   'total_pages': Globals.IdGet(settings.sMapName, settings.idMapBase) -
+                        settings.idMapBase + 1 + settings.cPagesExtra
+                   })
     return render_to_response('home.html', FinalResponse())
 
 def CatchAll(req):
