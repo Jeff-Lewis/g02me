@@ -6,7 +6,7 @@ from django.shortcuts import render_to_response
 from django.template import loader, Context, Template
 
 import settings
-from timescore.models import MemThrottle
+from timescore.models import MemRate
 
 import threading
 from urlparse import urlsplit, urlunsplit
@@ -151,6 +151,75 @@ class ReqFilter(object):
         logging.error("Uncaught exception")
         if not settings.DEBUG:
             return HttpError(req, "Application Error", {'status': 'Fail'})
+        
+class ReqUser(object):
+    aPerms = ['view', 'view-count', 'share', 'comment', 'comment-delete', 'admin', 'block']
+    mpPermMessage = {}
+    mpPermError = {}
+
+    def __init__(self, req):
+        # Nothing allowed by default!
+        self.perm = {}
+        for p in self.aPerms:
+            self.perm[p] = False
+
+        self.ip = req.META['REMOTE_ADDR']
+
+        rateWriteMax = 10
+        try:
+            self.ua = SGetSigned('ua', req.COOKIES['userAuth'])
+        except:
+            self.ua = self.ip
+            rateWriteMax = 2
+
+        if Block.FBlocked(ua):
+            return
+        self.user = users.get_current_user()
+        self.fAdmin = users.is_current_user_admin()
+        rate = MemRate("throttle.ua.%s" % ua, rateWriteMax, 60)
+        
+    def FAllow(self, perm):
+        return self.perm[perm]
+    
+    def Require(self, perm):
+        if not self.FAllow(perm):
+            message = "Authorization Error"
+            code = "Fail/Auth"
+            if perm in self.mpPermMessage:
+                message = self.mpPermMessage[perm]
+            if perm in self.mpPermCode:
+                code = self.mpPermCode[perm]
+            raise Error(message, code)
+        
+        
+class Block(db.Model):
+    # Block requests for abuse by IP or Cookie
+    ua = db.StringProperty(required=True)
+    dateCreated = db.DateTimeProperty()
+    
+    @staticmethod
+    def Create(ua):
+        if Block.FBlocked(ua):
+            return
+        dateCreated = local.dtNow
+        block = Block.get_or_insert(key_name=ua, ua=ua, dateCreated=dateCreated)
+        block.put()
+        memcache.set(self.KeyFromUa(ua), True)
+        
+    @staticmethod
+    def FBlocked(ua):
+        block = memcache.get(self.KeyFromUa(ua))
+        if block is not None:
+            return True
+        block = Block.get_by_key_name(self.KeyFromUa(ua))
+        if block is not None:
+            memcache.set(self.KeyFromUa(ua), True)
+            return True
+        return False
+    
+    @staticmethod
+    def KeyFromUa(ua):
+        return 'block.ua.' % ua
 
 # --------------------------------------------------------------------
 # Response object for error reporting - handles JSON calls as well
@@ -163,7 +232,6 @@ def HttpError(req, stError, obj={}):
     if IsJSON():
         logging.info('JSON Error: %(message)s (%(status)s)' % obj)
         return HttpJSON(req, obj=obj)
-    logging.info('UI Error: %s' % stError)
 
     http_status = 200
     if obj['status'] == 'Fail/NotFound':
@@ -242,8 +310,8 @@ def RequireUserAuth(hard=False):
     except:
         if hard:
             raise Error("Failed Authentication", "Fail/Auth")
-    th = MemThrottle("anon.%s" % local.ipAddress, 10, 60)
-    th.Limit()
+    rate = MemRate("anon.%s" % local.ipAddress, 10, 60)
+    rate.Limit()
     return local.ipAddress
 
 def SUserAuth():

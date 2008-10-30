@@ -131,11 +131,9 @@ hrsYear = 365*24+6
 hrsMonth = hrsYear/12
 
 # --------------------------------------------------------------------
-# In-memory Throttle
-#
-# Returns true if exceeds c requests (on average) over secs.  
+# Rate limiter helper
 # --------------------------------------------------------------------
-class Throttle(object):
+class Rate(object):
     # All date values must occur after this baseline date 1/1/2008
     dtBase = datetime(2008,10,27)
 
@@ -153,11 +151,10 @@ class Throttle(object):
         
         # Ignore times in the past
         if secs < self.secsLast:
-            return;
+            return False
 
         self.S = (1-self.k) * value + (self.k ** (secs - self.secsLast)) * self.S
         self.secsLast = secs
-        logging.info("Score: %s" % str(self.S))
         
         return self.S > self.SMax
     
@@ -166,25 +163,25 @@ class Throttle(object):
             raise util.Error("Server Busy", "Fail/Busy")
             
     @staticmethod    
-    def Secs(dt1):
-        ddt = dt1 - Throttle.dtBase
-        secs = ddt.days*24*60*60 + ddt.seconds
+    def Secs(t1):
+        dt = t1 - Rate.dtBase
+        secs = dt.days*24*60*60 + dt.seconds
         return secs
         
-class MemThrottle(Throttle):
+class MemRate(Rate):
     def __init__(self, key, cMax, secs):
         self.key = key
         self.cMax = cMax
         self.secs = secs
         
     def Exceeded(self, value=1, dt=None):
-        th = memcache.get('th.%s' % self.key)
-        if th is None:
-            th = Throttle(self.cMax, self.secs)
+        rate = memcache.get('rate.%s' % self.key)
+        if rate is None:
+            rate = Rate(self.cMax, self.secs)
         
-        f = th.Exceeded()
+        f = rate.Exceeded()
         
-        memcache.set('th.%s' % self.key, th)
+        memcache.set('rate.%s' % self.key, rate)
         return f
         
         

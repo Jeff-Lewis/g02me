@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<rss version="2.0">
+    <channel>
+        <title>G02.ME | {{Title}}</title>
+        <link>http://g02.me{{Path}}</link>
+        <description>{{Description}}</description>
+        <language>en-us</language>
+        <image>http://g02.me/images/logo.png</image>
+        <ttl>360</ttl>
+    {% for item in Items %}
+      <item>
+        <title>{{item.Title|escape}}</title>
+        <description>{{item.Description}}</description>
+        <pubDate>{{item.Date|date:"D, d M Y H:i:s"}} GMT</pubDate>
+        <link>http://g02.me{{item.Path}}</link>
+      </item>
+    {% endfor %}
+  </channel>
+</rss>
