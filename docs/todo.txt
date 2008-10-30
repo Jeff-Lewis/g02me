@@ -85,8 +85,8 @@ X Test deployment
   - Just hide non-anonymous comments - based on vote threshold
   - Ability to mark even claimed comments as "spam/bad"
     - two (independent) votes will hide that comment from all but the author of the comment.
-  - Mark URL as Spam - info-mode only AND prominently flagged as SPAM
-  - Mark URL as Adult - require login and affirmation of over 18 and OK to view adult content
+  ! Mark URL as Spam - info-mode only AND prominently flagged as SPAM
+  ! Mark URL as Adult - require login and affirmation of over 18 and OK to view adult content
   - Profile image
   - Friend feed and twitter account info
 - Detect or mark problem domains as info-mode pages (frameset unfriendly).
@@ -140,7 +140,8 @@ X Dates display in local time - use relative age instead
   - tag pages (keep until url added to tag - age at 5 minutes)
 X Decrement map TopTags when deleting a comment
 X BUG: Empty tag showing up?
-- Log referers for a url! - display click sources ala YouTube Statistics
+- Log referers for a url - display click sources ala YouTube and bit.ly Statistics
+- Log search terms and number of click through via search (info merge first?)
 - search (google Search widget)
 X http://g02.me/tag/ - Python error dump
 X http://tag/search engine - python dump
@@ -197,20 +198,6 @@ X Add slash through the 0 in the G02.ME logo (Tony Wright)
 X Add random bits to userAuth token!  (1 minute resolution only now)
 - For soft authorization on Share - don't add to Score!
 X Add title attribute to links to display where they will go in a tooltip (home, user, tag pages)
-! Reorganize login permissions to treat it globally rather than ad-hoc per function
-  - User permission levels:
-    - Blocked - by IP, for abuse
-    - Read-only - for search engines (detect by IP and/or user agent?)
-    - Throttle anonymous - per IP
-      - view counts 1/IP
-      - share counts 1/IP
-      - no commenting or deleting
-    - Authorized user - per cookie
-      - Throttle writes to 10/60
-      - Detect flag
-      - Delete anonymous comments
-    - Registered user 
-    - Admin user
 - Centralize error messages and codes in one file
 - Change comment and share to POST operations only
   - Update API page
@@ -235,3 +222,33 @@ X Share limit by user (same as view limit)
   - show users in last 15 minutes as "current" (merge all windows)
   - update calc once each minute - memcache
 - Unit test failing on empty database
+- Truncate titles with elipses in views
+- Shared count of ZERO(!) for http://g02.me/3g????
+- Spam - faked title - /3f
+! Reorganize login permissions to treat it globally rather than ad-hoc per function
+  - User permission levels:
+    - Blocked - by IP or Cookie, for abuse
+    - Read-only - for search engines (detect by IP and/or user agent?)
+    - Throttle anonymous - per IP
+      - view counts 1/IP
+      - share counts 1/IP
+      - no commenting or deleting
+    - Authorized user - per cookie
+      - Throttle writes to 10/60
+      - Delete anonymous comments
+    - Registered user 
+    - Admin user
+- Throttle/Filter architecture
+   - Anon IP -> read only, 1/60 write rate
+   - Cookied -> 10/60 write rate
+   - Blocked Cookie -> No access (Server Busy)
+   - Blocked IP -> No access (Server Busy)
+   - Admin Block IP, Block Cookie
+     - Info panel for Admin
+- Make ScoreSet not a Model - just globals
+- Log when application is loaded
+- Log when memcache is empty
+- I have comments that are older than Map they are commenting on!
+- Error sharing this: http://www.nwcn.com/video/index.html?nvid=297637
+- Simple comment protection
+  - Don't offer delete for named comments NOT your own (username)

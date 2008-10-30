@@ -46,7 +46,7 @@ window.onclick = Click;
   <form action="/comment/" method="get">
   <input type="hidden" name="id" value="{{map.GetId}}"/>
   <label for="comment">Comment: </label>
-  <input style="width:500px;" type="text" id="comment" name="comment" value="{% if username %}{{username|escape}}: {% endif %}"/>&nbsp;<input type="submit" value="Post"/>
+  <input style="width:500px;" type="text" id="comment" name="comment" value="{% if username %}{{username}}: {% endif %}"/>&nbsp;<input type="submit" value="Post"/>
   <br/><i>Example: "username: what do you think of this page [tag1, tag2, ...]"</i>
   </form>
 </div>
@@ -54,13 +54,15 @@ window.onclick = Click;
 <div class="comments">
 {% for comment in map.Comments %}
 	{% spaceless %}<p>
-    {% if comment.username %}<a target="_top" href="/user/{{comment.username}}" title="Recent activity | {{comment.username}}">{{comment.username}}</a>:{% endif %}
+    {% if comment.username %}<a target="_top" href="/user/{{comment.username}}" title="{{comment.username}}'s activity">{{comment.username}}</a>:{% endif %}
     {{comment.comment|escape|urlize}}
     {% if comment.tags %}
-    	[{% for tag in comment.TagList %}<a target="_top" href="/tag/{{tag}}" title="Recently popular | {{tag}}">{{tag|escape}}</a>{% if not forloop.last %}, {% endif %}{% endfor %}]
+    	[{% for tag in comment.TagList %}<a target="_top" href="/tag/{{tag}}" title="{{tag}} pages">{{tag}}</a>{% if not forloop.last %}, {% endif %}{% endfor %}]
     {% endif %}
     - {{ comment.Age }}
+    {% if comment.AllowDelete %}
     <img class="x" onclick="DeleteComment({{comment.key.id}});" src="/images/x.png"/>
+    {% endif %}
     </p>{% endspaceless %}
 {% endfor %}
 </div>

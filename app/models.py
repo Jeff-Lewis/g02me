@@ -408,6 +408,9 @@ class Comment(db.Model):
     def Age(self):
         return SAgeReq(self.dateCreated)
     
+    def AllowDelete(self):
+        return self.username == '' or self.username == local.cookies['username']
+    
     def JSON(self):
         c = {'comment': self.comment}
         if self.username:
