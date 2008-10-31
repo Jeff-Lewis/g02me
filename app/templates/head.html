@@ -22,7 +22,9 @@ function Click()
 window.onclick = Click;
 </script>
 {% endblock %}
+
 {% block subTitle %}{{map.title|escape}}{% endblock %}
+
 {% block body %}
 <a target="_top" href="/" title="G02.ME Home | Popular Pages"><img class="logo" src="/images/logo.png"></a>
 
@@ -66,5 +68,6 @@ window.onclick = Click;
     </p>{% endspaceless %}
 {% endfor %}
 </div>
-
 {% endblock %}
+
+{% block footer %}{%endblock %}

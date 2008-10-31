@@ -91,7 +91,7 @@ def UserView(req, username):
     if IsJSON():
         return HttpJSON(req, obj=Comment.ForUserJSON(username))
     comments = Comment.ForUser(username)
-    AddToResponse({'username':username, 'comments':comments})
+    AddToResponse({'usernamePage':username, 'comments':comments})
     return render_to_response('user.html', FinalResponse())
 
 def TagView(req, tag):

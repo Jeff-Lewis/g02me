@@ -6,13 +6,24 @@
 <link rel="icon" type="image/png" href="/images/favicon.png">
 <title>G02.ME - {% block subTitle %}{% endblock %}</title>
 {% block head %}
-<script>
-function Loaded() {}
-</script>
 {% endblock %}
 </head>
+
 <body onload="Loaded();">
-{% block body %}{% endblock %}
+
+{% block body %}
+{% endblock %}
+
+{% block footer %}
+<div class="bottom">
+<a href="http://code.google.com/p/g02me/wiki/AboutUs">About Us</a> |
+<a href="http://blog.g02.me">Blog</a> |
+<a href="http://code.google.com/p/g02me/wiki/API">Developers</a> |
+<a href="http://code.google.com/p/g02me/wiki/TermsOfService">Terms of Service</a>
+</div>
+{% endblock %}
+
+{% block analytics %}
 <script type="text/javascript">
 var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
 document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
@@ -21,5 +32,7 @@ document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.
 var pageTracker = _gat._getTracker("UA-5439059-1");
 pageTracker._trackPageview();
 </script>
+{% endblock %}
+
 </body>
 </html>
