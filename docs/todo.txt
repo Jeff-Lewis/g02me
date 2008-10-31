@@ -252,3 +252,5 @@ X Share limit by user (same as view limit)
 - Error sharing this: http://www.nwcn.com/video/index.html?nvid=297637
 - Simple comment protection
   - Don't offer delete for named comments NOT your own (username)
+- Throttle comment scoring by user
+- break up comments, map, and globals into their own .py files

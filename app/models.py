@@ -372,6 +372,7 @@ class Comment(db.Model):
     @classmethod
     def ForUser(cls, username):
         comments = Comment.gql("WHERE username = :username ORDER BY dateCreated DESC", username=username)
+        comments = comments.fetch(100)
         clist = []
         dup = set()
         for comment in comments:
