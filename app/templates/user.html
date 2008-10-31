@@ -1,6 +1,6 @@
-{% extends "master.html" %}
+{% extends "pages.html" %}
 {% block subTitle %}{{username}}'s activity | {% endblock %}
-{% block body %}
+{% block pagebody %}
 <div class="page">
 <a target="_top" href="/" title="G02.ME Home | Popular Pages"><img class="logo" src="/images/logo.png"></a>
 <h1 style="padding-top: 40px;">{{usernamePage}}'s activity</h1>
@@ -25,8 +25,4 @@
 	</tr>
 {% endfor %}
 </table>
-
-<div style="margin-top:15px;text-align:center;"><span>Elapsed time: {{elapsed}}s</span></div>
-
-</div>
 {% endblock %}

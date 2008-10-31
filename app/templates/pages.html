@@ -1,0 +1,17 @@
+{% extends "master.html" %}
+
+{% block body %}
+<div class="page">
+{% if username %}
+<div class="heading">Welcome back,
+	<a href="/user/{{username}}" title="{{username}}'s activity">{{username}}</a>
+</div>
+{% endif %}
+
+{% block pagebody %}
+{% endblock %}
+
+<div class="timer"><span>Elapsed time: {{elapsed}}s</span></div>
+
+</div>
+{% endblock %}

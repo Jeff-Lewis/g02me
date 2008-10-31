@@ -25,7 +25,7 @@ class Map(db.Model):
     # Avoid self-referential and URL ping-pong with known URL redirection sites
     blackList = set(['g02.me', 'www.g02.me', 'localhost:8080',
                  'tinyurl.com', 'www.tinyurl.com', 'bit.ly', 'is.gd', 'snurl.com',
-                 'short.to', 'cli.gs', 'snipurl.com', ])
+                 'short.to', 'cli.gs', 'snipurl.com', 'ff.im'])
     
     url = db.StringProperty(required=True)
     title = db.StringProperty()

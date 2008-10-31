@@ -1,13 +1,6 @@
-{% extends "master.html" %}
+{% extends "pages.html" %}
 {% block subTitle %}A URL Shortening Service{% endblock %}
-{% block body %}
-<div class="page">
-{% if username %}
-<div class="heading">Welcome back,
-	<a href="/user/{{username}}" title="{{username}}'s activity">{{username}}</a>
-</div>
-{% endif %}
-
+{% block pagebody %}
 <a target="_top" href="/"><img title="G02.ME" class="logo" src="/images/logo.png"></a>
 <h1 style="padding-top: 35px;">A URL Shortening Service</h1>
 <p class="subhead">Shorten, Share, and Comment - then see what others are doing</p>
@@ -71,8 +64,5 @@ alt="Powered by Google App Engine" /></a>
 	{% endif %}
 {% endfor %}
 </table>
-<div style="margin-top:15px;text-align:center;"><span>Elapsed time: {{elapsed}}s</span></div>
 </div> <!-- right -->
-
-</div>
 {% endblock %}
