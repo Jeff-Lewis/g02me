@@ -254,3 +254,4 @@ X Share limit by user (same as view limit)
   - Don't offer delete for named comments NOT your own (username)
 - Throttle comment scoring by user
 - break up comments, map, and globals into their own .py files
+X Admin page timeout online! - turned off expensive querys

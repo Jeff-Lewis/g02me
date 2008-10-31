@@ -276,6 +276,7 @@ def AddToResponse(mp):
 def FinalResponse():
     local.mpResponse['elapsed'] = ResponseTime()
     local.mpResponse['now'] = local.dtNow
+    local.mpResponse['username'] =  local.cookies['username']
     return local.mpResponse
     
 def ResponseTime():

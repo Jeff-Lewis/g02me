@@ -74,7 +74,8 @@ def Head(req, id):
     map.Viewed()
     if IsJSON():
         return HttpJSON(req, obj=map.JSON())
-    return render_to_response('head.html', {'map': map, 'username':local.cookies['username'], 'TopTags':map.TopTags()})
+    AddToResponse({'map': map, 'TopTags':map.TopTags()})
+    return render_to_response('head.html', FinalResponse())
 
 def FrameSet(req, id):
     # http://g02me/N
@@ -134,9 +135,9 @@ def Admin(req, command=None):
           {'user':user,
            'req':req,
            'logout':users.create_logout_url(req.get_full_path()),
-           'Broken':Map.ss.Broken(),
-           'BadComments':Comment.BadComments(),
-           'BrokenComments':Comment.Broken(),
-           'BadCounts':Map.FindBadTagCounts(),
+           #'Broken':Map.ss.Broken(),
+           #'BadComments':Comment.BadComments(),
+           #'BrokenComments':Comment.Broken(),
+           #'BadCounts':Map.FindBadTagCounts(),
            'MemCache':[{'key':key, 'value':ms[key]} for key in ms.keys()],
            })

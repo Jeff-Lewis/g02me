@@ -71,6 +71,11 @@ width: 910px;
 margin: auto;
 }
 
+div.heading
+{
+float: right;
+}
+
 div.left
 {
 clear: left;

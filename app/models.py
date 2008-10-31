@@ -425,12 +425,12 @@ class Comment(db.Model):
     # Admin functions - used in /admin console -------------------
     
     @classmethod
-    def BadComments(cls):
+    def BadComments(cls, limit=100):
         comments = Comment.gql("WHERE comment = '' AND tags = ''")
-        return comments.fetch(100)
+        return comments.fetch(limit)
     
     @classmethod
-    def Broken(cls, limit=1000):
+    def Broken(cls, limit=100):
         # Return the broken links
         comments = db.Query(Comment).order('-dateCreated')
         return [comment for comment in comments.fetch(limit) if not comment.MapExists()]

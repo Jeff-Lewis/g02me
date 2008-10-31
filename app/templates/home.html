@@ -2,6 +2,11 @@
 {% block subTitle %}A URL Shortening Service{% endblock %}
 {% block body %}
 <div class="page">
+{% if username %}
+<div class="heading">Welcome back,
+	<a href="/user/{{username}}" title="{{username}}'s activity">{{username}}</a>
+</div>
+{% endif %}
 
 <a target="_top" href="/"><img title="G02.ME" class="logo" src="/images/logo.png"></a>
 <h1 style="padding-top: 35px;">A URL Shortening Service</h1>
@@ -50,7 +55,6 @@ alt="Powered by Google App Engine" /></a>
 </div> <!-- left -->
 
 <div class="right">
-
 <h2>Recently popular pages</h2>
 <p class="subhead">{{total_pages}} pages shared to date.</p>
 <table class="scores">
