@@ -78,6 +78,8 @@ X Test deployment
   - home(popular)
   - user "favorites"
   - user+tag
+  - use feedburner?
+  - make easy to get email update from feedburner (top page, and comments on user page)
 - User account
   - Claim a username by signing in
   - Require login to comment using a claimed username
@@ -185,6 +187,7 @@ X Use a 64-character set that excludes homoglpyhs (Joe Hruska)
 X Darken the light blue color a shade for readability (Kenshi Arasaki) -> 4cc6ed to 45AFD1
 X Add slash through the 0 in the G02.ME logo (Tony Wright)
 - Add thousands sep for counts in analytics (info, home, tags, user)
+  - Add as Django filter
 - Hitting back button after leaving a comment (or deleting comment) should not resubmit!
   - Chrome behavior only?
   - 
@@ -256,3 +259,23 @@ X Share limit by user (same as view limit)
 - break up comments, map, and globals into their own .py files
 X Admin page timeout online! - turned off expensive querys
 - Don't __share an item that's been shared by you previously (especially don't add duplicate comment entry)
+- Marcelo feedback:
+  - One-click install in IE
+    - Look for IE Add to Favorites extension
+  - "How to use G02.ME" instead of "Install the Bookmarklet"
+    - Call to Action box - stand out (bigger type/box/color/graphics)
+  - Declutter the home page by moving "What is G02.me" to another page.
+  - Global replace "URL" with "Link"
+- Tony feedback (see comp):
+  - Separate out username from comment box
+  - Shrink icon
+  - Separate out the input form from the title/comments 
+  - Help icon to explain comment format (hover?)
+- Enable users to make custom aliases
+    - if 6 characters or less prepend '~'
+    - slugify
+    - display aliases in info panel
+    - only allow 3 aliases per URL
+- Do screencast explaining what you can do with G02.ME
+- Space out rows of table on home page
+- Use 
