@@ -255,3 +255,4 @@ X Share limit by user (same as view limit)
 - Throttle comment scoring by user
 - break up comments, map, and globals into their own .py files
 X Admin page timeout online! - turned off expensive querys
+- Don't __share an item that's been shared by you previously (especially don't add duplicate comment entry)
