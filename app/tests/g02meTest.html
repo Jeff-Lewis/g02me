@@ -71,6 +71,7 @@ ts.AddTest("Map", function(ut)
 			{
 			var frame = document.createElement("iframe");
 			frame.src = "/" + objInit.id;
+			frame.style.width = "800px";
 			document.body.appendChild(frame);
 			tm = new UT.Timer(ut.NextFn.FnMethod(ut), 500).Active(true);
 			},

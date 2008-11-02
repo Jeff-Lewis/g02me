@@ -11,7 +11,7 @@ function BeforeUnload(evt)
 {
 	msUnloading = new Date().getTime();
 	
-	if (msUnloading - msLoaded < 3000)
+	if (msUnloading - msLoaded < 5000)
 		{
 		evt = evt || window.event || {};
 		evt.returnValue = "Click CANCEL to keep the G02.ME header at the top of the page.";

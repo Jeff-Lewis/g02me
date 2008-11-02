@@ -324,6 +324,8 @@ class Comment(db.Model):
     map = db.ReferenceProperty(Map)
     dateCreated = db.DateTimeProperty()
     
+    regComment = re.compile(r"^( *([a-zA-Z0-9_\.\-]+) *: *)?([^\[]*) *(\[(.*)\])? *$")
+    
     @classmethod
     def Create(cls, map, username='', comment='', tags=''):
         username = TrimString(username)
@@ -349,13 +351,14 @@ class Comment(db.Model):
         self.delete();
     
     @classmethod
-    def Parse(cls, st):
-        reg = re.compile(r"^( *([a-zA-Z0-9_\.\-+]+) *: *)?([^\[]*) *(\[(.*)\])? *$")
-        m = reg.match(st)
+    def Parse(cls, sUsername, sComment):
+        if sUsername != '':
+            sComment = "%s: %s" % (sUsername, sComment)
+            
+        m = Comment.regComment.match(sComment)
     
         if m == None:
             raise Error("Could not parse comment")
-        
         
         if m.group(5):
             tags = re.sub(" *, *", ',', m.group(5)).strip()
@@ -364,8 +367,13 @@ class Comment(db.Model):
             tags = ','.join(rTags)
         else:
             tags = ''
+            
+        # If not specified, default to the last username stored in the cookie
+        sUsername = m.group(2)
+        if not sUsername:
+            sUsername = local.cookies['username']
 
-        return {'username':m.group(2),
+        return {'username':sUsername,
                 'comment': m.group(3),
                 'tags': tags}
         

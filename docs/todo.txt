@@ -10,13 +10,15 @@ X Bookmarklet
 - Home
   ! Number of pages - calculate from ID
   - Number of views
-  - Number of people (unique IP?)
+  - Number of people (day/month)
   X IE instructions for creating bookmark
   X Recently popular pages
   - JSON api for most popular
   ! Tag cloud
+  - Top users
 - Info Header
 	- Info bar horizontal/vertical option
+	  - Default based on display orientation
 	- Pull web page image from Sphere or Alexa?
 	X Move comment bar to top - comments rev-chron below
 - User pages
@@ -72,7 +74,7 @@ X Domain registration - map
 X Analytics setup
 X Page title customization
 X Test deployment
-- RSS feeds:
+! RSS feeds:
   - user activity
   - tags
   - home(popular)
@@ -156,8 +158,9 @@ X urls.py - CatchAll
   - Base on 2x rate on next higher halfLife scale
 - Option to show /user/xxx sorted by popularity (not date of last comment) 
 - Mobile
-  - iPhone (bookmarklet)
-  - Other
+  - Bookmarklet?
+  - Simplified display
+  - Test on iPhone, Windows Mobile, Blackberry, G1
 X JSON Date format looks funny with 1 digit dates, hours, etc.
 ! Replies page for users - show follow on comments on URL's user's have shared or commented on.
   - Need "unfollow" capability to stop getting notified
@@ -170,10 +173,13 @@ X JSON Date format looks funny with 1 digit dates, hours, etc.
   - upper/lower case differences
   - use initially seen URL as canonical?
 X Add analytics tracking code to frameset - missing referer on map
-- Feature: Star the info page (faster than leaving a comment - but puts it in your comment queue)
+! Star the info page (faster than leaving a comment - but puts it in your comment queue)
   - Generate __fave comment
   - Icons in user activity for Shared, Commented, Favorite
-- Feature: New activity indicator in /user/xxx
+  - Custom RSS feed of favorited links
+  - Alternativly, "Follow" the infopage?
+  - Help users make live bookmarks?
+! Feature: New activity indicator in /user/xxx
   - Annotate Map with username (incl. anon) of most recent commenter (or comment seq #)
   - When viewing Info for a Map I've already commented on, update the dateViewed in that comment
   - Highlight comments (yellow background?) that have recent COMMENTS later than my last dateViewed.
@@ -261,7 +267,7 @@ X Admin page timeout online! - turned off expensive querys
 - Don't __share an item that's been shared by you previously (especially don't add duplicate comment entry)
 - Marcelo feedback:
   - One-click install in IE
-    - Look for IE Add to Favorites extension
+    - Look for IE Add to Favorites extension - window.external.AddFavorite(url, title)
   - "How to use G02.ME" instead of "Install the Bookmarklet"
     - Call to Action box - stand out (bigger type/box/color/graphics)
   - Declutter the home page by moving "What is G02.me" to another page.
@@ -269,6 +275,7 @@ X Admin page timeout online! - turned off expensive querys
 - Tony feedback (see comp):
   - Separate out username from comment box
   - Shrink icon
+  - Remove URL on page and substitute hover over title
   - Separate out the input form from the title/comments 
   - Help icon to explain comment format (hover?)
 - Enable users to make custom aliases
@@ -278,4 +285,4 @@ X Admin page timeout online! - turned off expensive querys
     - only allow 3 aliases per URL
 - Do screencast explaining what you can do with G02.ME
 - Space out rows of table on home page
-- Use 
+- Credit first sharer of each URL (in info and on popular pages)

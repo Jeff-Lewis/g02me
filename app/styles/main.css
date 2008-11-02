@@ -9,6 +9,8 @@ color: #3d94b0;
 h1 {
 margin: 0;
 font-size: 18px;
+white-space: nowrap;
+overflow: hidden;
 }
 
 h2 {
@@ -16,13 +18,33 @@ margin: 0;
 font-size: 16px;
 }
 
+p {
+margin: 3px 0px;
+}
+
 p.subhead {
 font-style: italic;
 margin-bottom: 15px;
 }
 
+p.help {
+font-style: italic;
+color: #CDAC6D;
+}
+
+p.url {
+font-size: 10px;
+white-space: nowrap;
+overflow: hidden;
+}
+
 a {
 color: #45AFD1;
+text-decoration: none;
+}
+
+a:hover {
+text-decoration: underline;
 }
 
 img {
@@ -36,14 +58,15 @@ float: left;
 margin-right: 10px;
 }
 
-img.x:hover {
-cursor: pointer;
+img.logo-small {
+width: 51px;
+height: 34px;
+float: left;
+margin-right: 10px;
 }
 
-div.ur {
-float: right;
-margin-left: 10px;
-width: 150px;
+img.x:hover {
+cursor: pointer;
 }
 
 li {
@@ -51,72 +74,100 @@ line-height: 18px;
 margin-left: -5px;
 }
 
-p {
-margin: 3px 0px;
+/* Info-bar styles (for head.html) */
+
+#info-status {
+float: right;
+padding-left: 10px;
+width: 150px;
 }
 
-div.entry {
-width: 700px;
-margin-left: 90px;
+#info-body {
+margin-right: 160px
 }
 
-div.comments p
-{
+#info-form {
+clear: left;
+padding-top: 6px;
+}
+
+#info-form input[type=submit] {
+float:right;
+width: 70px;
+}
+
+#info-form label {
+float: left;
+font-size: 12px;
+}
+
+#info-form input[type=text] {
+width: 100%;
+background-color: #EEE;
+border: 1px solid #AAA;
+padding: 1px 0;
+margin: 1px;
+}
+
+div.comments p {
 color: #AAA;
 }
 
-div.page
-{
+/* Page-specific styles (based on pages.html master template) */
+
+div.page {
 width: 910px;
 margin: auto;
 }
 
-div.heading
-{
+div.heading {
 float: right;
 }
 
-div.left
-{
+div.left {
 clear: left;
 width: 350px;
 float: left;
 }
 
-div.right
-{
+div.right {
 float: right;
 width: 540px;
 padding-left: 10px;
 border-left: 1px solid #45AFD1;
 }
 
-div.timer
-{
+div.timer {
 clear: both;
 padding-top:15px;
 text-align:center;
 }
 
-div.bottom
-{
+div.bottom {
 clear:both;
 text-align:center;
 padding-top: 25px;
 }
 
-table.scores th
-{
-text-align: left;
+table {
+border-collapse: collapse;
 }
 
-table.scores td.num
-{
+table.scores th {
+text-align: left;
+border-bottom: 1px solid;
+padding-right: 10px;
+}
+
+table.scores td {
+vertical-align: top;
+padding-bottom: 3px;
+}
+
+table.scores td.num {
 text-align: center;
 }
 
-table.scores td.age
-{
-width: 100px;
+table.scores td.age {
 white-space: nowrap;
 }

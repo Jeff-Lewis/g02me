@@ -36,8 +36,15 @@ def Lookup(req):
     logging.info("lookup")
     return HttpResponseRedirect("/%s" % map.GetId())
 
+def Signout(req):
+    local.cookies['username'] = ''
+    return HttpResponseRedirect('/')
+
 def DoComment(req, command=None):
     RequireUserAuth(True)
+    if local.requser.FRepeated():
+        raise Error("Duplicate request", "Fail")
+
     if command == 'delete':
         cid = req.GET.get('cid', '').strip()
         try:
@@ -57,8 +64,8 @@ def DoComment(req, command=None):
         if map == None:
             RaiseNotFound(id)
             
-        parts = Comment.Parse(req.GET.get('comment', ""))
-    
+        parts = Comment.Parse(req.GET.get('username', ''), req.GET.get('comment', ''))
+        
         map.AddComment(username=parts['username'], comment=parts['comment'], tags=parts['tags'])
 
     if IsJSON():

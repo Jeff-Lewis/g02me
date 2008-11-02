@@ -3,8 +3,9 @@
 {% block body %}
 <div class="page">
 {% if username %}
-<div class="heading">Welcome back,
-	<a href="/user/{{username}}" title="{{username}}'s activity">{{username}}</a>
+<div class="heading">
+	Welcome <a href="/user/{{username}}" title="{{username}}'s activity">{{username}}</a> |
+	<a href="/signout/">Sign out</a>
 </div>
 {% endif %}
 

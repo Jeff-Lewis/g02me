@@ -1,4 +1,7 @@
 {% extends "master.html" %}
+
+{% block subTitle %}{{map.title|escape}}{% endblock %}
+
 {% block head %}
 <script>
 
@@ -23,33 +26,43 @@ window.onclick = Click;
 </script>
 {% endblock %}
 
-{% block subTitle %}{{map.title|escape}}{% endblock %}
-
 {% block body %}
-<a target="_top" href="/" title="G02.ME Home | Popular Pages"><img class="logo" src="/images/logo.png"></a>
 
-<div class="ur">
-<a target="_top" href="{{map.Href}}" title="Close Frame">Close</a>
-<a target="_top" href="{{map.Href}}" title="Close Frame"><img class="x" src="/images/x.png"/></a>
-<p>Shared: {{map.shareCount}}</p>
-<p>Viewed: {{map.viewCount}}</p>
-<p>Comments: {{map.CommentCount}}</p>
-<p>Tags: 
-{% for tag in TopTags %}
-	<a target="_top" href="/tag/{{tag}}" title="Recently popular | {{tag}}">{{tag|escape}}</a>{% if not forloop.last %}, {% endif %}
-{% endfor %}
-</p>
-</div>
+<div id="info-status">
+	<p>{% if username %}
+		<a target="_top" href="/user/{{username}}" title="{{username}}'s activity">{{username}}</a> |
+	   {% endif %}
+		<a target="_top" href="{{map.Href}}" title="Close Frame">Close</a>
+		<a target="_top" href="{{map.Href}}" title="Close Frame"><img class="x" src="/images/x.png"/></a></p>
+	<p>Shared: {{map.shareCount}}</p>
+	<p>Viewed: {{map.viewCount}}</p>
+	<p>Comments: {{map.CommentCount}}</p>
+	<p>Tags: 
+	{% for tag in TopTags %}
+		<a target="_top" href="/tag/{{tag}}" title="Recently popular | {{tag}}">{{tag|escape}}</a>{% if not forloop.last %}, {% endif %}
+	{% endfor %}
+	</p>
+</div> <!-- info-status -->
 
-<h1><a target="_top" href="{{map.Href}}">{{map.title|escape}}</a></h1>
-<p>{{map.url|escape}}</p>
+<div id="info-body">
+<a target="_top" href="/" title="G02.ME Home | Popular Pages"><img class="logo-small" src="/images/logo-small.png"></a>
+<h1><a target="_top" href="{{map.Href}}" title="{{map.url|escape}}">{{map.title|escape}}</a></h1>
+<p class="url">{{map.url|escape}}</p>
 
-<div class="entry">
+<div id="info-form">
   <form action="/comment/" method="get">
   <input type="hidden" name="id" value="{{map.GetId}}"/>
-  <label for="comment">Comment: </label>
-  <input style="width:500px;" type="text" id="comment" name="comment" value="{% if username %}{{username}}: {% endif %}"/>&nbsp;<input type="submit" value="Post"/>
-  <br/><i>Example: "username: what do you think of this page [tag1, tag2, ...]"</i>
+  <table><tr>
+    {% if not username %}
+      <td><label for="username">Nickname: </label></td>
+      <td><input style="width:70px;" type="text" id="username" name="username"/></td>
+    {% endif %}
+    <td><label for="comment">Comment: </label></td>
+  	<td style="width:100%"><input type="text" id="comment" name="comment"/></td>
+  	<td style="width:5px;">&nbsp;</td>
+    <td><input type="submit" value="Post"/></td>
+  </tr></table>
+  <p class="help">Comment format: "nickname: text of your comment [tag1, tag2, ...]"</p>
   </form>
 </div>
 
@@ -68,6 +81,9 @@ window.onclick = Click;
     </p>{% endspaceless %}
 {% endfor %}
 </div>
+
+</div> <!-- info-body -->
+
 {% endblock %}
 
 {% block footer %}{%endblock %}

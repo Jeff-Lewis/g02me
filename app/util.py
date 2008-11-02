@@ -1,5 +1,7 @@
 from google.appengine.api import users
+from google.appengine.api import memcache
 from google.appengine.ext import db
+
 
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render_to_response
@@ -124,6 +126,7 @@ class ReqFilter(object):
         local.dtNow = datetime.now()
         local.sSecret = models.Globals.SGet(settings.sSecretName, "test server key")
         local.mpResponse = {}
+        local.requser = ReqUser(req)
         
     def process_response(self, req, resp):
         # If the user has no valid userAuth token, given them one for the next request
@@ -148,35 +151,48 @@ class ReqFilter(object):
             return e.resp
         if isinstance(e, Error):
             return HttpError(req, e.obj['message'], obj=e.obj)
+        # TODO - write exception backtrace into log file
         logging.error("Uncaught exception")
         if not settings.DEBUG:
             return HttpError(req, "Application Error", {'status': 'Fail'})
         
 class ReqUser(object):
-    aPerms = ['view', 'view-count', 'share', 'comment', 'comment-delete', 'admin', 'block']
+    """
+    Permissions:
+        'view': Can view (read-only) data from site
+        'view-count': Can update view counts
+        'share': Can share new url's
+        'comment': Can comment (or delete comments) on url's
+        'admin': Can use admin page
+    """
     mpPermMessage = {}
     mpPermError = {}
 
     def __init__(self, req):
         # Nothing allowed by default!
-        self.perm = {}
-        for p in self.aPerms:
-            self.perm[p] = False
+        self.req = req
+        self.mpAllowed = set()
 
         self.ip = req.META['REMOTE_ADDR']
 
+        # Allow 10 writes per minute on average for one authenticated user
         rateWriteMax = 10
         try:
             self.ua = SGetSigned('ua', req.COOKIES['userAuth'])
         except:
+            # Only 2 writes per minute for anonymous user
             self.ua = self.ip
             rateWriteMax = 2
 
-        if Block.FBlocked(ua):
+        if Block.FBlocked(self.ua):
             return
+        self.mpAllowed.add('view')
         self.user = users.get_current_user()
-        self.fAdmin = users.is_current_user_admin()
-        rate = MemRate("throttle.ua.%s" % ua, rateWriteMax, 60)
+        if users.is_current_user_admin():
+            self.mpAllowed.add('admin')
+        rate = MemRate("throttle.ua.%s" % self.ua, rateWriteMax, 60)
+        if not rate.Exceeded():
+            self.mpAllowed |= set(['view-count', 'share', 'comment'])
         
     def FAllow(self, perm):
         return self.perm[perm]
@@ -191,9 +207,17 @@ class ReqUser(object):
                 code = self.mpPermCode[perm]
             raise Error(message, code)
         
-        
+    def FRepeated(self):
+        # Check for successive duplicate requests - same user, same path
+        key = 'repeat.ua.%s' % self.ua
+        repeat = memcache.get(key)
+        if repeat == self.req.get_full_path():
+            return True
+        memcache.set(key, self.req.get_full_path())
+        return False
+
 class Block(db.Model):
-    # Block requests for abuse by IP or Cookie
+    # Block requests for abuse by IP or User Auth cookie
     ua = db.StringProperty(required=True)
     dateCreated = db.DateTimeProperty()
     
@@ -208,18 +232,20 @@ class Block(db.Model):
         
     @staticmethod
     def FBlocked(ua):
-        block = memcache.get(self.KeyFromUa(ua))
+        key = Block.KeyFromUa(ua)
+        block = memcache.get(key)
         if block is not None:
             return True
-        block = Block.get_by_key_name(self.KeyFromUa(ua))
+        block = Block.get_by_key_name(key)
         if block is not None:
-            memcache.set(self.KeyFromUa(ua), True)
+            memcache.set(key, True)
             return True
         return False
     
     @staticmethod
     def KeyFromUa(ua):
-        return 'block.ua.' % ua
+        return 'block.ua.%s' % ua
+    
 
 # --------------------------------------------------------------------
 # Response object for error reporting - handles JSON calls as well

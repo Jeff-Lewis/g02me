@@ -12,6 +12,7 @@ handlers:
 
 - url: /tests
   static_dir: tests
+  login: admin
 
 - url: /images
   static_dir: images
