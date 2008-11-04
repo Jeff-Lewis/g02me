@@ -26,7 +26,7 @@ class ScoreSet(db.Model):
     
     def Update(self, model, value, dt=None, tags=None):
         if dt is None:
-            dt = datetime.now()
+            dt = util.local.dtNow
         scores = self.ScoresForModel(model)
         if scores.count() == 0:
             scores = []
@@ -77,7 +77,7 @@ class Score(db.Model):
     
     def Update(self, value, dt=None, tags=None):
         if dt is None:
-            dt = datetime.now()
+            dt = util.local.dtNow
         value = float(value)
         k = 0.5 ** (1.0/self.hrsHalf)
         
@@ -101,7 +101,7 @@ class Score(db.Model):
         
     def ScoreNow(self, dt=None):
         if dt is None:
-            dt = datetime.now()
+            dt = util.local.dtNow
         hrs = Score.Hours(dt)
         k = 0.5 ** (1.0/self.hrsHalf)
         return (k ** (hrs - self.hrsLast)) * self.S
@@ -146,7 +146,7 @@ class Rate(object):
         
     def Exceeded(self, value=1, dt=None):
         if dt is None:
-            dt = datetime.now()
+            dt = util.local.dtNow
         secs = self.Secs(dt)
         
         # Ignore times in the past

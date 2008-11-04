@@ -51,7 +51,7 @@ class Map(db.Model):
         if rg[1] in Map.blackList:
             raise Error("Can't create link to domain: %s" % rg[1], status="Fail/Domain")
         title = unicode(title, 'utf8')
-        dateCreated = datetime.now()
+        dateCreated = local.dtNow
         id = Map.__IdNext()
         map = Map(key_name=Map.KeyFromId(id), url=url, title=title, userAuthFirst=userAuthFirst,
                   dateCreated=dateCreated, usernameCreator=local.cookies['username'])
@@ -170,12 +170,13 @@ class Map(db.Model):
             self.put()
             self.ss.Update(self, self.scoreShare, dt=local.dtNow, tags=self.TopTags())
             self._FLimitStats()
+
+            # Overload the comment to record when a (registered user) shares a URL
+            if local.cookies['username'] != '':
+                self.AddComment(username=local.cookies['username'], comment="__share")
         else:
             self.put()
 
-        # Overload the comment to record when a (registered user) shares a URL
-        if local.cookies['username'] != '':
-            self.AddComment(username=local.cookies['username'], comment="__share")
         
     def Viewed(self):
         if self._FLimitStats():
@@ -336,7 +337,7 @@ class Comment(db.Model):
         userAuth = RequireUserAuth(True)
         comment = TrimString(comment)
         tags = TrimString(tags)
-        dateCreated = datetime.now()
+        dateCreated = local.dtNow
         
         if tags == '' and comment == '':
             raise Error("Empty comment")
@@ -453,4 +454,25 @@ class Comment(db.Model):
     def MissingCreator(cls, limit=200):
         # Return the broken links
         comments = Comment.gql("WHERE comment = '__share' ORDER BY dateCreated DESC")
-        return [comment for comment in comments.fetch(limit) if comment.map.usernameCreator != comment.username]
+        aMissing = []
+        for comment in comments.fetch(limit):
+            if comment.map.usernameCreator is not None:
+                continue
+            ddt = abs(comment.dateCreated - comment.map.dateCreated)
+            if ddt.days == 0 and ddt.seconds < 10:
+                aMissing.append(comment)
+        return aMissing
+    
+    @classmethod
+    def FixMissingCreators(cls, comments):
+        for comment in comments:
+            if comment.map.usernameCreator is None and comment.username != '':
+                comment.map.usernameCreator = comment.username
+                comment.map.put()
+    
+    
+    
+    
+    
+    
+    

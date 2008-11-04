@@ -13,6 +13,7 @@
 <br/><a href="/admin/clean-comments">Remove Empty Comments</a>
 <br/><a href="/admin/clean-broken-comments">Remove Broken Comments</a>
 <br/><a href="/admin/fix-tag-counts">Fix Tag Counts</a>
+<br/><a href="/admin/fix-missing-creators">Fix Missing Creators</a>
 </div> <!-- left -->
 
 <div class="right">
@@ -47,11 +48,12 @@
 
 <h2>Missing Creator: {{MissingCreator|length}}</h2>
 <table class="scores">
-<tr><th>comment</th><th>dateCreated</th><th>Shared By</th><th>Creator</th></tr>
+<tr><th>comment</th><th>Cmt Date</th><th>Link Date</th><th>Shared By</th><th>Creator</th></tr>
 {% for comment in MissingCreator %}
 	<tr>
-		<td>{{comment.comment|escape}}</td>
-		<td class="num">{{comment.dateCreated|date:"m/d/y H:i"}}</td>
+		<td><a href="/{{comment.map.GetId}}">{{comment.map.GetId}}</a></td>
+		<td class="num">{{comment.dateCreated|date:"m/d/y H:i:s"}}</td>
+		<td class="num">{{comment.map.dateCreated|date:"m/d/y H:i:s"}}</td>
 		<td class="num">{{comment.username}}</td>
 		<td class="num">{{comment.map.Creator}}</td>
 	</tr>

@@ -134,6 +134,11 @@ def Admin(req, command=None):
             maps = Map.FindBadTagCounts()
             logging.info("Fixing %d bad tag counts" % len(maps))
             Map.FixTagCounts(maps)
+            
+        if command == 'fix-missing-creators':
+            comments = Comment.MissingCreator()
+            logging.info("Fixing %d missing creators" % len(comments))
+            Comment.FixMissingCreators(comments)
 
         return HttpResponseRedirect("/admin/")
 

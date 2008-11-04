@@ -32,12 +32,12 @@ window.onclick = Click;
 
 <div id="info-status">
 	<p class="stats-header">
-		<a style="float:right;padding-top:2px;padding-right:2px;"target="_top" href="{{map.Href}}" title="Close Frame"><img class="x" src="/images/x.png"/></a>
+		<a style="float:right;padding-top:2px;padding-right:2px;" target="_top" href="{{map.Href}}" title="Close Frame"><img class="x" src="/images/x.png"/></a>
 		Stats
 	</p>
 	<p>Created: {{map.Age}}</p>
 	{% if map.Creator %}
-	<p>By: <a href="/user/{{map.Creator}}">{{map.Creator}}</a></p>
+	<p>By: <a href="/user/{{map.Creator}}" target="_top">{{map.Creator}}</a></p>
 	{% endif %}
 	<p>Shared: {{map.shareCount}}</p>
 	<p>Viewed: {{map.viewCount}}</p>
