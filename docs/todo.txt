@@ -145,7 +145,7 @@ X Dates display in local time - use relative age instead
   - info pages
     - statistics (write through view counter)
     - comments
-  - home page (keep for 60 seconds)
+  - home page (keep for 60 seconds) - Adjust expires header
   - tag pages (keep until url added to tag - age at 5 minutes)
 X Decrement map TopTags when deleting a comment
 X BUG: Empty tag showing up?
@@ -173,6 +173,11 @@ X JSON Date format looks funny with 1 digit dates, hours, etc.
     - Use the most recent 100 comments by a user as their "following" list.
     - Annotate Map with username (incl. anon) of most recent commenter (or comment seq #)
     - Highlight all comments where last commenter is NOT yourself (or comment seq # > than user's comment)
+  - Create RSS feed - and instructions on getting mail for the feed (feedburner?)
+! Feature: New activity indicator in /user/xxx
+  - Annotate Map with username (incl. anon) of most recent commenter (or comment seq #)
+  - When viewing Info for a Map I've already commented on, update the dateViewed in that comment
+  - Highlight comments (yellow background?) that have recent COMMENTS later than my last dateViewed.
 - Reduce duplication of URL's
   - www.* vs *
   - upper/lower case differences
@@ -181,13 +186,9 @@ X Add analytics tracking code to frameset - missing referer on map
 ! Star the info page (faster than leaving a comment - but puts it in your comment queue)
   - Generate __fave comment
   - Icons in user activity for Shared, Commented, Favorite
-  - Custom RSS feed of favorited links
+  - Custom RSS feed of favorited links (can all be in one page)
   - Alternativly, "Follow" the infopage?
   - Help users make live bookmarks?
-! Feature: New activity indicator in /user/xxx
-  - Annotate Map with username (incl. anon) of most recent commenter (or comment seq #)
-  - When viewing Info for a Map I've already commented on, update the dateViewed in that comment
-  - Highlight comments (yellow background?) that have recent COMMENTS later than my last dateViewed.
 X Use a 64-character set that excludes homoglpyhs (Joe Hruska)
   - 1 i I l (el) | o O 0 | - _ | rn m | cl d | vv w
   - Safe characters to use are: 0-9, A-Z, a-z, -_  (original 64) PLUS: '()*.~  and MAYBE: <>|{}\^[]`
@@ -199,10 +200,17 @@ X Darken the light blue color a shade for readability (Kenshi Arasaki) -> 4cc6ed
 X Add slash through the 0 in the G02.ME logo (Tony Wright)
 - Add thousands sep for counts in analytics (info, home, tags, user)
   - Add as Django filter
-- Hitting back button after leaving a comment (or deleting comment) should not resubmit!
+X Hitting back button after leaving a comment (or deleting comment) should not resubmit!
   - Chrome behavior only?
-  - 
 - Put all site-specific code in settings.py (analytics account number, G02.ME name, etc.)
+  - Analytics account id
+  - G02.ME host name
+- Move primary domain to "go2.me".
+  - Direct go2.me to ghs
+  - Add nake domain
+  - Once working, and 301 redirection from g02.me
+  - Move Blog to go2.me
+    - Redirect blog.g02.me to blog.go2.me
 - Recursive attacks
 	X Block links to other URL shoteners (tinyurl.com, www.tinyurl.com, bit.ly, is.gd, etc.)
 	- Move from GET to PUT
@@ -243,6 +251,7 @@ X Share limit by user (same as view limit)
 - Unit test failing on empty database
 - Truncate titles with elipses in views
 - Shared count of ZERO(!) for http://g02.me/3g????
+  - Side effect of throttling un-authorized users
 - Spam - faked title - /3f
 ! Reorganize login permissions to treat it globally rather than ad-hoc per function
   - User permission levels:
@@ -257,7 +266,7 @@ X Share limit by user (same as view limit)
       - Delete anonymous comments
     - Registered user 
     - Admin user
-- Throttle/Filter architecture
+! Throttle/Filter architecture
    - Anon IP -> read only, 1/60 write rate
    - Cookied -> 10/60 write rate
    - Blocked Cookie -> No access (Server Busy)
@@ -281,7 +290,7 @@ X Admin page timeout online! - turned off expensive querys
   - "How to use G02.ME" instead of "Install the Bookmarklet"
     - Call to Action box - stand out (bigger type/box/color/graphics)
   - Declutter the home page by moving "What is G02.me" to another page.
-  - Global replace "URL" with "Link"
+  X Global replace "URL" with "Link"
 X Tony feedback (see comp):
   X Separate out username from comment box
   X Shrink icon
@@ -292,10 +301,12 @@ X Tony feedback (see comp):
     - if 6 characters or less prepend '~'
     - slugify
     - display aliases in info panel
-    - only allow 3 aliases per URL
+    - allow 3 aliases per URL
 - Do screencast explaining what you can do with G02.ME
-- Space out rows of table on home page
+X Space out rows of table on home page
 - Credit first sharer of each URL (in info and on popular pages)
 - Get more comprehensive server processing times with code in main.py (inclusive of
   django response handling).
 X Fix timer to end of page!
+- Record nickname of first sharer - show in Created field (n days ago by USER)
+- Install profiling to do performance testing and tuning
