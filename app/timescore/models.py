@@ -37,14 +37,14 @@ class ScoreSet(db.Model):
         for s in scores:
             s.Update(value, dt, tags=tags)
             
-    def Best(self, hrsHalf=24, limit=100, tag=None):
+    def Best(self, hrsHalf=24, limit=50, tag=None):
         if tag:
             scores = Score.gql('WHERE name = :name AND hrsHalf = :hrsHalf AND tag = :tag ORDER BY LogS DESC', name=self.name, hrsHalf=hrsHalf, tag=tag)
         else:
             scores = Score.gql('WHERE name = :name AND hrsHalf = :hrsHalf ORDER BY LogS DESC', name=self.name, hrsHalf=hrsHalf)
         return scores.fetch(limit)
     
-    def Broken(self, limit=1000):
+    def Broken(self, limit=100):
         # Return the broken links
         scores = Score.gql('WHERE name = :name ORDER BY hrsLast DESC', name=self.name)
         return [score for score in scores.fetch(limit) if not score.ModelExists()]
