@@ -146,5 +146,6 @@ def Admin(req, command=None):
            #'BadComments':Comment.BadComments(),
            #'BrokenComments':Comment.Broken(),
            #'BadCounts':Map.FindBadTagCounts(),
+           'MissingCreator':Comment.MissingCreator(),
            'MemCache':[{'key':key, 'value':ms[key]} for key in ms.keys()],
            })

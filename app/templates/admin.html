@@ -32,6 +32,7 @@
 </table>
 
 <h2>Bad Comments: {{BadComments|length}}</h2>
+
 <h2>Broken Comments: {{ BrokenComments|length }} </h2>
 <table class="scores">
 <tr><th>comment</th><th>dateCreated</th><th>MapKey</th></tr>
@@ -40,6 +41,19 @@
 		<td>{{comment.comment|escape}}</td>
 		<td class="num">{{comment.dateCreated}}</td>
 		<td class="num">{{comment.MapKey}}</td>
+	</tr>
+{% endfor %}
+</table>
+
+<h2>Missing Creator: {{MissingCreator|length}}</h2>
+<table class="scores">
+<tr><th>comment</th><th>dateCreated</th><th>Shared By</th><th>Creator</th></tr>
+{% for comment in MissingCreator %}
+	<tr>
+		<td>{{comment.comment|escape}}</td>
+		<td class="num">{{comment.dateCreated|date:"m/d/y H:i"}}</td>
+		<td class="num">{{comment.username}}</td>
+		<td class="num">{{comment.map.Creator}}</td>
 	</tr>
 {% endfor %}
 </table>

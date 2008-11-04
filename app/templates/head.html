@@ -31,12 +31,14 @@ window.onclick = Click;
 <div style="clear:both;"></div>
 
 <div id="info-status">
-	<p>{% if username %}
-		<a target="_top" href="/user/{{username}}" title="{{username}}'s activity">{{username}}</a> |
-	   {% endif %}
-		<a target="_top" href="{{map.Href}}" title="Close Frame">Close</a>
-		<a target="_top" href="{{map.Href}}" title="Close Frame"><img class="x" src="/images/x.png"/></a></p>
-	<p>Age: {{map.Age}}</p>
+	<p class="stats-header">
+		<a style="float:right;padding-top:2px;padding-right:2px;"target="_top" href="{{map.Href}}" title="Close Frame"><img class="x" src="/images/x.png"/></a>
+		Stats
+	</p>
+	<p>Created: {{map.Age}}</p>
+	{% if map.Creator %}
+	<p>By: <a href="/user/{{map.Creator}}">{{map.Creator}}</a></p>
+	{% endif %}
 	<p>Shared: {{map.shareCount}}</p>
 	<p>Viewed: {{map.viewCount}}</p>
 	<p>Comments: {{map.CommentCount}}</p>

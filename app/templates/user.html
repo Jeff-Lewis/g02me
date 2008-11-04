@@ -22,7 +22,11 @@
 		<td class="num">{{comment.map.shareCount}}</td>
 		<td class="num">{{comment.map.viewCount}}</td>
 		<td class="num">{{comment.map.CommentCount}}</td>
-		<td class="age">{{comment.map.Age}}</td>
+		<td class="age">{{comment.map.Age}}
+			{% if comment.map.Creator %}
+				by <a href="/user/{{comment.map.Creator}}">{{comment.map.Creator}}</a>
+			{% endif %}
+		</td>
 	</tr>
 {% endfor %}
 </table>

@@ -13,7 +13,11 @@
 		<td class="num">{{page.model.shareCount}}</td>
 		<td class="num">{{page.model.viewCount}}</td>
 		<td class="num">{{page.model.CommentCount}}</td>
-		<td class="age">{{page.model.Age}}</td>
+		<td class="age">{{page.model.Age}}
+			{% if page.model.Creator %}
+				by <a href="/user/{{page.model.Creator}}">{{page.model.Creator}}</a>
+			{% endif %}
+		</td>
 	</tr>
 	{% endif %}
 {% endfor %}

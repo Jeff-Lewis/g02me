@@ -78,8 +78,17 @@ margin-left: -5px;
 
 #info-status {
 float: right;
-padding-left: 10px;
-width: 150px;
+margin-left: 5px;
+padding-left: 5px;
+width: 180px;
+border-left: 1px solid #45AFD1;
+}
+
+p.stats-header {
+text-align: center;
+font-weight: bold;
+color: white;
+background-color: #45AFD1;
 }
 
 #info-body {

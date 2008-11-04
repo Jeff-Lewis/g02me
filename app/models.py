@@ -30,6 +30,7 @@ class Map(db.Model):
     url = db.StringProperty(required=True)
     title = db.StringProperty()
     userAuthFirst = db.StringProperty()
+    usernameCreator = db.StringProperty()
     dateCreated = db.DateTimeProperty()
     viewCount = db.IntegerProperty(default=0)
     shareCount = db.IntegerProperty(default=0)
@@ -53,7 +54,7 @@ class Map(db.Model):
         dateCreated = datetime.now()
         id = Map.__IdNext()
         map = Map(key_name=Map.KeyFromId(id), url=url, title=title, userAuthFirst=userAuthFirst,
-                  dateCreated=dateCreated)
+                  dateCreated=dateCreated, usernameCreator=local.cookies['username'])
         return map
     
     @staticmethod
@@ -201,6 +202,9 @@ class Map(db.Model):
 
     def Age(self):
         return SAgeReq(self.dateCreated)
+    
+    def Creator(self):
+        return self.usernameCreator
     
     def Href(self):
         return Href(self.url)
@@ -444,3 +448,9 @@ class Comment(db.Model):
         # Return the broken links
         comments = db.Query(Comment).order('-dateCreated')
         return [comment for comment in comments.fetch(limit) if not comment.MapExists()]
+    
+    @classmethod
+    def MissingCreator(cls, limit=200):
+        # Return the broken links
+        comments = Comment.gql("WHERE comment = '__share' ORDER BY dateCreated DESC")
+        return [comment for comment in comments.fetch(limit) if comment.map.usernameCreator != comment.username]
