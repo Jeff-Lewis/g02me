@@ -305,10 +305,11 @@ def FinalResponse():
     local.mpResponse['username'] =  local.cookies['username']
     return local.mpResponse
     
-def ResponseTime():
-    ddt = datetime.now() - local.dtNow 
-    sec = ddt.seconds + float(ddt.microseconds)/1000000
-    return "%1.2f" % sec
+class ResponseTime(object):
+    def __str__(self):
+        ddt = datetime.now() - local.dtNow 
+        sec = ddt.seconds + float(ddt.microseconds)/1000000
+        return "%1.2f" % sec
         
 # --------------------------------------------------------------------
 # Ensure user is signed in for request to procede
