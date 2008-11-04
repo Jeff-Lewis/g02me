@@ -207,6 +207,11 @@ X Add slash through the 0 in the G02.ME logo (Tony Wright)
 	X Block links to other URL shoteners (tinyurl.com, www.tinyurl.com, bit.ly, is.gd, etc.)
 	- Move from GET to PUT
 - Paging control for user activity pages
+  - Implement as month ranges
+  - Indicate in page header that older pages have NOT been updated (no need for crawlers to re-index)
+  - Links in home user activity page to named month ranges ("mckoss's activity for October 2008")
+  - Build efficient queries for all activity in a month - limit to 50 comments
+  - Potential for unreachable comments beyond 50 comments in any one month
 - Require a request key for comments and all JSON requests
 - Disallow + is username?
 X Add random bits to userAuth token!  (1 minute resolution only now)
@@ -293,4 +298,4 @@ X Tony feedback (see comp):
 - Credit first sharer of each URL (in info and on popular pages)
 - Get more comprehensive server processing times with code in main.py (inclusive of
   django response handling).
-- Fix timer to end of page!
+X Fix timer to end of page!
