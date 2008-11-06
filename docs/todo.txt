@@ -310,3 +310,13 @@ X Space out rows of table on home page
 X Fix timer to end of page!
 - Record nickname of first sharer - show in Created field (n days ago by USER)
 - Install profiling to do performance testing and tuning
+- Multiple __share comments per user are possible - shouldn't be
+- Google User Accounts
+  - Persistent cookie (30 days) in lieu of Google Auth
+- Twitter features
+  - User Profile Page - twitter info
+  - Anonymous twitter encrypted cookie
+  - RSS Feed auto-twitter
+  - Claim your account button
+  - Allow claiming of account with pseudonomyous twitter user name
+- Polls
