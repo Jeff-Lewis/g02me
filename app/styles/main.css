@@ -104,11 +104,11 @@ overflow: hidden;
 min-width: 400px;
 }
 
-#info-form label {
+label {
 font-size: 12px;
 }
 
-#info-form input[type=text] {
+input[type=text] {
 background-color: #EEE;
 border: 1px solid #AAA;
 padding: 1px 2px;
@@ -128,6 +128,7 @@ margin: auto;
 
 div.heading {
 float: right;
+white-space: nowrap;
 }
 
 div.left {

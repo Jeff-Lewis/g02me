@@ -141,7 +141,7 @@ class ReqFilter(object):
                 resp.set_cookie(name, local.cookies[name], max_age=60*60*24*30)
             else:
                 resp.delete_cookie(name)
-        # BUG: Should allow client caching of home and /tag pages - 60 seconds
+        # TODO: Should allow client caching of home and /tag pages - 60 seconds
         resp['Cache-Control'] = 'no-cache'
         resp['Expires'] = '0'
         return resp
@@ -264,7 +264,8 @@ def HttpError(req, stError, obj={}):
         http_status = 404  
     t = loader.get_template('error.html')
     logging.info("Error: %r" % obj)
-    resp = HttpResponse(t.render(Context(obj)))
+    AddToResponse(obj)
+    resp = HttpResponse(t.render(Context(FinalResponse())))
     resp.status_code = http_status
     return resp
 
@@ -283,7 +284,7 @@ class DirectResponse(Exception):
         self.resp = resp
         
 def RaiseNotFound(id):
-    raise Error("The G02.ME page, http://g02.me/%s, does not exist" % id, obj={'id':id, 'status':'Fail/NotFound'})
+    raise Error("The %s page, %s/%s, does not exist" % (settings.sSiteName, local.stHost, id), obj={'id':id, 'status':'Fail/NotFound'})
 
 def IsJSON():
     return local.req.has_key("callback")
@@ -300,12 +301,19 @@ def AddToResponse(mp):
     local.mpResponse.update(mp)
 
 def FinalResponse():
-    local.mpResponse['elapsed'] = ResponseTime()
-    local.mpResponse['now'] = local.dtNow
-    local.mpResponse['username'] =  local.cookies['username']
+    AddToResponse({
+        'elapsed': ResponseTime(),
+        'now': local.dtNow,
+        'username': local.cookies['username'],
+        'analytics_code': settings.sAnalyticsCode,
+        'site_name': settings.sSiteName,
+        'site_host': settings.sSiteHost,
+        'host': local.stHost,
+        })
     return local.mpResponse
     
 class ResponseTime(object):
+    # Object looks like a string object - evaluates with time since start of request
     def __str__(self):
         ddt = datetime.now() - local.dtNow 
         sec = ddt.seconds + float(ddt.microseconds)/1000000

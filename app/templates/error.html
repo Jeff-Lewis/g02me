@@ -1,7 +1,7 @@
 {% extends "master.html" %}
-
+{% block subTitle %}Error - {{ message|escape }}{% endblock %}
 {% block body %}
-<a target="_top" href="/"><img title="G02.ME" class="logo" src="/images/logo.png"></a>
+<a target="_top" href="/"><img title="{{site_name}}" class="logo" src="/images/logo.png"></a>
 <h2>Error: {{ message|escape }}.</h2>
 <p class="subhead">Status: {{status}}</p>
 {% ifequal status "Fail/NotFound" %} 
@@ -15,9 +15,8 @@
 </style>
 <script type="text/javascript">
   var GOOG_FIXURL_LANG = 'en';
-  var GOOG_FIXURL_SITE = 'http://g02.me/';
+  var GOOG_FIXURL_SITE = 'http://{{site_host}}/';
 </script>
-<script type="text/javascript" 
-    src="http://linkhelp.clients.google.com/tbproxy/lh/wm/fixurl.js"></script>
+<script src="http://linkhelp.clients.google.com/tbproxy/lh/wm/fixurl.js"></script>
 {% endifequal %}
 {% endblock %}

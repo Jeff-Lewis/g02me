@@ -2,7 +2,7 @@
 <html>
 <head>
 <link rel="icon" type="image/png" href="/images/favicon.png">
-<title>G02.ME - {{map.title|escape}}</title>
+<title>{{site_name}} - {{map.title|escape}}</title>
 <script src='http://www.google-analytics.com/ga.js'></script>
 <script>
 msLoaded = new Date().getTime();
@@ -14,7 +14,7 @@ function BeforeUnload(evt)
 	if (msUnloading - msLoaded < 5000)
 		{
 		evt = evt || window.event || {};
-		evt.returnValue = "Click CANCEL to keep the G02.ME header at the top of the page.";
+		evt.returnValue = "Click CANCEL to keep the {{site_name}} header at the top of the page.";
 		return evt.returnValue;
 		}
 }

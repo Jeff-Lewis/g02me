@@ -2,12 +2,18 @@
 
 {% block body %}
 <div class="page">
-{% if username %}
 <div class="heading">
+{% if username %}
 	Welcome <a href="/user/{{username}}" title="{{username}}'s activity">{{username}}</a> |
 	<a href="/signout/">Sign out</a>
-</div>
+{% else %}
+	<div id="sign-in">
+	    <label for="username">Nickname: </label>
+	    <input style="width:70px;" type="text" id="username" name="username"/>
+		<input style="width:70px;" type="button" value="Claim It"/>
+	</div>
 {% endif %}
+</div>
 
 {% block pagebody %}
 {% endblock %}

@@ -11,10 +11,10 @@ import logging
 def Home(req):
     if IsJSON():
         return HttpJSON(req, Map.TopJSON())
-    AddToResponse({'host': local.stHost,
-                   'pages': Map.TopPages(),
-                   'total_pages': Globals.IdGet(settings.sMapName, settings.idMapBase) -
-                        settings.idMapBase + 1 + settings.cPagesExtra
+    AddToResponse({
+       'pages': Map.TopPages(),
+       'total_pages': Globals.IdGet(settings.sMapName, settings.idMapBase) -
+            settings.idMapBase + 1 + settings.cPagesExtra
                    })
     return render_to_response('home.html', FinalResponse())
 
@@ -92,7 +92,8 @@ def FrameSet(req, id):
     if IsJSON():
         map.Viewed()
         return HttpJSON(req, obj=map.JSON())
-    return render_to_response('mapped.html', {'map':map})
+    AddToResponse({'map':map})
+    return render_to_response('mapped.html', FinalResponse())
 
 def UserView(req, username):
     if IsJSON():
