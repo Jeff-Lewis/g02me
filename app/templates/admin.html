@@ -1,6 +1,6 @@
-{% extends "master.html" %}
+{% extends "pages.html" %}
 {% block subTitle %}Administration{% endblock %}
-{% block body %}
+{% block pagebody %}
 <div class="page">
 
 <a target="_top" href="/"><img title="{{site_name}}" class="logo" src="/images/logo.png"></a>
@@ -9,16 +9,22 @@
 
 <div class="left">
 <h2>Welcome, {{ user.nickname }}</h2>
-<a href="/admin/clean-broken">Remove Broken Scores</a>
-<br/><a href="/admin/clean-comments">Remove Empty Comments</a>
-<br/><a href="/admin/clean-broken-comments">Remove Broken Comments</a>
-<br/><a href="/admin/fix-tag-counts">Fix Tag Counts</a>
-<br/><a href="/admin/fix-missing-creators">Fix Missing Creators</a>
+
+
+<h2>Memcache</h2>
+<a href="/admin/flush-memcache">Flush</a>
+<ol>
+{% for pair in MemCache %}
+	<li>{{pair.key}}: {{pair.value|escape}}</li>
+{% endfor %}
+</ol>
 </div> <!-- left -->
 
 <div class="right">
 
-<h2>Broken Scores: {{ Broken|length }}</h2>
+{% if Broken %}
+<p>
+<a href="/admin/clean-broken">Remove Broken Scores</a> ({{ Broken|length }})
 <table class="scores">
 <tr><th>name</th><th>hrsHalf</th><th>S</th><th>LogS</th><th>hrsLast</th></tr>
 {% for score in Broken %}
@@ -31,10 +37,28 @@
 	</tr>
 {% endfor %}
 </table>
+</p>
+{% endif %}
 
-<h2>Bad Comments: {{BadComments|length}}</h2>
+{% if BadComments %}
+<p>
+<a href="/admin/clean-comments">Remove Empty Comments</a>
+<table class="scores">
+<tr><th>comment</th><th>dateCreated</th><th>MapKey</th></tr>
+{% for comment in BadComments %}
+	<tr>
+		<td>{{comment.comment|escape}}</td>
+		<td class="num">{{comment.dateCreated}}</td>
+		<td class="num">{{comment.MapKey}}</td>
+	</tr>
+{% endfor %}
+</table>
+</p>
+{% endif %}
 
-<h2>Broken Comments: {{ BrokenComments|length }} </h2>
+{% if BrokenComments %}
+<p>
+<a href="/admin/clean-broken-comments">Remove Broken Comments</a> ({{BrokenComments|length}})
 <table class="scores">
 <tr><th>comment</th><th>dateCreated</th><th>MapKey</th></tr>
 {% for comment in BrokenComments %}
@@ -45,8 +69,23 @@
 	</tr>
 {% endfor %}
 </table>
+</p>
+{% endif %}
 
-<h2>Missing Creator: {{MissingCreator|length}}</h2>
+{% if BadCounts %}
+<p>
+<a href="/admin/fix-tag-counts">Fix Tag Counts</a> ({{BadCounts|length}})
+<ol>
+{% for map in BadCounts %}
+	<li>(<a href="/info/{{map.GetId}}">info</a>): {{map.STagDiff|escape}}</li>
+{% endfor %}
+</ol>
+<p>
+{% endif %}
+
+{% if MissingCreator %}
+<p>
+<a href="/admin/fix-missing-creators">Fix Missing Creators</a> ({{MissingCreator|length}})
 <table class="scores">
 <tr><th>comment</th><th>Cmt Date</th><th>Link Date</th><th>Shared By</th><th>Creator</th></tr>
 {% for comment in MissingCreator %}
@@ -59,23 +98,9 @@
 	</tr>
 {% endfor %}
 </table>
-
-<h2>Bad Tag Counts: {{BadCounts|length}}</h2>
-<ol>
-{% for map in BadCounts %}
-	<li>(<a href="/info/{{map.GetId}}">info</a>): {{map.STagDiff|escape}}</li>
-{% endfor %}
-</ol>
-
-<h2>Memcache</h2>
-<ol>
-{% for pair in MemCache %}
-	<li>{{pair.key}}: {{pair.value|escape}}</li>
-{% endfor %}
-</ol>
+</p>
+{% endif %}
 </div> <!-- right -->
-
-
 
 <div class="bottom">
 <a href="{{ logout }}">Logout</a>

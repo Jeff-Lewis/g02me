@@ -2,8 +2,7 @@
 {% block subTitle %}Error - {{ message|escape }}{% endblock %}
 {% block body %}
 <a target="_top" href="/"><img title="{{site_name}}" class="logo" src="/images/logo.png"></a>
-<h2>Error: {{ message|escape }}.</h2>
-<p class="subhead">Status: {{status}}</p>
+<h3 style="padding-top: 30px;">{{status_major}}: {{ message|escape }}.</h3>
 {% ifequal status "Fail/NotFound" %} 
 <style type="text/css">
   #goog-wm { }

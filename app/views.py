@@ -22,7 +22,8 @@ def CatchAll(req):
     raise Error("Page not found", "Fail/NotFound")
 
 def MakeAlias(req):
-    map = Map.FindOrCreateUrl(req.GET.get('url', ""), req.GET.get('title', ""))
+    mpParams = ParamsCheckAPI(fPost=False)
+    map = Map.FindOrCreateUrl(mpParams.get('url', ""), mpParams.get('title', ""))
     if IsJSON():
         return HttpJSON(req, obj=map.JSON())
     return HttpResponseRedirect("/%s" % map.GetId())
@@ -33,24 +34,40 @@ def Lookup(req):
         raise Error("No shortened url exists", "Fail/NotFound")
     if IsJSON():
         return HttpJSON(req, obj=map.JSON())
-    logging.info("lookup")
     return HttpResponseRedirect("/%s" % map.GetId())
 
-def Signout(req):
-    local.cookies['username'] = ''
+regUsername = re.compile(r"^[a-zA-Z0-9_\.\-]+$")
+
+def SetUsername(req):
+    TrySetUsername(req, req.REQUEST.get('username', ''), True)
+    if IsJSON():
+        return HttpJSON(req, obj={'username':local.cookies['username']})
     return HttpResponseRedirect('/')
+
+def TrySetUsername(req, sUsername, fSetEmpty=False):
+    if sUsername == '' and not fSetEmpty:
+        return;
+    
+    if sUsername == local.cookies['username']:
+        return
+
+    if sUsername != '' and not regUsername.match(sUsername):
+        raise Error("Invalid Nickname: %s" % sUsername)
+    if not req.GET.get('force', False) and Comment.FUsernameUsed(sUsername):
+        raise Error("Username (%s) already in use" % sUsername, 'Fail/Used')
+    local.cookies['username'] = sUsername
 
 def DoComment(req, command=None):
     RequireUserAuth(True)
-    if local.requser.FRepeated():
-        raise Error("Duplicate request", "Fail")
-
+    
+    mpParams = ParamsCheckAPI()
+    
     if command == 'delete':
-        cid = req.GET.get('cid', '').strip()
+        delkey = mpParams.get('delkey', '').strip()
         try:
-            cid = int(cid)
+            cid = int(SGetSigned('dk', delkey))
         except:
-            raise Error("Invalid comment id: %s" % cid)
+            raise Error("Invalid comment deletion key: %s" % delkey)
         comment = Comment.get_by_id(int(cid))
         if comment is None:
             raise Error("Comment id=%d does not exists" % cid, 'Fail/NotFound')
@@ -58,15 +75,17 @@ def DoComment(req, command=None):
         comment.Delete()
         
     if command is None:
-        id = req.GET.get('id', "").strip()
+        id = mpParams.get('id', "").strip()
         
         map = Map.Lookup(id)
         if map == None:
             RaiseNotFound(id)
-            
-        parts = Comment.Parse(req.GET.get('username', ''), req.GET.get('comment', ''))
         
-        map.AddComment(username=parts['username'], comment=parts['comment'], tags=parts['tags'])
+        parts = Comment.Parse(mpParams.get('username', ''), mpParams.get('comment', ''))
+        
+        TrySetUsername(req, parts['username'])
+        
+        map.AddComment(username=local.cookies['username'], comment=parts['comment'], tags=parts['tags'])
 
     if IsJSON():
         return HttpJSON(req, obj=map.JSON())
@@ -140,11 +159,14 @@ def Admin(req, command=None):
             comments = Comment.MissingCreator()
             logging.info("Fixing %d missing creators" % len(comments))
             Comment.FixMissingCreators(comments)
+            
+        if command == 'flush-memcache':
+            memcache.flush_all()
 
         return HttpResponseRedirect("/admin/")
 
     ms = memcache.get_stats()
-    return render_to_response('admin.html',
+    AddToResponse(
           {'user':user,
            'req':req,
            'logout':users.create_logout_url(req.get_full_path()),
@@ -155,3 +177,5 @@ def Admin(req, command=None):
            'MissingCreator':Comment.MissingCreator(),
            'MemCache':[{'key':key, 'value':ms[key]} for key in ms.keys()],
            })
+    return render_to_response('admin.html', FinalResponse())
+          

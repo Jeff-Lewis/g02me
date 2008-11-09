@@ -107,7 +107,7 @@ ts.AddTest("Errors", function(ut)
 		function (ut)
 			{
 			new UT.ScriptData("/map/").Call({url:"http://g02.me"}, function (obj) {
-				ut.AssertContains(obj, {status:"Fail/Domain"});
+				ut.AssertContains(obj, {status:"Warning/Domain"});
 				ut.NextFn();
 				});
 			},
@@ -121,7 +121,7 @@ ts.AddTest("Errors", function(ut)
 		function (ut)
 			{
 			new UT.ScriptData("/map/").Call({url:"http://G02.ME"}, function (obj) {
-				ut.AssertContains(obj, {status:"Fail/Domain"});
+				ut.AssertContains(obj, {status:"Warning/Domain"});
 				ut.NextFn();
 				});
 			},
@@ -199,11 +199,18 @@ ts.AddTest("Comment", function(ut)
 		function(ut)
 			{
 			new UT.ScriptData("/comment/").Call({id:objInit.id, comment:"hello"}, function (obj) {
+				ut.AssertContains(obj, {status:"Fail/Auth"});
+				ut.NextFn();
+				});
+			},
+		function(ut)
+			{
+			new UT.ScriptData("/comment/").Call({id:objInit.id, comment:"hello", apikey:'test-api-key'}, ut.FnWrap(function (obj) {
 				ut.AssertContains(obj, {status:"OK", url:"http://google.com/"});
 				ut.AssertContains(obj.comments[0], {comment:"hello"});
 				cComment = obj.comments.length;
 				ut.NextFn();
-				});
+				}));
 			},
 		function(ut)
 			{
@@ -216,7 +223,7 @@ ts.AddTest("Comment", function(ut)
 			},
 		function(ut)
 			{
-			new UT.ScriptData("/comment/").Call({id:objInit.id, comment:"mckoss :  This is a test  [  ,,tag1,  tag2]"}, function (obj) {
+			new UT.ScriptData("/comment/").Call({id:objInit.id, force: true, comment:"mckoss :  This is a test  [  ,,tag1,  tag2]", apikey:'test-api-key'}, function (obj) {
 				ut.AssertContains(obj, {status:"OK", url:"http://google.com/"});
 				ut.AssertContains(obj.comments[0], {comment:"This is a test", tags:"tag1,tag2", user:"mckoss"});
 				ut.AssertType(obj.comments[0].created, Date);
@@ -238,7 +245,7 @@ ts.AddTest("Comment", function(ut)
 		function(ut)
 			{
 			tagUniq = "dm-" + Math.floor(Math.random()*1000);
-			new UT.ScriptData("/comment/").Call({id:objInit.id, comment:"mckoss :  [" + tagUniq + "]"}, function (obj) {
+			new UT.ScriptData("/comment/").Call({id:objInit.id, comment:"mckoss :  [" + tagUniq + "]", apikey:'test-api-key'}, function (obj) {
 				ut.AssertContains(obj, {status:"OK", url:"http://google.com/"});
 				ut.AssertContains(obj.comments[0], {comment:"", user:"mckoss", tags:tagUniq});
 				com2= obj.comments[0];
@@ -250,15 +257,22 @@ ts.AddTest("Comment", function(ut)
 		function(ut)
 			{
 			new UT.ScriptData("/comment/delete").Call({cid:com2.cid}, function(obj) {
-				ut.AssertEq(obj.comments.length, cComment+1);
-				for (var i = 0; i < obj.tags.length; i++)
-					ut.AssertNEq(obj.tags[i], tagUniq);
+				ut.AssertContains(obj, {status: "Fail/Auth"});
 				ut.NextFn();
 				});
 			},
 		function(ut)
 			{
-			new UT.ScriptData("/comment/delete").Call({cid:com.cid}, function(obj) {
+			new UT.ScriptData("/comment/delete").Call({delkey:com2.delkey, apikey:'test-api-key'}, ut.FnWrap(function(obj) {
+				ut.AssertEq(obj.comments.length, cComment+1);
+				for (var i = 0; i < obj.tags.length; i++)
+					ut.AssertNEq(obj.tags[i], tagUniq);
+				ut.NextFn();
+				}));
+			},
+		function(ut)
+			{
+			new UT.ScriptData("/comment/delete").Call({delkey:com.delkey, apikey:'test-api-key'}, function(obj) {
 				ut.AssertEq(obj.comments.length, cComment);
 				ut.NextFn();
 				});
@@ -321,7 +335,7 @@ ts.AddTest("Tag", function(ut)
 			},
 		function(ut)
 			{
-			new UT.ScriptData("/comment/").Call({id:objInit.id, comment:"Testing tags [, ,search,, multi word]"}, function (obj) {
+			new UT.ScriptData("/comment/").Call({id:objInit.id, comment:"Testing tags [, ,search,, multi word]", apikey:'test-api-key'}, function (obj) {
 				ut.AssertContains(obj, {status:"OK", url:"http://google.com/"});
 				ut.AssertGT(obj.comments.length, 0);
 				ut.AssertContains(obj.comments[0], {comment:"Testing tags", tags: "search,multi-word"});

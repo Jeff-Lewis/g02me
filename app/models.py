@@ -48,6 +48,9 @@ class Map(db.Model):
         if not title:
             title = url
         rg = urlsplit(url)
+        if rg[1] == settings.sSiteHost or rg[1].startswith('localhost'):
+            raise Error("Congratulations on installing the %(title)s bookmarklet.  You should use it when you want to share a web page\
+                BESIDES one on %(title)s" % {'title': settings.sSiteName}, 'Warning/Domain')
         if rg[1] in Map.blackList:
             raise Error("Can't create link to domain: %s" % rg[1], status="Fail/Domain")
         title = unicode(title, 'utf8')
@@ -331,8 +334,8 @@ class Comment(db.Model):
     
     regComment = re.compile(r"^( *([a-zA-Z0-9_\.\-]+) *: *)?([^\[]*) *(\[(.*)\])? *$")
     
-    @classmethod
-    def Create(cls, map, username='', comment='', tags=''):
+    @staticmethod
+    def Create(map, username='', comment='', tags=''):
         username = TrimString(username)
         userAuth = RequireUserAuth(True)
         comment = TrimString(comment)
@@ -354,16 +357,16 @@ class Comment(db.Model):
         except:
             pass
         self.delete();
-    
-    @classmethod
-    def Parse(cls, sUsername, sComment):
+        
+    @staticmethod
+    def Parse(sUsername, sComment):
         if sUsername != '':
             sComment = "%s: %s" % (sUsername, sComment)
             
         m = Comment.regComment.match(sComment)
     
         if m == None:
-            raise Error("Could not parse comment")
+            raise Error("Improperly formatted comment")
         
         if m.group(5):
             tags = re.sub(" *, *", ',', m.group(5)).strip()
@@ -373,17 +376,16 @@ class Comment(db.Model):
         else:
             tags = ''
             
-        # If not specified, default to the last username stored in the cookie
         sUsername = m.group(2)
-        if not sUsername:
-            sUsername = local.cookies['username']
+        if sUsername is None:
+            sUsername = ''
 
         return {'username':sUsername,
                 'comment': m.group(3),
                 'tags': tags}
         
-    @classmethod
-    def ForUser(cls, username):
+    @staticmethod
+    def ForUser(username):
         comments = Comment.gql("WHERE username = :username ORDER BY dateCreated DESC", username=username)
         comments = comments.fetch(100)
         clist = []
@@ -400,10 +402,17 @@ class Comment(db.Model):
                 break;
         return clist
     
-    @classmethod
-    def ForUserJSON(cls, username):
+    @staticmethod
+    def FUsernameUsed(sUsername):
+        if sUsername == '':
+            return False
+        comment = Comment.gql("WHERE username = :username", username=sUsername).get()
+        return comment is not None
+    
+    @staticmethod
+    def ForUserJSON(username):
         obj = {'user':username}
-        rg = [comment.map.JSON() for comment in cls.ForUser(username)]
+        rg = [comment.map.JSON() for comment in Comment.ForUser(username)]
         if len(rg) > 0: 
             obj['urls'] = rg
         return obj
@@ -427,6 +436,11 @@ class Comment(db.Model):
     def AllowDelete(self):
         return self.username == '' or self.username == local.cookies['username']
     
+    def DelKey(self):
+        s = SSign('dk', self.key().id())
+        logging.info('dk: %s' % s)
+        return s
+    
     def JSON(self):
         c = {'comment': self.comment}
         if self.username:
@@ -434,24 +448,25 @@ class Comment(db.Model):
         if self.tags:
             c['tags'] = self.tags
         c['created'] = self.dateCreated
-        c['cid'] = self.key().id()
+        if self.AllowDelete():
+            c['delkey'] = self.DelKey()
         return c
     
     # Admin functions - used in /admin console -------------------
     
-    @classmethod
-    def BadComments(cls, limit=100):
+    @staticmethod
+    def BadComments(limit=100):
         comments = Comment.gql("WHERE comment = '' AND tags = ''")
         return comments.fetch(limit)
     
-    @classmethod
-    def Broken(cls, limit=100):
+    @staticmethod
+    def Broken(limit=100):
         # Return the broken links
         comments = db.Query(Comment).order('-dateCreated')
         return [comment for comment in comments.fetch(limit) if not comment.MapExists()]
     
-    @classmethod
-    def MissingCreator(cls, limit=200):
+    @staticmethod
+    def MissingCreator(limit=200):
         # Return the broken links
         comments = Comment.gql("WHERE comment = '__share' ORDER BY dateCreated DESC")
         aMissing = []
@@ -463,8 +478,8 @@ class Comment(db.Model):
                 aMissing.append(comment)
         return aMissing
     
-    @classmethod
-    def FixMissingCreators(cls, comments):
+    @staticmethod
+    def FixMissingCreators(comments):
         for comment in comments:
             if comment.map.usernameCreator is None and comment.username != '':
                 comment.map.usernameCreator = comment.username

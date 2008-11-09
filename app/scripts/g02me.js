@@ -1,5 +1,14 @@
 // g02me.js - G02.ME Link Shortening Service
 // Copyright (c) Mike Koss (mckoss@startpad.org)
+if (!window.console || !console.firebug)
+{
+    var names = ["log", "debug", "info", "warn", "error", "assert", "dir", "dirxml",
+    "group", "groupEnd", "time", "timeEnd", "count", "trace", "profile", "profileEnd"];
+
+    window.console = {};
+    for (var i = 0; i < names.length; ++i)
+        window.console[names[i]] = function() {}
+}
 
 Function.prototype.FnMethod = function(obj)
 {
@@ -29,7 +38,32 @@ Function.prototype.FnArgs = function()
 };
 
 var G02 = {
+sSiteName: "G02.ME",
 
+SetUsername: function(sUsername)
+	{
+	var sd = new G02.ScriptData('/cmd/setusername');
+	sd.Call({username:sUsername}, SUCallback);
+		
+	function SUCallback(obj)
+		{
+		switch (obj.status)
+			{
+		case 'OK':
+			// Refresh the page to reset the display for the new server-set cookie
+			window.location.href = window.location.href;
+			break;
+		case 'Fail/Used':
+			if (confirm("The nickname, " + sUsername + ", is already in use.  Are you sure you want to use it?"))
+				sd.Call({username:sUsername, force:true}, SUCallback);
+			break;
+		default:
+			alert(G02.sSiteName + ": " + obj.message);
+			break;
+			}
+		};
+	},
+	
 // Extend(dest, src1, src2, ... )
 // Shallow copy properties in turn into dest object
 Extend: function(dest)
@@ -60,16 +94,51 @@ StParams: function(obj)
 			continue;
 		stParams += stDelim;
 		stParams += encodeURIComponent(prop);
-		// BUG: This is a bit bogus to encode a query param in JSON
-		if (typeof obj[prop] == "object")
-			stParams += "=" + encodeURIComponent(PF.EncodeJSON(obj[prop], true));
-		else if (obj[prop] != null)
+		if (obj[prop] != null)
 			stParams += "=" + encodeURIComponent(obj[prop]);
 		stDelim = "&";
 		}
 	if (obj._anchor)
 		stParams += "#" + encodeURIComponent(obj._anchor);
 	return stParams;
+	},
+	
+// Level 2, IE, or Level 0 event models supported.
+// "this" - points to target object
+// 1st argument is event
+// TODO: Don't I have to wrap for IE to add window.event???
+
+fnHandlers: [],
+
+AddEventFn: function(elem, stEvt, fnCallback, fCapture)
+	{
+	if (!fCapture)
+		fCapture = false;
+	if (elem.addEventListener)
+		elem.addEventListener(stEvt, fnCallback, fCapture);
+	else if (elem.attachEvent)
+		elem.attachEvent('on' + stEvt, fnCallback);
+	else
+		elem['on' + stEvt] = fnCallback;
+
+	G02.fnHandlers.push({elem:elem, evt:stEvt, fn:fnCallback, fCapture:fCapture});
+	return G02.fnHandlers.length-1;
+	},
+	
+RemoveEventFn: function(ifn)
+	{
+	var fnHand = G02.fnHandlers[ifn];
+	if (!fnHand)
+		return;
+	G02.fnHandlers[ifn] = undefined;
+
+	var elem = fnHand.elem;
+	if (elem.removeEventListener)
+		elem.removeEventListener(fnHand.evt, fnHand.fn, fnHand.fCapture);
+	else if (elem.attachEvent)
+		elem.detachEvent('on' + fnHand.evt, fnHand.fn);
+	else
+		elem['on' + fnHand.evt] = undefined;
 	}
 };  // G02
 

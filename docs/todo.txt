@@ -52,6 +52,11 @@ X Scoring by views, votes, and comments
   - AdSense
   - Sponsored links (AdManager)
   - PayPal donation (or GooglePayments)
+  - Premium membership
+    - Higher karma/scoring
+    - RSS Feeds
+    - on-site badges and bolding of comments
+    - reserve nickname and prevent comment deletion
 X Unicode in title
 X special case g02.me urls -> just redirect back to them - don't alias them
 X Should child page links remove the upper frame (can I track changes?)
@@ -185,7 +190,7 @@ X JSON Date format looks funny with 1 digit dates, hours, etc.
 X Add analytics tracking code to frameset - missing referer on map
 ! Star the info page (faster than leaving a comment - but puts it in your comment queue)
   - Generate __fave comment
-  - Icons in user activity for Shared, Commented, Favorite
+  - Icons in user activity for Shared, Commented, Favorite/Watch/Follow, Wish List
   - Custom RSS feed of favorited links (can all be in one page)
   - Alternativly, "Follow" the infopage?
   - Help users make live bookmarks?
@@ -320,3 +325,36 @@ X Fix timer to end of page!
   - Claim your account button
   - Allow claiming of account with pseudonomyous twitter user name
 - Polls
+- Private version on google apps for domains
+- Email notifications of watch list
+- Fix styling of head to have smooth clipping of left-hand block
+- Site wide stats page:
+  - Use write-through rates (day/week/month/year)
+  - append /api when JSON call
+  - Creation of new user auth (first time visitor)
+  - Adoption of a Nickname
+  - Share
+  - Comment
+  - View
+  - Home page view
+  - Tag page view
+  - User page view
+  - Sign up for account
+  - Ping RSS feed for updates
+  - Tweet via RSS
+  - JSON calls (not from referrer {{host}})
+  - Send email notification
+- Pagetracking for goals
+  - append /api when done via JSON calls (not from UI)
+  - /meta/username
+  - /meta/username/comment
+  - /meta/comment
+  - /meta/
+- Setvar user partitioning
+  - "user" (as opposed to anon)
+  - "admin"
+  - "premium"
+- Fork thread to request pseudo-batch processing
+  - RSS feed checking
+  - Send email notifications
+  - 

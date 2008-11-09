@@ -1,5 +1,5 @@
 application: g02me
-version: 5
+version: 6
 runtime: python
 api_version: 1
 
@@ -17,6 +17,10 @@ handlers:
 - url: /images
   static_dir: images
     
+- url: /static
+  static_dir: static
+  expiration: 1d
+  
 - url: /favicon.ico
   static_files: images/favicon.ico
   upload: images/favicon.ico
@@ -37,10 +41,6 @@ handlers:
   script: shell.py
   login: admin
   
-- url: /static
-  static_dir: static
-  expiration: 1d
-
 # Django handler
 # Note that paths not designated in urls.py will throw a FileNotFound exception
 - url: /.*

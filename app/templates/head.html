@@ -2,18 +2,40 @@
 
 {% block subTitle %}{{map.title|escape}}{% endblock %}
 
-{% block head %}
-<script>
+{% block script %}
+var txtUsername;
+var txtComment;
 
 function Loaded()
 {
-	document.getElementById("comment").focus();
+	txtUsername = document.getElementById("username")
+	if (txtUsername)
+		G02.AddEventFn(txtUsername, "keydown", KeyDownUsername);
+
+	txtComment = document.getElementById("comment");
+	txtComment.focus();
+	G02.AddEventFn(txtComment, "keydown", KeyDownComment);
 }
 
-function DeleteComment(id)
+function DeleteComment(delkey)
 {
-	if (confirm("Are you sure you want to delete this comment?"))
-		window.location.href = '/comment/delete?cid=' + id;
+	if (!confirm("Are you sure you want to delete this comment?"))
+		return;
+	
+	var sd = new G02.ScriptData('/comment/delete');
+	var objCall = {delkey:delkey, userauth:"{{userauth}}"};
+	sd.Call(objCall, function(obj) {
+		switch (obj.status)
+			{
+		case 'OK':
+			// Refresh the page to reset the display for the new header
+			window.location.href = window.location.href;
+			break;
+		default:
+			alert(G02.sSiteName + ": " + obj.message);
+			break;
+			}
+		});
 }
 
 function Click()
@@ -22,8 +44,56 @@ function Click()
 		window.parent.Click();
 }
 
+function PostComment()
+{
+	sUsername = "";
+	if (txtUsername)
+		sUsername = txtUsername.value;
+	var sd = new G02.ScriptData('/comment/');
+	var objCall = {id:"{{map.GetId}}", userauth:"{{userauth}}", username:sUsername, comment:txtComment.value};
+	sd.Call(objCall, PCCallback);
+		
+	function PCCallback(obj)
+		{
+		switch (obj.status)
+			{
+		case 'OK':
+			// Refresh the page to reset the display for the new header
+			window.location.href = window.location.href;
+			break;
+		case 'Fail/Used':
+			if (confirm(obj.message + "  Are you sure you want to use it?"))
+				{
+				objCall.force = true;
+				sd.Call(objCall, PCCallback);
+				}
+			break;
+		default:
+			alert(G02.sSiteName + ": " + obj.message);
+			break;
+			}
+		};
+}
+
+function KeyDownUsername(evt)
+{
+	if (evt.keyCode == 13)
+		{
+		txtComment.focus();
+		evt.preventDefault();
+		}
+}	
+
+function KeyDownComment(evt)
+{
+	if (evt.keyCode == 13)
+		{
+		PostComment();
+		evt.preventDefault();
+		}
+}
+
 window.onclick = Click;
-</script>
 {% endblock %}
 
 {% block body %}
@@ -55,9 +125,6 @@ window.onclick = Click;
 <p class="url">{{map.url|escape}}</p>
 
 <div id="info-form">
-	<form style="padding:0;margin:0;" action="/comment/" method="get">
-	<input type="hidden" name="id" value="{{map.GetId}}"/>
-
 	{% if username %}
 	<div style="float:left;width:80px;height:22px;margin-top:4px;">
 	{% else %}
@@ -70,7 +137,7 @@ window.onclick = Click;
 		<label for="comment">Comment: </label>
 	</div>
 
-	<input style="float:right;width:70px;" type="submit" value="Post" tabindex="3"/>
+	<input onclick="PostComment();" style="float:right;width:70px;" type="button" value="Post" tabindex="3"/>
 
 	{% if username %}
 	<div style="margin-left:80px;margin-right:80px;">
@@ -81,8 +148,6 @@ window.onclick = Click;
 	</div>
 
 	<p style="clear:left;" class="help">Comment format: "nickname: text of your comment [tag1, tag2, ...]"</p>
-
-	</form>
 </div>
 
 <div class="comments">
@@ -95,7 +160,7 @@ window.onclick = Click;
     {% endif %}
     - {{ comment.Age }}
     {% if comment.AllowDelete %}
-    <img class="x" onclick="DeleteComment({{comment.key.id}});" src="/images/x.png"/>
+    <img class="x" onclick="DeleteComment('{{comment.DelKey}}');" src="/images/x.png"/>
     {% endif %}
     </p>{% endspaceless %}
 {% endfor %}

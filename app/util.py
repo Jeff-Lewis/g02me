@@ -125,6 +125,7 @@ class ReqFilter(object):
 
         local.dtNow = datetime.now()
         local.sSecret = models.Globals.SGet(settings.sSecretName, "test server key")
+        local.sAPIKey = models.Globals.SGet(settings.sAPIKeyName, "test-api-key")
         local.mpResponse = {}
         local.requser = ReqUser(req)
         
@@ -133,7 +134,7 @@ class ReqFilter(object):
         try:
             RequireUserAuth(True)
         except:
-            local.cookies['userAuth'] = SSign('au', SUserAuth())
+            local.cookies['userAuth'] = SSign('ua', SUserAuth())
             logging.info("new auth: %s" % local.cookies['userAuth'])
 
         for name in self.asCookies:
@@ -206,15 +207,6 @@ class ReqUser(object):
             if perm in self.mpPermCode:
                 code = self.mpPermCode[perm]
             raise Error(message, code)
-        
-    def FRepeated(self):
-        # Check for successive duplicate requests - same user, same path
-        key = 'repeat.ua.%s' % self.ua
-        repeat = memcache.get(key)
-        if repeat == self.req.get_full_path():
-            return True
-        memcache.set(key, self.req.get_full_path())
-        return False
 
 class Block(db.Model):
     # Block requests for abuse by IP or User Auth cookie
@@ -261,10 +253,12 @@ def HttpError(req, stError, obj={}):
 
     http_status = 200
     if obj['status'] == 'Fail/NotFound':
-        http_status = 404  
+        http_status = 404
+        
     t = loader.get_template('error.html')
     logging.info("Error: %r" % obj)
     AddToResponse(obj)
+    AddToResponse({'status_major': obj['status'].split('/')[0]})
     resp = HttpResponse(t.render(Context(FinalResponse())))
     resp.status_code = http_status
     return resp
@@ -286,6 +280,18 @@ class DirectResponse(Exception):
 def RaiseNotFound(id):
     raise Error("The %s page, %s/%s, does not exist" % (settings.sSiteName, local.stHost, id), obj={'id':id, 'status':'Fail/NotFound'})
 
+def ParamsCheckAPI(fPost=True):
+    if local.req.method == 'GET':
+        mpParams = local.req.GET
+        if not fPost or mpParams.get('apikey', '') == local.sAPIKey:
+            return mpParams
+        RequireUserAuth(True)
+        if local.cookies['userAuth'] != mpParams.get('userauth'):
+            raise Error("Invalid Authorization", 'Fail/Auth')
+    else:
+        mpParams = local.req.POST
+    return mpParams
+
 def IsJSON():
     return local.req.has_key("callback")
 
@@ -294,7 +300,7 @@ def HttpJSON(req, obj=None):
         obj = {}
     if not 'status' in obj:
         obj['status'] = 'OK'
-    resp = HttpResponse("%s(%s);" % (req.GET["callback"], simplejson.dumps(obj, cls=JavaScriptEncoder)), mimetype="application/x-javascript")
+    resp = HttpResponse("%s(%s);" % (req.GET["callback"], simplejson.dumps(obj, cls=JavaScriptEncoder, indent=4)), mimetype="application/x-javascript")
     return resp
 
 def AddToResponse(mp):
@@ -305,6 +311,7 @@ def FinalResponse():
         'elapsed': ResponseTime(),
         'now': local.dtNow,
         'username': local.cookies['username'],
+        'userauth': local.cookies['userAuth'],
         'analytics_code': settings.sAnalyticsCode,
         'site_name': settings.sSiteName,
         'site_host': settings.sSiteHost,
@@ -400,8 +407,8 @@ def SSign(type, s):
     # Sign the string using the server secret key
     # type is a short string that is used to distinguish one type of signed content vs. another
     # (e.g. user auth from).
-    hash = sha1('~'.join((type, s, local.sSecret))).hexdigest().upper()
-    return '~'.join((type, s, hash))
+    hash = sha1('~'.join((type, str(s), local.sSecret))).hexdigest().upper()
+    return '~'.join((type, str(s), hash))
 
 regSigned = re.compile(r"^(\w+)~(.*)~[0-9A-F]{40}$")
 
@@ -410,7 +417,7 @@ def SGetSigned(type, s, sError="Failed Authentication"):
     # original (unsigned) string if succeeds.
     try:
         m = regSigned.match(s)
-        if SSign(m.group(1), m.group(2)) == s:
+        if SSign(type, m.group(2)) == s:
             return m.group(2)
     except:
         pass
