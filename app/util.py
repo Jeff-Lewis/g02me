@@ -102,7 +102,6 @@ class ReqFilter(object):
     Setup global (thread local) variables for the request and handle exceptions thrown
     in the views.
     """
-    asCookies =['userAuth', 'username']
     
     def process_request(self, req):
         import models
@@ -118,26 +117,28 @@ class ReqFilter(object):
         local.stHost = "http://" + host + "/"
         local.ipAddress = req.META['REMOTE_ADDR']
         
-        # Copy the desired cookies into local.cookies dictionary
+        # A place to copy any cookies we want during request processing
         local.cookies = {}
-        for name in self.asCookies:
-            local.cookies[name] = req.COOKIES.get(name, '')
+        
+        # A place to put dictionary values for template responses
+        local.mpResponse = {}
+        
+        # A place to add Google Analytics events
+        local.aGAEvents = []
 
         local.dtNow = datetime.now()
         local.sSecret = models.Globals.SGet(settings.sSecretName, "test server key")
         local.sAPIKey = models.Globals.SGet(settings.sAPIKeyName, "test-api-key")
-        local.mpResponse = {}
+        
         local.requser = ReqUser(req)
         
     def process_response(self, req, resp):
         # If the user has no valid userAuth token, given them one for the next request
-        try:
-            RequireUserAuth(True)
-        except:
-            local.cookies['userAuth'] = SSign('ua', SUserAuth())
-            logging.info("new auth: %s" % local.cookies['userAuth'])
+        local.cookies['userAuth'] = local.requser.uaSigned
+        local.cookies['username'] = local.requser.username
+        local.cookies['userType'] = local.requser.sType
 
-        for name in self.asCookies:
+        for name in local.cookies:
             if local.cookies[name] != '':
                 resp.set_cookie(name, local.cookies[name], max_age=60*60*24*30)
             else:
@@ -160,41 +161,70 @@ class ReqFilter(object):
 class ReqUser(object):
     """
     Permissions:
-        'view': Can view (read-only) data from site
-        'view-count': Can update view counts
+        'read': Can read data from site
+        'inc-view-count': Can update view counts
+        'score': Can update ranking scores
         'share': Can share new url's
         'comment': Can comment (or delete comments) on url's
         'admin': Can use admin page
     """
     mpPermMessage = {}
     mpPermError = {}
+    mpTypes = {'base': 10, 'comment': 20, 'share': 30, 'username': 40}
 
     def __init__(self, req):
-        # Nothing allowed by default!
         self.req = req
+        self.sType = 'base'
+        self.SetType(req.COOKIES.get('userType', 'base'))
+        self.username = req.COOKIES.get('username', '')
+        
+        # Nothing allowed by default!
         self.mpAllowed = set()
 
-        self.ip = req.META['REMOTE_ADDR']
+        if Block.FBlocked(local.ipAddress):
+            return
 
         # Allow 10 writes per minute on average for one authenticated user
-        rateWriteMax = 10
+        
         try:
-            self.ua = SGetSigned('ua', req.COOKIES['userAuth'])
+            self.uaSigned = req.COOKIES['userAuth']
+            self.ua = SGetSigned('ua', self.uaSigned)
+            self.fFirstAuth = False
+            rateWriteMax = 10
+            if Block.FBlocked(self.ua):
+                return;
         except:
             # Only 2 writes per minute for anonymous user
-            self.ua = self.ip
+            self.ua = SUserAuth()
+            self.uaSigned = SSign('ua', self.ua)
+            self.fFirstAuth = True
             rateWriteMax = 2
+            AddGAEvent('newuser')
+            logging.info(self.ua)
 
-        if Block.FBlocked(self.ua):
-            return
-        self.mpAllowed.add('view')
+        self.mpAllowed.add('read')
+        
         self.user = users.get_current_user()
         if users.is_current_user_admin():
             self.mpAllowed.add('admin')
-        rate = MemRate("throttle.ua.%s" % self.ua, rateWriteMax, 60)
-        if not rate.Exceeded():
-            self.mpAllowed |= set(['view-count', 'share', 'comment'])
         
+        if self.fFirstAuth:
+            rate = MemRate("throttle.ip.%s" % local.ipAddress, rateWriteMax, 60)
+        else:
+            rate = MemRate("throttle.ua.%s" % self.ua, rateWriteMax, 60)
+
+        if not rate.Exceeded():
+            self.mpAllowed |= set(['inc-view-count', 'score', 'share', 'comment'])
+        
+    def SetType(self, sType):
+        # Upgrade user type if going to a "higher" level - used for tracking analytics pipeline
+        try:
+            if self.mpTypes[self.sType] < self.mpTypes[sType]:
+                self.sType = sType
+                return
+        except:
+            pass
+            
     def FAllow(self, perm):
         return self.perm[perm]
     
@@ -305,17 +335,27 @@ def HttpJSON(req, obj=None):
 
 def AddToResponse(mp):
     local.mpResponse.update(mp)
+    
+def AddGAEvent(sEvent):
+    local.aGAEvents.append(sEvent)
+    logging.info("Analytics event: %s" % sEvent)
 
 def FinalResponse():
     AddToResponse({
         'elapsed': ResponseTime(),
         'now': local.dtNow,
-        'username': local.cookies['username'],
-        'userauth': local.cookies['userAuth'],
-        'analytics_code': settings.sAnalyticsCode,
+
+        'user_type': local.requser.sType,
+        'username': local.requser.username,
+        'userauth': local.requser.uaSigned,
+        'new_user': local.requser.fFirstAuth,
+
         'site_name': settings.sSiteName,
         'site_host': settings.sSiteHost,
         'host': local.stHost,
+
+        'analytics_code': settings.sAnalyticsCode,        
+        'GA_Events': local.aGAEvents,
         })
     return local.mpResponse
     
@@ -347,12 +387,10 @@ def RequireUserAuth(hard=False):
     # If missing, will allow a limited number of authentications per unique IP
     # Returns raw IP address for anonymous users as unique user key
     # Returns IP~DateIssued~Rand for truly authenticated users
-    try:
-        s = SGetSigned('ua', local.cookies['userAuth'])
-        return s
-    except:
-        if hard:
-            raise Error("Failed Authentication", "Fail/Auth")
+    if not local.requser.fFirstAuth:
+        return local.requser.ua
+    if hard:
+        raise Error("Failed Authentication", "Fail/Auth")
     rate = MemRate("anon.%s" % local.ipAddress, 10, 60)
     rate.Limit()
     return local.ipAddress
@@ -415,13 +453,15 @@ regSigned = re.compile(r"^(\w+)~(.*)~[0-9A-F]{40}$")
 def SGetSigned(type, s, sError="Failed Authentication"):
     # Raise exception if s is not a valid signed string of the correct type.  Returns
     # original (unsigned) string if succeeds.
+    s = str(s)
     try:
         m = regSigned.match(s)
         if SSign(type, m.group(2)) == s:
             return m.group(2)
     except:
         pass
-    logging.warning("Signed failure: %s: %s" % (type, s))
+    if s != '':
+        logging.warning("Signed failure: %s: %s" % (type, s))
     raise Error(sError, 'Fail/Auth')
 
 # --------------------------------------------------------------------

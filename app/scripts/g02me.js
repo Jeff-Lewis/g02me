@@ -51,6 +51,7 @@ SetUsername: function(sUsername)
 			{
 		case 'OK':
 			// Refresh the page to reset the display for the new server-set cookie
+			pageTracker._trackPageview('/meta/newuser');
 			window.location.href = window.location.href;
 			break;
 		case 'Fail/Used':

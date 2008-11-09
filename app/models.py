@@ -175,8 +175,8 @@ class Map(db.Model):
             self._FLimitStats()
 
             # Overload the comment to record when a (registered user) shares a URL
-            if local.cookies['username'] != '':
-                self.AddComment(username=local.cookies['username'], comment="__share")
+            if local.requser.username != '':
+                self.AddComment(username=local.requser.username, comment="__share")
         else:
             self.put()
 
@@ -438,7 +438,6 @@ class Comment(db.Model):
     
     def DelKey(self):
         s = SSign('dk', self.key().id())
-        logging.info('dk: %s' % s)
         return s
     
     def JSON(self):

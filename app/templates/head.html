@@ -28,6 +28,7 @@ function DeleteComment(delkey)
 		switch (obj.status)
 			{
 		case 'OK':
+			pageTracker._trackPageview('/meta/comment/delete');
 			// Refresh the page to reset the display for the new header
 			window.location.href = window.location.href;
 			break;
@@ -58,6 +59,7 @@ function PostComment()
 		switch (obj.status)
 			{
 		case 'OK':
+			pageTracker._trackPageview('/meta/comment');
 			// Refresh the page to reset the display for the new header
 			window.location.href = window.location.href;
 			break;
