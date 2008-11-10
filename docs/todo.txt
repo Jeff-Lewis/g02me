@@ -346,10 +346,11 @@ X Fix timer to end of page!
   - Send email notification
 - Pagetracking for goals
   - append /api when done via JSON calls (not from UI)
-  - /meta/username
-  - /meta/username/comment
-  - /meta/comment
-  - /meta/
+  - /meta/username - client
+  - /meta/comment - client
+  - /meta/share - ??? server/deferred to next page ??? -> do all the same way!
+  - /meta/newuser - server
+  - SetVar for user state [base, comment, share, username]
 - Setvar user partitioning
   - "user" (as opposed to anon)
   - "admin"
@@ -357,4 +358,4 @@ X Fix timer to end of page!
 - Fork thread to request pseudo-batch processing
   - RSS feed checking
   - Send email notifications
-  - 
+- Analytics tracking

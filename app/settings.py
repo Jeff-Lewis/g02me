@@ -9,7 +9,7 @@ except:
     pass
 
 DEBUG = (ENVIRONMENT == "local")
-#DEBUG = True
+DEBUG = True
 TEMPLATE_DEBUG = DEBUG
 
 ADMINS = (

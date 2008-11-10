@@ -57,7 +57,7 @@ class Map(db.Model):
         dateCreated = local.dtNow
         id = Map.__IdNext()
         map = Map(key_name=Map.KeyFromId(id), url=url, title=title, userAuthFirst=userAuthFirst,
-                  dateCreated=dateCreated, usernameCreator=local.cookies['username'])
+                  dateCreated=dateCreated, usernameCreator=local.requser.username)
         return map
     
     @staticmethod
@@ -347,7 +347,7 @@ class Comment(db.Model):
         
         com = Comment(map=map, username=username, userAuth=userAuth, comment=comment, tags=tags, dateCreated=dateCreated)
         if username:
-            local.cookies['username'] = username
+            local.requser.username = username
         return com
     
     def Delete(self):
@@ -434,7 +434,7 @@ class Comment(db.Model):
         return SAgeReq(self.dateCreated)
     
     def AllowDelete(self):
-        return self.username == '' or self.username == local.cookies['username']
+        return self.username == '' or self.username == local.requser.username
     
     def DelKey(self):
         s = SSign('dk', self.key().id())

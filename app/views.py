@@ -41,21 +41,21 @@ regUsername = re.compile(r"^[a-zA-Z0-9_\.\-]+$")
 def SetUsername(req):
     TrySetUsername(req, req.REQUEST.get('username', ''), True)
     if IsJSON():
-        return HttpJSON(req, obj={'username':local.cookies['username']})
+        return HttpJSON(req, obj={'username':local.requser.username})
     return HttpResponseRedirect('/')
 
 def TrySetUsername(req, sUsername, fSetEmpty=False):
     if sUsername == '' and not fSetEmpty:
         return;
     
-    if sUsername == local.cookies['username']:
+    if sUsername == local.requser.username:
         return
 
     if sUsername != '' and not regUsername.match(sUsername):
         raise Error("Invalid Nickname: %s" % sUsername)
     if not req.GET.get('force', False) and Comment.FUsernameUsed(sUsername):
         raise Error("Username (%s) already in use" % sUsername, 'Fail/Used')
-    local.cookies['username'] = sUsername
+    local.requser.username = sUsername
 
 def DoComment(req, command=None):
     RequireUserAuth(True)
@@ -85,7 +85,7 @@ def DoComment(req, command=None):
         
         TrySetUsername(req, parts['username'])
         
-        map.AddComment(username=local.cookies['username'], comment=parts['comment'], tags=parts['tags'])
+        map.AddComment(username=local.requser.username, comment=parts['comment'], tags=parts['tags'])
 
     if IsJSON():
         return HttpJSON(req, obj=map.JSON())

@@ -316,7 +316,7 @@ def ParamsCheckAPI(fPost=True):
         if not fPost or mpParams.get('apikey', '') == local.sAPIKey:
             return mpParams
         RequireUserAuth(True)
-        if local.cookies['userAuth'] != mpParams.get('userauth'):
+        if local.requser.uaSigned != mpParams.get('userauth'):
             raise Error("Invalid Authorization", 'Fail/Auth')
     else:
         mpParams = local.req.POST

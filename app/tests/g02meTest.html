@@ -198,10 +198,10 @@ ts.AddTest("Comment", function(ut)
 			},
 		function(ut)
 			{
-			new UT.ScriptData("/comment/").Call({id:objInit.id, comment:"hello"}, function (obj) {
+			new UT.ScriptData("/comment/").Call({id:objInit.id, comment:"hello"}, ut.FnWrap(function (obj) {
 				ut.AssertContains(obj, {status:"Fail/Auth"});
 				ut.NextFn();
-				});
+				}));
 			},
 		function(ut)
 			{
@@ -310,12 +310,12 @@ ts.AddTest("User", function(ut)
 	ut.AsyncSequence([
 		function(ut)
 			{
-			new UT.ScriptData("/user/mckoss").Call({}, function(obj) {
+			new UT.ScriptData("/user/mckoss").Call({}, ut.FnWrap(function(obj) {
 				ut.AssertContains(obj, {status:"OK"});
 				ut.AssertType(obj.urls, Array);
 				ut.Assert(obj.urls.length > 0, "non-empty user list");
 				ut.NextFn();
-				});
+				}));
 			}
 		]);
 }).Async(true);
