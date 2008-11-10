@@ -102,69 +102,42 @@ class ReqFilter(object):
     Setup global (thread local) variables for the request and handle exceptions thrown
     in the views.
     """
+    asCookies =['userAuth', 'username']
     
     def process_request(self, req):
         import models
 
         host = req.META["HTTP_HOST"]
 
-        # Redirect to the primary hosted domain
-        if settings.ENVIRONMENT == "hosted" and host in settings.mpSiteAlternates:
-            return HttpResponsePermanentRedirect('http://%s%s' % (settings.sSiteHost, req.path))
+        # Enforce canonical URL's (w/o www)
+        if host.startswith('www.'):
+            return HttpResponseRedirect('http://%s%s' % (host[4:], req.path))
         
         # Initialize thread-local variables for this request
         local.req = req
         local.stHost = "http://" + host + "/"
         local.ipAddress = req.META['REMOTE_ADDR']
         
-        # A place to copy any cookies we want during request processing
+        # Copy the desired cookies into local.cookies dictionary
         local.cookies = {}
-        
-        # A place to put dictionary values for template responses
-        local.mpResponse = {}
-        
+        for name in self.asCookies:
+            local.cookies[name] = req.COOKIES.get(name, '')
+
         local.dtNow = datetime.now()
         local.sSecret = models.Globals.SGet(settings.sSecretName, "test server key")
         local.sAPIKey = models.Globals.SGet(settings.sAPIKeyName, "test-api-key")
-        
-        requser = ReqUser(req)
-        
-        if requser.fAnon:
-            requser.SetMaxRate('write', 1)
-            requser.Allow('share')
-        else:
-            requser.SetMaxRate('write', 10)
-            requser.Allow('share', 'score', 'view-count', 'comment')
-            
-        if req.method == 'GET':
-            local.mpParams = req.GET
-            local.fJSON = local.mpParams.has_key("callback")
-            # JSON calls must satisfy following requirements to allow
-            # write access.
-            # - Using a signed API key
-            # - Passes a signed csrf param equal to the currently signed in userAuth cookie
-            if local.fJSON:
-                try:
-                    if SGetSigned('api', local.mpParams['apikey']):
-                        requser.Allow('api')
-                except: pass           
-        else:
-            local.mpParams = req.POST
-
-        try:
-            if local.mpParams['csrf'] == requser.uidSigned:
-                requser.Allow('api', 'post')
-        except: pass
-        
-        local.requser = requser
+        local.mpResponse = {}
+        local.requser = ReqUser(req)
         
     def process_response(self, req, resp):
         # If the user has no valid userAuth token, given them one for the next request
-        local.cookies['userAuth'] = local.requser.uaSigned
-        local.cookies['username'] = local.requser.username
-        local.cookies['userType'] = local.requser.sType
+        try:
+            RequireUserAuth(True)
+        except:
+            local.cookies['userAuth'] = SSign('ua', SUserAuth())
+            logging.info("new auth: %s" % local.cookies['userAuth'])
 
-        for name in local.cookies:
+        for name in self.asCookies:
             if local.cookies[name] != '':
                 resp.set_cookie(name, local.cookies[name], max_age=60*60*24*30)
             else:
@@ -184,137 +157,86 @@ class ReqFilter(object):
         if not settings.DEBUG:
             return HttpError(req, "Application Error", {'status': 'Fail'})
         
-# --------------------------------------------------------------------
-# User information for the request.
-# - Authentication
-# - Permissions
-# - Request throttling
-# - API request permission
-# - Admin access
-# - Virtual session state (cookie based)
-# --------------------------------------------------------------------
-
 class ReqUser(object):
+    """
+    Permissions:
+        'view': Can view (read-only) data from site
+        'view-count': Can update view counts
+        'share': Can share new url's
+        'comment': Can comment (or delete comments) on url's
+        'admin': Can use admin page
+    """
     mpPermMessage = {}
     mpPermError = {}
 
     def __init__(self, req):
-        self.req = req
-        self.fAnon = True
-        
         # Nothing allowed by default!
-        self.mpPermit = set()
+        self.req = req
+        self.mpAllowed = set()
 
-        if Block.Blocked(local.ipAddress):
-            return
+        self.ip = req.META['REMOTE_ADDR']
 
         # Allow 10 writes per minute on average for one authenticated user
-        
+        rateWriteMax = 10
         try:
-            self.uidSigned = req.COOKIES['userAuth']
-            self.uid = SGetSigned('uid', self.uidSigned)
-            if Block.Blocked(self.uid):
-                return;
-            self.fAnon = False
+            self.ua = SGetSigned('ua', req.COOKIES['userAuth'])
         except:
             # Only 2 writes per minute for anonymous user
-            self.uid = SGenUID()
-            self.uidSigned = SSign('uid', self.uid)
-            logging.info(self.ua)
+            self.ua = self.ip
+            rateWriteMax = 2
 
-        self.Allow('read')
-        
+        if Block.FBlocked(self.ua):
+            return
+        self.mpAllowed.add('view')
         self.user = users.get_current_user()
         if users.is_current_user_admin():
-            self.Allow('admin')
+            self.mpAllowed.add('admin')
+        rate = MemRate("throttle.ua.%s" % self.ua, rateWriteMax, 60)
+        if not rate.Exceeded():
+            self.mpAllowed |= set(['view-count', 'share', 'comment'])
         
-    def SetMaxRate(self, sName, rate):
-        # Set the maximum request rate (per minute) for a given activity
-        self.Allow(sName)
-        self.mpRates[sName] = MemRate('user.%s' % sName, rate, 60)
-        
-    def FRateExceeded(self, sName, value=1):
-        if sName not in self.mpRates:
-            return False
-        return self.mpRates[sName].FExceeded(value=value)
+    def FAllow(self, perm):
+        return self.perm[perm]
     
-    def SetVar(self, name, value, priority=1):
-        # Save a session variable for the user - only replace current value if the same or higher
-        # priority
-        if name not in self.mpVars or priority >= self.mpVarPri[name]:
-            self.mpVars[name] = value
-            self.mpVarPri[name] = priority
-        return self.mpVars[name]
-    
-    def GetVar(self, name, default=None):
-        if name not in self.mpVars:
-            return default
-        return self.mpVars[name]
-            
-    def Allow(self, *args):
-        for sPerm in args:
-            self.mpPermit[sPerm].add(sPerm)
-    
-    def FAllow(self, *args):
-        for sPerm in args:
-            if sPerm not in self.mpPermit or self.FRateExceeded(sPerm):
-                return False
-        return True
-    
-    def Require(self, *args):
-        for sPerm in args:
-            if not self.FAllow(sPerm):
-                message = self.mpPermMessage.get(sPerm, "Authorization Error")
-                code = self.mpPermCode.get(sPerm, "Fail/Auth")
-                raise Error(message, code)
-            
-    def FOnce(key):
-        if memcache.get('user.once.%s.%s' % (self.UserId(), key)):
-            return True
-        memcache.set('user.once.%s.%s' % (self.UserId(), key), True)
-
-    def UserId(self):
-        if self.fAnon:
-            return local.ipAddress
-        return self.uidSigned
-    
-    @staticmethod
-    def SGenUID():
-        # Generate a unique user ID: IP~Date~Random
-        import random
-        return "~".join((local.ipAddress, local.dtNow.strftime('%m/%d/%Y %H:%M'), str(random.randint(0, 10000))))
+    def Require(self, perm):
+        if not self.FAllow(perm):
+            message = "Authorization Error"
+            code = "Fail/Auth"
+            if perm in self.mpPermMessage:
+                message = self.mpPermMessage[perm]
+            if perm in self.mpPermCode:
+                code = self.mpPermCode[perm]
+            raise Error(message, code)
 
 class Block(db.Model):
     # Block requests for abuse by IP or User Auth cookie
-    sKey = db.StringProperty(required=True)
+    ua = db.StringProperty(required=True)
     dateCreated = db.DateTimeProperty()
-    secsMem = 3*60
     
     @staticmethod
-    def Create(sKey):
-        block = Block.Blocked(sKey)
-        if block:
-            return block
-        block = Block.get_or_insert(key_name=sKey, sKey=sKey, dateCreated=local.dtNow)
+    def Create(ua):
+        if Block.FBlocked(ua):
+            return
+        dateCreated = local.dtNow
+        block = Block.get_or_insert(key_name=ua, ua=ua, dateCreated=dateCreated)
         block.put()
-        memcache.set(self.MemKey(sKey), self, Block.secsMem)
-        return block
+        memcache.set(self.KeyFromUa(ua), True)
         
     @staticmethod
-    def Blocked(sKey):
-        sMemKey = Block.MemKey(sKey)
-        block = memcache.get(sMemKey)
+    def FBlocked(ua):
+        key = Block.KeyFromUa(ua)
+        block = memcache.get(key)
         if block is not None:
-            return block
-        block = Block.get_by_key_name(sKey)
+            return True
+        block = Block.get_by_key_name(key)
         if block is not None:
-            memcache.set(sMemKey, block, Block.secsMem)
-            return block
-        return None
+            memcache.set(key, True)
+            return True
+        return False
     
     @staticmethod
-    def MemKey(sKey):
-        return 'block.%s' % sKey
+    def KeyFromUa(ua):
+        return 'block.ua.%s' % ua
     
 
 # --------------------------------------------------------------------
@@ -358,6 +280,21 @@ class DirectResponse(Exception):
 def RaiseNotFound(id):
     raise Error("The %s page, %s/%s, does not exist" % (settings.sSiteName, local.stHost, id), obj={'id':id, 'status':'Fail/NotFound'})
 
+def ParamsCheckAPI(fPost=True):
+    if local.req.method == 'GET':
+        mpParams = local.req.GET
+        if not fPost or mpParams.get('apikey', '') == local.sAPIKey:
+            return mpParams
+        RequireUserAuth(True)
+        if local.cookies['userAuth'] != mpParams.get('userauth'):
+            raise Error("Invalid Authorization", 'Fail/Auth')
+    else:
+        mpParams = local.req.POST
+    return mpParams
+
+def IsJSON():
+    return local.req.has_key("callback")
+
 def HttpJSON(req, obj=None):
     if obj is None:
         obj = {}
@@ -368,22 +305,17 @@ def HttpJSON(req, obj=None):
 
 def AddToResponse(mp):
     local.mpResponse.update(mp)
-    
+
 def FinalResponse():
     AddToResponse({
         'elapsed': ResponseTime(),
         'now': local.dtNow,
-
-        'user_type': local.requser.sType,
-        'username': local.requser.username,
-        'userauth': local.requser.uaSigned,
-        'new_user': local.requser.fFirstAuth,
-
+        'username': local.cookies['username'],
+        'userauth': local.cookies['userAuth'],
+        'analytics_code': settings.sAnalyticsCode,
         'site_name': settings.sSiteName,
         'site_host': settings.sSiteHost,
         'host': local.stHost,
-
-        'analytics_code': settings.sAnalyticsCode,        
         })
     return local.mpResponse
     
@@ -415,14 +347,20 @@ def RequireUserAuth(hard=False):
     # If missing, will allow a limited number of authentications per unique IP
     # Returns raw IP address for anonymous users as unique user key
     # Returns IP~DateIssued~Rand for truly authenticated users
-    if not local.requser.fFirstAuth:
-        return local.requser.ua
-    if hard:
-        raise Error("Failed Authentication", "Fail/Auth")
+    try:
+        s = SGetSigned('ua', local.cookies['userAuth'])
+        return s
+    except:
+        if hard:
+            raise Error("Failed Authentication", "Fail/Auth")
     rate = MemRate("anon.%s" % local.ipAddress, 10, 60)
     rate.Limit()
     return local.ipAddress
 
+def SUserAuth():
+    import random
+    return "~".join((local.ipAddress, local.dtNow.strftime('%m/%d/%Y %H:%M'), str(random.randint(0, 10000))))
+    
 def RunInTransaction(func):
     # Function decorator to wrap entire function in an App Engine transaction
     def _transaction(*args, **kwargs):
@@ -465,28 +403,25 @@ def SPlural(n, sPlural="s", sSingle=''):
 # Signed and verified strings can only come from the server
 # --------------------------------------------------------------------
 
-def SSign(type, s, sSecret=None):
+def SSign(type, s):
     # Sign the string using the server secret key
     # type is a short string that is used to distinguish one type of signed content vs. another
     # (e.g. user auth from).
-    if sSecret is None:
-        sSecret = local.sSecret
-    hash = sha1('~'.join((type, str(s), sSecret))).hexdigest().upper()
+    hash = sha1('~'.join((type, str(s), local.sSecret))).hexdigest().upper()
     return '~'.join((type, str(s), hash))
 
 regSigned = re.compile(r"^(\w+)~(.*)~[0-9A-F]{40}$")
 
-def SGetSigned(type, s, sSecret=None, sError="Failed Authentication"):
+def SGetSigned(type, s, sError="Failed Authentication"):
     # Raise exception if s is not a valid signed string of the correct type.  Returns
     # original (unsigned) string if succeeds.
     try:
         m = regSigned.match(s)
-        if SSign(type, m.group(2), sSecret) == s:
+        if SSign(type, m.group(2)) == s:
             return m.group(2)
     except:
         pass
-    if s != '':
-        logging.warning("Signed failure: %s: %s" % (type, s))
+    logging.warning("Signed failure: %s: %s" % (type, s))
     raise Error(sError, 'Fail/Auth')
 
 # --------------------------------------------------------------------

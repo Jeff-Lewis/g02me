@@ -43,8 +43,6 @@ sSiteName: "G02.ME",
 SetUsername: function(sUsername)
 	{
 	var sd = new G02.ScriptData('/cmd/setusername');
-	if (sUsername != '')
-		pageTracker._trackPageview('/meta/newuser');
 	sd.Call({username:sUsername}, SUCallback);
 		
 	function SUCallback(obj)

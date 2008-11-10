@@ -42,7 +42,6 @@ class Map(db.Model):
     
     @classmethod
     def Create(cls, url, title):
-        local.requser.Require('write', 'share')
         url = NormalizeUrl(url)
         title = TrimString(title)
         userAuthFirst = RequireUserAuth()
@@ -58,7 +57,7 @@ class Map(db.Model):
         dateCreated = local.dtNow
         id = Map.__IdNext()
         map = Map(key_name=Map.KeyFromId(id), url=url, title=title, userAuthFirst=userAuthFirst,
-                  dateCreated=dateCreated, usernameCreator=local.requser.username)
+                  dateCreated=dateCreated, usernameCreator=local.cookies['username'])
         return map
     
     @staticmethod
@@ -155,8 +154,7 @@ class Map(db.Model):
         comm = Comment.Create(map=self, username=username, comment=comment, tags=tags)
         comm.put()
         self.AddTags(tags.split(','))
-        if local.requser.FAllow('score'):
-            self.ss.Update(self, self.scoreComment, dt=local.dtNow, tags=self.TopTags())
+        self.ss.Update(self, self.scoreComment, dt=local.dtNow, tags=self.TopTags())
         
     def CommentCount(self):
         # BUG: Will max out at 100 comments
@@ -170,27 +168,42 @@ class Map(db.Model):
     def Shared(self):
         # Updates shared count if a unique user share
         # ALWAYS - puts() the Map to the database as a side effect
-        if not self.is_saved() and local.requser.FAllow('share') and local.requser.FOnce('map.%s' % self.GetId()):
+        if not self._FLimitStats():
             self.shareCount = self.shareCount + 1
             self.put()
-            
-            if local.requser.FAllow('score'):
-                self.ss.Update(self, self.scoreShare, dt=local.dtNow, tags=self.TopTags())
+            self.ss.Update(self, self.scoreShare, dt=local.dtNow, tags=self.TopTags())
+            self._FLimitStats()
 
             # Overload the comment to record when a (registered user) shares a URL
-            if local.requser.username != '' and local.requser.FAllow('comment'):
-                self.AddComment(username=local.requser.username, comment="__share")
+            if local.cookies['username'] != '':
+                self.AddComment(username=local.cookies['username'], comment="__share")
         else:
             self.put()
+
         
     def Viewed(self):
         if self._FLimitStats():
             return
         self.viewCount = self.viewCount + 1
         self.put()
-        if local.requser.FAllow('score'):
-            self.ss.Update(self, self.scoreView, dt=local.dtNow, tags=self.TopTags())
+        self.ss.Update(self, self.scoreView, dt=local.dtNow, tags=self.TopTags())
         
+    def _FLimitStats(self):
+        try:
+            ua = RequireUserAuth(True)
+        except:
+            return True
+        
+        try:
+            id = self.GetId()
+        except:
+            return False
+
+        if memcache.get('view.%s.%s' % (id, ua)):
+            return True
+        memcache.set('view.%s.%s' % (id, ua), True)
+        return False
+
     def Age(self):
         return SAgeReq(self.dateCreated)
     
@@ -334,7 +347,7 @@ class Comment(db.Model):
         
         com = Comment(map=map, username=username, userAuth=userAuth, comment=comment, tags=tags, dateCreated=dateCreated)
         if username:
-            local.requser.username = username
+            local.cookies['username'] = username
         return com
     
     def Delete(self):
@@ -421,10 +434,11 @@ class Comment(db.Model):
         return SAgeReq(self.dateCreated)
     
     def AllowDelete(self):
-        return self.username == '' or self.username == local.requser.username
+        return self.username == '' or self.username == local.cookies['username']
     
     def DelKey(self):
         s = SSign('dk', self.key().id())
+        logging.info('dk: %s' % s)
         return s
     
     def JSON(self):

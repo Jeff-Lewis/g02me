@@ -22,6 +22,7 @@ def CatchAll(req):
     raise Error("Page not found", "Fail/NotFound")
 
 def MakeAlias(req):
+    mpParams = ParamsCheckAPI(fPost=False)
     map = Map.FindOrCreateUrl(mpParams.get('url', ""), mpParams.get('title', ""))
     if IsJSON():
         return HttpJSON(req, obj=map.JSON())
@@ -40,21 +41,21 @@ regUsername = re.compile(r"^[a-zA-Z0-9_\.\-]+$")
 def SetUsername(req):
     TrySetUsername(req, req.REQUEST.get('username', ''), True)
     if IsJSON():
-        return HttpJSON(req, obj={'username':local.requser.username})
+        return HttpJSON(req, obj={'username':local.cookies['username']})
     return HttpResponseRedirect('/')
 
 def TrySetUsername(req, sUsername, fSetEmpty=False):
     if sUsername == '' and not fSetEmpty:
         return;
     
-    if sUsername == local.requser.username:
+    if sUsername == local.cookies['username']:
         return
 
     if sUsername != '' and not regUsername.match(sUsername):
         raise Error("Invalid Nickname: %s" % sUsername)
     if not req.GET.get('force', False) and Comment.FUsernameUsed(sUsername):
         raise Error("Username (%s) already in use" % sUsername, 'Fail/Used')
-    local.requser.username = sUsername
+    local.cookies['username'] = sUsername
 
 def DoComment(req, command=None):
     RequireUserAuth(True)
@@ -84,7 +85,7 @@ def DoComment(req, command=None):
         
         TrySetUsername(req, parts['username'])
         
-        map.AddComment(username=local.requser.username, comment=parts['comment'], tags=parts['tags'])
+        map.AddComment(username=local.cookies['username'], comment=parts['comment'], tags=parts['tags'])
 
     if IsJSON():
         return HttpJSON(req, obj=map.JSON())
@@ -127,9 +128,9 @@ def TagView(req, tag):
     return render_to_response('tag.html', FinalResponse())
 
 def Admin(req, command=None):
-    local.requser.Require('admin')
+    user = RequireAdmin()
     
-    if command and local.requser.FAllow('api'):
+    if command:
         logging.info("admin command: %s" % command)
         if command == 'clean-broken':
             scores = Map.ss.Broken()
@@ -171,7 +172,7 @@ def Admin(req, command=None):
            'logout':users.create_logout_url(req.get_full_path()),
            #'Broken':Map.ss.Broken(),
            #'BadComments':Comment.BadComments(),
-           'BrokenComments':Comment.Broken(),
+           #'BrokenComments':Comment.Broken(),
            #'BadCounts':Map.FindBadTagCounts(),
            'MissingCreator':Comment.MissingCreator(),
            'MemCache':[{'key':key, 'value':ms[key]} for key in ms.keys()],

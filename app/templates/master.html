@@ -37,11 +37,8 @@ document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.
 var pageTracker = _gat._getTracker("{{analytics_code}}");
 pageTracker._addIgnoredOrganic("{{site_host}}")
 pageTracker._addIgnoredOrganic("go2.me")
-{% ifnotequal user_type 'base' %}pageTracker._setVar({{user_type}}){% endifnotequal %}
+{% if username %}pageTracker._setVar("username"){% endif %}
 pageTracker._trackPageview();
-{% for event in GA_Events %}
-	pageTracker._trackPageview("/meta/{{event}}");
-{% endfor %}
 </script>
 {% endblock %}
 
