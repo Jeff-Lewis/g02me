@@ -168,11 +168,10 @@ class Map(db.Model):
     def Shared(self):
         # Updates shared count if a unique user share
         # ALWAYS - puts() the Map to the database as a side effect
-        if not self._FLimitStats():
+        if self.shareCount == 0 or not self._FLimitStats():
             self.shareCount = self.shareCount + 1
             self.put()
             self.ss.Update(self, self.scoreShare, dt=local.dtNow, tags=self.TopTags())
-            self._FLimitStats()
 
             # Overload the comment to record when a (registered user) shares a URL
             if local.cookies['username'] != '':
@@ -438,7 +437,6 @@ class Comment(db.Model):
     
     def DelKey(self):
         s = SSign('dk', self.key().id())
-        logging.info('dk: %s' % s)
         return s
     
     def JSON(self):

@@ -421,7 +421,8 @@ def SGetSigned(type, s, sError="Failed Authentication"):
             return m.group(2)
     except:
         pass
-    logging.warning("Signed failure: %s: %s" % (type, s))
+    if s != '':
+        logging.warning("Signed failure: %s: %s" % (type, s))
     raise Error(sError, 'Fail/Auth')
 
 # --------------------------------------------------------------------
