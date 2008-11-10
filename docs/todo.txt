@@ -63,8 +63,8 @@ X Should child page links remove the upper frame (can I track changes?)
 X Change date to DateTime
 X Error page for non-existant URL - should be home page display with error message (Or custom file not found page! 404)
 X 301 redirect www.g02.me to g02.me - use Django middleware?
-- Get truncate templatetags working - I think I need an installed application - restructure files to
-  an app folder, add to INSTALLED_APPS?
+X Get truncate templatetags working - I think I need an installed application - restructure files to
+  an app folder, add to INSTALLED_APPS? - punt
 X Restructure files to Django standards - application dir, models.py, views.py...
 X Figure out if there is a work-around for NYT pages that don't like to be shown inside a frameset.
 - A/B Testing on home page and header?  Google Website optimizer
@@ -195,12 +195,15 @@ X Add analytics tracking code to frameset - missing referer on map
   - Alternativly, "Follow" the infopage?
   - Help users make live bookmarks?
 X Use a 64-character set that excludes homoglpyhs (Joe Hruska)
-  - 1 i I l (el) | o O 0 | - _ | rn m | cl d | vv w
-  - Safe characters to use are: 0-9, A-Z, a-z, -_  (original 64) PLUS: '()*.~  and MAYBE: <>|{}\^[]`
-  - Readbility option: ~(base34) A-Z, 2-9 (e.g., http://g02.me/~BFD9 or even http://pagesaves.com/BFD9)
-  - Global options: Replace characters 0O1Il with .~()*
-  - NO: Autohyperlink in email disallows parens, brackets and period!  Down to *~^ (for 0, 1, l)
-  - Change to base 57 (no 1iIloO0) -> and grandfather old base64 URL's for id's less than 256 (or some threshold)
+  X 1 i I l (el) | o O 0 | - _ | rn m | cl d | vv w
+  X Safe characters to use are: 0-9, A-Z, a-z, -_  (original 64) PLUS: '()*.~  and MAYBE: <>|{}\^[]`
+  X Readbility option: ~(base34) A-Z, 2-9 (e.g., http://g02.me/~BFD9 or even http://pagesaves.com/BFD9)
+  X Global options: Replace characters 0O1Il with .~()*
+  X NO: Autohyperlink in email disallows parens, brackets and period!  Down to *~^ (for 0, 1, l)
+  X Change to base 57 (no 1iIloO0) -> and grandfather old base64 URL's for id's less than 256 (or some threshold)
+  - Additional homoglyphs - lowercase letters that need context:  /csuvwxz /CSUVWXZ -> base 50
+  - Hyphen can be an email break character!
+  - Just go to all caps and numbers? -> base 36
 X Darken the light blue color a shade for readability (Kenshi Arasaki) -> 4cc6ed to 45AFD1
 X Add slash through the 0 in the G02.ME logo (Tony Wright)
 - Add thousands sep for counts in analytics (info, home, tags, user)
@@ -271,13 +274,14 @@ X Share limit by user (same as view limit)
       - Delete anonymous comments
     - Registered user 
     - Admin user
-! Throttle/Filter architecture
+! Throttle/Filter architecture - unified permission
    - Anon IP -> read only, 1/60 write rate
    - Cookied -> 10/60 write rate
    - Blocked Cookie -> No access (Server Busy)
    - Blocked IP -> No access (Server Busy)
    - Admin Block IP, Block Cookie
      - Info panel for Admin
+   - Throttle comment scoring by user
 - Make ScoreSet not a Model - just globals
 - Log when application is loaded
 - Log when memcache is empty
@@ -285,7 +289,6 @@ X Share limit by user (same as view limit)
 - Error sharing this: http://www.nwcn.com/video/index.html?nvid=297637
 - Simple comment protection
   - Don't offer delete for named comments NOT your own (username)
-- Throttle comment scoring by user
 - break up comments, map, and globals into their own .py files
 X Admin page timeout online! - turned off expensive querys
 - Don't __share an item that's been shared by you previously (especially don't add duplicate comment entry)
@@ -302,6 +305,7 @@ X Tony feedback (see comp):
   X Remove URL on page and substitute hover over title -> smaller font
   X Separate out the input form from the title/comments 
   - Help icon to explain comment format (hover?) - remove help line?
+  - Help landing page w/ callouts to all the things you can do with the command line
 - Enable users to make custom aliases
     - if 6 characters or less prepend '~'
     - slugify
@@ -325,6 +329,7 @@ X Fix timer to end of page!
   - Claim your account button
   - Allow claiming of account with pseudonomyous twitter user name
 - Polls
+- Pop-up alert to set nickname on anonymous commenting
 - Private version on google apps for domains
 - Email notifications of watch list
 - Fix styling of head to have smooth clipping of left-hand block
@@ -359,3 +364,4 @@ X Fix timer to end of page!
   - RSS feed checking
   - Send email notifications
 - Analytics tracking
+
