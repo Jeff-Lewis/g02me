@@ -22,6 +22,7 @@ ADMINS = (
 # Version 5 (base 57) starts at '32' (since there is no 0 or 1 in the alphabet)
 sSiteName = "G02.ME"
 sSiteHost = "g02.me"
+mpSiteAlternates = set(['www.g02.me', 'go2.me', 'www.go2.me'])
 idMapBase = 57
 cPagesExtra = 159
 sMapName = "map.2"

@@ -43,6 +43,8 @@ sSiteName: "G02.ME",
 SetUsername: function(sUsername)
 	{
 	var sd = new G02.ScriptData('/cmd/setusername');
+	if (sUsername != '')
+		pageTracker._trackPageview('/meta/newuser');
 	sd.Call({username:sUsername}, SUCallback);
 		
 	function SUCallback(obj)
@@ -51,7 +53,6 @@ SetUsername: function(sUsername)
 			{
 		case 'OK':
 			// Refresh the page to reset the display for the new server-set cookie
-			pageTracker._trackPageview('/meta/newuser');
 			window.location.href = window.location.href;
 			break;
 		case 'Fail/Used':

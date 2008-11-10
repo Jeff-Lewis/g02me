@@ -42,6 +42,7 @@ class Map(db.Model):
     
     @classmethod
     def Create(cls, url, title):
+        local.requser.Require('write', 'share')
         url = NormalizeUrl(url)
         title = TrimString(title)
         userAuthFirst = RequireUserAuth()
@@ -154,7 +155,8 @@ class Map(db.Model):
         comm = Comment.Create(map=self, username=username, comment=comment, tags=tags)
         comm.put()
         self.AddTags(tags.split(','))
-        self.ss.Update(self, self.scoreComment, dt=local.dtNow, tags=self.TopTags())
+        if local.requser.FAllow('score'):
+            self.ss.Update(self, self.scoreComment, dt=local.dtNow, tags=self.TopTags())
         
     def CommentCount(self):
         # BUG: Will max out at 100 comments
@@ -168,42 +170,27 @@ class Map(db.Model):
     def Shared(self):
         # Updates shared count if a unique user share
         # ALWAYS - puts() the Map to the database as a side effect
-        if not self._FLimitStats():
+        if not self.is_saved() and local.requser.FAllow('share') and local.requser.FOnce('map.%s' % self.GetId()):
             self.shareCount = self.shareCount + 1
             self.put()
-            self.ss.Update(self, self.scoreShare, dt=local.dtNow, tags=self.TopTags())
-            self._FLimitStats()
+            
+            if local.requser.FAllow('score'):
+                self.ss.Update(self, self.scoreShare, dt=local.dtNow, tags=self.TopTags())
 
             # Overload the comment to record when a (registered user) shares a URL
-            if local.requser.username != '':
+            if local.requser.username != '' and local.requser.FAllow('comment'):
                 self.AddComment(username=local.requser.username, comment="__share")
         else:
             self.put()
-
         
     def Viewed(self):
         if self._FLimitStats():
             return
         self.viewCount = self.viewCount + 1
         self.put()
-        self.ss.Update(self, self.scoreView, dt=local.dtNow, tags=self.TopTags())
+        if local.requser.FAllow('score'):
+            self.ss.Update(self, self.scoreView, dt=local.dtNow, tags=self.TopTags())
         
-    def _FLimitStats(self):
-        try:
-            ua = RequireUserAuth(True)
-        except:
-            return True
-        
-        try:
-            id = self.GetId()
-        except:
-            return False
-
-        if memcache.get('view.%s.%s' % (id, ua)):
-            return True
-        memcache.set('view.%s.%s' % (id, ua), True)
-        return False
-
     def Age(self):
         return SAgeReq(self.dateCreated)
     

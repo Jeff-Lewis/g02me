@@ -22,7 +22,6 @@ def CatchAll(req):
     raise Error("Page not found", "Fail/NotFound")
 
 def MakeAlias(req):
-    mpParams = ParamsCheckAPI(fPost=False)
     map = Map.FindOrCreateUrl(mpParams.get('url', ""), mpParams.get('title', ""))
     if IsJSON():
         return HttpJSON(req, obj=map.JSON())
@@ -128,9 +127,9 @@ def TagView(req, tag):
     return render_to_response('tag.html', FinalResponse())
 
 def Admin(req, command=None):
-    user = RequireAdmin()
+    local.requser.Require('admin')
     
-    if command:
+    if command and local.requser.FAllow('api'):
         logging.info("admin command: %s" % command)
         if command == 'clean-broken':
             scores = Map.ss.Broken()

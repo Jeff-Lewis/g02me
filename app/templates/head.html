@@ -24,11 +24,12 @@ function DeleteComment(delkey)
 	
 	var sd = new G02.ScriptData('/comment/delete');
 	var objCall = {delkey:delkey, userauth:"{{userauth}}"};
+	pageTracker._trackPageview('/meta/comment/delete');
+
 	sd.Call(objCall, function(obj) {
 		switch (obj.status)
 			{
 		case 'OK':
-			pageTracker._trackPageview('/meta/comment/delete');
 			// Refresh the page to reset the display for the new header
 			window.location.href = window.location.href;
 			break;
@@ -47,11 +48,16 @@ function Click()
 
 function PostComment()
 {
-	sUsername = "";
+	sUsername = '';
 	if (txtUsername)
 		sUsername = txtUsername.value;
 	var sd = new G02.ScriptData('/comment/');
 	var objCall = {id:"{{map.GetId}}", userauth:"{{userauth}}", username:sUsername, comment:txtComment.value};
+	var sTrack = '/meta/comment';
+	if (sUsername != '')
+		sTrack += '/newuser'
+	pageTracker._trackPageview(sTrack);
+
 	sd.Call(objCall, PCCallback);
 		
 	function PCCallback(obj)
@@ -59,7 +65,6 @@ function PostComment()
 		switch (obj.status)
 			{
 		case 'OK':
-			pageTracker._trackPageview('/meta/comment');
 			// Refresh the page to reset the display for the new header
 			window.location.href = window.location.href;
 			break;
