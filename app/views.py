@@ -171,7 +171,7 @@ def Admin(req, command=None):
            'logout':users.create_logout_url(req.get_full_path()),
            #'Broken':Map.ss.Broken(),
            #'BadComments':Comment.BadComments(),
-           #'BrokenComments':Comment.Broken(),
+           'BrokenComments':Comment.Broken(),
            #'BadCounts':Map.FindBadTagCounts(),
            'MissingCreator':Comment.MissingCreator(),
            'MemCache':[{'key':key, 'value':ms[key]} for key in ms.keys()],
