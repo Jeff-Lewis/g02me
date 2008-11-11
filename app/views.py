@@ -93,7 +93,7 @@ def DoComment(req, command=None):
     
 
 def Head(req, id):
-    # http://g02me/info/N
+    # http://go2.me/info/N
     map = Map.Lookup(id)
     if map == None:
         RaiseNotFound(id)
@@ -104,7 +104,7 @@ def Head(req, id):
     return render_to_response('head.html', FinalResponse())
 
 def FrameSet(req, id):
-    # http://g02me/N
+    # http://go.2me/N
     map = Map.Lookup(id)
     if map == None:
         RaiseNotFound(id)

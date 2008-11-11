@@ -16,7 +16,7 @@ ADMINS = (
     ('Mike Koss', 'mckoss@gmail.com'),
 )
 
-# G02.ME Specific Settings
+# Go2.me Specific Settings
 
 # Version 1 (base 64) started at 1 through 2V (about 159)
 # Version 5 (base 57) starts at '32' (since there is no 0 or 1 in the alphabet)
