@@ -168,10 +168,12 @@ class Map(db.Model):
     def Shared(self):
         # Updates shared count if a unique user share
         # ALWAYS - puts() the Map to the database as a side effect
-        if self.shareCount == 0 or not self._FLimitStats():
+        if not self._FLimitStats() or self.shareCount == 0:
             self.shareCount = self.shareCount + 1
             self.put()
             self.ss.Update(self, self.scoreShare, dt=local.dtNow, tags=self.TopTags())
+            # If the link is new - need to call FLimitStats with a valid ID
+            self._FLimitStats()
 
             # Overload the comment to record when a (registered user) shares a URL
             if local.cookies['username'] != '':
