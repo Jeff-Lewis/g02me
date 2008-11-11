@@ -9,7 +9,7 @@ except:
     pass
 
 DEBUG = (ENVIRONMENT == "local")
-#DEBUG = True
+DEBUG = True
 TEMPLATE_DEBUG = DEBUG
 
 ADMINS = (
@@ -20,8 +20,9 @@ ADMINS = (
 
 # Version 1 (base 64) started at 1 through 2V (about 159)
 # Version 5 (base 57) starts at '32' (since there is no 0 or 1 in the alphabet)
-sSiteName = "G02.ME"
-sSiteHost = "g02.me"
+sSiteName = "Go2.ME"
+sSiteHost = "go2.me"
+mpSiteAlternates = set(['www.g02.me', 'g02.me', 'www.go2.me', 'localhost:8080'])
 idMapBase = 57
 cPagesExtra = 159
 sMapName = "map.2"

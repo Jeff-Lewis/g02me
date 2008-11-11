@@ -3,7 +3,7 @@ from google.appengine.api import memcache
 from google.appengine.ext import db
 
 
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponse, HttpResponseRedirect, HttpResponsePermanentRedirect
 from django.shortcuts import render_to_response
 from django.template import loader, Context, Template
 
@@ -107,25 +107,27 @@ class ReqFilter(object):
     def process_request(self, req):
         import models
 
-        host = req.META["HTTP_HOST"]
-
-        # Enforce canonical URL's (w/o www)
-        if host.startswith('www.'):
-            return HttpResponseRedirect('http://%s%s' % (host[4:], req.path))
-        
-        # Initialize thread-local variables for this request
-        local.req = req
-        local.stHost = "http://" + host + "/"
         local.ipAddress = req.META['REMOTE_ADDR']
-        
+        local.dtNow = datetime.now()
+        host = req.META["HTTP_HOST"]
+        local.sSecret = models.Globals.SGet(settings.sSecretName, "test server key")
+        local.sAPIKey = models.Globals.SGet(settings.sAPIKeyName, "test-api-key")
+
         # Copy the desired cookies into local.cookies dictionary
         local.cookies = {}
         for name in self.asCookies:
             local.cookies[name] = req.COOKIES.get(name, '')
 
-        local.dtNow = datetime.now()
-        local.sSecret = models.Globals.SGet(settings.sSecretName, "test server key")
-        local.sAPIKey = models.Globals.SGet(settings.sAPIKeyName, "test-api-key")
+        # Enforce canonical URL's (w/o www)
+        if settings.ENVIRONMENT == "hosted" and host in settings.mpSiteAlternates:
+            return HttpResponsePermanentRedirect('http://%s%s' % (settings.sSiteHost, req.path))
+        
+        # Initialize thread-local variables for this request
+        local.req = req
+        local.stHost = "http://" + host + "/"
+        
+
+
         local.mpResponse = {}
         local.requser = ReqUser(req)
         

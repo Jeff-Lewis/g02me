@@ -40,7 +40,8 @@ function DeleteComment(delkey)
 
 function Click()
 {
-	if (window.parent && window.parent.Click)
+	// Call the Click function in our parent window in case we're in a Frame
+	if (window.parent && window.parent != window && window.parent.Click)
 		window.parent.Click();
 }
 
