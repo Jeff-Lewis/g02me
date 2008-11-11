@@ -17,7 +17,7 @@ import simplejson
 from hashlib import sha1
 import re
 
-sIDChars = "23456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghjkmnpqrstuvwxyz-_"
+sIDChars = "23456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghjkmnpqrstuvwxyz"
 nIDChars = len(sIDChars)
 
 def IntToSID(i):
@@ -118,9 +118,9 @@ class ReqFilter(object):
         for name in self.asCookies:
             local.cookies[name] = req.COOKIES.get(name, '')
 
-        # Enforce canonical URL's (w/o www)
+        # Enforce canonical URL's (w/o www) - only GET's are support here
         if settings.ENVIRONMENT == "hosted" and host in settings.mpSiteAlternates:
-            return HttpResponsePermanentRedirect('http://%s%s' % (settings.sSiteHost, req.path))
+            return HttpResponsePermanentRedirect('http://%s%s' % (settings.sSiteHost, req.get_full_path()))
         
         # Initialize thread-local variables for this request
         local.req = req

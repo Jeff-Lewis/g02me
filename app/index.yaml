@@ -43,7 +43,7 @@ indexes:
   - name: dateCreated
     direction: desc
 
-# Used once in query history.
+# Unused in query history -- copied from input.
 - kind: Score
   properties:
   - name: hrsHalf
