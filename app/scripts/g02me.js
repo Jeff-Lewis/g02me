@@ -223,7 +223,7 @@ G02.ScriptData.stMsg = {
 G02.ScriptData.prototype = {
 	constructor:G02.ScriptData,
 	rid: 0,
-	msTimeout: 2000, 
+	msTimeout: 10000, 
 
 Call: function(objParams, fnCallback)
 	{
