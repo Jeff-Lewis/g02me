@@ -114,7 +114,7 @@ ts.AddTest("Errors", function(ut)
 		function (ut)
 			{
 			new UT.ScriptData("/map/").Call({url:"http://www.g02.me"}, function (obj) {
-				ut.AssertContains(obj, {status:"Fail/Domain"});
+				ut.AssertContains(obj, {status:"Warning/Domain"});
 				ut.NextFn();
 				});
 			},

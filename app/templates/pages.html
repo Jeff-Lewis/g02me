@@ -29,7 +29,7 @@ function KeyDown(evt)
 {% else %}
 	<div id="sign-in">
 	    <label for="username">Nickname: </label>
-	    <input style="width:70px;" type="text" id="username" name="username"/>
+	    <input maxlength="20" style="width:70px;" type="text" id="username" name="username"/>
 		<input onclick="G02.SetUsername(txtUsername.value);" style="width:70px;" type="button" value="Claim It"/>
 	</div>
 {% endif %}

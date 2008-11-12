@@ -36,7 +36,7 @@ def Lookup(req):
         return HttpJSON(req, obj=map.JSON())
     return HttpResponseRedirect("/%s" % map.GetId())
 
-regUsername = re.compile(r"^[a-zA-Z0-9_\.\-]+$")
+regUsername = re.compile(r"^[a-zA-Z0-9_\.\-]{1,20}$")
 
 def SetUsername(req):
     TrySetUsername(req, req.REQUEST.get('username', ''), True)

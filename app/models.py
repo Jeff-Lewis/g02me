@@ -48,11 +48,18 @@ class Map(db.Model):
         if not title:
             title = url
         rg = urlsplit(url)
-        if rg[1] == settings.sSiteHost or rg[1].startswith('localhost'):
-            raise Error("Congratulations on installing the %(title)s bookmarklet.  You should use it when you want to share a web page\
-                BESIDES one on %(title)s" % {'title': settings.sSiteName}, 'Warning/Domain')
-        if rg[1] in Map.blackList:
-            raise Error("Can't create link to domain: %s" % rg[1], status="Fail/Domain")
+        
+        sError = """The %(siteName)s bookmarklet cannot be used to create links to %(host)s.
+                To created a shortened link, visit a page NOT on %(host)s, then click the bookmarklet"""
+
+        if rg[1] == settings.sSiteHost or rg[1] in settings.mpSiteAlternates or rg[1].startswith('localhost'):
+            raise Error(sError %
+                {'siteName': settings.sSiteName, 'host':settings.sSiteHost}, 'Warning/Domain')
+            
+        if  rg[1] in Map.blackList:
+            raise Error(sError %
+                {'siteName': settings.sSiteName, 'host':rg[1]}, 'Fail/Domain')          
+
         title = unicode(title, 'utf8')
         dateCreated = local.dtNow
         id = Map.__IdNext()
@@ -333,7 +340,7 @@ class Comment(db.Model):
     map = db.ReferenceProperty(Map)
     dateCreated = db.DateTimeProperty()
     
-    regComment = re.compile(r"^( *([a-zA-Z0-9_\.\-]+) *: *)?([^\[]*) *(\[(.*)\])? *$")
+    regComment = re.compile(r"^( *([a-zA-Z0-9_\.\-]{1,20}) *: *)?([^\[]*) *(\[(.*)\])? *$")
     
     @staticmethod
     def Create(map, username='', comment='', tags=''):
