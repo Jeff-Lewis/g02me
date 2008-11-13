@@ -130,6 +130,7 @@ def TagView(req, tag):
 def Admin(req, command=None):
     user = RequireAdmin()
     
+    # BUG - Add CSRF required field
     if command:
         logging.info("admin command: %s" % command)
         if command == 'clean-broken':
@@ -165,7 +166,12 @@ def Admin(req, command=None):
 
         return HttpResponseRedirect("/admin/")
 
-    ms = memcache.get_stats()
+    try:
+        ms = memcache.get_stats()
+        mpMem = [{'key':key, 'value':ms[key]} for key in ms]
+    except:
+        mpMem = [{'key':'message', 'value':'memcache get_stats() failure!'}]
+
     AddToResponse(
           {'user':user,
            'req':req,
@@ -174,8 +180,8 @@ def Admin(req, command=None):
            #'BadComments':Comment.BadComments(),
            #'BrokenComments':Comment.Broken(),
            #'BadCounts':Map.FindBadTagCounts(),
-           'MissingCreator':Comment.MissingCreator(),
-           'MemCache':[{'key':key, 'value':ms[key]} for key in ms.keys()],
+           #'MissingCreator':Comment.MissingCreator(),
+           'MemCache': mpMem
            })
     return render_to_response('admin.html', FinalResponse())
           

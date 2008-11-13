@@ -33,17 +33,7 @@ def main():
     application = django.core.handlers.wsgi.WSGIHandler()
 
     # Run the WSGI CGI handler with that application.
-    if settings.DEBUG:
-        util.run_wsgi_app(application)
-        return
+    util.run_wsgi_app(application)
     
-    try:
-        util.run_wsgi_app(application)
-    except:
-        logging.error("Application Error - main.py")
-        print 'Content-Type: text/plain'
-        print ''
-        print 'Application Error'
-
 if __name__ == '__main__':
   main()
