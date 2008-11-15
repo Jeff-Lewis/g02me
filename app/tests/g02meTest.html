@@ -3,6 +3,7 @@
 <head>
 <title>G02ME Unit Test</title>
 <script src="unit.js"></script>
+<script src="/scripts/g02me.js"></script>
 <script src="firebug/firebugx.js"></script>
 </head>
 <body onload="ts.Run();ts.Report();">
@@ -187,6 +188,12 @@ ts.AddTest("Comment", function(ut)
 	var com2;
 	var tagUniq;
 
+
+	sCSRF = Go2.GetCookies()['userAuth'];
+	mpCSRF = sCSRF.match(/^(.+)~[0-9A-F]{40}$/);
+	sCSRF = mpCSRF[1];
+	console.log("CSRF: " + sCSRF);
+
 	ut.AsyncSequence([
 		function(ut)
 			{
@@ -199,7 +206,7 @@ ts.AddTest("Comment", function(ut)
 		function(ut)
 			{
 			new UT.ScriptData("/comment/").Call({id:objInit.id, comment:"hello"}, ut.FnWrap(function (obj) {
-				ut.AssertContains(obj, {status:"Fail/Auth"});
+				ut.AssertContains(obj, {status:"Fail/Auth/api"});
 				ut.NextFn();
 				}));
 			},
@@ -208,6 +215,15 @@ ts.AddTest("Comment", function(ut)
 			new UT.ScriptData("/comment/").Call({id:objInit.id, comment:"hello", apikey:'test-api-key'}, ut.FnWrap(function (obj) {
 				ut.AssertContains(obj, {status:"OK", url:"http://google.com/"});
 				ut.AssertContains(obj.comments[0], {comment:"hello"});
+				cComment = obj.comments.length;
+				ut.NextFn();
+				}));
+			},
+		function(ut)
+			{
+			new UT.ScriptData("/comment/").Call({id:objInit.id, comment:"hello2", csrf:sCSRF}, ut.FnWrap(function (obj) {
+				ut.AssertContains(obj, {status:"OK", url:"http://google.com/"});
+				ut.AssertContains(obj.comments[0], {comment:"hello2"});
 				cComment = obj.comments.length;
 				ut.NextFn();
 				}));

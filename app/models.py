@@ -184,7 +184,7 @@ class Map(db.Model):
                 self.AddComment(username=local.requser.username, comment="__share")
         
     def Viewed(self):
-        if local.requser.FOnce('map.%s' % self.GetId()):
+        if not local.requser.FOnce('map.%s' % self.GetId()):
             return
         self.viewCount = self.viewCount + 1
         self.put()

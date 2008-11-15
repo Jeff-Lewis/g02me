@@ -10,13 +10,13 @@ function Loaded()
 		return;
 
 	txtUsername.focus();
-	G02.AddEventFn(txtUsername, "keydown", KeyDown);
+	Go2.AddEventFn(txtUsername, "keydown", KeyDown);
 }
 
 function KeyDown(evt)
 {
 	if (evt.keyCode == 13)
-		G02.SetUsername(txtUsername.value);
+		Go2.SetUsername(txtUsername.value);
 }
 {% endblock %}
 
@@ -25,12 +25,12 @@ function KeyDown(evt)
 <div class="heading">
 {% if username %}
 	Welcome <a href="/user/{{username}}" title="{{username}}'s activity">{{username}}</a> |
-	<a href="javascript:G02.SetUsername('');">Sign out</a>
+	<a href="javascript:Go2.SetUsername('');">Sign out</a>
 {% else %}
 	<div id="sign-in">
 	    <label for="username">Nickname: </label>
 	    <input style="width:70px;" type="text" id="username" name="username"/>
-		<input onclick="G02.SetUsername(txtUsername.value);" style="width:70px;" type="button" value="Claim It"/>
+		<input onclick="Go2.SetUsername(txtUsername.value);" style="width:70px;" type="button" value="Claim It"/>
 	</div>
 {% endif %}
 </div>

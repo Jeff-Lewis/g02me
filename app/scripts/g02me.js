@@ -1,48 +1,22 @@
-// g02me.js - G02.ME Link Shortening Service
+// g02me.js - Go2.me Link Shortening Service
 // Copyright (c) Mike Koss (mckoss@startpad.org)
 if (!window.console || !console.firebug)
-{
+	(function ()
+		{
     var names = ["log", "debug", "info", "warn", "error", "assert", "dir", "dirxml",
     "group", "groupEnd", "time", "timeEnd", "count", "trace", "profile", "profileEnd"];
 
     window.console = {};
     for (var i = 0; i < names.length; ++i)
         window.console[names[i]] = function() {}
-}
+		})();
 
-Function.prototype.FnMethod = function(obj)
-{
-	var _fn = this;
-	return function () { return _fn.apply(obj, arguments); };
-};
-
-Function.prototype.FnArgs = function()
-{
-	var _fn = this;
-	var _args = [];
-	for (var i = 0; i < arguments.length; i++)
-		_args.push(arguments[i]);
-
-	return function () {
-		var args = [];
-		// In case this is a method call, preserve the "this" variable
-		var self = this;
-
-		for (var i = 0; i < arguments.length; i++)
-			args.push(arguments[i]);
-		for (i = 0; i < _args.length; i++)
-			args.push(_args[i]);
-
-		return _fn.apply(self, args);
-	};	
-};
-
-var G02 = {
-sSiteName: "G02.ME",
+var Go2 = {
+sSiteName: "Go2.me",
 
 SetUsername: function(sUsername)
 	{
-	var sd = new G02.ScriptData('/cmd/setusername');
+	var sd = new Go2.ScriptData('/cmd/setusername');
 	if (sUsername != '')
 		pageTracker._trackPageview('/meta/newuser');
 	sd.Call({username:sUsername}, SUCallback);
@@ -60,7 +34,7 @@ SetUsername: function(sUsername)
 				sd.Call({username:sUsername, force:true}, SUCallback);
 			break;
 		default:
-			alert(G02.sSiteName + ": " + obj.message);
+			alert(Go2.sSiteName + ": " + obj.message);
 			break;
 			}
 		};
@@ -123,16 +97,16 @@ AddEventFn: function(elem, stEvt, fnCallback, fCapture)
 	else
 		elem['on' + stEvt] = fnCallback;
 
-	G02.fnHandlers.push({elem:elem, evt:stEvt, fn:fnCallback, fCapture:fCapture});
-	return G02.fnHandlers.length-1;
+	Go2.fnHandlers.push({elem:elem, evt:stEvt, fn:fnCallback, fCapture:fCapture});
+	return Go2.fnHandlers.length-1;
 	},
 	
 RemoveEventFn: function(ifn)
 	{
-	var fnHand = G02.fnHandlers[ifn];
+	var fnHand = Go2.fnHandlers[ifn];
 	if (!fnHand)
 		return;
-	G02.fnHandlers[ifn] = undefined;
+	Go2.fnHandlers[ifn] = undefined;
 
 	var elem = fnHand.elem;
 	if (elem.removeEventListener)
@@ -141,18 +115,45 @@ RemoveEventFn: function(ifn)
 		elem.detachEvent('on' + fnHand.evt, fnHand.fn);
 	else
 		elem['on' + fnHand.evt] = undefined;
-	}
-};  // G02
+	},
+	
+SetCookie: function(name, value, days, fSecure)
+	{
+	var st = encodeURIComponent(name) + "=" + encodeURIComponent(value);
+	if (days != undefined)
+		st += ";max-age=" + days*60*60*24;
+	if (fSecure)
+		st += ";secure";
+	st += ";path=/";
+	document.cookie = st;
+	},
 
-G02.Timer = function(fnCallback, ms)
+GetCookies: function()
+	{
+	var st = document.cookie;
+	var rgPairs = st.split(";");
+	
+	var obj = {};
+	for (var i = 0; i < rgPairs.length; i++)
+		{
+		// Note that document.cookie never returns ;max-age, ;secure, etc. - just name value pairs
+		rgPairs[i] = rgPairs[i].Trim();
+		var rgC = rgPairs[i].split("=");
+		obj[decodeURIComponent(rgC[0])] = decodeURIComponent(rgC[1]);
+		}
+	return obj;
+	}
+};  // Go2
+
+Go2.Timer = function(fnCallback, ms)
 {
 	this.ms = ms;
 	this.fnCallback = fnCallback;
 	return this;
 };
 
-G02.Timer.prototype = {
-	constructor: G02.Timer,
+Go2.Timer.prototype = {
+	constructor: Go2.Timer,
 	fActive: false,
 	fRepeat: false,
 	fInCallback: false,
@@ -206,47 +207,47 @@ Active: function(fActive)
 
 	return this;
 }
-}; // G02.Timer
+}; // Go2.Timer
 
-G02.ScriptData = function(stURL)
+Go2.ScriptData = function(stURL)
 {
     this.stURL = stURL;
     return this;
 };
 
-G02.ScriptData.ActiveCalls = [];
-G02.ScriptData.ridNext = 1;
-G02.ScriptData.stMsg = {
+Go2.ScriptData.ActiveCalls = [];
+Go2.ScriptData.ridNext = 1;
+Go2.ScriptData.stMsg = {
     errBusy: "Call made while another call is in progress.",
     errUnmatched: "Callback received for inactive call: ",
     errTimeout: "Server did not respond before timeout."
     };
 
-G02.ScriptData.prototype = {
-	constructor:G02.ScriptData,
+Go2.ScriptData.prototype = {
+	constructor:Go2.ScriptData,
 	rid: 0,
 	msTimeout: 2000, 
 
 Call: function(objParams, fnCallback)
 	{
     if (this.rid != 0)
-        throw(new Error(G02.ScriptData.stMsg.errBusy));
+        throw(new Error(Go2.ScriptData.stMsg.errBusy));
 
 	this.fResponse = false;
 	this.objResponse = undefined;
 	this.ridResponse = 0;
-   	this.rid = G02.ScriptData.ridNext++;
-    G02.ScriptData.ActiveCalls[this.rid] = this;
+   	this.rid = Go2.ScriptData.ridNext++;
+    Go2.ScriptData.ActiveCalls[this.rid] = this;
 
 	if (fnCallback)
 		this.fnCallback = fnCallback;
             
     if (objParams === undefined)
             objParams = {};
-    objParams.callback = "G02.ScriptData.ActiveCalls[" + this.rid + "].Callback";
+    objParams.callback = "Go2.ScriptData.ActiveCalls[" + this.rid + "].Callback";
     this.script = document.createElement("script");
-    this.script.src = this.stURL + G02.StParams(objParams);
-    this.tm = new G02.Timer(G02.ScriptData.Cancel.FnArgs(this.rid), this.msTimeout).Active(true);
+    this.script.src = this.stURL + Go2.StParams(objParams);
+    this.tm = new Go2.Timer(Go2.ScriptData.Cancel.FnArgs(this.rid), this.msTimeout).Active(true);
     document.body.appendChild(this.script);
     console.log("script[" + this.rid + "]: " + this.script.src);
     return this;
@@ -274,20 +275,54 @@ Timeout: function(rid)
 // ScriptData can be re-used once complete
 Cancel: function()
 	{
-	G02.ScriptData.Cancel(this.rid);
+	Go2.ScriptData.Cancel(this.rid);
 	}
-}; //G02.ScriptData
+}; //Go2.ScriptData
 
-G02.ScriptData.Cancel = function(rid)
+Go2.ScriptData.Cancel = function(rid)
 {
 	if (rid == 0)
 		return;
-	var sd = G02.ScriptData.ActiveCalls[rid];
-	G02.ScriptData.ActiveCalls[rid] = undefined;
+	var sd = Go2.ScriptData.ActiveCalls[rid];
+	Go2.ScriptData.ActiveCalls[rid] = undefined;
 	// Guard against multiple calls to Cancel (after sd may be reused)
 	if (sd && sd.rid == rid)
 		{
 		sd.rid = 0;
 		sd.tm.Active(false);
 		}
+};
+
+// Some extensions to built-it JavaScript objects (sorry!)
+
+Function.prototype.FnMethod = function(obj)
+{
+	var _fn = this;
+	return function () { return _fn.apply(obj, arguments); };
+};
+
+Function.prototype.FnArgs = function()
+{
+	var _fn = this;
+	var _args = [];
+	for (var i = 0; i < arguments.length; i++)
+		_args.push(arguments[i]);
+
+	return function () {
+		var args = [];
+		// In case this is a method call, preserve the "this" variable
+		var self = this;
+
+		for (var i = 0; i < arguments.length; i++)
+			args.push(arguments[i]);
+		for (i = 0; i < _args.length; i++)
+			args.push(_args[i]);
+
+		return _fn.apply(self, args);
+	};	
+};
+
+String.prototype.Trim = function()
+{
+	return (this || "").replace( /^\s+|\s+$/g, "");
 };
