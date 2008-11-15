@@ -210,9 +210,9 @@ X Add slash through the 0 in the G02.ME logo (Tony Wright)
   - Add as Django filter
 X Hitting back button after leaving a comment (or deleting comment) should not resubmit!
   - Chrome behavior only?
-- Put all site-specific code in settings.py (analytics account number, G02.ME name, etc.)
-  - Analytics account id
-  - G02.ME host name
+X Put all site-specific code in settings.py (analytics account number, G02.ME name, etc.)
+  X Analytics account id
+  X G02.ME host name
 - Move primary domain to "go2.me".
   - Direct go2.me to ghs
   - Add nake domain
@@ -349,19 +349,67 @@ X Fix timer to end of page!
   - Tweet via RSS
   - JSON calls (not from referrer {{host}})
   - Send email notification
-- Pagetracking for goals
-  - append /api when done via JSON calls (not from UI)
+- Analytics Pagetracking for goals
   - /meta/username - client
   - /meta/comment - client
   - /meta/share - ??? server/deferred to next page ??? -> do all the same way!
   - /meta/newuser - server
   - SetVar for user state [base, comment, share, username]
+  - Any way to use GA for JSON call tracking?
+  - Use GA event tracking instead???
 - Setvar user partitioning
   - "user" (as opposed to anon)
   - "admin"
   - "premium"
+  - OR - assign a composite "engagement" score and cluster 1 week half-life:
+    - Username: +10 points
+    - View: 1 point
+    - Share: 3 points
+    - Comment: 2 points
+    - Clustering:
+      0-5: Low
+      6-10: Medium
+      11-25: High
+      26-100: Very High
+      101+: Extremely High
+    - Store as compound value- last week's score, this week's score (cluster)
+      - e.g. None-Low or VeryHigh-High
+  - Use cookies for storage (no server-side session storage)
+- Track Progeny of users
+  - Associate each user with a "parent" user id - first page view authored by....
+- Can I show top views each week for each user's shares?
+- Track one week half-life rates for each user (stored in cookies)
+    - share
+    - comment
+    - view
+    - home
+    - tag page view
+    - user page view
+    - Write old data to log only when user is > 1 week old (each week returning)
 - Fork thread to request pseudo-batch processing
   - RSS feed checking
   - Send email notifications
-- Analytics tracking
-
+- AJAX not working on mobile
+  - G1
+  - Blackberry
+- Merge prodo6 changes back to main branch?
+- For limiting scoring on a single URL
+  - Change _FLimit to use a single memcache block with lists of the source authors
+    rather than one memchace per user * url combination
+- Don't log referer of domains from the bookmarklet use.
+  - When referer equals the url of the link - then it is a bookmarklet use
+- Show tags in home page and tags page - encourage cross-linking around the site
+  - Aggregrate related tags at top of tag page (or sidebar)
+  - Tag cloud format
+  - Incidence graph (or just summary of the tags used by links on the displayed page)?
+X go2.me migration
+  - Analytics cross-domain support
+  - blog update
+  - STS mail
+  - migrate blog url (redirect)
+  - Google Webmaster Tools
+X G02.me bookmarklet broken
+  - Missing full-path query params!
+- Move requser to req.usertrack
+  - Only req is stored in local
+- Move FinalResponse to context processor 

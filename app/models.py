@@ -170,7 +170,9 @@ class Map(db.Model):
     def Shared(self):
         # Updates shared count if a unique user share
         # ALWAYS - puts() the Map to the database as a side effect
-        if not self.is_saved() and local.requser.FAllow('share') and local.requser.FOnce('map.%s' % self.GetId()):
+        if not self.is_saved():
+            self.put()
+        if local.requser.FAllow('share') and local.requser.FOnce('map.%s' % self.GetId()):
             self.shareCount = self.shareCount + 1
             self.put()
             
@@ -180,11 +182,9 @@ class Map(db.Model):
             # Overload the comment to record when a (registered user) shares a URL
             if local.requser.username != '' and local.requser.FAllow('comment'):
                 self.AddComment(username=local.requser.username, comment="__share")
-        else:
-            self.put()
         
     def Viewed(self):
-        if self._FLimitStats():
+        if local.requser.FOnce('map.%s' % self.GetId()):
             return
         self.viewCount = self.viewCount + 1
         self.put()

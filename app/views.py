@@ -22,7 +22,7 @@ def CatchAll(req):
     raise Error("Page not found", "Fail/NotFound")
 
 def MakeAlias(req):
-    map = Map.FindOrCreateUrl(mpParams.get('url', ""), mpParams.get('title', ""))
+    map = Map.FindOrCreateUrl(local.mpParams.get('url', ""), local.mpParams.get('title', ""))
     if IsJSON():
         return HttpJSON(req, obj=map.JSON())
     return HttpResponseRedirect("/%s" % map.GetId())
@@ -57,9 +57,7 @@ def TrySetUsername(req, sUsername, fSetEmpty=False):
     local.requser.username = sUsername
 
 def DoComment(req, command=None):
-    RequireUserAuth(True)
-    
-    mpParams = ParamsCheckAPI()
+    local.requser.Require('api', 'write', 'comment')
     
     if command == 'delete':
         delkey = mpParams.get('delkey', '').strip()

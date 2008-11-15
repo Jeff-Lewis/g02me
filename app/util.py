@@ -138,31 +138,28 @@ class ReqFilter(object):
             
         if req.method == 'GET':
             local.mpParams = req.GET
-            local.fJSON = local.mpParams.has_key("callback")
-            # JSON calls must satisfy following requirements to allow
-            # write access.
-            # - Using a signed API key
-            # - Passes a signed csrf param equal to the currently signed in userAuth cookie
-            if local.fJSON:
-                try:
-                    if SGetSigned('api', local.mpParams['apikey']):
-                        requser.Allow('api')
-                except: pass           
         else:
             local.mpParams = req.POST
 
+        local.fJSON = local.mpParams.has_key("callback")
+
+        # API calls allowed if csrf field is validated to the current user OR
+        # if a signed apikey is given
         try:
-            if local.mpParams['csrf'] == requser.uidSigned:
+            if local.mpParams['csrf'] == requser.uid:
                 requser.Allow('api', 'post')
         except: pass
+        
+        try:
+            if SGetSigned('api', local.mpParams['apikey']):
+                requser.Allow('api')
+        except: pass   
         
         local.requser = requser
         
     def process_response(self, req, resp):
         # If the user has no valid userAuth token, given them one for the next request
-        local.cookies['userAuth'] = local.requser.uaSigned
-        local.cookies['username'] = local.requser.username
-        local.cookies['userType'] = local.requser.sType
+        local.cookies.update(local.requser.UserCookies())
 
         for name in local.cookies:
             if local.cookies[name] != '':
@@ -184,6 +181,10 @@ class ReqFilter(object):
         if not settings.DEBUG:
             return HttpError(req, "Application Error", {'status': 'Fail'})
         
+def IsJSON():
+    # BUG: Remove
+    return local.fJSON;
+        
 # --------------------------------------------------------------------
 # User information for the request.
 # - Authentication
@@ -196,11 +197,13 @@ class ReqFilter(object):
 
 class ReqUser(object):
     mpPermMessage = {}
-    mpPermError = {}
+    mpPermCode = {}
 
     def __init__(self, req):
         self.req = req
         self.fAnon = True
+        self.mpRates = {}
+        self.username = ''
         
         # Nothing allowed by default!
         self.mpPermit = set()
@@ -208,8 +211,6 @@ class ReqUser(object):
         if Block.Blocked(local.ipAddress):
             return
 
-        # Allow 10 writes per minute on average for one authenticated user
-        
         try:
             self.uidSigned = req.COOKIES['userAuth']
             self.uid = SGetSigned('uid', self.uidSigned)
@@ -217,10 +218,9 @@ class ReqUser(object):
                 return;
             self.fAnon = False
         except:
-            # Only 2 writes per minute for anonymous user
-            self.uid = SGenUID()
+            self.uid = self.SGenUID()
             self.uidSigned = SSign('uid', self.uid)
-            logging.info(self.ua)
+            logging.info("Anon-new: %s" % self.uid)
 
         self.Allow('read')
         
@@ -253,7 +253,7 @@ class ReqUser(object):
             
     def Allow(self, *args):
         for sPerm in args:
-            self.mpPermit[sPerm].add(sPerm)
+            self.mpPermit.add(sPerm)
     
     def FAllow(self, *args):
         for sPerm in args:
@@ -264,25 +264,31 @@ class ReqUser(object):
     def Require(self, *args):
         for sPerm in args:
             if not self.FAllow(sPerm):
-                message = self.mpPermMessage.get(sPerm, "Authorization Error")
-                code = self.mpPermCode.get(sPerm, "Fail/Auth")
+                message = self.mpPermMessage.get(sPerm, "Authorization Error (%s)" % sPerm)
+                code = self.mpPermCode.get(sPerm, "Fail/Auth/%s" % sPerm)
                 raise Error(message, code)
             
-    def FOnce(key):
+    def FOnce(self, key):
         if memcache.get('user.once.%s.%s' % (self.UserId(), key)):
-            return True
+            return False
         memcache.set('user.once.%s.%s' % (self.UserId(), key), True)
+        return True
 
     def UserId(self):
         if self.fAnon:
             return local.ipAddress
-        return self.uidSigned
+        return self.uid
     
     @staticmethod
     def SGenUID():
         # Generate a unique user ID: IP~Date~Random
         import random
         return "~".join((local.ipAddress, local.dtNow.strftime('%m/%d/%Y %H:%M'), str(random.randint(0, 10000))))
+    
+    def UserCookies(self):
+        return {'userAuth': self.uidSigned,
+                'username': self.username,
+                }
 
 class Block(db.Model):
     # Block requests for abuse by IP or User Auth cookie
@@ -306,7 +312,7 @@ class Block(db.Model):
         block = memcache.get(sMemKey)
         if block is not None:
             return block
-        block = Block.get_by_key_name(sKey)
+        block = Block.get_by_key_name(sMemKey)
         if block is not None:
             memcache.set(sMemKey, block, Block.secsMem)
             return block
@@ -374,10 +380,9 @@ def FinalResponse():
         'elapsed': ResponseTime(),
         'now': local.dtNow,
 
-        'user_type': local.requser.sType,
         'username': local.requser.username,
-        'userauth': local.requser.uaSigned,
-        'new_user': local.requser.fFirstAuth,
+        'userauth': local.requser.uidSigned,
+        'new_user': local.requser.fAnon,
 
         'site_name': settings.sSiteName,
         'site_host': settings.sSiteHost,
@@ -415,8 +420,8 @@ def RequireUserAuth(hard=False):
     # If missing, will allow a limited number of authentications per unique IP
     # Returns raw IP address for anonymous users as unique user key
     # Returns IP~DateIssued~Rand for truly authenticated users
-    if not local.requser.fFirstAuth:
-        return local.requser.ua
+    if not local.requser.fAnon:
+        return local.requser.uid
     if hard:
         raise Error("Failed Authentication", "Fail/Auth")
     rate = MemRate("anon.%s" % local.ipAddress, 10, 60)
