@@ -178,3 +178,7 @@ text-align: center;
 table.scores td.age {
 white-space: nowrap;
 }
+
+form th {
+text-align: right;
+}

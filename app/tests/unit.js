@@ -674,6 +674,8 @@ FnWrap: function(fn)
 			catch (e)
 				{
 				ut.AssertException(e, "", false);
+				// Advance to next function in sequence
+				ut.NextFn();
 				}
 		});
 	}

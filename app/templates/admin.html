@@ -6,7 +6,6 @@
 <a target="_top" href="/"><img title="{{site_name}}" class="logo" src="/images/logo.png"></a>
 <h1 style="padding-top: 40px;">Community URL Sharing Service</h1>
 
-
 <div class="left">
 <h2>Welcome, {{ user.nickname }}</h2>
 
@@ -18,6 +17,16 @@
 	<li>{{pair.key}}: {{pair.value|escape}}</li>
 {% endfor %}
 </ol>
+
+<h2>API Key Generator</h2>
+<form action="create-api-key" method="get">
+	<input type="hidden" name="csrf" value="{{csrf}}"/>
+	<table>
+		<tr><th><label for="dev">Dev:</label></th><td><input type="text" id="dev" name="dev"/></td></tr>
+		<tr><th><label for="exp">Expires:</label></th><td><input type="text" id="exp" name="exp" value="2009-12-31"/></td></tr>
+		<tr><th></th><td><input type="submit" value="Create"/></td></tr>
+	</table>
+</form>
 </div> <!-- left -->
 
 <div class="right">

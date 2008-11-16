@@ -60,7 +60,7 @@ def DoComment(req, command=None):
     local.requser.Require('api', 'write', 'comment')
     
     if command == 'delete':
-        delkey = mpParams.get('delkey', '').strip()
+        delkey = local.mpParams.get('delkey', '').strip()
         try:
             cid = int(SGetSigned('dk', delkey))
         except:
@@ -72,13 +72,13 @@ def DoComment(req, command=None):
         comment.Delete()
         
     if command is None:
-        id = mpParams.get('id', "").strip()
+        id = local.mpParams.get('id', "").strip()
         
         map = Map.Lookup(id)
         if map == None:
             RaiseNotFound(id)
         
-        parts = Comment.Parse(mpParams.get('username', ''), mpParams.get('comment', ''))
+        parts = Comment.Parse(local.mpParams.get('username', ''), local.mpParams.get('comment', ''))
         
         TrySetUsername(req, parts['username'])
         
@@ -159,19 +159,23 @@ def Admin(req, command=None):
             
         if command == 'flush-memcache':
             memcache.flush_all()
+            
+        if command == 'create-api-key':
+            logging.info('CAK')
+            key = '~'.join((local.mpParams['dev'], local.mpParams['exp']))
+            raise Error('Signed API key: %s' % SSign('api', key), 'OK')
 
         return HttpResponseRedirect("/admin/")
 
     ms = memcache.get_stats()
     AddToResponse(
-          {'user':user,
-           'req':req,
+          {
            'logout':users.create_logout_url(req.get_full_path()),
            #'Broken':Map.ss.Broken(),
            #'BadComments':Comment.BadComments(),
            'BrokenComments':Comment.Broken(),
            #'BadCounts':Map.FindBadTagCounts(),
-           'MissingCreator':Comment.MissingCreator(),
+           #'MissingCreator':Comment.MissingCreator(),
            'MemCache':[{'key':key, 'value':ms[key]} for key in ms.keys()],
            })
     return render_to_response('admin.html', FinalResponse())

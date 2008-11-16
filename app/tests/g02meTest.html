@@ -13,6 +13,10 @@
 var ts = new UT.TestSuite();
 ts.DWOutputDiv();
 
+// API Key signed with the default (local) secret key (will not work on Go2.me)
+var sAPIKey = "api~test~2009-12-31~CA3DB128CF8B57EF309C3210ECBE9E9D80E156FC";
+var sAPIKeyExpired = "api~test~2008-11-01~506A7A7407A649DFBB2C8AB2CA0A464C94B0657B";
+
 ts.AddTest("Map", function(ut)
 {
 	var objInit;
@@ -190,9 +194,9 @@ ts.AddTest("Comment", function(ut)
 
 
 	sCSRF = Go2.GetCookies()['userAuth'];
-	mpCSRF = sCSRF.match(/^(.+)~[0-9A-F]{40}$/);
+	mpCSRF = sCSRF.match(/^uid~(.+)~[0-9A-F]+$/);
+	ut.Assert(mpCSRF && mpCSRF[1], "Missing User Auth Cookie");
 	sCSRF = mpCSRF[1];
-	console.log("CSRF: " + sCSRF);
 
 	ut.AsyncSequence([
 		function(ut)
@@ -212,18 +216,16 @@ ts.AddTest("Comment", function(ut)
 			},
 		function(ut)
 			{
-			new UT.ScriptData("/comment/").Call({id:objInit.id, comment:"hello", apikey:'test-api-key'}, ut.FnWrap(function (obj) {
-				ut.AssertContains(obj, {status:"OK", url:"http://google.com/"});
-				ut.AssertContains(obj.comments[0], {comment:"hello"});
-				cComment = obj.comments.length;
+			new UT.ScriptData("/comment/").Call({id:objInit.id, comment:"hello", apikey:sAPIKeyExpired}, ut.FnWrap(function (obj) {
+				ut.AssertContains(obj, {status:"Fail/Auth/api"});
 				ut.NextFn();
 				}));
 			},
 		function(ut)
 			{
-			new UT.ScriptData("/comment/").Call({id:objInit.id, comment:"hello2", csrf:sCSRF}, ut.FnWrap(function (obj) {
+			new UT.ScriptData("/comment/").Call({id:objInit.id, comment:"hello", apikey:sAPIKey}, ut.FnWrap(function (obj) {
 				ut.AssertContains(obj, {status:"OK", url:"http://google.com/"});
-				ut.AssertContains(obj.comments[0], {comment:"hello2"});
+				ut.AssertContains(obj.comments[0], {comment:"hello"});
 				cComment = obj.comments.length;
 				ut.NextFn();
 				}));
@@ -239,7 +241,16 @@ ts.AddTest("Comment", function(ut)
 			},
 		function(ut)
 			{
-			new UT.ScriptData("/comment/").Call({id:objInit.id, force: true, comment:"mckoss :  This is a test  [  ,,tag1,  tag2]", apikey:'test-api-key'}, function (obj) {
+			new UT.ScriptData("/comment/").Call({id:objInit.id, comment:"hello2", csrf:sCSRF}, ut.FnWrap(function (obj) {
+				ut.AssertContains(obj, {status:"OK", url:"http://google.com/"});
+				ut.AssertContains(obj.comments[0], {comment:"hello2"});
+				cComment = obj.comments.length;
+				ut.NextFn();
+				}));
+			},
+		function(ut)
+			{
+			new UT.ScriptData("/comment/").Call({id:objInit.id, force: true, comment:"mckoss :  This is a test  [  ,,tag1,  tag2]", apikey:sAPIKey}, function (obj) {
 				ut.AssertContains(obj, {status:"OK", url:"http://google.com/"});
 				ut.AssertContains(obj.comments[0], {comment:"This is a test", tags:"tag1,tag2", user:"mckoss"});
 				ut.AssertType(obj.comments[0].created, Date);
@@ -261,25 +272,25 @@ ts.AddTest("Comment", function(ut)
 		function(ut)
 			{
 			tagUniq = "dm-" + Math.floor(Math.random()*1000);
-			new UT.ScriptData("/comment/").Call({id:objInit.id, comment:"mckoss :  [" + tagUniq + "]", apikey:'test-api-key'}, function (obj) {
+			new UT.ScriptData("/comment/").Call({id:objInit.id, comment:"mckoss :  [" + tagUniq + "]", apikey:sAPIKey}, ut.FnWrap(function (obj) {
 				ut.AssertContains(obj, {status:"OK", url:"http://google.com/"});
 				ut.AssertContains(obj.comments[0], {comment:"", user:"mckoss", tags:tagUniq});
 				com2= obj.comments[0];
 				ut.AssertEq(obj.comments.length, cComment+2);
 				ut.AssertContains(obj.tags, ["tag1", "tag2", tagUniq]);
 				ut.NextFn();
-				});
+				}));
 			},
 		function(ut)
 			{
-			new UT.ScriptData("/comment/delete").Call({cid:com2.cid}, function(obj) {
-				ut.AssertContains(obj, {status: "Fail/Auth"});
+			new UT.ScriptData("/comment/delete").Call({cid:com2.cid}, ut.FnWrap(function(obj) {
+				ut.AssertContains(obj, {status: "Fail/Auth/api"});
 				ut.NextFn();
-				});
+				}));
 			},
 		function(ut)
 			{
-			new UT.ScriptData("/comment/delete").Call({delkey:com2.delkey, apikey:'test-api-key'}, ut.FnWrap(function(obj) {
+			new UT.ScriptData("/comment/delete").Call({delkey:com2.delkey, apikey:sAPIKey}, ut.FnWrap(function(obj) {
 				ut.AssertEq(obj.comments.length, cComment+1);
 				for (var i = 0; i < obj.tags.length; i++)
 					ut.AssertNEq(obj.tags[i], tagUniq);
@@ -288,7 +299,7 @@ ts.AddTest("Comment", function(ut)
 			},
 		function(ut)
 			{
-			new UT.ScriptData("/comment/delete").Call({delkey:com.delkey, apikey:'test-api-key'}, function(obj) {
+			new UT.ScriptData("/comment/delete").Call({delkey:com.delkey, apikey:sAPIKey}, function(obj) {
 				ut.AssertEq(obj.comments.length, cComment);
 				ut.NextFn();
 				});
@@ -351,7 +362,7 @@ ts.AddTest("Tag", function(ut)
 			},
 		function(ut)
 			{
-			new UT.ScriptData("/comment/").Call({id:objInit.id, comment:"Testing tags [, ,search,, multi word]", apikey:'test-api-key'}, function (obj) {
+			new UT.ScriptData("/comment/").Call({id:objInit.id, comment:"Testing tags [, ,search,, multi word]", apikey:sAPIKey}, function (obj) {
 				ut.AssertContains(obj, {status:"OK", url:"http://google.com/"});
 				ut.AssertGT(obj.comments.length, 0);
 				ut.AssertContains(obj.comments[0], {comment:"Testing tags", tags: "search,multi-word"});

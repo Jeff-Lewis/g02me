@@ -116,7 +116,10 @@ RemoveEventFn: function(ifn)
 	else
 		elem['on' + fnHand.evt] = undefined;
 	},
-	
+
+// Cookies can be quoted with "..." if they have spaces or other special characters.
+// Internal quotes may be escaped with a \ character
+// These routines use encodeURIComponent to safely encode and decode all special characters
 SetCookie: function(name, value, days, fSecure)
 	{
 	var st = encodeURIComponent(name) + "=" + encodeURIComponent(value);
@@ -139,7 +142,12 @@ GetCookies: function()
 		// Note that document.cookie never returns ;max-age, ;secure, etc. - just name value pairs
 		rgPairs[i] = rgPairs[i].Trim();
 		var rgC = rgPairs[i].split("=");
-		obj[decodeURIComponent(rgC[0])] = decodeURIComponent(rgC[1]);
+		var val = decodeURIComponent(rgC[1]);
+		// Remove quotes around value string if any (and also replaces \" with ")
+		var rg = val.match('^"(.*)"$');
+		if (rg)
+			val = rg[1].replace('\\"', '"');
+		obj[decodeURIComponent(rgC[0])] = val;
 		}
 	return obj;
 	}

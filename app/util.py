@@ -125,7 +125,6 @@ class ReqFilter(object):
         
         local.dtNow = datetime.now()
         local.sSecret = models.Globals.SGet(settings.sSecretName, "test server key")
-        local.sAPIKey = models.Globals.SGet(settings.sAPIKeyName, "test-api-key")
         
         requser = ReqUser(req)
         
@@ -151,8 +150,13 @@ class ReqFilter(object):
         except: pass
         
         try:
-            if SGetSigned('api', local.mpParams['apikey']):
+            sAPI = SGetSigned('api', local.mpParams['apikey'])
+            # Format: user~yyyy-mm-dd (expiration date)
+            rgAPI = sAPI.split('~')
+            dtExpires = datetime.strptime(rgAPI[1], '%Y-%m-%d')
+            if dtExpires > local.dtNow:
                 requser.Allow('api')
+                requser.SetMaxRate('write', 60)
         except: pass   
         
         local.requser = requser
@@ -224,6 +228,8 @@ class ReqUser(object):
 
         self.Allow('read')
         
+        self.username = req.COOKIES.get('username', '')
+        
         self.user = users.get_current_user()
         if users.is_current_user_admin():
             self.Allow('admin')
@@ -291,8 +297,7 @@ class ReqUser(object):
                 }
 
 class Block(db.Model):
-    # Block requests for abuse by IP or User Auth cookie
-    sKey = db.StringProperty(required=True)
+    # Block requests for abuse by IP or User Auth key
     dateCreated = db.DateTimeProperty()
     secsMem = 3*60
     
@@ -301,9 +306,10 @@ class Block(db.Model):
         block = Block.Blocked(sKey)
         if block:
             return block
-        block = Block.get_or_insert(key_name=sKey, sKey=sKey, dateCreated=local.dtNow)
+        sMemKey = Block.MemKey(sKey)
+        block = Block.get_or_insert(key_name=sMemKey, dateCreated=local.dtNow)
         block.put()
-        memcache.set(self.MemKey(sKey), self, Block.secsMem)
+        memcache.set(sMemKey, self, Block.secsMem)
         return block
         
     @staticmethod
@@ -369,6 +375,7 @@ def HttpJSON(req, obj=None):
         obj = {}
     if not 'status' in obj:
         obj['status'] = 'OK'
+    obj['secsResponse'] = str(ResponseTime())
     resp = HttpResponse("%s(%s);" % (req.GET["callback"], simplejson.dumps(obj, cls=JavaScriptEncoder, indent=4)), mimetype="application/x-javascript")
     return resp
 
@@ -377,12 +384,16 @@ def AddToResponse(mp):
     
 def FinalResponse():
     AddToResponse({
+        # Elapsed time evaluates when USED
         'elapsed': ResponseTime(),
         'now': local.dtNow,
+        'req': local.req,
 
         'username': local.requser.username,
         'userauth': local.requser.uidSigned,
-        'new_user': local.requser.fAnon,
+        'csrf': local.requser.uid,
+        'user': local.requser.user,
+        'fAnon': local.requser.fAnon,
 
         'site_name': settings.sSiteName,
         'site_host': settings.sSiteHost,
@@ -402,6 +413,8 @@ class ResponseTime(object):
 # --------------------------------------------------------------------
 # Ensure user is signed in for request to procede
 # --------------------------------------------------------------------
+
+# TODO: These should go away - replaced by ReqUser functions
         
 def RequireAdmin():
     user = RequireUser()
