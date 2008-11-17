@@ -11,7 +11,7 @@
 
 
 <h2>Memcache</h2>
-<a href="/admin/flush-memcache">Flush</a>
+<a href="/admin/flush-memcache?csrf={{csrf}}">Flush</a>
 <ol>
 {% for pair in MemCache %}
 	<li>{{pair.key}}: {{pair.value|escape}}</li>
@@ -24,6 +24,7 @@
 	<table>
 		<tr><th><label for="dev">Dev:</label></th><td><input type="text" id="dev" name="dev"/></td></tr>
 		<tr><th><label for="exp">Expires:</label></th><td><input type="text" id="exp" name="exp" value="2009-12-31"/></td></tr>
+		<tr><th><label for="rate">Rate (RPM):</label></th><td><input type="text" id="rate" name="rate" value="10"/></td></tr>
 		<tr><th></th><td><input type="submit" value="Create"/></td></tr>
 	</table>
 </form>
@@ -33,7 +34,7 @@
 
 {% if Broken %}
 <p>
-<a href="/admin/clean-broken">Remove Broken Scores</a> ({{ Broken|length }})
+<a href="/admin/clean-broken?csrf={{csrf}}">Remove Broken Scores</a> ({{ Broken|length }})
 <table class="scores">
 <tr><th>name</th><th>hrsHalf</th><th>S</th><th>LogS</th><th>hrsLast</th></tr>
 {% for score in Broken %}
@@ -51,7 +52,7 @@
 
 {% if BadComments %}
 <p>
-<a href="/admin/clean-comments">Remove Empty Comments</a>
+<a href="/admin/clean-comments?csrf={{csrf}}">Remove Empty Comments</a>
 <table class="scores">
 <tr><th>comment</th><th>dateCreated</th><th>MapKey</th></tr>
 {% for comment in BadComments %}
@@ -67,7 +68,7 @@
 
 {% if BrokenComments %}
 <p>
-<a href="/admin/clean-broken-comments">Remove Broken Comments</a> ({{BrokenComments|length}})
+<a href="/admin/clean-broken-comments?csrf={{csrf}}">Remove Broken Comments</a> ({{BrokenComments|length}})
 <table class="scores">
 <tr><th>comment</th><th>dateCreated</th><th>MapKey</th></tr>
 {% for comment in BrokenComments %}
@@ -83,7 +84,7 @@
 
 {% if BadCounts %}
 <p>
-<a href="/admin/fix-tag-counts">Fix Tag Counts</a> ({{BadCounts|length}})
+<a href="/admin/fix-tag-counts?csrf={{csrf}}">Fix Tag Counts</a> ({{BadCounts|length}})
 <ol>
 {% for map in BadCounts %}
 	<li>(<a href="/info/{{map.GetId}}">info</a>): {{map.STagDiff|escape}}</li>
@@ -94,7 +95,7 @@
 
 {% if MissingCreator %}
 <p>
-<a href="/admin/fix-missing-creators">Fix Missing Creators</a> ({{MissingCreator|length}})
+<a href="/admin/fix-missing-creators?csrf={{csrf}}">Fix Missing Creators</a> ({{MissingCreator|length}})
 <table class="scores">
 <tr><th>comment</th><th>Cmt Date</th><th>Link Date</th><th>Shared By</th><th>Creator</th></tr>
 {% for comment in MissingCreator %}

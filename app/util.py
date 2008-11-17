@@ -8,7 +8,7 @@ from django.shortcuts import render_to_response
 from django.template import loader, Context, Template
 
 import settings
-from timescore.models import MemRate
+from timescore.models import Rate
 
 import threading
 from urlparse import urlsplit, urlunsplit
@@ -128,11 +128,24 @@ class ReqFilter(object):
         
         requser = ReqUser(req)
         
+        """
+        Add additional permissions to ReqUser object:
+
+        'write': Can write to database (rate-limited)
+        'share': Can share a link
+        'score': Can update the score of a link
+        'view-count': Can update the view count of a link
+        'comment': Can add or delete a comment
+        'api': Can make a data-modification request via JSON or POST api
+        
+        Note that multiple permission can be required to perform operations like 'comment'.
+        """
+        
         if requser.fAnon:
-            requser.SetMaxRate('write', 1)
+            requser.SetMaxRate('write', local.ipAddress, 1)
             requser.Allow('share')
         else:
-            requser.SetMaxRate('write', 10)
+            requser.SetMaxRate('write', requser.uid, 10)
             requser.Allow('share', 'score', 'view-count', 'comment')
             
         if req.method == 'GET':
@@ -151,12 +164,14 @@ class ReqFilter(object):
         
         try:
             sAPI = SGetSigned('api', local.mpParams['apikey'])
-            # Format: user~yyyy-mm-dd (expiration date)
+            # Format: dev~rate~yyyy-mm-dd (expiration date)
             rgAPI = sAPI.split('~')
-            dtExpires = datetime.strptime(rgAPI[1], '%Y-%m-%d')
+            dev = str(rgAPI[0])
+            rate = int(rgAPI[1])
+            dtExpires = datetime.strptime(rgAPI[2], '%Y-%m-%d')
             if dtExpires > local.dtNow:
+                requser.SetMaxRate('write', dev, rate)
                 requser.Allow('api')
-                requser.SetMaxRate('write', 60)
         except: pass   
         
         local.requser = requser
@@ -200,9 +215,12 @@ def IsJSON():
 # --------------------------------------------------------------------
 
 class ReqUser(object):
-    mpPermMessage = {}
-    mpPermCode = {}
-
+    """
+    Manage permissions for the user who is making this request.
+    Looks for (and sets) cookies: userAuth and username
+    
+    Built in permissions: 'read', 'admin'
+    """
     def __init__(self, req):
         self.req = req
         self.fAnon = True
@@ -234,16 +252,25 @@ class ReqUser(object):
         if users.is_current_user_admin():
             self.Allow('admin')
         
-    def SetMaxRate(self, sName, rate):
+    def SetMaxRate(self, sName, sScope=None, rpm=None):
         # Set the maximum request rate (per minute) for a given activity
+        # If mulitple calls are made, the largest allowed rate applies.
         self.Allow(sName)
-        self.mpRates[sName] = MemRate('user.%s' % sName, rate, 60)
+        if sName in self.mpRates:
+            rate = self.mpRates[sName]
+            if rate.rpmMax >= rpm:
+                return
+        self.mpRates[sName] = MemRate('%s.%s' % (sScope, sName), rpm)
         
-    def FRateExceeded(self, sName, value=1):
-        if sName not in self.mpRates:
-            return False
-        return self.mpRates[sName].FExceeded(value=value)
-    
+    def RateExceeded(self, sPerm):
+        # If a rate is exceeded, return the one that is exceeded
+        if sPerm not in self.mpRates:
+            return None
+        rate = self.mpRates[sPerm]
+        if rate.FExceeded():
+            return rate
+        return None
+
     def SetVar(self, name, value, priority=1):
         # Save a session variable for the user - only replace current value if the same or higher
         # priority
@@ -261,18 +288,23 @@ class ReqUser(object):
         for sPerm in args:
             self.mpPermit.add(sPerm)
     
-    def FAllow(self, *args):
-        for sPerm in args:
-            if sPerm not in self.mpPermit or self.FRateExceeded(sPerm):
-                return False
-        return True
-    
     def Require(self, *args):
         for sPerm in args:
-            if not self.FAllow(sPerm):
-                message = self.mpPermMessage.get(sPerm, "Authorization Error (%s)" % sPerm)
-                code = self.mpPermCode.get(sPerm, "Fail/Auth/%s" % sPerm)
-                raise Error(message, code)
+            if sPerm not in self.mpPermit:
+                raise Error("Authorization Error (%s)" % sPerm, "Fail/Auth/%s" % sPerm)
+                
+            rate = self.RateExceeded(sPerm)
+            if rate is not None:
+                raise Error("Maximum request rate exceeded (%1.1f per minute - %d allowed for %s)" % (rate.RPM(), rate.cMax, rate.key),
+                            'Fail/Busy/%s' % sPerm)
+        return True
+    
+    def FAllow(self, *args):
+        try:
+            self.Require(*args)
+            return True
+        except:
+            return False
             
     def FOnce(self, key):
         if memcache.get('user.once.%s.%s' % (self.UserId(), key)):
@@ -295,6 +327,35 @@ class ReqUser(object):
         return {'userAuth': self.uidSigned,
                 'username': self.username,
                 }
+
+class MemRate(object):
+    def __init__(self, key, rpmMax=None):
+        self.rate = None
+        self.key = key
+        self.rpmMax = rpmMax
+        self.fExceeded = None
+        
+    def FExceeded(self):
+        if self.fExceeded is not None:
+            return self.fExceeded
+
+        self.EnsureRate()
+        self.fExceeded = self.rate.FExceeded()
+        memcache.set('rate.%s' % self.key, self.rate, 300)
+        logging.info('MemRate: %1.2f/%d for %s (%s)' % (self.rate.S*60, self.rpmMax, self.key, self.fExceeded))
+        return self.fExceeded
+    
+    def RPM(self):
+        # Return current number of requests per minute
+        if self.rate is None:
+            return 0.0
+        return self.rate.S * 60.0
+    
+    def EnsureRate(self):
+        if self.rate is None:
+            self.rate = memcache.get('rate.%s' % self.key)
+        if self.rate is None:
+            self.rate = Rate(self.rpmMax, 60)
 
 class Block(db.Model):
     # Block requests for abuse by IP or User Auth key
@@ -437,7 +498,7 @@ def RequireUserAuth(hard=False):
         return local.requser.uid
     if hard:
         raise Error("Failed Authentication", "Fail/Auth")
-    rate = MemRate("anon.%s" % local.ipAddress, 10, 60)
+    rate = MemRate("anon.%s" % local.ipAddress, 10)
     rate.Limit()
     return local.ipAddress
 

@@ -17,7 +17,7 @@ indexes:
   - name: dateCreated
     direction: desc
 
-# Unused in query history -- copied from input.
+# Used once in query history.
 - kind: Comment
   properties:
   - name: dateCreated
@@ -29,7 +29,7 @@ indexes:
   - name: map
   - name: dateCreated
 
-# Used 28 times in query history.
+# Used 31 times in query history.
 - kind: Comment
   properties:
   - name: map

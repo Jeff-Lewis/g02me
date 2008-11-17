@@ -134,7 +134,7 @@ hrsMonth = hrsYear/12
 # Rate limiter helper
 # --------------------------------------------------------------------
 class Rate(object):
-    # All date values must occur after this baseline date 1/1/2008
+    # All date values must occur after this baseline date
     dtBase = datetime(2008,10,27)
 
     def __init__(self, cMax, secs):
@@ -144,7 +144,11 @@ class Rate(object):
         self.secsLast = 0
         self.S = 0.0
         
-    def FExceeded(self, value=1, dt=None):
+    def FExceeded(self, value=1.0, dt=None):
+        """
+        Returns true if all prior calls exceed the established rate (always returns False on first call).
+        Current rate is updated as a side effect.
+        """
         if dt is None:
             dt = util.local.dtNow
         secs = self.Secs(dt)
@@ -162,31 +166,8 @@ class Rate(object):
         
         return f
     
-    def Limit(self, value=1.0, dt=None):
-        if self.FExceeded(dt=dt):
-            raise util.Error("Server Busy", "Fail/Busy")
-            
     @staticmethod    
     def Secs(t1):
         dt = t1 - Rate.dtBase
         secs = dt.days*24*60*60 + dt.seconds
         return secs
-        
-class MemRate(Rate):
-    def __init__(self, key, cMax=None, secs=60, secsExpire=None):
-        self.key = key
-        self.cMax = cMax
-        self.secs = secs
-        if secsExpire is None:
-            secsExpire = 2 * secs
-        self.secsExpire = secsExpire
-        
-    def FExceeded(self, value=1, dt=None):
-        rate = memcache.get('rate.%s' % self.key)
-        if rate is None:
-            rate = Rate(self.cMax, self.secs)
-        
-        f = rate.FExceeded(dt=dt)
-        
-        memcache.set('rate.%s' % self.key, rate, self.secsExpire)
-        return f

@@ -13,9 +13,10 @@
 var ts = new UT.TestSuite();
 ts.DWOutputDiv();
 
-// API Key signed with the default (local) secret key (will not work on Go2.me)
-var sAPIKey = "api~test~2009-12-31~CA3DB128CF8B57EF309C3210ECBE9E9D80E156FC";
-var sAPIKeyExpired = "api~test~2008-11-01~506A7A7407A649DFBB2C8AB2CA0A464C94B0657B";
+// API Keys signed with the default (local) secret key (will not work on hosted Go2.me)
+var sAPIKey = "api~test~10~2009-01-01~C2CC89F2EEDD6B03A282F55878C08281DB6168AF";
+var sAPIKeyExpired = "api~test~10~2008-01-01~51B2192FF5481272A0031774B41259EA51D728F7";
+var sAPIKeySlow = "api~test~1~2009-01-01~E448E0BD69811529FE28E3B20FBD719755B69567";
 
 ts.AddTest("Map", function(ut)
 {

@@ -127,8 +127,10 @@ def TagView(req, tag):
 def Admin(req, command=None):
     local.requser.Require('admin')
     
-    if command and local.requser.FAllow('api'):
+    if command:
         logging.info("admin command: %s" % command)
+        local.requser.Require('api')
+
         if command == 'clean-broken':
             scores = Map.ss.Broken()
             logging.info("Removing %d broken scores" % len(scores))
@@ -162,7 +164,7 @@ def Admin(req, command=None):
             
         if command == 'create-api-key':
             logging.info('CAK')
-            key = '~'.join((local.mpParams['dev'], local.mpParams['exp']))
+            key = '~'.join((local.mpParams['dev'], local.mpParams['rate'], local.mpParams['exp']))
             raise Error('Signed API key: %s' % SSign('api', key), 'OK')
 
         return HttpResponseRedirect("/admin/")
