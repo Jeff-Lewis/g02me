@@ -17,13 +17,13 @@ function Loaded()
 	Go2.AddEventFn(txtComment, "keydown", KeyDownComment);
 }
 
-function DeleteComment(delkey)
+function DeleteComment(sDelKey)
 {
 	if (!confirm("Are you sure you want to delete this comment?"))
 		return;
 	
 	var sd = new Go2.ScriptData('/comment/delete');
-	var objCall = {delkey:delkey, userauth:"{{userauth}}"};
+	var objCall = {delkey:sDelKey, csrf:"{{csrf}}"};
 	pageTracker._trackPageview('/meta/comment/delete');
 
 	sd.Call(objCall, function(obj) {
@@ -43,8 +43,8 @@ function DeleteComment(delkey)
 function Click()
 {
 	// Call the Click function in our parent window in case we're in a Frame
-	if (window.parent && window.parent != window && window.parent.Click)
-		window.parent.Click();
+	if (window.parent && window.parent.Go2MeParentClick != undefined)
+		window.parent.Go2MeParentClick();
 }
 
 function PostComment()

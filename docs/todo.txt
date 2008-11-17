@@ -8,21 +8,21 @@ X Bookmarklet
   X User comments
   - Design (see delicious page: http://delicious.com/url/6e4e9fc8547418f22ac89a5f7558e58b?show=notes_only, for inspiration)
 - Home
-  ! Number of pages - calculate from ID
+  X Number of pages - calculate from ID
   - Number of views
   - Number of people (day/month)
   X IE instructions for creating bookmark
   X Recently popular pages
-  - JSON api for most popular
+  X JSON api for most popular
   ! Tag cloud
   - Top users
 - Info Header
 	- Info bar horizontal/vertical option
 	  - Default based on display orientation
-	- Pull web page image from Sphere or Alexa?
+	- Pull web page image from Sphere, Alexa or Faves?
 	X Move comment bar to top - comments rev-chron below
 - User pages
-  - Claim your account
+  - Claim your account (provide google, twitter, or Go2.me password)
   X Most recent comments showing page titles, dates, tags
 ! Tags
 	- Record tags scores for top 10 tags each URL
@@ -33,6 +33,7 @@ X favicon cached?  Can't see new one!
 - Sharing options
   - Twitter
   - TwitterFeed
+  - Twhirl
   - Friendfeed
   - Faves
   - MailTo
@@ -54,7 +55,7 @@ X Scoring by views, votes, and comments
   - PayPal donation (or GooglePayments)
   - Premium membership
     - Higher karma/scoring
-    - RSS Feeds
+    - RSS Feeds (auto-Go2-ing)
     - on-site badges and bolding of comments
     - reserve nickname and prevent comment deletion
 X Unicode in title
@@ -71,6 +72,7 @@ X Figure out if there is a work-around for NYT pages that don't like to be shown
 X Get trailing slash off of urls!
 - Widget showing number of views and shares of the current url - click to share
   - Need JSON call for lookup by url (but don't increase share count)
+  - Remove iframe is Go2.me widget is present on page!
 - Google Gadget
 - Use google safebrowsing api to warn about viewing of unsafe urls
 X refactor - Trap all exceptions to universal error page - use django middleware
@@ -101,7 +103,7 @@ X Test deployment
   - Profile image
   - Friend feed and twitter account info
 - Detect or mark problem domains as info-mode pages (frameset unfriendly).
-- Should not update view count when comments are added
+X Should not update view count when comments are added
   - Only update when referer is from another domain?
 X Add scroll bar when there are more comments than fit the head frame (or scale frame to fit)
 X Unit tests
@@ -417,3 +419,4 @@ X G02.me bookmarklet broken
   - Only req is stored in local
 - Move FinalResponse to context processor 
 X Unit Test Throttling
+- Comment deletion from UI fails!
