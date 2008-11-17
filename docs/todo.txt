@@ -138,7 +138,7 @@ X Don't count views by web crawlers
 X Page not found should be a 404 page
 X add expires meta http header to fix google cache bug
 X URL's with tailing "/" are not normalized to the non-trailing versions leading to duplicates
-- Is it possible to implement info/Close box so that currently navigated page is retained?
+! Is it possible to implement info/Close box so that currently navigated page is retained?
   - See if window.location.href is accessible from parent frameset
 X Fix comment counts
 X Cache broken again?
@@ -213,13 +213,13 @@ X Hitting back button after leaving a comment (or deleting comment) should not r
 X Put all site-specific code in settings.py (analytics account number, G02.ME name, etc.)
   X Analytics account id
   X G02.ME host name
-- Move primary domain to "go2.me".
+X Move primary domain to "go2.me".
   - Direct go2.me to ghs
   - Add nake domain
   - Once working, and 301 redirection from g02.me
   - Move Blog to go2.me
     - Redirect blog.g02.me to blog.go2.me
-- Recursive attacks
+X Recursive attacks
 	X Block links to other URL shoteners (tinyurl.com, www.tinyurl.com, bit.ly, is.gd, etc.)
 	- Move from GET to PUT
 - Paging control for user activity pages
@@ -228,27 +228,27 @@ X Put all site-specific code in settings.py (analytics account number, G02.ME na
   - Links in home user activity page to named month ranges ("mckoss's activity for October 2008")
   - Build efficient queries for all activity in a month - limit to 50 comments
   - Potential for unreachable comments beyond 50 comments in any one month
-- Require a request key for comments and all JSON requests
-- Disallow + is username?
+X Require a request key for comments and all JSON requests
+X Disallow + in username?
 X Add random bits to userAuth token!  (1 minute resolution only now)
-- For soft authorization on Share - don't add to Score!
+X For soft authorization on Share - don't add to Score!
 X Add title attribute to links to display where they will go in a tooltip (home, user, tag pages)
 - Centralize error messages and codes in one file
-- Change comment and share to POST operations only
+X Change comment and share to POST operations only
   - Update API page
 - Integrate info page and frameset onto one page (IFRAME)
   - One page for Google to crawl
   - All links count to get info/content
   - No more double counting analytics via /info
   - Resizing/scrolling of info box
-- Link to My Links on home page for username cookie'd users
+X Link to My Links on home page for username cookie'd users
 - Disallow 'http' as a username (mistake in posting links)
 - Import bookmarks/faves
 X Elapsed time of response - home, tag, user pages
 X Share limit by user (same as view limit)
   - Sharing will then preclude a view count - good!
 - Hungarian for python doc
-- Viewing rates for pages (tag and home) (monthly page views extrapolation)
+X PUNT Viewing rates for pages (tag and home) (monthly page views extrapolation)
   - Calc view rate with 24 hour half life
   - Return 30x the daily view rate
   - Write-through memcache (write when update rate drops below 1/minute)
@@ -256,12 +256,12 @@ X Share limit by user (same as view limit)
   - Sliding window of unique user counts (by minute)
   - show users in last 15 minutes as "current" (merge all windows)
   - update calc once each minute - memcache
-- Unit test failing on empty database
+X Unit test failing on empty database
 - Truncate titles with elipses in views
-- Shared count of ZERO(!) for http://g02.me/3g????
+X Shared count of ZERO(!) for http://g02.me/3g????
   - Side effect of throttling un-authorized users
 - Spam - faked title - /3f
-! Reorganize login permissions to treat it globally rather than ad-hoc per function
+X Reorganize login permissions to treat it globally rather than ad-hoc per function
   - User permission levels:
     - Blocked - by IP or Cookie, for abuse
     - Read-only - for search engines (detect by IP and/or user agent?)
@@ -274,7 +274,7 @@ X Share limit by user (same as view limit)
       - Delete anonymous comments
     - Registered user 
     - Admin user
-! Throttle/Filter architecture - unified permission
+X Throttle/Filter architecture - unified permission
    - Anon IP -> read only, 1/60 write rate
    - Cookied -> 10/60 write rate
    - Blocked Cookie -> No access (Server Busy)
@@ -284,7 +284,7 @@ X Share limit by user (same as view limit)
    - Throttle comment scoring by user
 - Make ScoreSet not a Model - just globals
 - Log when application is loaded
-- Log when memcache is empty
+- Log when memcache is empty (does it ever empty?)
 - I have comments that are older than Map they are commenting on!
 X Error sharing this: http://www.nwcn.com/video/index.html?nvid=297637
 X Simple comment protection
