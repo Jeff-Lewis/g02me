@@ -11,7 +11,9 @@
 <p>Just drag this bookmarklet to your bookmarks toolbar*:</p>
 <p style="margin: 10px 100px;">
 <a style="font-size: 24px;" title="Drag me to your bookmarks toolbar"
-   href="javascript:location.href='{{host}}map/?url='+encodeURIComponent(location)+'&title='+encodeURIComponent(document.title);">{{site_name}}</a>
+   onclick="alert('Instead of clicking this link, you need to drag it to your toolbar.');return false;"
+   href="javascript:location.href='{{host}}map/?url='+encodeURIComponent(location)+'&title='+encodeURIComponent(document.title);">{{site_name}}
+</a>
 </p>
 
 <h2>What is {{site_name}}?</h2>

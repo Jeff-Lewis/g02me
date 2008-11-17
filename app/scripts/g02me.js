@@ -234,7 +234,7 @@ Go2.ScriptData.stMsg = {
 Go2.ScriptData.prototype = {
 	constructor:Go2.ScriptData,
 	rid: 0,
-	msTimeout: 2000, 
+	msTimeout: 10000, 
 
 Call: function(objParams, fnCallback)
 	{

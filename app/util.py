@@ -3,7 +3,7 @@ from google.appengine.api import memcache
 from google.appengine.ext import db
 
 
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponse, HttpResponseRedirect, HttpResponsePermanentRedirect
 from django.shortcuts import render_to_response
 from django.template import loader, Context, Template
 
@@ -17,7 +17,7 @@ import simplejson
 from hashlib import sha1
 import re
 
-sIDChars = "23456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghjkmnpqrstuvwxyz-_"
+sIDChars = "23456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghjkmnpqrstuvwxyz"
 nIDChars = len(sIDChars)
 
 def IntToSID(i):
@@ -106,16 +106,23 @@ class ReqFilter(object):
     def process_request(self, req):
         import models
 
+        local.ipAddress = req.META['REMOTE_ADDR']
+        local.dtNow = datetime.now()
         host = req.META["HTTP_HOST"]
+        local.sSecret = models.Globals.SGet(settings.sSecretName, "test server key")
+        local.sAPIKey = models.Globals.SGet(settings.sAPIKeyName, "test-api-key")
 
-        # Redirect to the primary hosted domain
-        if settings.ENVIRONMENT == "hosted" and host in settings.mpSiteAlternates:
-            return HttpResponsePermanentRedirect('http://%s%s' % (settings.sSiteHost, req.path))
+        # Enforce canonical URL's (w/o www) - only GET's are support here
+        if settings.ENVIRONMENT == "hosted":
+            if host in settings.mpSiteAlternates:
+                return HttpResponsePermanentRedirect('http://%s%s' % (settings.sSiteHost, req.get_full_path()))
+            # Redirect the old named blog to the new one
+            if host == 'blog.g02.me':
+                return HttpResponsePermanentRedirect('http://blog.go2.me%s' % req.get_full_path())
         
         # Initialize thread-local variables for this request
         local.req = req
         local.stHost = "http://" + host + "/"
-        local.ipAddress = req.META['REMOTE_ADDR']
         
         # A place to copy any cookies we want during request processing
         local.cookies = {}
@@ -123,10 +130,8 @@ class ReqFilter(object):
         # A place to put dictionary values for template responses
         local.mpResponse = {}
         
-        local.dtNow = datetime.now()
-        local.sSecret = models.Globals.SGet(settings.sSecretName, "test server key")
-        
-        requser = ReqUser(req)
+        local.mpResponse = {}
+        local.requser = requser = ReqUser(req)
         
         """
         Add additional permissions to ReqUser object:
@@ -173,8 +178,6 @@ class ReqFilter(object):
                 requser.SetMaxRate('write', dev, rate)
                 requser.Allow('api')
         except: pass   
-        
-        local.requser = requser
         
     def process_response(self, req, resp):
         # If the user has no valid userAuth token, given them one for the next request

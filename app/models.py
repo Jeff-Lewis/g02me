@@ -23,9 +23,9 @@ class Map(db.Model):
     
     # TODO: Add a database model for blacklisted domains
     # Avoid self-referential and URL ping-pong with known URL redirection sites
-    blackList = set([settings.sSiteHost, 'www.%s' % settings.sSiteHost, 'localhost:8080',
+    blackList = set([settings.sSiteHost, 'www.%s' % settings.sSiteHost,
                  'tinyurl.com', 'www.tinyurl.com', 'bit.ly', 'is.gd', 'snurl.com',
-                 'short.to', 'cli.gs', 'snipurl.com', 'ff.im'])
+                 'short.to', 'cli.gs', 'snipurl.com', 'ff.im', 'tr.im'])
     
     url = db.StringProperty(required=True)
     title = db.StringProperty()
@@ -49,11 +49,19 @@ class Map(db.Model):
         if not title:
             title = url
         rg = urlsplit(url)
-        if rg[1] == settings.sSiteHost or rg[1].startswith('localhost'):
-            raise Error("Congratulations on installing the %(title)s bookmarklet.  You should use it when you want to share a web page\
-                BESIDES one on %(title)s" % {'title': settings.sSiteName}, 'Warning/Domain')
-        if rg[1] in Map.blackList:
-            raise Error("Can't create link to domain: %s" % rg[1], status="Fail/Domain")
+        
+        sError = """The %(siteName)s bookmarklet cannot be used to create links to %(host)s.
+                To create a shortened link, visit a page NOT on %(host)s, then click the bookmarklet"""
+
+        sHost = rg[1].lower()
+        if sHost == settings.sSiteHost or sHost in settings.mpSiteAlternates or sHost.startswith('localhost'):
+            raise Error(sError %
+                {'siteName': settings.sSiteName, 'host':settings.sSiteHost}, 'Warning/Domain')
+            
+        if  sHost in Map.blackList:
+            raise Error(sError %
+                {'siteName': settings.sSiteName, 'host':sHost}, 'Fail/Domain')          
+
         title = unicode(title, 'utf8')
         dateCreated = local.dtNow
         id = Map.__IdNext()
@@ -172,7 +180,8 @@ class Map(db.Model):
         # ALWAYS - puts() the Map to the database as a side effect
         if not self.is_saved():
             self.put()
-        if local.requser.FAllow('share') and local.requser.FOnce('map.%s' % self.GetId()):
+        if local.requser.FAllow('share') and \
+            (local.requser.FOnce('map.%s' % self.GetId()) or self.shareCount == 0):
             self.shareCount = self.shareCount + 1
             self.put()
             
@@ -319,7 +328,7 @@ class Comment(db.Model):
     map = db.ReferenceProperty(Map)
     dateCreated = db.DateTimeProperty()
     
-    regComment = re.compile(r"^( *([a-zA-Z0-9_\.\-]+) *: *)?([^\[]*) *(\[(.*)\])? *$")
+    regComment = re.compile(r"^( *([a-zA-Z0-9_\.\-]{1,20}) *: *)?([^\[]*) *(\[(.*)\])? *$")
     
     @staticmethod
     def Create(map, username='', comment='', tags=''):

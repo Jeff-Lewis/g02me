@@ -35,7 +35,7 @@ def Lookup(req):
         return HttpJSON(req, obj=map.JSON())
     return HttpResponseRedirect("/%s" % map.GetId())
 
-regUsername = re.compile(r"^[a-zA-Z0-9_\.\-]+$")
+regUsername = re.compile(r"^[a-zA-Z0-9_\.\-]{1,20}$")
 
 def SetUsername(req):
     TrySetUsername(req, req.REQUEST.get('username', ''), True)
@@ -90,7 +90,7 @@ def DoComment(req, command=None):
     
 
 def Head(req, id):
-    # http://g02me/info/N
+    # http://go2.me/info/N
     map = Map.Lookup(id)
     if map == None:
         RaiseNotFound(id)
@@ -101,7 +101,7 @@ def Head(req, id):
     return render_to_response('head.html', FinalResponse())
 
 def FrameSet(req, id):
-    # http://g02me/N
+    # http://go.2me/N
     map = Map.Lookup(id)
     if map == None:
         RaiseNotFound(id)
@@ -127,6 +127,7 @@ def TagView(req, tag):
 def Admin(req, command=None):
     local.requser.Require('admin')
     
+    # BUG - Add CSRF required field
     if command:
         logging.info("admin command: %s" % command)
         local.requser.Require('api')
@@ -171,7 +172,12 @@ def Admin(req, command=None):
             return HttpJSON(req, {})
         return HttpResponseRedirect("/admin/")
 
-    ms = memcache.get_stats()
+    try:
+        ms = memcache.get_stats()
+        mpMem = [{'key':key, 'value':ms[key]} for key in ms]
+    except:
+        mpMem = [{'key':'message', 'value':'memcache get_stats() failure!'}]
+
     AddToResponse(
           {
            'logout':users.create_logout_url(req.get_full_path()),
@@ -180,7 +186,7 @@ def Admin(req, command=None):
            'BrokenComments':Comment.Broken(),
            #'BadCounts':Map.FindBadTagCounts(),
            #'MissingCreator':Comment.MissingCreator(),
-           'MemCache':[{'key':key, 'value':ms[key]} for key in ms.keys()],
+           'MemCache': mpMem
            })
     return render_to_response('admin.html', FinalResponse())
           

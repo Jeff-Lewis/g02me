@@ -52,17 +52,19 @@ border: 0;
 }
 
 img.logo {
-width: 85px;
-height: 85px;
+width: 200px;
+height: 73px;
 float: left;
 margin-right: 10px;
+margin-bottom: 10px;
 }
 
 img.logo-small {
-width: 51px;
+width: 93px;
 height: 34px;
 float: left;
 margin-right: 10px;
+padding-top: 2px;
 }
 
 img.x:hover {
