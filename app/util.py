@@ -113,6 +113,12 @@ class ReqFilter(object):
         host = req.META["HTTP_HOST"]
         local.sSecret = models.Globals.SGet(settings.sSecretName, "test server key")
         local.sAPIKey = models.Globals.SGet(settings.sAPIKeyName, "test-api-key")
+        local.cookies = {}
+        local.mpResponse = {}
+
+        # Initialize thread-local variables for this request
+        local.req = req
+        local.stHost = "http://" + host + "/"
 
         # Enforce canonical URL's (w/o www) - only GET's are support here
         if settings.ENVIRONMENT == "hosted":
@@ -121,18 +127,7 @@ class ReqFilter(object):
             # Redirect the old named blog to the new one
             if host == 'blog.g02.me':
                 return HttpResponsePermanentRedirect('http://blog.go2.me%s' % req.get_full_path())
-        
-        # Initialize thread-local variables for this request
-        local.req = req
-        local.stHost = "http://" + host + "/"
-        
-        # A place to copy any cookies we want during request processing
-        local.cookies = {}
-        
-        # A place to put dictionary values for template responses
-        local.mpResponse = {}
-        
-        local.mpResponse = {}
+
         local.requser = requser = ReqUser(req)
         
         """
@@ -183,7 +178,9 @@ class ReqFilter(object):
         
     def process_response(self, req, resp):
         # If the user has no valid userAuth token, given them one for the next request
-        local.cookies.update(local.requser.UserCookies())
+        try:
+            local.cookies.update(local.requser.UserCookies())
+        except: pass
 
         for name in local.cookies:
             if local.cookies[name] != '':
