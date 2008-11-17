@@ -52,7 +52,7 @@ function PostComment()
 	if (txtUsername)
 		sUsername = txtUsername.value;
 	var sd = new Go2.ScriptData('/comment/');
-	var objCall = {id:"{{map.GetId}}", userauth:"{{userauth}}", username:sUsername, comment:txtComment.value};
+	var objCall = {id:"{{map.GetId}}", csrf:"{{csrf}}", username:sUsername, comment:txtComment.value};
 	var sTrack = '/meta/comment';
 	if (sUsername != '')
 		sTrack += '/newuser'

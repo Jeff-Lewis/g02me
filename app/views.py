@@ -167,6 +167,8 @@ def Admin(req, command=None):
             key = '~'.join((local.mpParams['dev'], local.mpParams['rate'], local.mpParams['exp']))
             raise Error('Signed API key: %s' % SSign('api', key), 'OK')
 
+        if IsJSON():
+            return HttpJSON(req, {})
         return HttpResponseRedirect("/admin/")
 
     ms = memcache.get_stats()

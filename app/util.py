@@ -141,11 +141,10 @@ class ReqFilter(object):
         Note that multiple permission can be required to perform operations like 'comment'.
         """
         
+        requser.SetMaxRate('write', local.ipAddress, 1)
         if requser.fAnon:
-            requser.SetMaxRate('write', local.ipAddress, 1)
             requser.Allow('share')
         else:
-            requser.SetMaxRate('write', requser.uid, 10)
             requser.Allow('share', 'score', 'view-count', 'comment')
             
         if req.method == 'GET':
@@ -159,6 +158,7 @@ class ReqFilter(object):
         # if a signed apikey is given
         try:
             if local.mpParams['csrf'] == requser.uid:
+                requser.SetMaxRate('write', requser.uid, 10)
                 requser.Allow('api', 'post')
         except: pass
         
@@ -295,7 +295,7 @@ class ReqUser(object):
                 
             rate = self.RateExceeded(sPerm)
             if rate is not None:
-                raise Error("Maximum request rate exceeded (%1.1f per minute - %d allowed for %s)" % (rate.RPM(), rate.cMax, rate.key),
+                raise Error("Maximum request rate exceeded (%1.1f per minute - %d allowed for %s)" % (rate.RPM(), rate.rpmMax, rate.key),
                             'Fail/Busy/%s' % sPerm)
         return True
     

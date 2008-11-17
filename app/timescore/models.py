@@ -163,6 +163,7 @@ class Rate(object):
         f = self.S >= self.SMax
         
         self.S += (1-self.k) * value
+        logging.info("self.S = %1.2f" % self.S)
         
         return f
     
