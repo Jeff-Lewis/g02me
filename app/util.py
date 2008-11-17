@@ -17,6 +17,8 @@ import simplejson
 from hashlib import sha1
 import re
 
+# Some letters and numbers have been removed to ensure that humans can read the identifies
+# without ambiguity.
 sIDChars = "23456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghjkmnpqrstuvwxyz"
 nIDChars = len(sIDChars)
 
@@ -294,6 +296,10 @@ class ReqUser(object):
     def Require(self, *args):
         for sPerm in args:
             if sPerm not in self.mpPermit:
+                if sPerm == 'admin':
+                    if self.user is None:
+                        raise DirectResponse(HttpResponseRedirect(users.create_login_url(local.req.get_full_path())))
+                    raise DirectResponse(HttpResponseRedirect(users.create_logout_url(local.req.get_full_path())))
                 raise Error("Authorization Error (%s)" % sPerm, "Fail/Auth/%s" % sPerm)
                 
             rate = self.RateExceeded(sPerm)
@@ -345,7 +351,8 @@ class MemRate(object):
         self.EnsureRate()
         self.fExceeded = self.rate.FExceeded()
         memcache.set('rate.%s' % self.key, self.rate, 300)
-        logging.info('MemRate: %1.2f/%d for %s (%s)' % (self.rate.S*60, self.rpmMax, self.key, self.fExceeded))
+        if self.fExceeded:
+            logging.info('MemRate: %1.2f/%d for %s (%s)' % (self.rate.S*60, self.rpmMax, self.key, self.fExceeded))
         return self.fExceeded
     
     def RPM(self):

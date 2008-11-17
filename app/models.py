@@ -147,7 +147,7 @@ class Map(db.Model):
     
     @classmethod
     def TopJSON(cls, tag=None):
-        return {'pages':[score.model.JSON() for score in cls.ss.Best(tag=tag) if score.ModelExists]}
+        return {'pages':[score.model.JSON() for score in cls.ss.Best(tag=tag) if score.ModelExists()]}
     
     def GetId(self):
         return self.key().name()[2:]
