@@ -286,8 +286,8 @@ X Share limit by user (same as view limit)
 - Log when application is loaded
 - Log when memcache is empty
 - I have comments that are older than Map they are commenting on!
-- Error sharing this: http://www.nwcn.com/video/index.html?nvid=297637
-- Simple comment protection
+X Error sharing this: http://www.nwcn.com/video/index.html?nvid=297637
+X Simple comment protection
   - Don't offer delete for named comments NOT your own (username)
 - break up comments, map, and globals into their own .py files
 X Admin page timeout online! - turned off expensive querys
@@ -313,11 +313,11 @@ X Tony feedback (see comp):
     - allow 3 aliases per URL
 - Do screencast explaining what you can do with G02.ME
 X Space out rows of table on home page
-- Credit first sharer of each URL (in info and on popular pages)
-- Get more comprehensive server processing times with code in main.py (inclusive of
+X Credit first sharer of each URL (in info and on popular pages)
+X Get more comprehensive server processing times with code in main.py (inclusive of
   django response handling).
 X Fix timer to end of page!
-- Record nickname of first sharer - show in Created field (n days ago by USER)
+X Record nickname of first sharer - show in Created field (n days ago by USER)
 - Install profiling to do performance testing and tuning
 - Multiple __share comments per user are possible - shouldn't be
 - Google User Accounts
@@ -331,6 +331,7 @@ X Fix timer to end of page!
 - Polls
 - Pop-up alert to set nickname on anonymous commenting
 - Private version on google apps for domains
+  - Partition database by domain
 - Email notifications of watch list
 - Fix styling of head to have smooth clipping of left-hand block
 - Site wide stats page:
@@ -392,11 +393,13 @@ X Fix timer to end of page!
 - AJAX not working on mobile
   - G1
   - Blackberry
-- Merge prodo6 changes back to main branch?
+  - iPhone
+  - How to install bookmarklet on iPhone, G1, and Blackberry
+X Merge prodo6 changes back to main branch
 - For limiting scoring on a single URL
   - Change _FLimit to use a single memcache block with lists of the source authors
     rather than one memchace per user * url combination
-- Don't log referer of domains from the bookmarklet use.
+- Don't log referer of domains from the bookmarklet use (analytics)
   - When referer equals the url of the link - then it is a bookmarklet use
 - Show tags in home page and tags page - encourage cross-linking around the site
   - Aggregrate related tags at top of tag page (or sidebar)
@@ -413,4 +416,4 @@ X G02.me bookmarklet broken
 - Move requser to req.usertrack
   - Only req is stored in local
 - Move FinalResponse to context processor 
-- Unit Test Throttling
+X Unit Test Throttling

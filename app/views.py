@@ -181,8 +181,8 @@ def Admin(req, command=None):
     AddToResponse(
           {
            'logout':users.create_logout_url(req.get_full_path()),
-           #'Broken':Map.ss.Broken(),
-           #'BadComments':Comment.BadComments(),
+           'Broken':Map.ss.Broken(),
+           #'EmptyComments':Comment.EmptyComments(),
            'BrokenComments':Comment.Broken(),
            #'BadCounts':Map.FindBadTagCounts(),
            #'MissingCreator':Comment.MissingCreator(),

@@ -450,7 +450,7 @@ class Comment(db.Model):
     # Admin functions - used in /admin console -------------------
     
     @staticmethod
-    def BadComments(limit=100):
+    def EmptyComments(limit=100):
         comments = Comment.gql("WHERE comment = '' AND tags = ''")
         return comments.fetch(limit)
     
