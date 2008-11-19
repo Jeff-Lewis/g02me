@@ -419,4 +419,7 @@ X G02.me bookmarklet broken
   - Only req is stored in local
 - Move FinalResponse to context processor 
 X Unit Test Throttling
-- Comment deletion from UI fails!
+X Comment deletion from UI fails!
+- Form post method of posting a URL
+- Anonymous user is getting shared+1 and viewed+1...
+- Should limit comment scoring to one per user

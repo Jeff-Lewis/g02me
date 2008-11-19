@@ -45,7 +45,7 @@ class Map(db.Model):
         local.requser.Require('write', 'share')
         url = NormalizeUrl(url)
         title = TrimString(title)
-        userAuthFirst = RequireUserAuth()
+        userAuthFirst = local.requser.UserId()
         if not title:
             title = url
         rg = urlsplit(url)
@@ -333,7 +333,7 @@ class Comment(db.Model):
     @staticmethod
     def Create(map, username='', comment='', tags=''):
         username = TrimString(username)
-        userAuth = RequireUserAuth(True)
+        userAuth = local.requser.UserId()
         comment = TrimString(comment)
         tags = TrimString(tags)
         dateCreated = local.dtNow

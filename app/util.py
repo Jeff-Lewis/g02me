@@ -2,7 +2,6 @@ from google.appengine.api import users
 from google.appengine.api import memcache
 from google.appengine.ext import db
 
-
 from django.http import HttpResponse, HttpResponseRedirect, HttpResponsePermanentRedirect
 from django.shortcuts import render_to_response
 from django.template import loader, Context, Template
@@ -478,37 +477,6 @@ class ResponseTime(object):
         sec = ddt.seconds + float(ddt.microseconds)/1000000
         return "%1.2f" % sec
         
-# --------------------------------------------------------------------
-# Ensure user is signed in for request to procede
-# --------------------------------------------------------------------
-
-# TODO: These should go away - replaced by ReqUser functions
-        
-def RequireAdmin():
-    user = RequireUser()
-    if not users.is_current_user_admin():
-        raise DirectResponse(HttpResponseRedirect(users.create_logout_url(local.req.get_full_path())))
-    return user
-    
-def RequireUser():
-    user = users.get_current_user()
-    if not user:
-        raise DirectResponse(HttpResponseRedirect(users.create_login_url(local.req.get_full_path())))
-    return user
-
-def RequireUserAuth(hard=False):
-    # Tries to confirm signed authentication token
-    # If missing, will allow a limited number of authentications per unique IP
-    # Returns raw IP address for anonymous users as unique user key
-    # Returns IP~DateIssued~Rand for truly authenticated users
-    if not local.requser.fAnon:
-        return local.requser.uid
-    if hard:
-        raise Error("Failed Authentication", "Fail/Auth")
-    rate = MemRate("anon.%s" % local.ipAddress, 10)
-    rate.Limit()
-    return local.ipAddress
-
 def RunInTransaction(func):
     # Function decorator to wrap entire function in an App Engine transaction
     def _transaction(*args, **kwargs):
