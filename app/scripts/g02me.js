@@ -13,12 +13,17 @@ if (!window.console || !console.firebug)
 
 var Go2 = {
 sSiteName: "Go2.me",
+sCSRF: "",
+
+SetCSRF: function(sCSRF)
+	{
+	Go2.sCSRF = sCSRF;
+	},
 
 SetUsername: function(sUsername)
 	{
 	var sd = new Go2.ScriptData('/cmd/setusername');
-	if (sUsername != '')
-		pageTracker._trackPageview('/meta/newuser');
+	Go2.TrackEvent('username');
 	sd.Call({username:sUsername}, SUCallback);
 		
 	function SUCallback(obj)
@@ -38,6 +43,64 @@ SetUsername: function(sUsername)
 			break;
 			}
 		};
+	},
+	
+PostComment: function(sID, sUsername, sComment)
+	{
+	var sd = new Go2.ScriptData('/comment/');
+	var objCall = {id:sID, csrf:Go2.sCSRF, username:sUsername, comment:sComment};
+	Go2.TrackEvent('comment');
+
+	sd.Call(objCall, PCCallback);
+		
+	function PCCallback(obj)
+		{
+		switch (obj.status)
+			{
+		case 'OK':
+			// Refresh the page to reset the display for the new header
+			window.location.href = window.location.href;
+			break;
+		case 'Fail/Used':
+			if (confirm(obj.message + "  Are you sure you want to use it?"))
+				{
+				objCall.force = true;
+				sd.Call(objCall, PCCallback);
+				}
+			break;
+		default:
+			alert(Go2.sSiteName + ": " + obj.message);
+			break;
+			}
+		};
+	},
+	
+DeleteComment: function(sDelKey)
+	{
+		if (!confirm("Are you sure you want to delete this comment?"))
+			return;
+		
+		var sd = new Go2.ScriptData('/comment/delete');
+		var objCall = {delkey:sDelKey, csrf:Go2.sCSRF};
+		Go2.TrackEvent('comment/delete');
+
+		sd.Call(objCall, function(obj) {
+			switch (obj.status)
+				{
+			case 'OK':
+				// Refresh the page to reset the display for the new header
+				window.location.href = window.location.href;
+				break;
+			default:
+				alert(Go2.sSiteName + ": " + obj.message);
+				break;
+				}
+			});
+	},
+	
+TrackEvent: function(sEvent)
+	{
+	pageTracker._trackPageview('/meta/' + sEvent);
 	},
 	
 // Extend(dest, src1, src2, ... )
