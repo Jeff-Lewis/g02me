@@ -72,7 +72,7 @@ X Figure out if there is a work-around for NYT pages that don't like to be shown
 X Get trailing slash off of urls!
 - Widget showing number of views and shares of the current url - click to share
   - Need JSON call for lookup by url (but don't increase share count)
-  - Remove iframe is Go2.me widget is present on page!
+  - Remove iframe if Go2.me widget is present on page!
 - Google Gadget
 - Use google safebrowsing api to warn about viewing of unsafe urls
 X refactor - Trap all exceptions to universal error page - use django middleware
@@ -104,7 +104,6 @@ X Test deployment
   - Friend feed and twitter account info
 - Detect or mark problem domains as info-mode pages (frameset unfriendly).
 X Should not update view count when comments are added
-  - Only update when referer is from another domain?
 X Add scroll bar when there are more comments than fit the head frame (or scale frame to fit)
 X Unit tests
 X Store key instead of model in timescore - don't have problem of ModelExists needing to be called - punt
@@ -238,7 +237,7 @@ X Add title attribute to links to display where they will go in a tooltip (home,
 - Centralize error messages and codes in one file
 X Change comment and share to POST operations only
   - Update API page
-- Integrate info page and frameset onto one page (IFRAME)
+! Integrate info page and frameset onto one page (IFRAME)
   - One page for Google to crawl
   - All links count to get info/content
   - No more double counting analytics via /info
@@ -330,6 +329,11 @@ X Record nickname of first sharer - show in Created field (n days ago by USER)
   - RSS Feed auto-twitter
   - Claim your account button
   - Allow claiming of account with pseudonomyous twitter user name
+  - Can put encryption key to decode twitter password in a cookie - ensures we don't
+    store an offline usable twitter password on the server
+    - key = H('key', username, password) - not stored on server- saved in cookie
+    - passStored = E(key, twitter-password)
+    - twitter-password = D(key, passStored)
 - Polls
 - Pop-up alert to set nickname on anonymous commenting
 - Private version on google apps for domains
@@ -401,7 +405,7 @@ X Merge prodo6 changes back to main branch
 - For limiting scoring on a single URL
   - Change _FLimit to use a single memcache block with lists of the source authors
     rather than one memchace per user * url combination
-- Don't log referer of domains from the bookmarklet use (analytics)
+! Don't log referer of domains from the bookmarklet use (analytics)
   - When referer equals the url of the link - then it is a bookmarklet use
 - Show tags in home page and tags page - encourage cross-linking around the site
   - Aggregrate related tags at top of tag page (or sidebar)
@@ -423,3 +427,11 @@ X Comment deletion from UI fails!
 - Form post method of posting a URL
 - Anonymous user is getting shared+1 and viewed+1...
 - Should limit comment scoring to one per user
+- Full text search across Go2.me (use Google Search)
+! Event tracking
+  - (Category, Action, Label, Value):
+	  - (user, username/new-auth, [from-home, from-comment], [ip])
+	  - (load-times, home/user/tag, [tag]/[user], [ms])
+	  - (url, share/comment/view, [domain])
+! Don't track info pages but redirect to frameset when top?
+

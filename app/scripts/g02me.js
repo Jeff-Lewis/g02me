@@ -45,6 +45,11 @@ SetUsername: function(sUsername)
 		};
 	},
 	
+Map: function(sURL, sTitle)
+	{
+		location.href = '/map/?url='+encodeURIComponent(sURL)+'&title='+encodeURIComponent(sTitle);
+	},
+	
 PostComment: function(sID, sUsername, sComment)
 	{
 	var sd = new Go2.ScriptData('/comment/');

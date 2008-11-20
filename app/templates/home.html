@@ -1,5 +1,56 @@
 {% extends "pages.html" %}
 {% block subTitle %}A Link Shortening Service{% endblock %}
+{% block script %}
+Go2.SetCSRF("{{csrf}}");
+
+var txtUsername;
+var txtLink;
+var txtTitle;
+
+function Loaded()
+{
+	txtUsername = document.getElementById('username');
+
+	txtLink = document.getElementById("link");
+	txtTitle = document.getElementById("title");
+	
+	Go2.AddEventFn(txtLink, "keydown", function(evt)
+		{
+		if (evt.keyCode == 13)
+			{
+			txtTitle.focus();
+			evt.preventDefault();
+			}
+		});
+
+	Go2.AddEventFn(txtTitle, "keydown", function(evt)
+		{
+		if (evt.keyCode == 13)
+			{
+			Shorten();
+			}
+		});
+
+	if (txtUsername)
+		{
+		txtUsername.focus();
+		Go2.AddEventFn(txtUsername, "keydown", function(evt)
+			{
+			if (evt.keyCode == 13)
+				Go2.SetUsername(txtUsername.value);
+			});
+		}
+	else
+		txtLink.focus();
+}
+
+function Shorten()
+{
+	Go2.Map(txtLink.value, txtTitle.value);
+}
+
+{% endblock %}
+
 {% block pagebody %}
 <a target="_top" href="/"><img title="{{site_name}}" class="logo" src="/images/logo.png"></a>
 <h1 style="padding-top: 30px;">A Link Shortening Service</h1>
@@ -29,6 +80,16 @@
 	<li><b>Tags</b> - Add a tag, and then click on the tag link to see the most popular links for that tag -
 	it's a great way to find out what others are sharing.</li>
 </ul>
+
+<h2>Shorten a link now:</h2>
+<p>If you can't install the bookmarklet, you can still shorten a link
+by typing into this form.
+<table>
+<tr><th><label for="link">Link (URL):</label></th><td><input id="link" style="width:220px;" value="http://"/></td></tr>
+<tr><th><label for="title">Title (opt):</label></th><td><input id="title" style="width:220px;"/></td></tr>
+<tr><th></th><td style="text-align:right;"><input type="button" onclick="Shorten();" value="Shorten"/></td></tr>
+</table>
+</p>
 
 <i>
 * Installation instructions for Internet Explorer:
@@ -74,5 +135,6 @@ alt="Powered by Google App Engine" /></a>
 	{% endif %}
 {% endfor %}
 </table>
+
 </div> <!-- right -->
 {% endblock %}

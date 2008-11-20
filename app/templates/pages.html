@@ -1,6 +1,8 @@
 {% extends "master.html" %}
 
 {% block script %}
+Go2.SetCSRF("{{csrf}}");
+
 var txtUsername;
 
 function Loaded()
