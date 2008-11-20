@@ -183,7 +183,7 @@
 - Install profiling to do performance testing and tuning
 
 ------------------------------------------------------------
-                        MONITIZATION
+                        MONETIZATION
 ------------------------------------------------------------
 
 - Monetization

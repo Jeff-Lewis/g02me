@@ -3,6 +3,8 @@
 {% block subTitle %}{{map.title|escape}}{% endblock %}
 
 {% block script %}
+Go2.SetCSRF("{{csrf}}");
+
 var txtUsername;
 var txtComment;
 
