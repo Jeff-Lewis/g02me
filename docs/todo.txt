@@ -1,35 +1,24 @@
 ToDo:
 
-X Bookmarklet
-- Info Panel:
-  X Link to source (remove frame)
-  X Homepage link
-  X Link to users
-  X User comments
-  - Design (see delicious page: http://delicious.com/url/6e4e9fc8547418f22ac89a5f7558e58b?show=notes_only, for inspiration)
 - Home
-  X Number of pages - calculate from ID
   - Number of views
   - Number of people (day/month)
-  X IE instructions for creating bookmark
-  X Recently popular pages
-  X JSON api for most popular
-  ! Tag cloud
   - Top users
 - Info Header
+    - Design (see delicious page: http://delicious.com/url/6e4e9fc8547418f22ac89a5f7558e58b?show=notes_only, for inspiration)
 	- Info bar horizontal/vertical option
 	  - Default based on display orientation
 	- Pull web page image from Sphere, Alexa or Faves?
-	X Move comment bar to top - comments rev-chron below
-- User pages
-  - Claim your account (provide google, twitter, or Go2.me password)
-  X Most recent comments showing page titles, dates, tags
+	- Help icon to explain comment format (hover?) - remove help line?
+	- Help landing page w/ callouts to all the things you can do with the command line
 ! Tags
 	- Record tags scores for top 10 tags each URL
 	- Recently popular tag pages (Today AND Year)
-X Design and styling
-X favicon
-X favicon cached?  Can't see new one!
+	- Tag cloud on home page
+	- Show tags in home page and tags page - encourage cross-linking around the site
+	  - Aggregrate related tags at top of tag page (or sidebar)
+	  - Tag cloud format
+	  - Incidence graph (or just summary of the tags used by links on the displayed page)?
 - Sharing options
   - Twitter
   - TwitterFeed
@@ -37,18 +26,18 @@ X favicon cached?  Can't see new one!
   - Friendfeed
   - Faves
   - MailTo
-X Lock top pane on navigation? -> Don't know how
-X JSON API
-X JSON documentation - link from home
-X domain redirection for http://g02.me (what is pageforest doing???)
-X URL names not conflict with commands
-X base64 encode ids
 - In-page JSCRIPT bookmaklet
   - get metadata from page?  (description)
   - get micro-formats from page
 - Performance
   - Shard counter(s) - pages, visitors
-X Scoring by views, votes, and comments
+  - memcache
+	  - info pages
+	    - statistics (write through view counter)
+	    - comments
+	  - home page (keep for 60 seconds) - Adjust expires header
+	  - tag pages (keep until url added to tag - age at 5 minutes)
+  - Install profiling to do performance testing and tuning
 - Monetization
   - AdSense
   - Sponsored links (AdManager)
@@ -58,31 +47,15 @@ X Scoring by views, votes, and comments
     - RSS Feeds (auto-Go2-ing)
     - on-site badges and bolding of comments
     - reserve nickname and prevent comment deletion
-X Unicode in title
-X special case g02.me urls -> just redirect back to them - don't alias them
-X Should child page links remove the upper frame (can I track changes?)
-X Change date to DateTime
-X Error page for non-existant URL - should be home page display with error message (Or custom file not found page! 404)
-X 301 redirect www.g02.me to g02.me - use Django middleware?
-X Get truncate templatetags working - I think I need an installed application - restructure files to
-  an app folder, add to INSTALLED_APPS? - punt
-X Restructure files to Django standards - application dir, models.py, views.py...
-X Figure out if there is a work-around for NYT pages that don't like to be shown inside a frameset.
 - A/B Testing on home page and header?  Google Website optimizer
-X Get trailing slash off of urls!
 - Widget showing number of views and shares of the current url - click to share
   - Need JSON call for lookup by url (but don't increase share count)
   - Remove iframe if Go2.me widget is present on page!
 - Google Gadget
 - Use google safebrowsing api to warn about viewing of unsafe urls
-X refactor - Trap all exceptions to universal error page - use django middleware
-X delete comments enabled
-X Username cookie (suggest for comments)
-- Per-user cookie to open all URLs in info-mode
-X Domain registration - map
-X Analytics setup
-X Page title customization
-X Test deployment
+- Link safety
+	- Per-user setting to open all URLs in info-mode
+	- Mark as spam/adult
 ! RSS feeds:
   - user activity
   - tags
@@ -93,6 +66,7 @@ X Test deployment
   - make easy to get email update from feedburner (top page, and comments on user page)
 - User account
   - Claim a username by signing in
+  - Claim your account (provide google, twitter, or Go2.me password)
   - Require login to comment using a claimed username
   - Protects your comments from being edited or deleted by others
   - Just hide non-anonymous comments - based on vote threshold
@@ -103,77 +77,33 @@ X Test deployment
   - Profile image
   - Friend feed and twitter account info
 - Detect or mark problem domains as info-mode pages (frameset unfriendly).
-X Should not update view count when comments are added
-X Add scroll bar when there are more comments than fit the head frame (or scale frame to fit)
-X Unit tests
-X Store key instead of model in timescore - don't have problem of ModelExists needing to be called - punt
-X Admin routine to clean up scores for non-existant (delted) models
-X don't allow links to g02.me pages
-- prune empty commments
 - don't recognize http: as a user name
-X auto-hyperlink http addresses in comments
-  - convert to g02me links automatically?
-X comments ordered
-- Use memcache to reduce abuse:
-  X Throttle scoring for a given user, or IP address
-  X Drop userid cookie on user
-  X Throttling middleware
-  X Use memcache to set rates
-  X beware crawlers (don't throttle Google!)
-  - Throttle single referer's?
-  X Set userid cookie only at home and mapped pages - require for updating views, and other edit operations - punt
-  X Limit one view per userid in stats
-  X Replace userid with crypto-secure verifiable hash (not forge-able)
-  - Record each user key in database
-  - Enable expiration of user permissions
-- Require dev key for jscript calls (registered user)
-  - Provide "private dev key" for free (up to 10 calls per day)
-  - Pay for up to N calls per day on your dev key
-  - Pay for a "public api key" - usable from a fixed set of referers.
-X About Page
-X AppEngine Logo
-X Blog - new features list
+- convert embedded comment links to g02me links automatically
+- Throttling/Abuse
+  - Admin interface to block/throttle IP's, users, domains, referers
 - G02.ME email accounts for admin email from address
-X Don't count views by web crawlers
-  X If no userid cookie - don't count it! (note that Frame will set cookie, and head will then count!)
-X Page not found should be a 404 page
-X add expires meta http header to fix google cache bug
-X URL's with tailing "/" are not normalized to the non-trailing versions leading to duplicates
+- Don't count anonymous views!
 ! Is it possible to implement info/Close box so that currently navigated page is retained?
   - See if window.location.href is accessible from parent frameset
-X Fix comment counts
-X Cache broken again?
-X Lookup function (return url only if it already exists)
-X Catch exceptions in AsyncSequence unit.js
-X Display Dates in Comments in Head
-X Dates display in local time - use relative age instead
 - Use memcache to improve performance of popularity pages
-  - info pages
-    - statistics (write through view counter)
-    - comments
-  - home page (keep for 60 seconds) - Adjust expires header
-  - tag pages (keep until url added to tag - age at 5 minutes)
-X Decrement map TopTags when deleting a comment
-X BUG: Empty tag showing up?
-- Log referers for a url - display click sources ala YouTube and bit.ly Statistics
-- Log search terms and number of click through via search (info merge first?)
-- search (google Search widget)
-X http://g02.me/tag/ - Python error dump
-X http://tag/search engine - python dump
-- AdSense
-X urls.py - CatchAll
+- Link statistics
+	- Log referers for a url - display click sources ala YouTube and bit.ly Statistics
+	- Log search terms and number of click through via search (info merge first?)
+- Full text search (google Search widget or API)
+- Error reporting
+  - Better tracking of backtrace in log files (even with DEBUG=False)
+  - Send email to admin account on unexpected failures
 - Auto-tag domains (nyt.com, e.g.)
 - Popularity views flags/icons
   ! Up/Down Arrows
   - "New" marker
   - Base on 2x rate on next higher halfLife scale
-- Option to show /user/xxx sorted by popularity (not date of last comment) 
 - Mobile
   - Bookmarklet?
   - Simplified and smaller display (Marcelo)
   - Test on iPhone, Windows Mobile, Blackberry, G1
-X JSON Date format looks funny with 1 digit dates, hours, etc.
 ! Replies page for users - show follow on comments on URL's user's have shared or commented on.
+  - Option to show /user/xxx sorted by popularity (not date of last comment) 
   - Need "unfollow" capability to stop getting notified
   - Plan:
     - Use the most recent 100 comments by a user as their "following" list.
@@ -188,110 +118,43 @@ X JSON Date format looks funny with 1 digit dates, hours, etc.
   - www.* vs *
   - upper/lower case differences
   - use initially seen URL as canonical?
-X Add analytics tracking code to frameset - missing referer on map
 ! Star the info page (faster than leaving a comment - but puts it in your comment queue)
   - Generate __fave comment
   - Icons in user activity for Shared, Commented, Favorite/Watch/Follow, Wish List
   - Custom RSS feed of favorited links (can all be in one page)
   - Alternativly, "Follow" the infopage?
   - Help users make live bookmarks?
-X Use a 64-character set that excludes homoglpyhs (Joe Hruska)
-  X 1 i I l (el) | o O 0 | - _ | rn m | cl d | vv w
-  X Safe characters to use are: 0-9, A-Z, a-z, -_  (original 64) PLUS: '()*.~  and MAYBE: <>|{}\^[]`
-  X Readbility option: ~(base34) A-Z, 2-9 (e.g., http://g02.me/~BFD9 or even http://pagesaves.com/BFD9)
-  X Global options: Replace characters 0O1Il with .~()*
-  X NO: Autohyperlink in email disallows parens, brackets and period!  Down to *~^ (for 0, 1, l)
-  X Change to base 57 (no 1iIloO0) -> and grandfather old base64 URL's for id's less than 256 (or some threshold)
-  - Additional homoglyphs - lowercase letters that need context:  /csuvwxz /CSUVWXZ -> base 50
-  - Hyphen can be an email break character!
-  - Just go to all caps and numbers? -> base 36
-X Darken the light blue color a shade for readability (Kenshi Arasaki) -> 4cc6ed to 45AFD1
-X Add slash through the 0 in the G02.ME logo (Tony Wright)
 - Add thousands sep for counts in analytics (info, home, tags, user)
   - Add as Django filter
-X Hitting back button after leaving a comment (or deleting comment) should not resubmit!
-  - Chrome behavior only?
-X Put all site-specific code in settings.py (analytics account number, G02.ME name, etc.)
-  X Analytics account id
-  X G02.ME host name
-X Move primary domain to "go2.me".
-  - Direct go2.me to ghs
-  - Add nake domain
-  - Once working, and 301 redirection from g02.me
-  - Move Blog to go2.me
-    - Redirect blog.g02.me to blog.go2.me
-X Recursive attacks
-	X Block links to other URL shoteners (tinyurl.com, www.tinyurl.com, bit.ly, is.gd, etc.)
-	- Move from GET to PUT
 - Paging control for user activity pages
   - Implement as month ranges
   - Indicate in page header that older pages have NOT been updated (no need for crawlers to re-index)
   - Links in home user activity page to named month ranges ("mckoss's activity for October 2008")
   - Build efficient queries for all activity in a month - limit to 50 comments
   - Potential for unreachable comments beyond 50 comments in any one month
-X Require a request key for comments and all JSON requests
-X Disallow + in username?
-X Add random bits to userAuth token!  (1 minute resolution only now)
-X For soft authorization on Share - don't add to Score!
-X Add title attribute to links to display where they will go in a tooltip (home, user, tag pages)
 - Centralize error messages and codes in one file
-X Change comment and share to POST operations only
-  - Update API page
 ! Integrate info page and frameset onto one page (IFRAME)
   - One page for Google to crawl
   - All links count to get info/content
   - No more double counting analytics via /info
   - Resizing/scrolling of info box
-X Link to My Links on home page for username cookie'd users
 - Disallow 'http' as a username (mistake in posting links)
 - Import bookmarks/faves
-X Elapsed time of response - home, tag, user pages
-X Share limit by user (same as view limit)
-  - Sharing will then preclude a view count - good!
-- Hungarian for python doc
-X PUNT Viewing rates for pages (tag and home) (monthly page views extrapolation)
-  - Calc view rate with 24 hour half life
-  - Return 30x the daily view rate
-  - Write-through memcache (write when update rate drops below 1/minute)
+- Document Hungarian for python/jscript doc
 - Number of (and List of) "current" users
   - Sliding window of unique user counts (by minute)
   - show users in last 15 minutes as "current" (merge all windows)
   - update calc once each minute - memcache
-X Unit test failing on empty database
 - Truncate titles with elipses in views
-X Shared count of ZERO(!) for http://g02.me/3g????
-  - Side effect of throttling un-authorized users
+  - django filter
+- BUG: Share count should never be zero (even if not scoring)
 - Spam - faked title - /3f
-X Reorganize login permissions to treat it globally rather than ad-hoc per function
-  - User permission levels:
-    - Blocked - by IP or Cookie, for abuse
-    - Read-only - for search engines (detect by IP and/or user agent?)
-    - Throttle anonymous - per IP
-      - view counts 1/IP
-      - share counts 1/IP
-      - no commenting or deleting
-    - Authorized user - per cookie
-      - Throttle writes to 10/60
-      - Delete anonymous comments
-    - Registered user 
-    - Admin user
-X Throttle/Filter architecture - unified permission
-   - Anon IP -> read only, 1/60 write rate
-   - Cookied -> 10/60 write rate
-   - Blocked Cookie -> No access (Server Busy)
-   - Blocked IP -> No access (Server Busy)
-   - Admin Block IP, Block Cookie
-     - Info panel for Admin
-   - Throttle comment scoring by user
-- Make ScoreSet not a Model - just globals
-- Log when application is loaded
-- Log when memcache is empty (does it ever empty?)
-- I have comments that are older than Map they are commenting on!
-X Error sharing this: http://www.nwcn.com/video/index.html?nvid=297637
-X Simple comment protection
-  - Don't offer delete for named comments NOT your own (username)
-- break up comments, map, and globals into their own .py files
-X Admin page timeout online! - turned off expensive querys
+- Code Refactoring
+	- Make ScoreSet not a Model - just globals
+	- break up comments, map, and globals into their own .py files
+- Site Administration
+	- Log when application is loaded
+	- Log when memcache is empty (does it ever empty?)
 - Don't __share an item that's been shared by you previously (especially don't add duplicate comment entry)
 - Marcelo feedback:
   - One-click install in IE
@@ -299,27 +162,12 @@ X Admin page timeout online! - turned off expensive querys
   - "How to use G02.ME" instead of "Install the Bookmarklet"
     - Call to Action box - stand out (bigger type/box/color/graphics)
   - Declutter the home page by moving "What is G02.me" to another page.
-  X Global replace "URL" with "Link"
-X Tony feedback (see comp):
-  X Separate out username from comment box
-  X Shrink icon
-  X Remove URL on page and substitute hover over title -> smaller font
-  X Separate out the input form from the title/comments 
-  - Help icon to explain comment format (hover?) - remove help line?
-  - Help landing page w/ callouts to all the things you can do with the command line
 - Enable users to make custom aliases
     - if 6 characters or less prepend '~'
     - slugify
     - display aliases in info panel
     - allow 3 aliases per URL
 - Do screencast explaining what you can do with G02.ME
-X Space out rows of table on home page
-X Credit first sharer of each URL (in info and on popular pages)
-X Get more comprehensive server processing times with code in main.py (inclusive of
-  django response handling).
-X Fix timer to end of page!
-X Record nickname of first sharer - show in Created field (n days ago by USER)
-- Install profiling to do performance testing and tuning
 - Multiple __share comments per user are possible - shouldn't be
 - Google User Accounts
   - Persistent cookie (30 days) in lieu of Google Auth
@@ -401,37 +249,20 @@ X Record nickname of first sharer - show in Created field (n days ago by USER)
   - Blackberry
   - iPhone
   - How to install bookmarklet on iPhone, G1, and Blackberry
-X Merge prodo6 changes back to main branch
 - For limiting scoring on a single URL
   - Change _FLimit to use a single memcache block with lists of the source authors
     rather than one memchace per user * url combination
 ! Don't log referer of domains from the bookmarklet use (analytics)
   - When referer equals the url of the link - then it is a bookmarklet use
-- Show tags in home page and tags page - encourage cross-linking around the site
-  - Aggregrate related tags at top of tag page (or sidebar)
-  - Tag cloud format
-  - Incidence graph (or just summary of the tags used by links on the displayed page)?
-X go2.me migration
-  - Analytics cross-domain support
-  - blog update
-  - STS mail
-  - migrate blog url (redirect)
-  - Google Webmaster Tools
-X G02.me bookmarklet broken
-  - Missing full-path query params!
 - Move requser to req.usertrack
   - Only req is stored in local
 - Move FinalResponse to context processor 
-X Unit Test Throttling
-X Comment deletion from UI fails!
 - Form post method of posting a URL
 - Anonymous user is getting shared+1 and viewed+1...
 - Should limit comment scoring to one per user
-- Full text search across Go2.me (use Google Search)
 ! Event tracking
   - (Category, Action, Label, Value):
 	  - (user, username/new-auth, [from-home, from-comment], [ip])
 	  - (load-times, home/user/tag, [tag]/[user], [ms])
 	  - (url, share/comment/view, [domain])
 ! Don't track info pages but redirect to frameset when top?
-
