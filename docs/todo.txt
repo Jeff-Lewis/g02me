@@ -310,4 +310,5 @@
 - Should limit comment scoring to one per user
 - Anonymous user is getting shared+1 and viewed+1...
 - Multiple __share comments per user are possible - shouldn't be
-  
+
+(test
