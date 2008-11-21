@@ -25,7 +25,7 @@ ts.AddTest("Map", function(ut)
 	ut.AsyncSequence([
 		function(ut)
 			{
-			new UT.ScriptData("/map/").Call({url:"http://google.com", apikey:sAPIKey}, function(obj) {
+			new Go2.ScriptData("/map/").Call({url:"http://google.com", apikey:sAPIKey}, function(obj) {
 				ut.AssertContains(obj, {status:"OK", url:"http://google.com/", title:"http://google.com/"});
 				ut.AssertGT(obj.scores.day, 0);
 				ut.AssertType(obj.created, Date);
@@ -35,7 +35,7 @@ ts.AddTest("Map", function(ut)
 			},
 		function(ut)
 			{
-			new UT.ScriptData("/map/").Call({url:"http://google.com?id=2", apikey:sAPIKey}, function(obj) {
+			new Go2.ScriptData("/map/").Call({url:"http://google.com?id=2", apikey:sAPIKey}, function(obj) {
 				ut.AssertContains(obj, {status:"OK", url:"http://google.com/?id=2", title:"http://google.com/?id=2"});
 				ut.AssertNEq(obj.id, objInit.id);
 				ut.NextFn();
@@ -43,7 +43,7 @@ ts.AddTest("Map", function(ut)
 			},
 		function(ut)
 			{
-			new UT.ScriptData("/lookup/").Call({url:"http://google.com", apikey:sAPIKey}, function(obj) {
+			new Go2.ScriptData("/lookup/").Call({url:"http://google.com", apikey:sAPIKey}, function(obj) {
 				ut.AssertContains(obj,
 					{status:"OK", url:"http://google.com/", id:objInit.id, viewed:objInit.viewed, shared:objInit.shared});
 				ut.NextFn();
@@ -51,7 +51,7 @@ ts.AddTest("Map", function(ut)
 			},
 		function(ut)
 			{
-			new UT.ScriptData("/map/").Call({url:"http://google.com", apikey:sAPIKey}, function(obj) {
+			new Go2.ScriptData("/map/").Call({url:"http://google.com", apikey:sAPIKey}, function(obj) {
 				ut.AssertContains(obj,
 					{status:"OK", url:"http://google.com/", id:objInit.id, viewed:objInit.viewed, shared:objInit.shared});
 				ut.NextFn();
@@ -59,7 +59,7 @@ ts.AddTest("Map", function(ut)
 			},
 		function(ut)
 			{
-			new UT.ScriptData("/map/").Call({url:"google.com", apikey:sAPIKey}, function(obj) {
+			new Go2.ScriptData("/map/").Call({url:"google.com", apikey:sAPIKey}, function(obj) {
 				ut.AssertContains(obj,
 					{status:"OK", url:"http://google.com/", id:objInit.id, viewed:objInit.viewed, shared:objInit.shared});
 				ut.NextFn();
@@ -67,7 +67,7 @@ ts.AddTest("Map", function(ut)
 			},
 		function(ut)
 			{
-			new UT.ScriptData("/map/").Call({url:" http://google.com ", apikey:sAPIKey}, function(obj) {
+			new Go2.ScriptData("/map/").Call({url:" http://google.com ", apikey:sAPIKey}, function(obj) {
 				ut.AssertContains(obj,
 					{status:"OK", url:"http://google.com/", id:objInit.id, viewed:objInit.viewed, shared:objInit.shared});
 				ut.NextFn();
@@ -83,7 +83,7 @@ ts.AddTest("Map", function(ut)
 			},
 		function(ut)
 			{
-			new UT.ScriptData("/map/").Call({url:"http://google.com", apikey:sAPIKey}, function(obj) {
+			new Go2.ScriptData("/map/").Call({url:"http://google.com", apikey:sAPIKey}, function(obj) {
 				ut.AssertContains(obj,
 					{status:"OK", url:"http://google.com/", id:objInit.id, viewed:objInit.viewed, shared:objInit.shared});
 				ut.NextFn();
@@ -91,7 +91,7 @@ ts.AddTest("Map", function(ut)
 			},
 		function(ut)
 			{
-			new UT.ScriptData("/map/").Call({url:"https://google.com", apikey:sAPIKey}, function(obj) {
+			new Go2.ScriptData("/map/").Call({url:"https://google.com", apikey:sAPIKey}, function(obj) {
 				ut.AssertContains(obj,
 					{status:"OK", url:"https://google.com/"});
 				ut.NextFn();
@@ -105,49 +105,49 @@ ts.AddTest("Errors", function(ut)
 	ut.AsyncSequence([
 		function (ut)
 			{
-			new UT.ScriptData("/map/").Call({url:"", apikey:sAPIKey}, function (obj) {
+			new Go2.ScriptData("/map/").Call({url:"", apikey:sAPIKey}, function (obj) {
 				ut.AssertContains(obj, {status:"Fail"});
 				ut.NextFn();
 				});
 			},
 		function (ut)
 			{
-			new UT.ScriptData("/map/").Call({url:"http://g02.me", apikey:sAPIKey}, function (obj) {
+			new Go2.ScriptData("/map/").Call({url:"http://g02.me", apikey:sAPIKey}, function (obj) {
 				ut.AssertContains(obj, {status:"Warning/Domain"});
 				ut.NextFn();
 				});
 			},
 		function (ut)
 			{
-			new UT.ScriptData("/map/").Call({url:"http://www.g02.me", apikey:sAPIKey}, function (obj) {
+			new Go2.ScriptData("/map/").Call({url:"http://www.g02.me", apikey:sAPIKey}, function (obj) {
 				ut.AssertContains(obj, {status:"Warning/Domain"});
 				ut.NextFn();
 				});
 			},
 		function (ut)
 			{
-			new UT.ScriptData("/map/").Call({url:"http://G02.ME", apikey:sAPIKey}, function (obj) {
+			new Go2.ScriptData("/map/").Call({url:"http://G02.ME", apikey:sAPIKey}, function (obj) {
 				ut.AssertContains(obj, {status:"Warning/Domain"});
 				ut.NextFn();
 				});
 			},
 		function (ut)
 			{
-			new UT.ScriptData("/map/").Call({url:"http://www.tinyurl.com", apikey:sAPIKey}, function (obj) {
+			new Go2.ScriptData("/map/").Call({url:"http://www.tinyurl.com", apikey:sAPIKey}, function (obj) {
 				ut.AssertContains(obj, {status:"Fail/Domain"}, "www.tinyurl.com");
 				ut.NextFn();
 				});
 			},
 		function (ut)
 			{
-			new UT.ScriptData("/map/").Call({url:"script://google.com", apikey:sAPIKey}, function (obj) {
+			new Go2.ScriptData("/map/").Call({url:"script://google.com", apikey:sAPIKey}, function (obj) {
 				ut.AssertContains(obj, {status:"Fail"});
 				ut.NextFn();
 				});
 			},
 		function(ut)
 			{
-			new UT.ScriptData("/lookup/").Call({url:"http://nosuchurl.com", apikey:sAPIKey}, function(obj) {
+			new Go2.ScriptData("/lookup/").Call({url:"http://nosuchurl.com", apikey:sAPIKey}, function(obj) {
 				ut.AssertContains(obj, {status:"Fail/NotFound"});
 				ut.NextFn();
 				});
@@ -162,7 +162,7 @@ ts.AddTest("Info", function(ut)
 	ut.AsyncSequence([
 		function(ut)
 			{
-			new UT.ScriptData("/map/").Call({url:"http://google.com"}, function(obj) {
+			new Go2.ScriptData("/map/").Call({url:"http://google.com"}, function(obj) {
 				ut.AssertContains(obj, {status:"OK", url:"http://google.com/"});
 				objInit = obj;
 				ut.NextFn();
@@ -170,14 +170,14 @@ ts.AddTest("Info", function(ut)
 			},
 		function (ut)
 			{
-			new UT.ScriptData("/info/" + objInit.id).Call({}, function (obj) {
+			new Go2.ScriptData("/info/" + objInit.id).Call({}, function (obj) {
 				ut.AssertContains(obj, {status:"OK", url:"http://google.com/"});
 				ut.NextFn();
 				});
 			},
 		function (ut)
 			{
-			new UT.ScriptData("/info/9999").Call({}, function (obj) {
+			new Go2.ScriptData("/info/9999").Call({}, function (obj) {
 				ut.AssertContains(obj, {status:"Fail/NotFound"});
 				ut.NextFn();
 				});
@@ -202,7 +202,7 @@ ts.AddTest("Comment", function(ut)
 	ut.AsyncSequence([
 		function(ut)
 			{
-			new UT.ScriptData("/map/").Call({url:"http://google.com"}, function(obj) {
+			new Go2.ScriptData("/map/").Call({url:"http://google.com"}, function(obj) {
 				ut.AssertContains(obj, {status:"OK", url:"http://google.com/"});
 				objInit = obj;
 				ut.NextFn();
@@ -210,21 +210,21 @@ ts.AddTest("Comment", function(ut)
 			},
 		function(ut)
 			{
-			new UT.ScriptData("/comment/").Call({id:objInit.id, comment:"hello"}, ut.FnWrap(function (obj) {
+			new Go2.ScriptData("/comment/").Call({id:objInit.id, comment:"hello"}, ut.FnWrap(function (obj) {
 				ut.AssertContains(obj, {status:"Fail/Auth/api"});
 				ut.NextFn();
 				}));
 			},
 		function(ut)
 			{
-			new UT.ScriptData("/comment/").Call({id:objInit.id, comment:"hello", apikey:sAPIKeyExpired}, ut.FnWrap(function (obj) {
+			new Go2.ScriptData("/comment/").Call({id:objInit.id, comment:"hello", apikey:sAPIKeyExpired}, ut.FnWrap(function (obj) {
 				ut.AssertContains(obj, {status:"Fail/Auth/api"});
 				ut.NextFn();
 				}));
 			},
 		function(ut)
 			{
-			new UT.ScriptData("/comment/").Call({id:objInit.id, comment:"hello", apikey:sAPIKey}, ut.FnWrap(function (obj) {
+			new Go2.ScriptData("/comment/").Call({id:objInit.id, comment:"hello", apikey:sAPIKey}, ut.FnWrap(function (obj) {
 				ut.AssertContains(obj, {status:"OK", url:"http://google.com/"});
 				ut.AssertContains(obj.comments[0], {comment:"hello"});
 				cComment = obj.comments.length;
@@ -233,7 +233,7 @@ ts.AddTest("Comment", function(ut)
 			},
 		function(ut)
 			{
-			new UT.ScriptData("/info/" + objInit.id).Call({}, function (obj) {
+			new Go2.ScriptData("/info/" + objInit.id).Call({}, function (obj) {
 				ut.AssertContains(obj, {status:"OK", url:"http://google.com/"});
 				ut.AssertContains(obj.comments[0], {comment:"hello"});
 				ut.AssertEq(obj.comments.length, cComment);
@@ -242,7 +242,7 @@ ts.AddTest("Comment", function(ut)
 			},
 		function(ut)
 			{
-			new UT.ScriptData("/comment/").Call({id:objInit.id, comment:"hello2", csrf:sCSRF}, ut.FnWrap(function (obj) {
+			new Go2.ScriptData("/comment/").Call({id:objInit.id, comment:"hello2", csrf:sCSRF}, ut.FnWrap(function (obj) {
 				ut.AssertContains(obj, {status:"OK", url:"http://google.com/"});
 				ut.AssertContains(obj.comments[0], {comment:"hello2"});
 				cComment = obj.comments.length;
@@ -251,7 +251,7 @@ ts.AddTest("Comment", function(ut)
 			},
 		function(ut)
 			{
-			new UT.ScriptData("/comment/").Call({id:objInit.id, force: true, comment:"mckoss :  This is a test  [  ,,tag1,  tag2]", apikey:sAPIKey}, function (obj) {
+			new Go2.ScriptData("/comment/").Call({id:objInit.id, force: true, comment:"mckoss :  This is a test  [  ,,tag1,  tag2]", apikey:sAPIKey}, function (obj) {
 				ut.AssertContains(obj, {status:"OK", url:"http://google.com/"});
 				ut.AssertContains(obj.comments[0], {comment:"This is a test", tags:"tag1,tag2", user:"mckoss"});
 				ut.AssertType(obj.comments[0].created, Date);
@@ -262,7 +262,7 @@ ts.AddTest("Comment", function(ut)
 			},
 		function(ut)
 			{
-			new UT.ScriptData("/info/" + objInit.id).Call({}, function (obj) {
+			new Go2.ScriptData("/info/" + objInit.id).Call({}, function (obj) {
 				ut.AssertContains(obj, {status:"OK", url:"http://google.com/"});
 				ut.AssertEq(obj.comments.length, cComment+1);
 				com = obj.comments[0];
@@ -273,7 +273,7 @@ ts.AddTest("Comment", function(ut)
 		function(ut)
 			{
 			tagUniq = "dm-" + Math.floor(Math.random()*1000);
-			new UT.ScriptData("/comment/").Call({id:objInit.id, comment:"mckoss :  [" + tagUniq + "]", apikey:sAPIKey}, ut.FnWrap(function (obj) {
+			new Go2.ScriptData("/comment/").Call({id:objInit.id, comment:"mckoss :  [" + tagUniq + "]", apikey:sAPIKey}, ut.FnWrap(function (obj) {
 				ut.AssertContains(obj, {status:"OK", url:"http://google.com/"});
 				ut.AssertContains(obj.comments[0], {comment:"", user:"mckoss", tags:tagUniq});
 				com2= obj.comments[0];
@@ -284,14 +284,14 @@ ts.AddTest("Comment", function(ut)
 			},
 		function(ut)
 			{
-			new UT.ScriptData("/comment/delete").Call({cid:com2.cid}, ut.FnWrap(function(obj) {
+			new Go2.ScriptData("/comment/delete").Call({cid:com2.cid}, ut.FnWrap(function(obj) {
 				ut.AssertContains(obj, {status: "Fail/Auth/api"});
 				ut.NextFn();
 				}));
 			},
 		function(ut)
 			{
-			new UT.ScriptData("/comment/delete").Call({delkey:com2.delkey, apikey:sAPIKey}, ut.FnWrap(function(obj) {
+			new Go2.ScriptData("/comment/delete").Call({delkey:com2.delkey, apikey:sAPIKey}, ut.FnWrap(function(obj) {
 				ut.AssertEq(obj.comments.length, cComment+1);
 				for (var i = 0; i < obj.tags.length; i++)
 					ut.AssertNEq(obj.tags[i], tagUniq);
@@ -300,14 +300,14 @@ ts.AddTest("Comment", function(ut)
 			},
 		function(ut)
 			{
-			new UT.ScriptData("/comment/delete").Call({delkey:com.delkey, apikey:sAPIKey}, function(obj) {
+			new Go2.ScriptData("/comment/delete").Call({delkey:com.delkey, apikey:sAPIKey}, function(obj) {
 				ut.AssertEq(obj.comments.length, cComment);
 				ut.NextFn();
 				});
 			},
 		function(ut)
 			{
-			new UT.ScriptData("/info/" + objInit.id).Call({}, function (obj) {
+			new Go2.ScriptData("/info/" + objInit.id).Call({}, function (obj) {
 				ut.AssertContains(obj, {status:"OK", url:"http://google.com/"});
 				ut.AssertEq(obj.comments.length, cComment);
 				ut.NextFn();
@@ -321,7 +321,7 @@ ts.AddTest("Popular", function(ut)
 	ut.AsyncSequence([
 		function(ut)
 			{
-			new UT.ScriptData("/").Call({}, ut.FnWrap(function(obj) {
+			new Go2.ScriptData("/").Call({}, ut.FnWrap(function(obj) {
 				ut.AssertContains(obj, {status:"OK"});
 				ut.Assert(obj.pages.length > 0, "non-empty popular list");
 				var url = obj.pages[0];
@@ -338,7 +338,7 @@ ts.AddTest("User", function(ut)
 	ut.AsyncSequence([
 		function(ut)
 			{
-			new UT.ScriptData("/user/mckoss").Call({}, ut.FnWrap(function(obj) {
+			new Go2.ScriptData("/user/mckoss").Call({}, ut.FnWrap(function(obj) {
 				ut.AssertContains(obj, {status:"OK"});
 				ut.AssertType(obj.urls, Array);
 				ut.Assert(obj.urls.length > 0, "non-empty user list");
@@ -355,7 +355,7 @@ ts.AddTest("Tag", function(ut)
 	ut.AsyncSequence([
 		function(ut)
 			{
-			new UT.ScriptData("/lookup/").Call({url:"http://google.com"}, function(obj) {
+			new Go2.ScriptData("/lookup/").Call({url:"http://google.com"}, function(obj) {
 				ut.AssertContains(obj, {status:"OK", url:"http://google.com/"});
 				objInit = obj;
 				ut.NextFn();
@@ -363,7 +363,7 @@ ts.AddTest("Tag", function(ut)
 			},
 		function(ut)
 			{
-			new UT.ScriptData("/comment/").Call({id:objInit.id, comment:"Testing tags [, ,search,, multi word]", apikey:sAPIKey}, function (obj) {
+			new Go2.ScriptData("/comment/").Call({id:objInit.id, comment:"Testing tags [, ,search,, multi word]", apikey:sAPIKey}, function (obj) {
 				ut.AssertContains(obj, {status:"OK", url:"http://google.com/"});
 				ut.AssertGT(obj.comments.length, 0);
 				ut.AssertContains(obj.comments[0], {comment:"Testing tags", tags: "search,multi-word"});
@@ -373,7 +373,7 @@ ts.AddTest("Tag", function(ut)
 			},
 		function(ut)
 			{
-			new UT.ScriptData("/tag/search").Call({}, ut.FnWrap(function (obj) {
+			new Go2.ScriptData("/tag/search").Call({}, ut.FnWrap(function (obj) {
 				ut.AssertContains(obj, {status:"OK"});
 				ut.AssertType(obj.pages, Array);
 				ut.AssertGT(obj.pages.length, 0);
@@ -382,7 +382,7 @@ ts.AddTest("Tag", function(ut)
 			},
 		function(ut)
 			{
-			new UT.ScriptData("/tag/no-such-tag").Call({}, ut.FnWrap(function (obj) {
+			new Go2.ScriptData("/tag/no-such-tag").Call({}, ut.FnWrap(function (obj) {
 				ut.AssertContains(obj, {status:"OK"});
 				ut.AssertType(obj.pages, Array);
 				ut.AssertEq(obj.pages.length, 0);
@@ -399,7 +399,7 @@ ts.AddTest("Throttle Writes", function(ut)
 	ut.AsyncSequence([
   		function(ut)
   			{
-  			new UT.ScriptData("/map/").Call({url:"http://google.com"}, function(obj) {
+  			new Go2.ScriptData("/map/").Call({url:"http://google.com"}, function(obj) {
   				ut.AssertContains(obj, {status:"OK", url:"http://google.com/"});
   				objInit = obj;
   				ut.NextFn();
@@ -407,14 +407,14 @@ ts.AddTest("Throttle Writes", function(ut)
   			},
   		function(ut)
 	  		{
-  		  	new UT.ScriptData("/admin/flush-memcache").Call({apikey:sAPIKey}, function(obj) {
+  		  	new Go2.ScriptData("/admin/flush-memcache").Call({apikey:sAPIKey}, function(obj) {
   		  		ut.AssertContains(obj, {status:"OK"});
   		  		ut.NextFn();
   		  		});
 	  		},
   		function(ut)
   			{
-  	  		var sd = new UT.ScriptData("/comment/");
+  	  		var sd = new Go2.ScriptData("/comment/");
   	  		var iCalls = 5;
   	  		var iErrors = 0;
 
@@ -441,6 +441,19 @@ ts.AddTest("Throttle Writes", function(ut)
   			}
   		]);
 }).Async(true, 5000);
+
+ts.AddTest("Call", function(ut)
+{
+	ut.AsyncSequence([
+    	function(ut)
+    		{
+    		new Go2.ScriptData("http://google.com").Call({}, function(obj) {
+        		ut.AssertContains(obj, {status: "Fail/Timeout"});
+    			ut.NextFn();
+    		});
+    		}
+		]);
+}).Async(true, 11000);
 
 </script>
 </body>

@@ -323,7 +323,7 @@ Call: function(objParams, fnCallback)
     objParams.callback = "Go2.ScriptData.ActiveCalls[" + this.rid + "].Callback";
     this.script = document.createElement("script");
     this.script.src = this.stURL + Go2.StParams(objParams);
-    this.tm = new Go2.Timer(Go2.ScriptData.Cancel.FnArgs(this.rid), this.msTimeout).Active(true);
+    this.tm = new Go2.Timer(this.Timeout.FnMethod(this), this.msTimeout).Active(true);
     document.body.appendChild(this.script);
     console.log("script[" + this.rid + "]: " + this.script.src);
     return this;
@@ -339,13 +339,12 @@ Callback: function()
     this.fnCallback.apply(undefined, arguments);
 	},
 	
-Timeout: function(rid)
+Timeout: function()
 	{
-	if (rid != this.rid)
-		return;
+	rid = this.rid;
 	this.Cancel();
     console.log("(" + rid + ") -> TIMEOUT");
-    this.fnCallback({status:"Fail/Timeout"});
+    this.fnCallback({status:"Fail/Timeout", message:"The " + Go2.sSiteName + " server failed to respond."});
 	},
 	
 // ScriptData can be re-used once complete
