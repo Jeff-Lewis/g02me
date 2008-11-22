@@ -30,6 +30,10 @@ def IntToSID(i):
         i = i/nIDChars
     return s
 
+# All all the country domains (2 letter), and the currently defined gTLD's
+regDomain = re.compile(r"^([a-z][a-z0-9-]*\.)+([a-zA-Z]{2}|" + 
+    r"aero|asia|biz|cat|com|coop|edu|gov|info|int|jobs|mil|mobi|museum|net|org|pro|tel|travel)$")
+
 def NormalizeUrl(url):
     url = url.strip()
     rgURL = list(urlsplit(url))
@@ -40,9 +44,11 @@ def NormalizeUrl(url):
     if rgURL[0] != "http" and rgURL[0] != "https":
         raise Error("Invalid protocol: %s" % rgURL[0]) 
     # Invalid domain
-    if not rgURL[1]:        
+    if rgURL[1]:
+        rgURL[1] = rgURL[1].lower()
+    if not rgURL[1] or not regDomain.search(rgURL[1]) or len(rgURL[1]) > 255:
         raise Error("Invalid URL: %s" % urlunsplit(rgURL))
-    rgURL[1] = rgURL[1].lower()
+    
     
     # Always end naked domains with a trailing slash as canonical
     if rgURL[2] == '':
