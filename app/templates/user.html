@@ -1,4 +1,5 @@
 {% extends "pages.html" %}
+{% load humanize %}
 {% block subTitle %}{{usernamePage}}'s activity{% endblock %}
 {% block pagebody %}
 <div class="page">
@@ -19,9 +20,9 @@
 	    	</p></div>
 	    {% endif %}
 		</td>
-		<td class="num">{{comment.map.shareCount}}</td>
-		<td class="num">{{comment.map.viewCount}}</td>
-		<td class="num">{{comment.map.CommentCount}}</td>
+		<td class="num">{{comment.map.shareCount|intcomma}}</td>
+		<td class="num">{{comment.map.viewCount|intcomma}}</td>
+		<td class="num">{{comment.map.CommentCount|intcomma}}</td>
 		<td class="age">{{comment.map.Age}}
 			{% if comment.map.Creator %}
 				by <a href="/user/{{comment.map.Creator}}">{{comment.map.Creator}}</a>

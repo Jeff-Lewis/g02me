@@ -1,4 +1,5 @@
 {% extends "master.html" %}
+{% load humanize %}
 
 {% block subTitle %}{{map.title|escape}}{% endblock %}
 
@@ -70,9 +71,9 @@ window.onclick = Click;
 	{% if map.Creator %}
 	<p>By: <a href="/user/{{map.Creator}}" target="_top">{{map.Creator}}</a></p>
 	{% endif %}
-	<p>Shared: {{map.shareCount}}</p>
-	<p>Viewed: {{map.viewCount}}</p>
-	<p>Comments: {{map.CommentCount}}</p>
+	<p>Shared: {{map.shareCount|intcomma}}</p>
+	<p>Viewed: {{map.viewCount|intcomma}}</p>
+	<p>Comments: {{map.CommentCount|intcomma}}</p>
 	<p>Tags: 
 	{% for tag in TopTags %}
 		<a target="_top" href="/tag/{{tag}}" title="Recently popular | {{tag}}">{{tag|escape}}</a>{% if not forloop.last %}, {% endif %}
