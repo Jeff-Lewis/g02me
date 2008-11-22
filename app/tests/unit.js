@@ -196,7 +196,7 @@ Call: function(objParams, fnCallback)
     objParams.callback = "UT.ScriptData.ActiveCalls[" + this.rid + "].Callback";
     this.script = document.createElement("script");
     this.script.src = this.stURL + UT.StParams(objParams);
-    this.tm = new UT.Timer(UT.ScriptData.Cancel.FnArgs(this.rid), this.msTimeout).Active(true);
+    this.tm = new UT.Timer(this.Timeout.FnMethod(this), this.msTimeout).Active(true);
     document.body.appendChild(this.script);
     console.log("script[" + this.rid + "]: " + this.script.src);
     return this;
@@ -212,10 +212,9 @@ Callback: function()
     this.fnCallback.apply(undefined, arguments);
 	},
 	
-Timeout: function(rid)
+Timeout: function()
 	{
-	if (rid != this.rid)
-		return;
+	var rid = this.rid;
 	this.Cancel();
     console.log("(" + rid + ") -> TIMEOUT");
     this.fnCallback({status:"Fail/Timeout"});

@@ -94,6 +94,7 @@
     - tag page view
     - user page view
     - Write old data to log only when user is > 1 week old (each week returning)
+- Deleting comment pre-populate comment box to allow edit and re-comment
   
 ------------------------------------------------------------
         PLATFORMS, SYNDICATION, IMPORT/EXPORT
@@ -262,6 +263,7 @@
 	  - (user, username/new-auth, [from-home, from-comment], [ip])
 	  - (load-times, home/user/tag, [tag]/[user], [ms])
 	  - (url, share/comment/view, [domain])
+	  - (error, error-code, message)
 ! Don't track info pages but redirect to frameset when top?
 
 ------------------------------------------------------------
@@ -297,7 +299,7 @@
                            BUGS
 ------------------------------------------------------------
 
-! Anon sharing is throwing exception
+X Anon sharing is throwing exception
 - don't recognize http: as a user name
 - Don't count anonymous views!
 ! Is it possible to implement info/Close box so that currently navigated page is retained?
@@ -310,5 +312,5 @@
 - Should limit comment scoring to one per user
 - Anonymous user is getting shared+1 and viewed+1...
 - Multiple __share comments per user are possible - shouldn't be
+! Timeouts of AJAX calls (claim username) do not generate errors
 
-(test
