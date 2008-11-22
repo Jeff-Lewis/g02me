@@ -111,7 +111,7 @@ class ReqFilter(object):
     """
     
     def process_request(self, req):
-        import models
+        from go2me import models
 
         local.ipAddress = req.META['REMOTE_ADDR']
         local.dtNow = datetime.now()
