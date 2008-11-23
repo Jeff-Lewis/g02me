@@ -1,5 +1,5 @@
 from django.conf.urls.defaults import *
-from views import *
+from go2me.views import *
 
 urlpatterns = patterns('',
     (r'^$', Home),
