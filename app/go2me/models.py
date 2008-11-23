@@ -199,9 +199,6 @@ class Map(db.Model):
         if local.requser.FAllow('score'):
             self.ss.Update(self, self.scoreView, dt=local.dtNow, tags=self.TopTags())
         
-    def Age(self):
-        return SAgeReq(self.dateCreated)
-    
     def Creator(self):
         return self.usernameCreator
     
@@ -432,9 +429,6 @@ class Comment(db.Model):
         except:
             return []
 
-    def Age(self):
-        return SAgeReq(self.dateCreated)
-    
     def AllowDelete(self):
         return self.username == '' or self.username == local.requser.username
     

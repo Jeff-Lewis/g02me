@@ -1,5 +1,6 @@
 {% extends "pages.html" %}
 {% load humanize %}
+{% load custom %}
 {% load cache %}
 {% block subTitle %}A Link Shortening Service{% endblock %}
 {% block script %}
@@ -129,7 +130,7 @@ alt="Powered by Google App Engine" /></a>
 		<td class="num">{{page.model.shareCount|intcomma}}</td>
 		<td class="num">{{page.model.viewCount|intcomma}}</td>
 		<td class="num">{{page.model.CommentCount|intcomma}}</td>
-		<td class="age">{{page.model.Age}}
+		<td class="age">{{page.model.dateCreated|Age}}
 			{% if page.model.Creator %}
 				<br/>by <a href="/user/{{page.model.Creator}}">{{page.model.Creator}}</a>
 			{% endif %}

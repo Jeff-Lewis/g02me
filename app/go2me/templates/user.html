@@ -1,5 +1,6 @@
 {% extends "pages.html" %}
 {% load humanize %}
+{% load custom %}
 {% block subTitle %}{{usernamePage}}'s activity{% endblock %}
 {% block pagebody %}
 <div class="page">
@@ -16,14 +17,14 @@
 			{% if comment.tags %}
 	    		[{% for tag in comment.TagList %}<a target="_top" href="/tag/{{tag}}">{{tag|escape}}</a>{% if not forloop.last %}, {% endif %}{% endfor %}]
 	    	{% endif %}
-	    	- <i>{{ comment.Age }}</i>
+	    	- <i>{{ comment.dateCreated|Age }}</i>
 	    	</p></div>
 	    {% endif %}
 		</td>
 		<td class="num">{{comment.map.shareCount|intcomma}}</td>
 		<td class="num">{{comment.map.viewCount|intcomma}}</td>
 		<td class="num">{{comment.map.CommentCount|intcomma}}</td>
-		<td class="age">{{comment.map.Age}}
+		<td class="age">{{comment.map.dateCreated|Age}}
 			{% if comment.map.Creator %}
 				by <a href="/user/{{comment.map.Creator}}">{{comment.map.Creator}}</a>
 			{% endif %}

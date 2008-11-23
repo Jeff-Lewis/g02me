@@ -1,5 +1,6 @@
 {% extends "pages.html" %}
 {% load humanize %}
+{% load custom %}
 {% block subTitle %}{{tag}} links{% endblock %}
 {% block pagebody %}
 <a target="_top" href="/" title="{{site_name}} Home | Popular Pages"><img class="logo" src="/images/logo.png"></a>
@@ -14,7 +15,7 @@
 		<td class="num">{{page.model.shareCount|intcomma}}</td>
 		<td class="num">{{page.model.viewCount|intcomma}}</td>
 		<td class="num">{{page.model.CommentCount|intcomma}}</td>
-		<td class="age">{{page.model.Age}}
+		<td class="age">{{page.model.dateCreated|Age}}
 			{% if page.model.Creator %}
 				by <a href="/user/{{page.model.Creator}}">{{page.model.Creator}}</a>
 			{% endif %}
