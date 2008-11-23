@@ -117,7 +117,7 @@ window.onclick = Click;
 {% for comment in map.Comments %}
 	{% spaceless %}<p>
     {% if comment.username %}<a target="_top" href="/user/{{comment.username}}" title="{{comment.username}}'s activity">{{comment.username}}</a>:{% endif %}
-    {{comment.comment|escape|urlize}}
+    {{comment.comment|escape|urlizetop}}
     {% if comment.tags %}
     	[{% for tag in comment.TagList %}<a target="_top" href="/tag/{{tag}}" title="{{tag}} pages">{{tag}}</a>{% if not forloop.last %}, {% endif %}{% endfor %}]
     {% endif %}

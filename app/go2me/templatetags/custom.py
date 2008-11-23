@@ -16,3 +16,13 @@ def ellipsis(value, arg):
         return value[:length] + "..."
     else:
         return value
+
+@register.filter(name='urlizetop')
+@stringfilter
+def urlizetop(value, sAttr=None):
+    from django.utils.html import urlize
+    "Converts URLs in plain text into clickable links - with additional attribute text inserted in <a> tags."
+    value = urlize(value, nofollow=True)
+    return value.replace('<a ', '<a target="_top" ')
+    
+

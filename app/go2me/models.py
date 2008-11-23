@@ -23,8 +23,7 @@ class Map(db.Model):
     
     # TODO: Add a database model for blacklisted domains
     # Avoid self-referential and URL ping-pong with known URL redirection sites
-    blackList = set([settings.sSiteHost, 'www.%s' % settings.sSiteHost,
-                 'tinyurl.com', 'www.tinyurl.com', 'bit.ly', 'is.gd', 'snurl.com',
+    blackList = set(['tinyurl.com', 'www.tinyurl.com', 'bit.ly', 'is.gd', 'snurl.com',
                  'short.to', 'cli.gs', 'snipurl.com', 'ff.im', 'tr.im'])
     
     url = db.StringProperty(required=True)
@@ -375,9 +374,16 @@ class Comment(db.Model):
         sUsername = m.group(2)
         if sUsername is None:
             sUsername = ''
+            
+        sComment = m.group(3)
 
-        return {'username':sUsername,
-                'comment': m.group(3),
+        # Users can begin a comment with a URL - don't treat it as a username field
+        if sUsername == "http":
+            sUsername = ''
+            sComment = "http:" + sComment
+        
+        return {'username': sUsername,
+                'comment': sComment,
                 'tags': tags}
         
     @staticmethod
