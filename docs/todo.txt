@@ -34,6 +34,8 @@
   ! Up/Down Arrows
   - "New" marker
   - Base on 2x rate on next higher halfLife scale
+  - Show graphical bar for score for day and up/down tick
+    - Hover to get numerical score X.X per day
 ! Replies page for users - show follow on comments on URL's user's have shared or commented on.
   - Option to show /user/xxx sorted by popularity (not date of last comment) 
   - Need "unfollow" capability to stop getting notified
@@ -56,8 +58,8 @@
   - Custom RSS feed of favorited links (can all be in one page)
   - Alternativly, "Follow" the infopage?
   - Help users make live bookmarks?
-- Add thousands sep for counts in analytics (info, home, tags, user)
-  - Add as Django filter
+X Add thousands sep for counts in analytics (info, home, tags, user)
+  - Add as Django filter -> already exists in humanize!
 - Paging control for user activity pages
   - Implement as month ranges
   - Indicate in page header that older pages have NOT been updated (no need for crawlers to re-index)
@@ -181,6 +183,7 @@
     - comments
   - home page (keep for 60 seconds) - Adjust expires header
   - tag pages (keep until url added to tag - age at 5 minutes)
+  - add a template tag that will auto-cache a page section
 - Install profiling to do performance testing and tuning
 
 ------------------------------------------------------------
@@ -265,6 +268,7 @@
 	  - (url, share/comment/view, [domain])
 	  - (error, error-code, message)
 ! Don't track info pages but redirect to frameset when top?
+- Change .Age to Age filter on a date value
 
 ------------------------------------------------------------
                     MARKETING AND PR
@@ -314,3 +318,5 @@ X Anon sharing is throwing exception
 - Multiple __share comments per user are possible - shouldn't be
 X Timeouts of AJAX calls (claim username) do not generate errors
 - Require that domains have a . in them to be valid (no intranet domains) 
+- Embedded links in comments need to target _top
+- Uneven margins in safari and Chrome.

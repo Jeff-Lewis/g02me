@@ -1,5 +1,6 @@
 {% extends "master.html" %}
 {% load humanize %}
+{% load custom %}
 
 {% block subTitle %}{{map.title|escape}}{% endblock %}
 
@@ -83,7 +84,7 @@ window.onclick = Click;
 
 <div id="info-body">
 <a target="_top" href="/" title="{{site_name}} Home | Popular Pages"><img class="logo-small" src="/images/logo-small.png"></a>
-<h1><a target="_top" href="{{map.Href}}" title="{{map.url|escape}}">{{map.title|escape}}</a></h1>
+<h1><a target="_top" href="{{map.Href}}" title="{{map.url|escape}}">{{map.title|ellipsis:100|escape}}</a></h1>
 <p class="url">{{map.url|escape}}</p>
 
 <div id="info-form">

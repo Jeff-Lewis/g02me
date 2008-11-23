@@ -1,9 +1,10 @@
 from django import template
+from django.template.defaultfilters import stringfilter
 register = template.Library()
 
-@register.filter(name='truncate')
+@register.filter(name='ellipsis')
 @stringfilter
-def truncate(value, arg):
+def ellipsis(value, arg):
     """
     Truncates a string more than arg characters and appends elipsis
     """

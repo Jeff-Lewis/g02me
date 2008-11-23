@@ -1,5 +1,6 @@
 {% extends "pages.html" %}
 {% load humanize %}
+{% load cache %}
 {% block subTitle %}A Link Shortening Service{% endblock %}
 {% block script %}
 Go2.SetCSRF("{{csrf}}");
@@ -115,6 +116,7 @@ alt="Powered by Google App Engine" /></a>
 
 </div> <!-- left -->
 
+{% cache 60 home %}
 <div class="right">
 <h2>Recently popular links</h2>
 <p class="subhead">{{total_pages|intcomma}} links shared to date.</p>
@@ -136,6 +138,7 @@ alt="Powered by Google App Engine" /></a>
 	{% endif %}
 {% endfor %}
 </table>
+{% endcache %}
 
 </div> <!-- right -->
 {% endblock %}
