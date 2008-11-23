@@ -153,6 +153,7 @@ class ReqFilter(object):
             requser.Allow('share')
         else:
             requser.Allow('share', 'score', 'view-count', 'comment')
+            requser.SetMaxRate('write', requser.uid, 10)
             
         if req.method == 'GET':
             local.mpParams = req.GET
@@ -261,12 +262,8 @@ class ReqUser(object):
         
     def SetMaxRate(self, sName, sScope=None, rpm=None):
         # Set the maximum request rate (per minute) for a given activity
-        # If mulitple calls are made, the largest allowed rate applies.
+        # If mulitple calls are made, the last set rate applies.
         self.Allow(sName)
-        if sName in self.mpRates:
-            rate = self.mpRates[sName]
-            if rate.rpmMax >= rpm:
-                return
         self.mpRates[sName] = MemRate('%s.%s' % (sScope, sName), rpm)
         
     def RateExceeded(self, sPerm):

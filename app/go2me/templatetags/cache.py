@@ -1,23 +1,21 @@
 # File copied from Django 1.0 distribution
 
-from django.template import Library, Node, TemplateSyntaxError, Variable, VariableDoesNotExist
+from django.template import Library, Node, TemplateSyntaxError, VariableDoesNotExist, resolve_variable
 from django.template import resolve_variable
-from django.core.cache import cache
-from django.utils.encoding import force_unicode
-from django.utils.http import urlquote
+from google.appengine.api import memcache as cache
 
 register = Library()
 
 class CacheNode(Node):
     def __init__(self, nodelist, expire_time_var, fragment_name, vary_on):
         self.nodelist = nodelist
-        self.expire_time_var = Variable(expire_time_var)
+        self.expire_time_var = expire_time_var
         self.fragment_name = fragment_name
         self.vary_on = vary_on
 
     def render(self, context):
         try:
-            expire_time = self.expire_time_var.resolve(context)
+            expire_time = resolve_variable(self.expire_time_var, context)
         except VariableDoesNotExist:
             raise TemplateSyntaxError('"cache" tag got an unknkown variable: %r' % self.expire_time_var.var)
         try:
