@@ -181,9 +181,9 @@ X Add thousands sep for counts in analytics (info, home, tags, user)
   - info pages
     - statistics (write through view counter)
     - comments
-  - home page (keep for 60 seconds) - Adjust expires header
+  X home page (keep for 60 seconds) - Adjust expires header
   - tag pages (keep until url added to tag - age at 5 minutes)
-  - add a template tag that will auto-cache a page section
+  X add a template tag that will auto-cache a page section - copy from Django 1.0
 - Install profiling to do performance testing and tuning
 
 ------------------------------------------------------------
@@ -268,7 +268,7 @@ X Add thousands sep for counts in analytics (info, home, tags, user)
 	  - (url, share/comment/view, [domain])
 	  - (error, error-code, message)
 ! Don't track info pages but redirect to frameset when top?
-- Change .Age to Age filter on a date value
+X Change .Age to Age filter on a date value
 
 ------------------------------------------------------------
                     MARKETING AND PR
@@ -304,12 +304,11 @@ X Add thousands sep for counts in analytics (info, home, tags, user)
 ------------------------------------------------------------
 
 X Anon sharing is throwing exception
-- don't recognize http: as a user name
 - Don't count anonymous views!
 ! Is it possible to implement info/Close box so that currently navigated page is retained?
   - See if window.location.href is accessible from parent frameset
-- Disallow 'http' as a username (mistake in posting links)
-- Truncate titles with elipses in views
+X Disallow 'http' as a username (mistake in posting links)
+X Truncate titles with elipses in views
   - django filter
 - BUG: Share count should never be zero (even if not scoring)
 - Don't __share an item that's been shared by you previously (especially don't add duplicate comment entry)
@@ -317,6 +316,6 @@ X Anon sharing is throwing exception
 - Anonymous user is getting shared+1 and viewed+1...
 - Multiple __share comments per user are possible - shouldn't be
 X Timeouts of AJAX calls (claim username) do not generate errors
-- Require that domains have a . in them to be valid (no intranet domains) 
-- Embedded links in comments need to target _top
+X Require that domains have a . in them to be valid (no intranet domains) 
+X Embedded links in comments need to target _top
 - Uneven margins in safari and Chrome.
