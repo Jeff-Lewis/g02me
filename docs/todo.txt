@@ -186,6 +186,11 @@ X Add thousands sep for counts in analytics (info, home, tags, user)
 - Install profiling to do performance testing and tuning
 
 ------------------------------------------------------------
+                          TESTING
+------------------------------------------------------------
+- Unit test invalid domain names are rejected
+
+------------------------------------------------------------
                         MONETIZATION
 ------------------------------------------------------------
 
