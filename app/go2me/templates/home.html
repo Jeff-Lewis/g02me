@@ -131,7 +131,10 @@ using this form:</p>
 {% for page in pages %}
 	{% if page.ModelExists %}
 	<tr>
-		<td><a href="/{{page.model.GetId}}" title="{{page.model.url|escape}}">{{page.model.title|escape}}</a></td>
+		<td>
+			<a href="/{{page.model.GetId}}" title="{{page.model.url|escape}}">{{page.model.title|escape}}</a>
+			<span style="display:none;" class="Snap_Shot_Preview">{{page.model.url|escape}}</span>
+		</td>
 		<td class="num">{{page.model.shareCount|intcomma}}</td>
 		<td class="num">{{page.model.viewCount|intcomma}}</td>
 		<td class="num">{{page.model.CommentCount|intcomma}}</td>

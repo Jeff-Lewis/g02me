@@ -469,7 +469,8 @@ def FinalResponse():
         'site_host': settings.sSiteHost,
         'host': local.stHost,
 
-        'analytics_code': settings.sAnalyticsCode,        
+        'analytics_code': settings.sAnalyticsCode,
+        'snapshots_code': settings.sSnapShotsCode,        
         })
     return local.mpResponse
     

@@ -14,7 +14,9 @@
 <tr><th>Title</th><th>Shared</th><th>Viewed</th><th>Comments</th><th>Created</th><th>Scores</th></tr>
 {% for comment in comments %}
 	<tr>
-		<td><a href="/{{comment.map.GetId}}" title="{{comment.map.url|escape}}">{{comment.map.title|escape}}</a>
+		<td>
+			<a href="/{{comment.map.GetId}}" title="{{comment.map.url|escape}}">{{comment.map.title|escape}}</a>
+			<span style="display:none;" class="Snap_Shot_Preview">{{comment.map.url|escape}}</span>
 		{% if comment.comment or comment.tags %}<div class="comments"><p>
 			{% ifequal comment.comment "__share" %}<i>Shared</i>{% else %}{{comment.comment|escape|urlize}}{% endifequal %}
 			{% if comment.tags %}
