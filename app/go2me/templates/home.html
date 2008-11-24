@@ -57,20 +57,13 @@ function Shorten()
 {% endblock %}
 
 {% block pagebody %}
-<a target="_top" href="/"><img title="{{site_name}}" class="logo" src="/images/logo.png"></a>
-<h1 style="padding-top: 30px;">A Link Shortening Service</h1>
-<p class="subhead">Shorten, Share, and Comment - then see what others are doing</p>
+<div class="head">
+	<a target="_top" href="/"><img title="{{site_name}}" class="logo" src="/images/logo.png"></a>
+	<h1 style="padding-top: 20px;">A Link Shortening Service</h1>
+	<p class="subhead">Don't just send a link - start a conversation and get feedback.</p>
+</div>
 
 <div class="left">
-
-<h2>Install the bookmarklet</h2>
-<p>Just drag this bookmarklet to your bookmarks toolbar*:</p>
-<p style="margin: 10px 100px;">
-<a style="font-size: 24px;" title="Drag me to your bookmarks toolbar"
-   onclick="alert('Instead of clicking this link, you need to drag it to your toolbar.');return false;"
-   href="javascript:location.href='{{host}}map/?url='+encodeURIComponent(location)+'&title='+encodeURIComponent(document.title);">{{site_name}}
-</a>
-</p>
 
 <h2>What is {{site_name}}?</h2>
 <ul>
@@ -86,15 +79,34 @@ function Shorten()
 	it's a great way to find out what others are sharing.</li>
 </ul>
 
+<div style="text-align:center;">
+<a href="http://code.google.com/p/g02me/">
+	<img src="http://code.google.com/appengine/images/appengine-silver-120x30.gif" alt="Powered by Google App Engine" />
+</a>
+</div>
+
+</div> <!-- left -->
+
+<div class="right">
+
+<h2>Install the bookmarklet</h2>
+<p>Just drag this bookmarklet to your bookmarks toolbar*:</p>
+<div class="bookmarklet">
+<a class="bookmarklet" title="Drag me to your bookmarks toolbar"
+   onclick="alert('Instead of clicking this link, you need to drag it to your toolbar.');return false;"
+   href="javascript:location.href='{{host}}map/?url='+encodeURIComponent(location)+'&title='+encodeURIComponent(document.title);">
+   <img src="/images/bookmarklet.png" alt="{{site_name}}">
+</a>
+</div>
+
 <h2>Shorten a link now:</h2>
-<p>If you can't install the bookmarklet, you can still shorten a link
-by typing into this form.
+<p>If you can't install the bookmarklet just now, you can shorten a single link
+using this form:</p>
 <table>
-<tr><th><label for="link">Link (URL):</label></th><td><input id="link" style="width:220px;" value="http://"/></td></tr>
-<tr><th><label for="title">Title (opt):</label></th><td><input id="title" style="width:220px;"/></td></tr>
+<tr><th><label for="link">Link (URL):</label></th><td><input id="link" style="width:350px;" value="http://"/></td></tr>
+<tr><th><label for="title">Title (opt):</label></th><td><input id="title" style="width:350px;"/></td></tr>
 <tr><th></th><td style="text-align:right;"><input type="button" onclick="Shorten();" value="Shorten"/></td></tr>
 </table>
-</p>
 
 <i>
 * Installation instructions for Internet Explorer:
@@ -107,20 +119,10 @@ by typing into this form.
 </ul>
 </i>
 
-<div style="text-align:center;">
-<a href="http://code.google.com/p/g02me/">
-<img src="http://code.google.com/appengine/images/appengine-silver-120x30.gif"
-alt="Powered by Google App Engine" /></a>
-</div>
-
-<div style="text-align:center;padding-top:20px">
-<iframe src="http://www.google.com/talk/service/badge/Show?tk=z01q6amlqhrl17p9n10jauhlnrj43o58f0q6mro09fpgobnd4ebvqmkmrtmt1ntg7b3jlohj0253417t9tp4mcumsmgtig277c7jdvp3govn5p9jvoq6lmsnr7qjirqdq0ahr0pd9t2n48qpdafpqu6f41le3nph14uh83m92fgqrtlt7c1dillnedf4e1cn60o&amp;w=200&amp;h=60" allowtransparency="true" width="200" frameborder="0" height="60"></iframe>
-</div>
-
-</div> <!-- left -->
+</div> <!-- right -->
 
 {% cache 60 home %}
-<div class="right">
+<div style="clear:both;padding-top:15px;">
 <h2>Recently popular links</h2>
 <p class="subhead">{{total_pages|intcomma}} links shared to date.</p>
 <table class="scores">
@@ -134,16 +136,16 @@ alt="Powered by Google App Engine" /></a>
 		<td class="num">{{page.model.CommentCount|intcomma}}</td>
 		<td class="age">{{page.model.dateCreated|Age}}
 			{% if page.model.Creator %}
-				<br/>by <a href="/user/{{page.model.Creator}}">{{page.model.Creator}}</a>
+				by <a href="/user/{{page.model.Creator}}">{{page.model.Creator}}</a>
 			{% endif %}
 		</td>
-		<td class="bar"><div class="bar" bar_value="{{page.ScoreNow|mult:24|floatformat:1}}"
+		<td style="width:200px;" class="bar"><div class="bar" bar_value="{{page.ScoreNow|mult:24|floatformat:1}}"
 			title="{{page.ScoreNow|mult:24|floatformat:1}} points per day">&nbsp;</div></td>
 	</tr>
 	{% endif %}
 {% endfor %}
 </table>
+</div>
 {% endcache %}
 
-</div> <!-- right -->
 {% endblock %}

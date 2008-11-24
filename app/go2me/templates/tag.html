@@ -3,9 +3,12 @@
 {% load custom %}
 {% block subTitle %}{{tag}} links{% endblock %}
 {% block pagebody %}
-<a target="_top" href="/" title="{{site_name}} Home | Popular Pages"><img class="logo" src="/images/logo.png"></a>
-<h1 style="padding-top: 40px;">{{tag}} links</h1>
-<div style='clear:both;'></div>
+<div class="head">
+	<a target="_top" href="/" title="{{site_name}} Home | Popular Pages"><img class="logo" src="/images/logo.png"></a>
+	<h1 style="padding-top: 40px;">{{tag}} links</h1>
+	<div style='clear:both;'></div>
+</div>
+
 <table class="scores">
 <tr><th>Title</th><th>Shared</th><th>Viewed</th><th>Comments</th><th>Created</th><th>Score</th></tr>
 {% for page in pages %}

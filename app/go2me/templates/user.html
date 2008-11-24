@@ -4,9 +4,12 @@
 {% block subTitle %}{{usernamePage}}'s activity{% endblock %}
 {% block pagebody %}
 <div class="page">
-<a target="_top" href="/" title="{{site_name}} Home | Popular Pages"><img class="logo" src="/images/logo.png"></a>
-<h1 style="padding-top: 40px;">{{usernamePage}}'s activity</h1>
-<div style='clear:both;'></div>
+<div class="head">
+	<a target="_top" href="/" title="{{site_name}} Home | Popular Pages"><img class="logo" src="/images/logo.png"></a>
+	<h1 style="padding-top: 40px;">{{usernamePage}}'s activity</h1>
+	<div style='clear:both;'></div>
+</div>
+
 <table class="scores">
 <tr><th>Title</th><th>Shared</th><th>Viewed</th><th>Comments</th><th>Created</th><th>Scores</th></tr>
 {% for comment in comments %}
