@@ -28,7 +28,7 @@ class ScoreSet(db.Model):
         if dt is None:
             dt = util.local.dtNow
         scores = self.ScoresForModel(model)
-        if scores.count() == 0:
+        if len(scores) == 0:
             scores = []
             for hrs in self.halfLives:
                 s = Score(name=self.name, hrsHalf=hrs, model=model, tags=tags)
@@ -49,10 +49,10 @@ class ScoreSet(db.Model):
         scores = Score.gql('WHERE name = :name ORDER BY hrsLast DESC', name=self.name)
         return [score for score in scores.fetch(limit) if not score.ModelExists()]
 
-    def ScoresForModel(self, model):
-        return Score.gql('WHERE name = :name AND model = :model', name=self.name, model=model)
+    def ScoresForModel(self, model, limit=5):
+        return Score.gql('WHERE name = :name AND model = :model', name=self.name, model=model).fetch(limit)
     
-    def ScoresJSON(self, model):
+    def ScoresNamed(self, model):
         scores = self.ScoresForModel(model)
         obj = {}
         for score in scores:

@@ -199,9 +199,6 @@ class Map(db.Model):
         if local.requser.FAllow('score'):
             self.ss.Update(self, self.scoreView, dt=local.dtNow, tags=self.TopTags())
         
-    def Age(self):
-        return SAgeReq(self.dateCreated)
-    
     def Creator(self):
         return self.usernameCreator
     
@@ -211,7 +208,7 @@ class Map(db.Model):
     def JSON(self):
         obj = {'url':self.url, 'id':self.GetId(), 'title':self.title,
                'viewed':self.viewCount, 'shared':self.shareCount, 'created':self.dateCreated,
-               'scores':self.ss.ScoresJSON(self), 'tags':self.TopTags()
+               'scores':self.ss.ScoresNamed(self), 'tags':self.TopTags()
                }
         rgComments = []
         for comment in self.Comments():
@@ -219,6 +216,9 @@ class Map(db.Model):
         if len(rgComments) > 0: 
             obj['comments'] = rgComments
         return obj
+    
+    def ScoresNamed(self):
+        return self.ss.ScoresNamed(self)
     
     # Admin functions - for use in /shell or /admin ------------------
     # BUG: FindBadTagCounts does NOT WORK in shell - complains about undefined comment.tags property and
@@ -432,9 +432,6 @@ class Comment(db.Model):
         except:
             return []
 
-    def Age(self):
-        return SAgeReq(self.dateCreated)
-    
     def AllowDelete(self):
         return self.username == '' or self.username == local.requser.username
     

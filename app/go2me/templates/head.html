@@ -68,7 +68,7 @@ window.onclick = Click;
 		<a style="float:right;padding-top:2px;padding-right:2px;" target="_top" href="{{map.Href}}" title="Close Frame"><img class="x" src="/images/x.png"/></a>
 		Stats
 	</p>
-	<p>Created: {{map.Age}}</p>
+	<p>Created: {{map.dateCreated|Age}}</p>
 	{% if map.Creator %}
 	<p>By: <a href="/user/{{map.Creator}}" target="_top">{{map.Creator}}</a></p>
 	{% endif %}
@@ -121,7 +121,7 @@ window.onclick = Click;
     {% if comment.tags %}
     	[{% for tag in comment.TagList %}<a target="_top" href="/tag/{{tag}}" title="{{tag}} pages">{{tag}}</a>{% if not forloop.last %}, {% endif %}{% endfor %}]
     {% endif %}
-    - {{ comment.Age }}
+    - {{ comment.dateCreated|Age }}
     {% if comment.AllowDelete %}
     <img class="x" onclick="DeleteComment('{{comment.DelKey}}');" src="/images/x.png"/>
     {% endif %}
