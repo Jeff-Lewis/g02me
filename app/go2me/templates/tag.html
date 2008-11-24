@@ -10,13 +10,13 @@
 </div>
 
 <table class="scores">
-<tr><th>Title</th><th>Shared</th><th>Viewed</th><th>Comments</th><th>Created</th><th>Score</th></tr>
+<tr><th></th><th>Title</th><th>Shared</th><th>Viewed</th><th>Comments</th><th>Created</th><th>Score</th></tr>
 {% for page in pages %}
 	{% if page.ModelExists %}
 	<tr>
+		<td style="width:18px;"><span style="display:none;" class="Snap_Shot_URL">{{page.model.url|escape}}</span></td>
 		<td>
 			<a href="/{{page.model.GetId}}" title="{{page.model.url|escape}}">{{page.model.title|escape}}</a>
-			<span style="display:none;" class="Snap_Shot_Preview">{{page.model.url|escape}}</span>
 		</td>
 		<td class="num">{{page.model.shareCount|intcomma}}</td>
 		<td class="num">{{page.model.viewCount|intcomma}}</td>
