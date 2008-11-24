@@ -45,6 +45,8 @@ function Loaded()
 		}
 	else
 		txtLink.focus();
+		
+	Go2.DisplayBars(200);
 }
 
 function Shorten()
@@ -122,7 +124,7 @@ alt="Powered by Google App Engine" /></a>
 <h2>Recently popular links</h2>
 <p class="subhead">{{total_pages|intcomma}} links shared to date.</p>
 <table class="scores">
-<tr><th>Title</th><th>Shared</th><th>Viewed</th><th>Comments</th><th>Created</th></tr>
+<tr><th>Title</th><th>Shared</th><th>Viewed</th><th>Comments</th><th>Created</th><th>Score</th></tr>
 {% for page in pages %}
 	{% if page.ModelExists %}
 	<tr>
@@ -135,6 +137,8 @@ alt="Powered by Google App Engine" /></a>
 				<br/>by <a href="/user/{{page.model.Creator}}">{{page.model.Creator}}</a>
 			{% endif %}
 		</td>
+		<td class="bar"><div class="bar" bar_value="{{page.ScoreNow|mult:24|floatformat:1}}"
+			title="{{page.ScoreNow|mult:24|floatformat:1}} points per day">&nbsp;</div></td>
 	</tr>
 	{% endif %}
 {% endfor %}

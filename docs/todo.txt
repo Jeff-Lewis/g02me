@@ -34,7 +34,7 @@
   ! Up/Down Arrows
   - "New" marker
   - Base on 2x rate on next higher halfLife scale
-  - Show graphical bar for score for day and up/down tick
+  ! Show graphical bar for score for day and up/down tick
     - Hover to get numerical score X.X per day
 ! Replies page for users - show follow on comments on URL's user's have shared or commented on.
   - Option to show /user/xxx sorted by popularity (not date of last comment) 
@@ -166,8 +166,7 @@ X Add thousands sep for counts in analytics (info, home, tags, user)
   ! Mark URL as Adult - require login and affirmation of over 18 and OK to view adult content
   - Profile image
   - Friend feed and twitter account info
-- Throttling/Abuse
-  - Admin interface to block/throttle IP's, users, domains, referers
+- Admin interface to block/throttle IP's, users, domains, referers
 - Spam - faked title - /3f
 - Google User Accounts
   - Persistent cookie (30 days) in lieu of Google Auth
@@ -304,7 +303,7 @@ X Change .Age to Age filter on a date value
 ------------------------------------------------------------
 
 X Anon sharing is throwing exception
-- Don't count anonymous views!
+- Don't score anonymous views!
 ! Is it possible to implement info/Close box so that currently navigated page is retained?
   - See if window.location.href is accessible from parent frameset
 X Disallow 'http' as a username (mistake in posting links)

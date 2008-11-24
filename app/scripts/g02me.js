@@ -102,6 +102,41 @@ DeleteComment: function(sDelKey)
 				}
 			});
 	},
+
+DisplayBars: function(widthMax)
+	{
+	scaleMax = 3.0;
+	aBars = $("div.bar")
+	
+	if (aBars.length == 0)
+		return;
+	
+	// assume first bar is the biggest!
+	var width = parseFloat(aBars[0].attributes["bar_value"].nodeValue);
+	if (width * scaleMax > widthMax)
+		scaleMax = widthMax/width;
+	
+	var i = 1;
+	var tm = new Go2.Timer(function()
+		{
+		Go2.ScaleBars(scaleMax * i /10);
+		if (i == 10)
+			tm.Active(false);
+		i++;
+		}, 75).Repeat().Active();
+	},
+	
+ScaleBars: function(scale)
+	{
+	console.log(scale);
+	var aBars = $("div.bar")
+	for (var i = 0; i < aBars.length; i++)
+		{
+		var divBar = aBars[i];
+		width = parseFloat(divBar.attributes["bar_value"].nodeValue);
+		divBar.style.width = (width*scale) + "px";
+		}	
+	},
 	
 TrackEvent: function(sEvent)
 	{

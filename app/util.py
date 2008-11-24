@@ -351,7 +351,7 @@ class MemRate(object):
         self.fExceeded = self.rate.FExceeded()
         memcache.set('rate.%s' % self.key, self.rate, 300)
         if self.fExceeded:
-            logging.info('MemRate: %1.2f/%d for %s (%s)' % (self.rate.S*60, self.rpmMax, self.key, self.fExceeded))
+            logging.info('MemRate exceeded: %1.2f/%d for %s (%s)' % (self.rate.S*60, self.rpmMax, self.key, self.fExceeded))
         return self.fExceeded
     
     def RPM(self):

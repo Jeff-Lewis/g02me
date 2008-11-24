@@ -19,6 +19,13 @@ def ellipsis(value, arg):
         return value[:length] + "..."
     else:
         return value
+    
+@register.filter(name='mult')
+def MultFilter(value, arg):
+    try:
+        return float(value) * float(arg)
+    except:
+        return 0.0
 
 @register.filter(name='urlizetop')
 @stringfilter

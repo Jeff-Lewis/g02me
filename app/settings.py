@@ -9,8 +9,9 @@ except:
     pass
 
 DEBUG = (ENVIRONMENT == "local")
-DEBUG = True
+#DEBUG = True
 TEMPLATE_DEBUG = DEBUG
+CACHE_ON = not DEBUG
 
 ADMINS = (
     ('Mike Koss', 'mckoss@gmail.com'),

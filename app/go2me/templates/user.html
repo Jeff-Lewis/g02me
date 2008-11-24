@@ -8,7 +8,7 @@
 <h1 style="padding-top: 40px;">{{usernamePage}}'s activity</h1>
 <div style='clear:both;'></div>
 <table class="scores">
-<tr><th>Title</th><th>Shared</th><th>Viewed</th><th>Comments</th><th>Created</th></tr>
+<tr><th>Title</th><th>Shared</th><th>Viewed</th><th>Comments</th><th>Created</th><th>Scores</th></tr>
 {% for comment in comments %}
 	<tr>
 		<td><a href="/{{comment.map.GetId}}" title="{{comment.map.url|escape}}">{{comment.map.title|escape}}</a>
@@ -29,6 +29,8 @@
 				by <a href="/user/{{comment.map.Creator}}">{{comment.map.Creator}}</a>
 			{% endif %}
 		</td>
+		<td class="bar"><div class="bar" bar_value="{{comment.map.ScoresNamed.day|mult:24|floatformat:1}}"
+			title="{{comment.map.ScoresNamed.day|mult:24|floatformat:1}} points per day">&nbsp;</div></td>
 	</tr>
 {% endfor %}
 </table>

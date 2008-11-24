@@ -3,6 +3,7 @@
 from django.template import Library, Node, TemplateSyntaxError, VariableDoesNotExist, resolve_variable
 from django.template import resolve_variable
 from google.appengine.api import memcache as cache
+import settings
 
 register = Library()
 
@@ -23,11 +24,15 @@ class CacheNode(Node):
         except (ValueError, TypeError):
             raise TemplateSyntaxError('"cache" tag got a non-integer timeout value: %r' % expire_time)
         # Build a unicode key for this fragment and all vary-on's.
-        cache_key = u':'.join([self.fragment_name] + [urlquote(resolve_variable(var, context)) for var in self.vary_on])
-        value = cache.get(cache_key)
+        if settings.CACHE_ON:
+            cache_key = u':'.join([self.fragment_name] + [urlquote(resolve_variable(var, context)) for var in self.vary_on])
+            value = cache.get(cache_key)
+        else:
+            value = None
         if value is None:
             value = self.nodelist.render(context)
-            cache.set(cache_key, value, expire_time)
+            if settings.CACHE_ON:
+                cache.set(cache_key, value, expire_time)
         return value
 
 def do_cache(parser, token):
