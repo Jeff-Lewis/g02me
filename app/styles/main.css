@@ -30,14 +30,17 @@ margin: 3px 0;
 }
 
 p.help {
+font-size: 12px;
 font-style: italic;
 color: #CDAC6D;
+margin: 0 0 3px 0;
 }
 
 p.url {
 font-size: 10px;
 white-space: nowrap;
 overflow: hidden;
+margin: 0;
 }
 
 a {
@@ -126,6 +129,7 @@ margin: 1px;
 
 div.comments p {
 color: #AAA;
+margin: 0 0;
 }
 
 /* Page-specific styles (based on pages.html master template) */

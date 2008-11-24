@@ -67,21 +67,22 @@ function Shorten()
 
 <h2>What is {{site_name}}?</h2>
 <ul>
-	<li><b>Free</b> - {{site_name}} is free hyperlink shortening service - use it to turn any link into a short one.</li>
-	<li><b>Short</b> - {{site_name}} links are only 16 characters long <i>(for comparison, tinyurl links are 25 characters long)</i> -
-	perfect for embedding in <a href="http://twitter.com">Twitter</a> or IM messages
-	(e.g., <a href="http://{{site_host}}/G">http://{{site_host}}/G</a>)
+	<li><b>Free</b> - {{site_name}} is free - use it to turn any link into a short one.</li>
+	<li><b>Shorter</b> - {{site_name}} links are only 16 characters long - more room for your twitter messages.</li>
+	<li><b>Comments</b> - Exchange comments and get feedback from your readers on every link page.</li>
+	<li><b>Analytics</b> - see exactly how many people are reading your links.</li>
+	<li><b>Personalized</b> - Use a nickname, and get a summary of all
+		{% if username %}<a href="/user/{{username}}" title="{{username}}'s activity">{% endif %}
+		your own shared links.
+		{% if username %}</a>{% endif %}
 	</li>
-	<li><b>Comments</b> - Exchange comments at the top of any shared {{site_name}} page.</li>
-	<li><b>Analytics</b> - Each {{site_name}} page displays the number of viewers	so you can see how often your link has been viewed.</li>
-	<li><b>Personalized</b> - Pick a username, and use it with all your comments.  You can then get a summary of all your most recently shared links.</li>
-	<li><b>Tags</b> - Add a tag, and then click on the tag link to see the most popular links for that tag -
-	it's a great way to find out what others are sharing.</li>
+	<li><b>Tags</b> - Add tags when you comment - the most popular links for each tag are collected together
+	on one page.</li>
 </ul>
 
 <div style="text-align:center;">
-<a href="http://code.google.com/p/g02me/">
-	<img src="http://code.google.com/appengine/images/appengine-silver-120x30.gif" alt="Powered by Google App Engine" />
+<a href="/images/fullscreen.png" title="Click to see full size screen shot.">
+	<img alt="Go2.me Screenshot" src="/images/thumbnail.png">
 </a>
 </div>
 
