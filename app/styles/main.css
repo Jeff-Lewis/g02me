@@ -96,6 +96,11 @@ width: 180px;
 border-left: 1px solid #45AFD1;
 }
 
+#info-status p
+{
+margin: 0;
+}
+
 p.stats-header {
 text-align: center;
 font-weight: bold;
