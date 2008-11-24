@@ -33,6 +33,9 @@ sAPIKeyName = "api.1"
 # Google Analytics Tracking Code
 sAnalyticsCode = "UA-5439059-1"
 
+# Snap Shots account id
+sSnapShotsCode = "f915fa6309d2941121149a264c4aa7bf"
+
 MANAGERS = ADMINS
 
 DATABASE_ENGINE = ''           # 'postgresql_psycopg2', 'postgresql', 'mysql', 'sqlite3' or 'ado_mssql'.

@@ -128,7 +128,6 @@ DisplayBars: function(widthMax)
 	
 ScaleBars: function(scale)
 	{
-	console.log(scale);
 	var aBars = $("div.bar")
 	for (var i = 0; i < aBars.length; i++)
 		{
