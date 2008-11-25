@@ -84,6 +84,7 @@ cursor: pointer;
 li {
 line-height: 18px;
 margin-left: -5px;
+margin-bottom: 3px;
 }
 
 /* Info-bar styles (for head.html) */
@@ -94,6 +95,11 @@ margin-left: 5px;
 padding-left: 5px;
 width: 180px;
 border-left: 1px solid #45AFD1;
+}
+
+#info-status p
+{
+margin: 0;
 }
 
 p.stats-header {

@@ -23,6 +23,9 @@ ADMINS = (
 # Version 5 (base 57) starts at '32' (since there is no 0 or 1 in the alphabet)
 sSiteName = "Go2.me"
 sSiteHost = "go2.me"
+sSiteTitle = "A Link Shortening Service"
+sSiteTagline = "Don't just send a link - start a conversation."
+nLinkLength = len("http://%s/" % sSiteHost) + 2 
 mpSiteAlternates = set(['www.go2.me', 'g02.me', 'www.g02.me'])
 idMapBase = 57
 cPagesExtra = 159

@@ -2,7 +2,7 @@
 {% load humanize %}
 {% load custom %}
 {% load cache %}
-{% block subTitle %}A Link Shortening Service{% endblock %}
+{% block subTitle %}{{site_title}}{% endblock %}
 {% block script %}
 Go2.SetCSRF("{{csrf}}");
 
@@ -59,25 +59,35 @@ function Shorten()
 {% block pagebody %}
 <div class="head">
 	<a target="_top" href="/"><img title="{{site_name}}" class="logo" src="/images/logo.png"></a>
-	<h1 style="padding-top: 20px;">A Link Shortening Service</h1>
-	<p class="subhead">Don't just send a link - start a conversation and get feedback.</p>
+	<h1 style="padding-top: 20px;">{{site_title}}</h1>
+	<p class="subhead">{{site_tagline}}</p>
 </div>
 
 <div class="left">
 
 <h2>What is {{site_name}}?</h2>
+<p>
+You can use {{site_name}} to take any long link (URL) and convert it to a shorter one that
+you can send in Twitter, IM, or Email messages.  Your link will not only display the page
+you want to share, but also add an information box where your readers can comment on your link.
+Try it:
+</p>
+<p style="text-align:center;"><a href="/G">http://{{site_host}}/G</a></p>
+<h2>{{site_name}} Benefits:</h2>
 <ul>
-	<li><b>Free</b> - {{site_name}} is free - use it to turn any link into a short one.</li>
-	<li><b>Shorter</b> - {{site_name}} links are only 16 characters long - more room for your twitter messages.</li>
-	<li><b>Comments</b> - Exchange comments and get feedback from your readers on every link page.</li>
-	<li><b>Analytics</b> - see exactly how many people are reading your links.</li>
+	<li><b>Comments</b> - Exchange comments with your readers on every link page.</li>
+	<li><b>Feedback</b> - see how many people are reading your links.</li>
 	<li><b>Personalized</b> - Use a nickname, and get a summary of all
 		{% if username %}<a href="/user/{{username}}" title="{{username}}'s activity">{% endif %}
-		your own shared links.
+		your shared links.
 		{% if username %}</a>{% endif %}
 	</li>
-	<li><b>Tags</b> - Add tags when you comment - the most popular links for each tag are collected together
-	on one page.</li>
+	<li><b>Promote</b> - Promote your link by adding one or more "[tags]" to any comment -
+	the most popular links for each tag are listed in their own page, for example:
+	<p style="text-align:center"><a href="/tag/video">http://{{site_host}}/tag/video</a></p>
+	</li>
+	<li><b>Shorter than TinyURL</b> - {{site_name}} links are only {{link_length}} characters long - perfect for Twitter messages.</li>
+	<li><b>It's Free</b> - add the Bookmarklet to get started.</li>
 </ul>
 
 <div style="text-align:center;">
@@ -90,8 +100,8 @@ function Shorten()
 
 <div class="right">
 
-<h2>Install the bookmarklet</h2>
-<p>Just drag this bookmarklet to your bookmarks toolbar*:</p>
+<h2>Install the Bookmarklet:</h2>
+<p>To get started, just drag this bookmarklet to your bookmarks toolbar: *</p>
 <div class="bookmarklet">
 <a class="bookmarklet" title="Drag me to your bookmarks toolbar"
    onclick="alert('Instead of clicking this link, you need to drag it to your toolbar.');return false;"
@@ -103,7 +113,7 @@ function Shorten()
 <h2>Shorten a link now:</h2>
 <p>If you can't install the bookmarklet just now, you can shorten a single link
 using this form:</p>
-<table>
+<table style="margin:15px 0;">
 <tr><th><label for="link">Link (URL):</label></th><td><input id="link" style="width:350px;" value="http://"/></td></tr>
 <tr><th><label for="title">Title (opt):</label></th><td><input id="title" style="width:350px;"/></td></tr>
 <tr><th></th><td style="text-align:right;"><input type="button" onclick="Shorten();" value="Shorten"/></td></tr>
@@ -144,7 +154,7 @@ using this form:</p>
 			{% endif %}
 		</td>
 		<td style="width:200px;" class="bar"><div class="bar" bar_value="{{page.ScoreNow|mult:24|floatformat:1}}"
-			title="{{page.ScoreNow|mult:24|floatformat:1}} points per day">&nbsp;</div></td>
+			title="{{page.ScoreNow|mult:24|floatformat:1}} points Today">&nbsp;</div></td>
 	</tr>
 	{% endif %}
 {% endfor %}

@@ -97,6 +97,9 @@ X Add thousands sep for counts in analytics (info, home, tags, user)
     - user page view
     - Write old data to log only when user is > 1 week old (each week returning)
 - Deleting comment pre-populate comment box to allow edit and re-comment
+- Stemming of tags
+  - Tag aliases
+  - Tag rollup (aggregrate tags)
   
 ------------------------------------------------------------
         PLATFORMS, SYNDICATION, IMPORT/EXPORT
@@ -184,6 +187,13 @@ X Add thousands sep for counts in analytics (info, home, tags, user)
   - tag pages (keep until url added to tag - age at 5 minutes)
   X add a template tag that will auto-cache a page section - copy from Django 1.0
 - Install profiling to do performance testing and tuning
+! /user/x pages are too slow - optimize scoring queries?
+- Displaying comment counts in home page query has exceeded quota - CommentCount
+
+------------------------------------------------------------
+                          TESTING
+------------------------------------------------------------
+- Unit test invalid domain names are rejected
 
 ------------------------------------------------------------
                         MONETIZATION
@@ -318,3 +328,4 @@ X Timeouts of AJAX calls (claim username) do not generate errors
 X Require that domains have a . in them to be valid (no intranet domains) 
 X Embedded links in comments need to target _top
 - Uneven margins in safari and Chrome.
+! Chrome table extends beyond the bounds of the page
