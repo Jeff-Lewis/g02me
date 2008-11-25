@@ -467,6 +467,9 @@ def FinalResponse():
 
         'site_name': settings.sSiteName,
         'site_host': settings.sSiteHost,
+        'site_title': settings.sSiteTitle,
+        'site_tagline': settings.sSiteTagline,
+        'link_length': settings.nLinkLength,
         'host': local.stHost,
 
         'analytics_code': settings.sAnalyticsCode,

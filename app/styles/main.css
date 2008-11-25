@@ -84,6 +84,7 @@ cursor: pointer;
 li {
 line-height: 18px;
 margin-left: -5px;
+margin-bottom: 3px;
 }
 
 /* Info-bar styles (for head.html) */
