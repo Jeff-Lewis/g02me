@@ -199,6 +199,11 @@ vertical-align: top;
 padding-top: 5px;
 }
 
+table.scores td.title div {
+width: 400px;
+overflow: hidden;
+}
+
 table.scores td.num {
 text-align: center;
 }

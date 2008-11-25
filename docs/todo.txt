@@ -120,7 +120,7 @@ X Add thousands sep for counts in analytics (info, home, tags, user)
   - How to install bookmarklet on iPhone, G1, and Blackberry
 - Import bookmarks/faves
 - Sharing options
-  - Twitter
+  ! Twitter
   - TwitterFeed
   - Twhirl
   - Friendfeed
@@ -137,15 +137,15 @@ X Add thousands sep for counts in analytics (info, home, tags, user)
   - user+tag
   - use feedburner?
   - make easy to get email update from feedburner (top page, and comments on user page)
-- Twitter features
-  - User Profile Page - twitter info
+! Twitter features
+  ! User Profile Page - twitter info
   - Anonymous twitter encrypted cookie
-  - RSS Feed auto-twitter
+  ! RSS Feed auto-twitter
   - Claim your account button
   - Allow claiming of account with pseudonomyous twitter user name
-  - Can put encryption key to decode twitter password in a cookie - ensures we don't
+  X Can put encryption key to decode twitter password in a cookie - ensures we don't
     store an offline usable twitter password on the server
-    - key = H('key', username, password) - not stored on server- saved in cookie
+    - key = H(sServerKey, username, password) - not stored on server- saved in cookie
     - passStored = E(key, twitter-password)
     - twitter-password = D(key, passStored)
 

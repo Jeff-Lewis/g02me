@@ -142,9 +142,9 @@ using this form:</p>
 	{% if page.ModelExists %}
 	<tr>
 		<td style="width:18px;"><span style="display:none;" class="ssu Snap_Shot_URL">{{page.model.url|escape}}</span></td>
-		<td>
+		<td class="title"><div>
 			<a href="/{{page.model.GetId}}" title="{{page.model.url|escape}}">{{page.model.title|escape}}</a>
-		</td>
+		</div></td>
 		<td class="num">{{page.model.shareCount|intcomma}}</td>
 		<td class="num">{{page.model.viewCount|intcomma}}</td>
 		<td class="num">{{page.model.CommentCount|intcomma}}</td>

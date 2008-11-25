@@ -34,6 +34,7 @@ class Map(db.Model):
     viewCount = db.IntegerProperty(default=0)
     shareCount = db.IntegerProperty(default=0)
     sTags = db.TextProperty()
+    fBanish = db.BooleanProperty(default=False)
     
     @classmethod
     def KeyFromId(cls, id):
