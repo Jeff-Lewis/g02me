@@ -424,6 +424,11 @@ class Comment(db.Model):
             if key in dup:
                 continue
             dup.add(key)
+            # Cleanup comments from expunged Maps
+            if not comment.MapExists():
+                logging.warning("Removing orphaned comment for %s." % comment.MapKey())
+                comment.delete()
+                continue
             clist.append(comment)
             if len(clist) == 50:
                 break;

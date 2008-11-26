@@ -43,8 +43,8 @@ def profile_main():
     prof = prof.runctx("real_main()", globals(), locals())
     stream = StringIO.StringIO()
     stats = pstats.Stats(prof, stream=stream)
-    stats.sort_stats("time")  # Or cumulative
-    stats.print_stats(160)  # 80 = how many to print
+    stats.sort_stats("cumulative")  # time or cumulative
+    stats.print_stats(80)  # lines to print
     # The rest is optional.
     # stats.print_callees()
     # stats.print_callers()

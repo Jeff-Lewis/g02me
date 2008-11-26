@@ -1,0 +1,1 @@
+appcfg.py --verbose --no_cookies rollback app
