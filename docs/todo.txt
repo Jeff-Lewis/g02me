@@ -187,9 +187,9 @@ X Add thousands sep for counts in analytics (info, home, tags, user)
   X home page (keep for 60 seconds) - Adjust expires header
   - tag pages (keep until url added to tag - age at 5 minutes)
   X add a template tag that will auto-cache a page section - copy from Django 1.0
-- Install profiling to do performance testing and tuning
+X Install profiling to do performance testing and tuning
 ! /user/x pages are too slow - optimize scoring queries?
-- Displaying comment counts in home page query has exceeded quota - CommentCount
+X Displaying comment counts in home page query has exceeded quota - CommentCount
 
 ------------------------------------------------------------
                           TESTING
@@ -324,9 +324,8 @@ X Truncate titles with elipses in views
 - Don't __share an item that's been shared by you previously (especially don't add duplicate comment entry)
 - Should limit comment scoring to one per user
 - Anonymous user is getting shared+1 and viewed+1...
-- Multiple __share comments per user are possible - shouldn't be
 X Timeouts of AJAX calls (claim username) do not generate errors
 X Require that domains have a . in them to be valid (no intranet domains) 
 X Embedded links in comments need to target _top
-- Uneven margins in safari and Chrome.
-! Chrome table extends beyond the bounds of the page
+X Uneven margins in safari and Chrome.
+X Chrome table extends beyond the bounds of the page

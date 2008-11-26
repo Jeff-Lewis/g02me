@@ -37,9 +37,10 @@
 				by <a href="/user/{{comment.map.Creator}}">{{comment.map.Creator}}</a>
 			{% endif %}
 		</td>
-		{% setvar scoreDay %}{{comment.map.ScoresNamed.day|mult:24|floatformat:1}}{% endsetvar %}
-		<td class="bar"><div class="bar" bar_value="{{scoreDay}}"
-			title="{{scoreDay}} points per day">&nbsp;</div></td>
+		{% with comment.map.ScoresNamed.day as scoreDay %}
+		<td class="bar"><div class="bar" bar_value="{{scoreDay|mult:24|floatformat:1}}"
+			title="{{scoreDay|mult:24|floatformat:1}} points per day">&nbsp;</div></td>
+		{% endwith %}
 	</tr>
 {% endfor %}
 </table>
