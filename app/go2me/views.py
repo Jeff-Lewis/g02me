@@ -111,12 +111,26 @@ def FrameSet(req, id):
     AddToResponse({'map':map})
     return render_to_response('mapped.html', FinalResponse())
 
-def UserView(req, username):
+def real_UserView(req, username):
     if IsJSON():
         return HttpJSON(req, obj=Comment.ForUserJSON(username))
     comments = Comment.ForUser(username)
     AddToResponse({'usernamePage':username, 'comments':comments})
     return render_to_response('user.html', FinalResponse())
+
+def UserView(*args, **kwargs):
+    import cProfile, pstats, StringIO
+    prof = cProfile.Profile()
+    result = prof.runcall(real_UserView, *args, **kwargs)
+    stream = StringIO.StringIO()
+    stats = pstats.Stats(prof, stream=stream)
+    stats.sort_stats("cumulative")  # time Or cumulative
+    stats.print_stats(160)  # 80 = how many to print
+    # The rest is optional.
+    # stats.print_callees()
+    # stats.print_callers()
+    logging.info("Profile data:\n%s", stream.getvalue())
+    return result
 
 def TagView(req, tag):
     if IsJSON():

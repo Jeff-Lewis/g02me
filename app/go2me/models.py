@@ -33,7 +33,7 @@ class Map(db.Model):
     dateCreated = db.DateTimeProperty()
     viewCount = db.IntegerProperty(default=0)
     shareCount = db.IntegerProperty(default=0)
-    commentCount = db.IntegerProperty(default=0)
+    commentCount = db.IntegerProperty()
     sTags = db.TextProperty()
     fBan = db.BooleanProperty(default=False)
     
@@ -177,6 +177,7 @@ class Map(db.Model):
         return self.commentCount
     
     def EnsureCommentCount(self):
+        # Historical models do not have this attribute - rebuild it from query
         if self.commentCount is None:
             self.commentCount = len(self.Comments())
             return True
@@ -419,9 +420,7 @@ class Comment(db.Model):
         clist = []
         dup = set()
         for comment in comments:
-            if not comment.MapExists():
-                continue
-            key = comment.map.GetId()
+            key = comment.MapKey()
             if key in dup:
                 continue
             dup.add(key)
@@ -429,6 +428,9 @@ class Comment(db.Model):
             if len(clist) == 50:
                 break;
         return clist
+    
+    def MapKey(self):
+        return Comment.map.get_value_for_datastore(self)
     
     @staticmethod
     def FUsernameUsed(sUsername):

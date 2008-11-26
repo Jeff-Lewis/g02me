@@ -13,56 +13,30 @@ indexes:
 # Unused in query history -- copied from input.
 - kind: Comment
   properties:
-  - name: comment
-  - name: dateCreated
-    direction: desc
-
-# Unused in query history -- copied from input.
-- kind: Comment
-  properties:
-  - name: dateCreated
-    direction: desc
-
-# Unused in query history -- copied from input.
-- kind: Comment
-  properties:
-  - name: map
-  - name: dateCreated
-
-# Used 51 times in query history.
-- kind: Comment
-  properties:
   - name: map
   - name: dateCreated
     direction: desc
 
-# Used 7 times in query history.
+# Unused in query history -- copied from input.
 - kind: Comment
   properties:
   - name: username
   - name: dateCreated
     direction: desc
 
-# Used 3 times in query history.
+# Used once in query history.
 - kind: Score
   properties:
   - name: hrsHalf
   - name: name
-  - name: LogS
-    direction: desc
-
-# Used 3 times in query history.
-- kind: Score
-  properties:
-  - name: hrsHalf
-  - name: name
-  - name: tag
   - name: LogS
     direction: desc
 
 # Unused in query history -- copied from input.
 - kind: Score
   properties:
+  - name: hrsHalf
   - name: name
-  - name: hrsLast
+  - name: tag
+  - name: LogS
     direction: desc
