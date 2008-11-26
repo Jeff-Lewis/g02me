@@ -33,6 +33,7 @@ class Map(db.Model):
     dateCreated = db.DateTimeProperty()
     viewCount = db.IntegerProperty(default=0)
     shareCount = db.IntegerProperty(default=0)
+    commentCount = db.IntegerProperty(default=0)
     sTags = db.TextProperty()
     fBan = db.BooleanProperty(default=False)
     
@@ -97,7 +98,6 @@ class Map(db.Model):
             if not tag in self.tags:
                 self.tags[tag] = 0
             self.tags[tag] = self.tags[tag] + 1
-        self.put()
         
     def RemoveTags(self, rgTags):
         self.ReifyTags()
@@ -108,7 +108,6 @@ class Map(db.Model):
             self.tags[tag] = self.tags[tag] - 1
             if self.tags[tag] <= 0:
                 del self.tags[tag]
-        self.put()
         
     def TopTags(self, limit=10):
         # Return to top 10 tags (by use) for this url
@@ -161,15 +160,27 @@ class Map(db.Model):
                 }
         
     def AddComment(self, username='', comment='', tags=''):
+        self.EnsureCommentCount()
         comm = Comment.Create(map=self, username=username, comment=comment, tags=tags)
         comm.put()
+        if not comment.startswith('__'):
+            self.commentCount += 1
         self.AddTags(tags.split(','))
+        self.put()
         if local.requser.FAllow('score') and not self.Banished():
             self.ss.Update(self, self.scoreComment, dt=local.dtNow, tags=self.TopTags())
         
     def CommentCount(self):
-        # BUG: Will max out at 100 comments
-        return len(self.Comments())
+        # Cache the comment count in the model
+        if self.EnsureCommentCount():
+            self.put()
+        return self.commentCount
+    
+    def EnsureCommentCount(self):
+        if self.commentCount is None:
+            self.commentCount = len(self.Comments())
+            return True
+        return False
     
     def Comments(self, limit=100):
         # Just return "true" comments (not sharing events)
@@ -183,7 +194,7 @@ class Map(db.Model):
             self.put()
         if local.requser.FAllow('share') and \
             (local.requser.FOnce('map.%s' % self.GetId()) or self.shareCount == 0):
-            self.shareCount = self.shareCount + 1
+            self.shareCount += 1
             self.put()
             
             if local.requser.FAllow('score') and not self.Banished():
@@ -196,7 +207,7 @@ class Map(db.Model):
     def Viewed(self):
         if not local.requser.FOnce('map.%s' % self.GetId()):
             return
-        self.viewCount = self.viewCount + 1
+        self.viewCount += 1
         self.put()
         if local.requser.FAllow('score') and not self.Banished():
             self.ss.Update(self, self.scoreView, dt=local.dtNow, tags=self.TopTags())
@@ -361,6 +372,9 @@ class Comment(db.Model):
         # Delete the Comment and update the tag list in the Map
         try:
             self.map.RemoveTags(self.tags.split(','))
+            if not self.comment.startswith('__'):
+                self.map.commentCount -= 1
+            self.map.put()
         except:
             pass
         self.delete();
