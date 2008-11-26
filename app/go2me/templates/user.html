@@ -23,6 +23,9 @@
 	    		[{% for tag in comment.TagList %}<a target="_top" href="/tag/{{tag}}">{{tag|escape}}</a>{% if not forloop.last %}, {% endif %}{% endfor %}]
 	    	{% endif %}
 	    	- <i>{{ comment.dateCreated|Age }}</i>
+	    	{% if comment.AllowDelete %}
+    			<img class="x" onclick="Go2.DeleteComment('{{comment.DelKey}}');" src="/images/x.png"/>
+    		{% endif %}
 	    	</p></div>
 	    {% endif %}
 		</div></td>

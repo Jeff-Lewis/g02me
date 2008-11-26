@@ -82,25 +82,46 @@ PostComment: function(sID, sUsername, sComment)
 	
 DeleteComment: function(sDelKey)
 	{
-		if (!confirm("Are you sure you want to delete this comment?"))
-			return;
-		
-		var sd = new Go2.ScriptData('/comment/delete');
-		var objCall = {delkey:sDelKey, csrf:Go2.sCSRF};
-		Go2.TrackEvent('comment/delete');
+	if (!confirm("Are you sure you want to delete this comment?"))
+		return;
+	
+	var sd = new Go2.ScriptData('/comment/delete');
+	var objCall = {delkey:sDelKey, csrf:Go2.sCSRF};
+	Go2.TrackEvent('comment/delete');
 
-		sd.Call(objCall, function(obj) {
-			switch (obj.status)
-				{
-			case 'OK':
-				// Refresh the page to reset the display for the new header
-				window.location.href = window.location.href;
-				break;
-			default:
-				alert(Go2.sSiteName + ": " + obj.message);
-				break;
-				}
-			});
+	sd.Call(objCall, function(obj) {
+		switch (obj.status)
+			{
+		case 'OK':
+			// Refresh the page to reset the display for the new header
+			window.location.href = window.location.href;
+			break;
+		default:
+			alert(Go2.sSiteName + ": " + obj.message);
+			break;
+			}
+		});
+	},
+	
+BanishId: function(sID, fBan)
+	{
+	if (!confirm("Are you sure you want to " + (fBan ? "banish" : "un-banish") + " this id: " + sID))
+		return;
+	
+	var sd = new Go2.ScriptData('/admin/ban-id');
+	
+	sd.Call({id:sID, fBan:fBan, csrf:Go2.sCSRF}, function(obj) {
+		switch (obj.status)
+			{
+		case 'OK':
+			// Refresh the page to reset the display for the new header
+			window.location.href = window.location.href;
+			break;
+		default:
+			alert(Go2.sSiteName + ": " + obj.message);
+			break;
+			}
+		});
 	},
 
 DisplayBars: function(widthMax)

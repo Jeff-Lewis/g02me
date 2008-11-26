@@ -392,6 +392,103 @@ ts.AddTest("Tag", function(ut)
 		]);
 }).Async(true, 5000);
 
+ts.AddTest("Ban", function(ut)
+{
+	// Confirm we can ban a link:
+	// - We can get info on it, but it does not appear in a tag view
+	// - It's scores are reset to 0
+	// - It can not get additional scores by commenting on it (stays at 0)
+	// - When we unban it, it can acrue scores via comments
+	var objInit;
+	var urlUniq = "http://mckoss.com/" + Math.floor(Math.random()*1000);
+	var cTagged;
+
+	ut.AsyncSequence([
+		function(ut)
+			{
+			new Go2.ScriptData("/map/").Call({url:urlUniq, apikey:sAPIKey}, function(obj) {
+				ut.AssertContains(obj, {status:"OK"});
+				objInit = obj;
+				ut.NextFn();
+				});
+			},
+		function(ut)
+			{
+			new Go2.ScriptData("/comment/").Call({id:objInit.id, comment:"[adult]", apikey:sAPIKey}, ut.FnWrap(function (obj) {
+				ut.AssertContains(obj, {status:"OK"});
+				ut.NextFn();
+				}));
+			},
+		function(ut)
+			{
+			new Go2.ScriptData("/tag/adult").Call({}, ut.FnWrap(function(obj) {
+				ut.AssertContains(obj, {status:"OK"});
+				ut.Assert(obj.pages.length > 0, "non-empty tag list");
+				cTagged = obj.pages.length;
+				var url = obj.pages[0];
+				for (var prop in {day:0,week:0,month:0,year:0})
+					ut.AssertGT(url.scores[prop], 0, prop);
+				ut.NextFn();
+				}));
+			},
+		function(ut)
+			{
+			new Go2.ScriptData("/admin/ban-id").Call({id:objInit.id, fBan:true, apikey:sAPIKey}, function(obj) {
+				ut.AssertContains(obj, {status:"OK"});
+				ut.NextFn();
+				});
+			},
+		function(ut)
+			{
+			new Go2.ScriptData("/tag/adult").Call({}, ut.FnWrap(function(obj) {
+				ut.AssertContains(obj, {status:"OK"});
+				ut.AssertEq(obj.pages.length, cTagged-1);
+				ut.NextFn();
+				}));
+			},
+		function (ut)
+			{
+			new Go2.ScriptData("/info/" + objInit.id).Call({}, function (obj) {
+				ut.AssertContains(obj, {status:"OK"});
+				for (var prop in {day:0,week:0,month:0,year:0})
+					ut.AssertEq(obj.scores[prop], undefined, prop);
+				ut.NextFn();
+				});
+			},
+		function(ut)
+			{
+			new Go2.ScriptData("/admin/ban-id").Call({id:objInit.id, fBan:false, apikey:sAPIKey}, function(obj) {
+				ut.AssertContains(obj, {status:"OK"});
+				ut.NextFn();
+				});
+			},
+		function(ut)
+			{
+			new Go2.ScriptData("/comment/").Call({id:objInit.id, comment:"some score", apikey:sAPIKey}, ut.FnWrap(function (obj) {
+				ut.AssertContains(obj, {status:"OK"});
+				ut.NextFn();
+				}));
+			},
+		function(ut)
+			{
+			new Go2.ScriptData("/tag/adult").Call({}, ut.FnWrap(function(obj) {
+				ut.AssertContains(obj, {status:"OK"});
+				ut.AssertEq(obj.pages.length, cTagged);
+				ut.NextFn();
+				}));
+			},
+		function (ut)
+			{
+			new Go2.ScriptData("/info/" + objInit.id).Call({}, function (obj) {
+				ut.AssertContains(obj, {status:"OK"});
+				for (var prop in {day:0,week:0,month:0,year:0})
+					ut.AssertGT(obj.scores[prop], 0, prop);
+				ut.NextFn();
+				});
+			}
+		]);
+}).Async(true);
+
 ts.AddTest("Throttle Writes", function(ut)
 {
 	var objInit;

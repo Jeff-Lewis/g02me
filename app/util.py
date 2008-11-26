@@ -293,21 +293,33 @@ class ReqUser(object):
             self.mpPermit.add(sPerm)
     
     def Require(self, *args):
+        if not self.FAllow(*args):
+            if self.sPermFail == 'admin' and not local.fJSON:
+                if self.user is None:
+                    raise DirectResponse(HttpResponseRedirect(users.create_login_url(local.req.get_full_path())))
+                raise DirectResponse(HttpResponseRedirect(users.create_logout_url(local.req.get_full_path())))               
+
+            raise Error(self.message, self.code)
+    
+    def FAllow(self, *args):
+        # Not thread safe - uses instance variables to store last error message
         for sPerm in args:
             if sPerm not in self.mpPermit:
-                if sPerm == 'admin':
-                    if self.user is None:
-                        raise DirectResponse(HttpResponseRedirect(users.create_login_url(local.req.get_full_path())))
-                    raise DirectResponse(HttpResponseRedirect(users.create_logout_url(local.req.get_full_path())))
-                raise Error("Authorization Error (%s)" % sPerm, "Fail/Auth/%s" % sPerm)
+                self.message = "Authorization Error (%s)" % sPerm
+                self.code = "Fail/Auth/%s" % sPerm
+                self.sPermFail = sPerm
+                return False
                 
             rate = self.RateExceeded(sPerm)
             if rate is not None:
-                raise Error("Maximum request rate exceeded (%1.1f per minute - %d allowed for %s)" % (rate.RPM(), rate.rpmMax, rate.key),
-                            'Fail/Busy/%s' % sPerm)
+                self.message = "Maximum request rate exceeded (%1.1f per minute - %d allowed for %s)" % \
+                    (rate.RPM(), rate.rpmMax, rate.key)
+                self.code = 'Fail/Busy/%s' % sPerm
+                self.sPermFail = sPerm
+                return False
+
         return True
-    
-    def FAllow(self, *args):
+
         try:
             self.Require(*args)
             return True
@@ -463,7 +475,8 @@ def FinalResponse():
         'userauth': local.requser.uidSigned,
         'csrf': local.requser.uid,
         'user': local.requser.user,
-        'fAnon': local.requser.fAnon,
+        'is_anon': local.requser.fAnon,
+        'is_admin': local.requser.FAllow('admin'),
 
         'site_name': settings.sSiteName,
         'site_host': settings.sSiteHost,

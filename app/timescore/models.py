@@ -59,6 +59,11 @@ class ScoreSet(db.Model):
             obj[self.HalfName(score.hrsHalf)] = score.ScoreNow()
         return obj
     
+    def DeleteScores(self, model):
+        scores = self.ScoresForModel(model)
+        for score in scores:
+            score.delete()
+    
     @classmethod
     def HalfName(cls, hrs):
         return {hrsDay:'day', hrsWeek:'week', hrsMonth:'month', hrsYear:'year'}.get(hrs, str(hrs))

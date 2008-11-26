@@ -21,11 +21,6 @@ function Loaded()
 	Go2.AddEventFn(txtComment, "keydown", KeyDownComment);
 }
 
-function DeleteComment(sDelKey)
-{
-	Go2.DeleteComment(sDelKey);
-}
-
 function Click()
 {
 	// Call the Click function in our parent window in case we're in a Frame
@@ -80,6 +75,9 @@ window.onclick = Click;
 		<a target="_top" href="/tag/{{tag}}" title="Recently popular | {{tag}}">{{tag|escape}}</a>{% if not forloop.last %}, {% endif %}
 	{% endfor %}
 	</p>
+	{% if is_admin %}<p style="text-align:center;">
+		<input type="button" onclick="Go2.BanishId('{{map.GetId}}', '{{map.Banished}}'=='False');" value="{% if map.Banished%}Un-{% endif %}Ban"/>
+	</p>{% endif %}
 </div> <!-- info-status -->
 
 <div id="info-body">
@@ -123,7 +121,7 @@ window.onclick = Click;
     {% endif %}
     - {{ comment.dateCreated|Age }}
     {% if comment.AllowDelete %}
-    <img class="x" onclick="DeleteComment('{{comment.DelKey}}');" src="/images/x.png"/>
+    <img class="x" onclick="Go2.DeleteComment('{{comment.DelKey}}');" src="/images/x.png"/>
     {% endif %}
     </p>{% endspaceless %}
 {% endfor %}

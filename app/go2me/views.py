@@ -167,6 +167,13 @@ def Admin(req, command=None):
             logging.info('CAK')
             key = '~'.join((local.mpParams['dev'], local.mpParams['rate'], local.mpParams['exp']))
             raise Error('Signed API key: %s' % SSign('api', key), 'OK')
+        
+        if command == 'ban-id':
+            try:
+                map = Map.Lookup(local.mpParams['id'])
+                map.Ban(local.mpParams['fBan'] == 'true')
+            except:
+                raise Error("Can't ban id: %s" % local.mpParams['id'])
 
         if IsJSON():
             return HttpJSON(req, {})

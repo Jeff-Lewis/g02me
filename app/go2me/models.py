@@ -34,7 +34,7 @@ class Map(db.Model):
     viewCount = db.IntegerProperty(default=0)
     shareCount = db.IntegerProperty(default=0)
     sTags = db.TextProperty()
-    fBanish = db.BooleanProperty(default=False)
+    fBan = db.BooleanProperty(default=False)
     
     @classmethod
     def KeyFromId(cls, id):
@@ -147,7 +147,8 @@ class Map(db.Model):
     
     @classmethod
     def TopJSON(cls, tag=None):
-        return {'pages':[score.model.JSON() for score in cls.ss.Best(tag=tag) if score.ModelExists()]}
+        return {'pages':[score.model.JSON() for score in cls.ss.Best(tag=tag) \
+             if score.ModelExists() and not score.model.Banished()]}
     
     def GetId(self):
         return self.key().name()[2:]
@@ -163,7 +164,7 @@ class Map(db.Model):
         comm = Comment.Create(map=self, username=username, comment=comment, tags=tags)
         comm.put()
         self.AddTags(tags.split(','))
-        if local.requser.FAllow('score'):
+        if local.requser.FAllow('score') and not self.Banished():
             self.ss.Update(self, self.scoreComment, dt=local.dtNow, tags=self.TopTags())
         
     def CommentCount(self):
@@ -185,7 +186,7 @@ class Map(db.Model):
             self.shareCount = self.shareCount + 1
             self.put()
             
-            if local.requser.FAllow('score'):
+            if local.requser.FAllow('score') and not self.Banished():
                 self.ss.Update(self, self.scoreShare, dt=local.dtNow, tags=self.TopTags())
 
             # Overload the comment to record when a (registered user) shares a URL
@@ -197,7 +198,7 @@ class Map(db.Model):
             return
         self.viewCount = self.viewCount + 1
         self.put()
-        if local.requser.FAllow('score'):
+        if local.requser.FAllow('score') and not self.Banished():
             self.ss.Update(self, self.scoreView, dt=local.dtNow, tags=self.TopTags())
         
     def Creator(self):
@@ -220,6 +221,16 @@ class Map(db.Model):
     
     def ScoresNamed(self):
         return self.ss.ScoresNamed(self)
+    
+    def Ban(self, fBan=True):
+        self.fBan = fBan;
+        self.put()
+        if fBan:
+            self.ss.DeleteScores(self)
+    
+    def Banished(self):
+        f = self.fBan is not None and self.fBan
+        return f
     
     # Admin functions - for use in /shell or /admin ------------------
     # BUG: FindBadTagCounts does NOT WORK in shell - complains about undefined comment.tags property and
