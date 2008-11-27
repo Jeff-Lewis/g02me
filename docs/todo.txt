@@ -158,7 +158,7 @@ X Add thousands sep for counts in analytics (info, home, tags, user)
 	- Per-user setting to open all URLs in info-mode
 	- Mark as spam/adult
 - Use google safebrowsing api to warn about viewing of unsafe urls
-- User account
+! User account
   - Claim a username by signing in
   - Claim your account (provide google, twitter, or Go2.me password)
   - Require login to comment using a claimed username

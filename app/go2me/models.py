@@ -1,16 +1,13 @@
 from google.appengine.ext import db
 from google.appengine.api import memcache
-from django.shortcuts import render_to_response
 
 from util import *
 from timescore.models import ScoreSet, hrsMonth
 import settings
 
 import logging
-from sys import exc_info
 from urlparse import urlsplit
 import re
-from datetime import datetime
 import pickle
 
 class Map(db.Model):

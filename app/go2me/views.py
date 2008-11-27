@@ -4,7 +4,8 @@ from django.shortcuts import render_to_response
 from django.http import HttpResponseRedirect
 
 from util import *
-from models import *
+from models import Map, Comment, Globals
+from profile import Profile
 
 import logging
 
@@ -39,6 +40,8 @@ regUsername = re.compile(r"^[a-zA-Z0-9_\.\-]{1,20}$")
 
 def SetUsername(req):
     TrySetUsername(req, req.REQUEST.get('username', ''), True)
+    if local.requser.username == '' and local.requser.user is not None:
+        return HttpResponseRedirect(users.create_logout_url(local.req.get_full_path()))
     if IsJSON():
         return HttpJSON(req, obj={'username':local.requser.username})
     return HttpResponseRedirect('/')
@@ -49,12 +52,19 @@ def TrySetUsername(req, sUsername, fSetEmpty=False):
     
     if sUsername == local.requser.username:
         return
-
+    
     if sUsername != '' and not regUsername.match(sUsername):
         raise Error("Invalid Nickname: %s" % sUsername)
     if not req.GET.get('force', False) and Comment.FUsernameUsed(sUsername):
         raise Error("Username (%s) already in use" % sUsername, 'Fail/Used')
     local.requser.username = sUsername
+
+def Login(req):
+    import profile
+    local.requser.Require('user')
+    profile = Profile.Create()
+    profile.put()
+    return HttpResponseRedirect("/")
 
 def DoComment(req, command=None):
     local.requser.Require('api', 'write', 'comment')

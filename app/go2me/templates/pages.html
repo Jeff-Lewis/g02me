@@ -28,13 +28,16 @@ function KeyDown(evt)
 <div class="page">
 <div class="heading">
 {% if username %}
-	Welcome <a href="/user/{{username}}" title="{{username}}'s activity">{{username}}</a> |
+	Welcome <a href="/user/{{username}}" title="{{username}}'s activity">{{username}}</a>
+	{% if not profile %}
+		(<a href="/cmd/login" title="Protect your nickname by creating a Go2.me account.">Claim It</a>)
+	{% endif %} |
 	<a href="javascript:Go2.SetUsername('');">Sign out</a>
 {% else %}
 	<div id="sign-in">
 	    <label for="username">Nickname: </label>
 	    <input maxlength="20" style="width:70px;" type="text" id="username" name="username"/>
-		<input onclick="Go2.SetUsername(txtUsername.value);" style="width:70px;" type="button" value="Claim It"/>
+		<input onclick="Go2.SetUsername(txtUsername.value);" style="width:70px;" type="button" value="Set It"/>
 	</div>
 {% endif %}
 </div>

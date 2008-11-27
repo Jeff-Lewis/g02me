@@ -227,9 +227,11 @@ class ReqUser(object):
     Manage permissions for the user who is making this request.
     Looks for (and sets) cookies: userAuth and username
     
-    Built in permissions: 'read', 'admin'
+    Built in permissions: 'read', 'admin', 'user'
     """
     def __init__(self, req):
+        from go2me.profile import Profile
+        
         self.req = req
         self.fAnon = True
         self.mpRates = {}
@@ -257,6 +259,10 @@ class ReqUser(object):
         self.username = req.COOKIES.get('username', '')
         
         self.user = users.get_current_user()
+        self.profile = None
+        if self.user is not None:
+            self.Allow('user')
+            self.profile = Profile.Lookup(self.user)
         if users.is_current_user_admin():
             self.Allow('admin')
         
@@ -294,10 +300,14 @@ class ReqUser(object):
     
     def Require(self, *args):
         if not self.FAllow(*args):
-            if self.sPermFail == 'admin' and not local.fJSON:
-                if self.user is None:
+            if not local.fJSON:
+                if self.sPermFail == 'user':
                     raise DirectResponse(HttpResponseRedirect(users.create_login_url(local.req.get_full_path())))
-                raise DirectResponse(HttpResponseRedirect(users.create_logout_url(local.req.get_full_path())))               
+
+                if self.sPermFail == 'admin':
+                    if self.user is None:
+                        raise DirectResponse(HttpResponseRedirect(users.create_login_url(local.req.get_full_path())))
+                    raise DirectResponse(HttpResponseRedirect(users.create_logout_url(local.req.get_full_path())))               
 
             raise Error(self.message, self.code)
     
@@ -475,6 +485,7 @@ def FinalResponse():
         'userauth': local.requser.uidSigned,
         'csrf': local.requser.uid,
         'user': local.requser.user,
+        'profile': local.requser.profile,
         'is_anon': local.requser.fAnon,
         'is_admin': local.requser.FAllow('admin'),
 
@@ -488,6 +499,7 @@ def FinalResponse():
         'analytics_code': settings.sAnalyticsCode,
         'snapshots_code': settings.sSnapShotsCode,        
         })
+    logging.info("%r" % local.mpResponse)
     return local.mpResponse
     
 class ResponseTime(object):
