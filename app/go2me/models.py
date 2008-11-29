@@ -199,6 +199,7 @@ class Map(db.Model):
                 self.ss.Update(self, self.scoreShare, dt=local.dtNow, tags=self.TopTags())
 
             # Overload the comment to record when a (registered user) shares a URL
+            # BUG: Don't record __share if user has already shared it
             if local.requser.username != '' and local.requser.FAllow('comment'):
                 self.AddComment(username=local.requser.username, comment="__share")
         
@@ -362,8 +363,6 @@ class Comment(db.Model):
             raise Error("Empty comment")
         
         com = Comment(map=map, username=username, userAuth=userAuth, comment=comment, tags=tags, dateCreated=dateCreated)
-        if username:
-            local.requser.username = username
         return com
     
     def Delete(self):
@@ -463,7 +462,7 @@ class Comment(db.Model):
             return []
 
     def AllowDelete(self):
-        return self.username == '' or self.username == local.requser.username
+        return self.username == '' or self.username == local.requser.username or local.requser.FAllow('admin')
     
     def DelKey(self):
         s = SSign('dk', self.key().id())

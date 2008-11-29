@@ -36,34 +36,24 @@ def Lookup(req):
         return HttpJSON(req, obj=map.JSON())
     return HttpResponseRedirect("/%s" % map.GetId())
 
-regUsername = re.compile(r"^[a-zA-Z0-9_\.\-]{1,20}$")
-
 def SetUsername(req):
-    TrySetUsername(req, req.REQUEST.get('username', ''), True)
-    if local.requser.username == '' and local.requser.user is not None:
+    try:
+        local.requser.SetOpenUsername(req.REQUEST.get('username', ''), fForce=req.GET.get('force', False))
+    except Error, e:
+        if e.obj['status'] == 'Fail/Auth/Used':
+            local.requser.Require('user')
+        else:
+            raise e
+
+    # Setting to '' is a log-out command - be sure to clear the Google Login too
+    if local.requser.username == '' and local.requser.profile is not None:
         return HttpResponseRedirect(users.create_logout_url(local.req.get_full_path()))
     if IsJSON():
         return HttpJSON(req, obj={'username':local.requser.username})
     return HttpResponseRedirect('/')
 
-def TrySetUsername(req, sUsername, fSetEmpty=False):
-    if sUsername == '' and not fSetEmpty:
-        return;
-    
-    if sUsername == local.requser.username:
-        return
-    
-    if sUsername != '' and not regUsername.match(sUsername):
-        raise Error("Invalid Nickname: %s" % sUsername)
-    if not req.GET.get('force', False) and Comment.FUsernameUsed(sUsername):
-        raise Error("Username (%s) already in use" % sUsername, 'Fail/Used')
-    local.requser.username = sUsername
-
 def Login(req):
-    import profile
     local.requser.Require('user')
-    profile = Profile.Create()
-    profile.put()
     return HttpResponseRedirect("/")
 
 def DoComment(req, command=None):
@@ -90,7 +80,7 @@ def DoComment(req, command=None):
         
         parts = Comment.Parse(local.mpParams.get('username', ''), local.mpParams.get('comment', ''))
         
-        TrySetUsername(req, parts['username'])
+        local.requser.SetOpenUsername(parts['username'], fSetEmpty=False, fForce=req.GET.get('force', False))
         
         map.AddComment(username=local.requser.username, comment=parts['comment'], tags=parts['tags'])
 
@@ -127,6 +117,9 @@ def UserView(req, username):
     comments = Comment.ForUser(username)
     AddToResponse({'usernamePage':username, 'comments':comments})
     return render_to_response('user.html', FinalResponse())
+
+def UserProfile(req):
+    raise Error("NYI")
 
 def TagView(req, tag):
     if IsJSON():

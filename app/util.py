@@ -222,6 +222,8 @@ def IsJSON():
 # - Virtual session state (cookie based)
 # --------------------------------------------------------------------
 
+from go2me.profile import Profile
+
 class ReqUser(object):
     """
     Manage permissions for the user who is making this request.
@@ -229,13 +231,14 @@ class ReqUser(object):
     
     Built in permissions: 'read', 'admin', 'user'
     """
+
     def __init__(self, req):
-        from go2me.profile import Profile
         
         self.req = req
         self.fAnon = True
         self.mpRates = {}
         self.username = ''
+        self.profile = None
         
         # Nothing allowed by default!
         self.mpPermit = set()
@@ -256,16 +259,29 @@ class ReqUser(object):
 
         self.Allow('read')
         
-        self.username = req.COOKIES.get('username', '')
+        # If we have lost Google Auth - see if we have the longer lived
+        # signin cookie instead.
+        user = users.get_current_user()
+        if user:
+            self.profile = Profile.FindOrCreate(user, self.username)
+        else:
+            try:
+                sSignin = req.COOKIES['signin']
+                self.username = SGetSigned('signin', sSignin)
+                self.profile = Profile.Lookup(self.username)
+            except: pass
         
-        self.user = users.get_current_user()
-        self.profile = None
-        if self.user is not None:
+        if not self.profile:    
+            try:
+                self.SetOpenUsername(req.COOKIES.get('username', ''), fForce=True)
+            except: pass
+
+        if self.profile and not self.profile.fBanned:
             self.Allow('user')
-            self.profile = Profile.Lookup(self.user)
-        if users.is_current_user_admin():
-            self.Allow('admin')
-        
+            self.username = self.profile.username
+            if self.profile.fAdmin or users.is_current_user_admin():
+                self.Allow('admin')
+            
     def SetMaxRate(self, sName, sScope=None, rpm=None):
         # Set the maximum request rate (per minute) for a given activity
         # If mulitple calls are made, the last set rate applies.
@@ -297,15 +313,16 @@ class ReqUser(object):
     def Allow(self, *args):
         for sPerm in args:
             self.mpPermit.add(sPerm)
+            
+    def Disallow(self, *args):
+        for sPerm in args:
+            self.mpPermit.discard(sPerm)
     
     def Require(self, *args):
         if not self.FAllow(*args):
             if not local.fJSON:
-                if self.sPermFail == 'user':
-                    raise DirectResponse(HttpResponseRedirect(users.create_login_url(local.req.get_full_path())))
-
-                if self.sPermFail == 'admin':
-                    if self.user is None:
+                if self.sPermFail in ['user', 'admin']:
+                    if self.profile is None or self.profile.fBanned:
                         raise DirectResponse(HttpResponseRedirect(users.create_login_url(local.req.get_full_path())))
                     raise DirectResponse(HttpResponseRedirect(users.create_logout_url(local.req.get_full_path())))               
 
@@ -357,6 +374,26 @@ class ReqUser(object):
         return {'userAuth': self.uidSigned,
                 'username': self.username,
                 }
+        
+    def SetOpenUsername(self, username, fSetEmpty=True, fForce=False):
+        # Will only set username that is "available" (not used in an unbanned Profile, and will only allow
+        # setting of names already used in comments if fForce is True
+        if username == '':
+            if not fSetEmpty:
+                return;
+            self.username = username;
+        
+        if username == self.username:
+            return
+        
+        Profile.RequireValidUsername(username)
+
+        profile = Profile.Lookup(username)
+        if (profile and not profile.fBanned) or \
+            (not fForce and Comment.FUsernameUsed(username)):
+            raise Error("Username (%s) already in use" % username, 'Fail/Auth/Used')
+
+        self.username = username        
 
 class MemRate(object):
     def __init__(self, key, rpmMax=None):
@@ -484,7 +521,6 @@ def FinalResponse():
         'username': local.requser.username,
         'userauth': local.requser.uidSigned,
         'csrf': local.requser.uid,
-        'user': local.requser.user,
         'profile': local.requser.profile,
         'is_anon': local.requser.fAnon,
         'is_admin': local.requser.FAllow('admin'),
@@ -499,7 +535,6 @@ def FinalResponse():
         'analytics_code': settings.sAnalyticsCode,
         'snapshots_code': settings.sSnapShotsCode,        
         })
-    logging.info("%r" % local.mpResponse)
     return local.mpResponse
     
 class ResponseTime(object):

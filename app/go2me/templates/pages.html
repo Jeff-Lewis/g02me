@@ -29,8 +29,10 @@ function KeyDown(evt)
 <div class="heading">
 {% if username %}
 	Welcome <a href="/user/{{username}}" title="{{username}}'s activity">{{username}}</a>
-	{% if not profile %}
-		(<a href="/cmd/login" title="Protect your nickname by creating a Go2.me account.">Claim It</a>)
+	{% if profile %}
+		(<a href="/profile" title="{{username}}'s profile">Profile</a>)
+	{% else %}
+		(<a href="/cmd/login" title="You nickname is temporary until you create a (free) account.">Keep It</a>)
 	{% endif %} |
 	<a href="javascript:Go2.SetUsername('');">Sign out</a>
 {% else %}
