@@ -45,12 +45,12 @@ class Profile(db.Model):
     fBan = db.BooleanProperty(default=False)
     
     @staticmethod
-    def FindOrCreate(user, username):
+    def FindOrCreate(user, username, userid):
         # First try lookup by username (and create if not taken)
         profile = None
         if username:
             Profile.RequireValidUsername(username)
-            profile = Profile.get_or_insert(key_name='U:' + username, user=user, username=username, userAuthFirst=local.requser.UserId(),
+            profile = Profile.get_or_insert(key_name='U:' + username, user=user, username=username, userAuthFirst=userid,
                       dateCreated=local.dtNow)
 
         if not profile or profile.user != user:

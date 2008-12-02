@@ -34,9 +34,13 @@ SetUsername: function(sUsername)
 			// Refresh the page to reset the display for the new server-set cookie
 			window.location.href = window.location.href;
 			break;
-		case 'Fail/Used':
+		case 'Fail/Auth/Used':
 			if (confirm("The nickname, " + sUsername + ", is already in use.  Are you sure you want to use it?"))
 				sd.Call({username:sUsername, force:true}, SUCallback);
+			break;
+		case 'Fail/Auth/user':
+			if (confirm("The nickname, " + sUsername + ", is already in use and requires a login.  Are you sure you want to use it?"))
+				window.location.href = obj.urlLogin;
 			break;
 		default:
 			alert(Go2.sSiteName + ": " + obj.message);

@@ -329,3 +329,4 @@ X Require that domains have a . in them to be valid (no intranet domains)
 X Embedded links in comments need to target _top
 X Uneven margins in safari and Chrome.
 X Chrome table extends beyond the bounds of the page
+- Usernames are case sensitive

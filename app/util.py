@@ -189,7 +189,7 @@ class ReqFilter(object):
         except: pass
 
         for name in local.cookies:
-            if local.cookies[name] != '':
+            if local.cookies[name]:
                 resp.set_cookie(name, local.cookies[name], max_age=60*60*24*30)
             else:
                 resp.delete_cookie(name)
@@ -222,8 +222,6 @@ def IsJSON():
 # - Virtual session state (cookie based)
 # --------------------------------------------------------------------
 
-from go2me.profile import Profile
-
 class ReqUser(object):
     """
     Manage permissions for the user who is making this request.
@@ -233,7 +231,8 @@ class ReqUser(object):
     """
 
     def __init__(self, req):
-        
+        from go2me.profile import Profile        
+
         self.req = req
         self.fAnon = True
         self.mpRates = {}
@@ -263,7 +262,7 @@ class ReqUser(object):
         # signin cookie instead.
         user = users.get_current_user()
         if user:
-            self.profile = Profile.FindOrCreate(user, self.username)
+            self.profile = Profile.FindOrCreate(user, req.COOKIES.get('username', ''), self.UserId())
         else:
             try:
                 sSignin = req.COOKIES['signin']
@@ -326,6 +325,8 @@ class ReqUser(object):
                         raise DirectResponse(HttpResponseRedirect(users.create_login_url(local.req.get_full_path())))
                     raise DirectResponse(HttpResponseRedirect(users.create_logout_url(local.req.get_full_path())))               
 
+            if self.sPermFail in ['user', 'admin']:
+                raise Error(self.message, self.code, {'urlLogin': users.create_login_url('/')})
             raise Error(self.message, self.code)
     
     def FAllow(self, *args):
@@ -373,11 +374,14 @@ class ReqUser(object):
     def UserCookies(self):
         return {'userAuth': self.uidSigned,
                 'username': self.username,
+                'signin': self.profile and SSign('signin', self.profile.username)
                 }
         
     def SetOpenUsername(self, username, fSetEmpty=True, fForce=False):
         # Will only set username that is "available" (not used in an unbanned Profile, and will only allow
         # setting of names already used in comments if fForce is True
+        from go2me.models import Comment
+        from go2me.profile import Profile
         if username == '':
             if not fSetEmpty:
                 return;
@@ -389,8 +393,13 @@ class ReqUser(object):
         Profile.RequireValidUsername(username)
 
         profile = Profile.Lookup(username)
-        if (profile and not profile.fBanned) or \
-            (not fForce and Comment.FUsernameUsed(username)):
+        if (profile and not profile.fBanned):
+            if IsJSON():
+                raise Error("Username (%s) requires login" % username, 'Fail/Auth/user',
+                    {'urlLogin': users.create_login_url('/')})
+            self.Require('user')
+
+        if not fForce and Comment.FUsernameUsed(username):
             raise Error("Username (%s) already in use" % username, 'Fail/Auth/Used')
 
         self.username = username        

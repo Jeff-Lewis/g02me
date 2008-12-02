@@ -37,23 +37,20 @@ def Lookup(req):
     return HttpResponseRedirect("/%s" % map.GetId())
 
 def SetUsername(req):
-    try:
-        local.requser.SetOpenUsername(req.REQUEST.get('username', ''), fForce=req.GET.get('force', False))
-    except Error, e:
-        if e.obj['status'] == 'Fail/Auth/Used':
-            local.requser.Require('user')
-        else:
-            raise e
+    local.requser.SetOpenUsername(req.REQUEST.get('username', ''), fForce=req.GET.get('force', False))
 
     # Setting to '' is a log-out command - be sure to clear the Google Login too
     if local.requser.username == '' and local.requser.profile is not None:
+        local.requser.profile = None
         return HttpResponseRedirect(users.create_logout_url(local.req.get_full_path()))
     if IsJSON():
         return HttpJSON(req, obj={'username':local.requser.username})
     return HttpResponseRedirect('/')
 
 def Login(req):
+    logging.info("Login")
     local.requser.Require('user')
+    logging.info("Login has user")
     return HttpResponseRedirect("/")
 
 def DoComment(req, command=None):
