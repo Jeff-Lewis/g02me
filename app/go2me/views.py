@@ -1,11 +1,12 @@
 from google.appengine.ext import db
 from google.appengine.api import users, memcache
+
 from django.shortcuts import render_to_response
 from django.http import HttpResponseRedirect
 
 from util import *
 from models import Map, Comment, Globals
-from profile import Profile
+import profile
 
 import logging
 
@@ -116,7 +117,15 @@ def UserView(req, username):
     return render_to_response('user.html', FinalResponse())
 
 def UserProfile(req):
-    raise Error("NYI")
+    local.requser.Require('user')
+    if local.req.method == 'POST':
+        local.requser.Require('post')
+        if local.requser.profile.FForm(local.mpParams):
+            return HttpResponseRedirect('/')
+    else:
+        AddToResponse(local.requser.profile.GetFormVars())
+
+    return render_to_response('profile.html', FinalResponse())
 
 def TagView(req, tag):
     if IsJSON():

@@ -36,6 +36,12 @@ color: #CDAC6D;
 margin: 0 0 3px 0;
 }
 
+p.error {
+font-style: italic;
+color: red;
+text-align:center;
+}
+
 p.url {
 font-size: 10px;
 white-space: nowrap;

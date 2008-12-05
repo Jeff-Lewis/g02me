@@ -24,7 +24,7 @@ indexes:
   - name: dateCreated
     direction: desc
 
-# Used 17 times in query history.
+# Used 26 times in query history.
 - kind: Score
   properties:
   - name: hrsHalf

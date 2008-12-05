@@ -1,6 +1,8 @@
 from google.appengine.ext import db
 from google.appengine.api import memcache
 
+from django import forms
+
 from util import *
 from timescore.models import ScoreSet, hrsMonth, hrsWeek
 import settings
@@ -16,6 +18,11 @@ class Profile(db.Model):
     """
     ss = ScoreSet.GetSet("karma", [hrsWeek, hrsMonth])
     regUsername = re.compile(r"^[a-zA-Z0-9_\.\-]{1,20}$")
+    mpFormFields = {'username':'username',
+                    'birth':'dateBirth',
+                    'home':'urlHome',
+                    'loc':'sLocation',
+                    'about':'sAbout'}
     
     # Account identifiers
     user = db.UserProperty(required=True)               # Google account
@@ -33,14 +40,11 @@ class Profile(db.Model):
     # Personal/profile information
     dateBirth = db.DateProperty()
     sLocation = db.StringProperty()
-    sCity = db.StringProperty()
-    sState = db.StringProperty()
-    sCountry = db.StringProperty()
     urlHome = db.StringProperty()
     sAbout = db.StringProperty()
+    img = db.BlobProperty()
     shareCount = db.IntegerProperty(default=0)
     commentCount = db.IntegerProperty(default=0)
-    sTags = db.TextProperty()
 
     fBan = db.BooleanProperty(default=False)
     
@@ -68,3 +72,20 @@ class Profile(db.Model):
         if not Profile.regUsername.match(username):
             raise Error("Invalid nickname: %s" % username, 'Fail/Auth')
 
+    def GetFormVars(self):
+        vars = {}
+        for field in self.mpFormFields:
+            vars[field] = getattr(self, self.mpFormFields[field])
+        return vars 
+    
+    def FForm(self, mpForm):
+        # TODO: Since we're not on Django 1.0 - can't use the nifty forms package.
+        for field in self.mpFormFields:
+            if field in mpForm:
+                logging.info("setting %s to %s", self.mpFormFields[field], mpForm[field])
+                setattr(self, self.mpFormFields[field], mpForm[field])
+        self.put()
+        AddToResponse({'error_message': "NYI"})
+        return True
+    
+    
