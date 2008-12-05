@@ -39,7 +39,7 @@ SetUsername: function(sUsername)
 				sd.Call({username:sUsername, force:true}, SUCallback);
 			break;
 		case 'Fail/Auth/user':
-			if (confirm("The nickname, " + sUsername + ", is already in use and requires a login.  Are you sure you want to use it?"))
+			if (confirm("The nickname, " + sUsername + ", is already in use and requires a login.  Do you want to log in now?"))
 				window.location.href = obj.urlLogin;
 			break;
 		default:

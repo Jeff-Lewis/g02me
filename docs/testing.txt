@@ -1,0 +1,54 @@
+Manual Test Cases (not covered in Unit Tests)
+
+Requirements
+- One-to-one correspondence with account and a single user name (or username initially unassigned)
+
+Test Matrix
+  
+username, account, matched
+1. new, new, N/A -> Create new
+2. new, old, N/A -> Switch to Google Account
+3. old, new, N/A -> Ignore username - prompt for username in profile
+4. old, old, True -> Regular login
+5. old, old, False -> Ignore username, use account  
+
+1. New username and new Google Account
+
+- Sign Out (no nickname)
+- Use nickname, mckoss
+  -> (Create Account)
+- Create Account/mike@mckoss.com
+  -> ProfilePage/username non-editable [!]
+  - Fill out profile/OK
+  	-> Home page (Profile link)
+- Sign Out
+  -> Blank username, no cookies
+  
+4. Existing username and corresponding Google Account
+
+- Use nickname, mckoss
+  -> requires login -> Cancel, OK
+- Sign in, mike@mckoss.com
+  -> (Profile link available)
+- Sign Out
+
+3. Reuse username, but unattached Google Account
+
+- Use nickname, mckoss (OK)
+- Sign in, mike2@mckoss.com (no nickname)
+  -> Profile page w editable username [!]
+  -> Set username to mckoss2
+- Sign Out
+
+5. Reuse username, but switch to attached Google Account
+
+- Use nickname, mckoss
+- Sign in as mike2@mckoss.com
+  -> Home page as mckoss2
+- Sign Out
+
+2. New username switch to existing Google Account
+
+- Use nickname, mckoss3
+- Sign in as mike@mckoss.com
+  -> Home page as mckoss

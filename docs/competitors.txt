@@ -1,0 +1,39 @@
+Competitive Analysis
+
+- Feature list
+- Popularity (Alexa, Compete, Quantcast)
+- Total # of URL's to date
+
+http://trends.google.com/websites?q=is.gd%2C+bit.ly%2C+snipurl.com&geo=all&date=all&sort=0
+http://trends.google.com/websites?q=is.gd%2C+bit.ly%2C+tr.im%2C+budurl.com%2C+snurl.com&geo=all&date=all&sort=0
+
+List of URL Shortening services:
+
+- tinyurl.com (URLS=100M, 1.5B clicks/month, Alexa=797)
+- snipurl.com/snurl.com (URLS=14M, 1.5M users, 84K reg users, Alexa=10,058)
+- bit.ly (URLS=, Alexa=16,978)
+  - Post to twitter
+  - GMail Gadget
+- is.gd (URLS=2M, Alexa=29K)
+- budurl.com (Alexa=75K)
+- tr.im (Alexa 113K)
+
+- Go2.me (URLS=500, Alexa=650K)
+
+
+- eweri
+- hex.io
+- idek.net
+- lin.cr
+- poprl
+- twurl
+- urlBorg
+- zima
+- ff.im
+- short.to
+
+URL Shortening Service Clients
+
+- TweetDeck.com
+- Twhirl.org
+- Twitter.com

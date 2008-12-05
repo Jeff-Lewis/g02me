@@ -101,6 +101,11 @@ X Add thousands sep for counts in analytics (info, home, tags, user)
   - Tag aliases
   - Tag rollup (aggregrate tags)
 ! Delete comment from user page (including shared)
+- Fun tag animation (relative positioning)
+  - Home page tag clouds:
+  - Tags
+  - Users
+  - Domains
   
 ------------------------------------------------------------
         PLATFORMS, SYNDICATION, IMPORT/EXPORT
