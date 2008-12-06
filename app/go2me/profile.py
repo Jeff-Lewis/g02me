@@ -11,6 +11,7 @@ import logging
 from urlparse import urlsplit
 import re
 import pickle
+import datetime
 
 class Profile(db.Model):
     """
@@ -18,6 +19,7 @@ class Profile(db.Model):
     """
     ss = ScoreSet.GetSet("karma", [hrsWeek, hrsMonth])
     regUsername = re.compile(r"^[a-zA-Z0-9_\.\-]{1,20}$")
+    regDate = re.compile(r"^\s*(\d{1,2})\s*/\s*(\d{1,2})\s*/\s*(\d{1,2})\s*$")
     mpFormFields = {'username':'username',
                     'birth':'dateBirth',
                     'home':'urlHome',
@@ -33,15 +35,17 @@ class Profile(db.Model):
     passTwitterCipher = db.StringProperty()             # E(key, passPlain)
     keyFriendFeed = db.StringProperty()                 # API Key for Friendfeed
     userAuthFirst = db.StringProperty()                 # Initial auth token for the creating user
+    
+    username.foobar = 1
 
     fBanned = db.BooleanProperty(default=False)
     fAdmin = db.BooleanProperty(default=False)
     
     # Personal/profile information
     dateBirth = db.DateProperty()
-    sLocation = db.StringProperty()
-    urlHome = db.StringProperty()
-    sAbout = db.StringProperty()
+    sLocation = db.StringProperty(default='')
+    urlHome = db.StringProperty(default='')
+    sAbout = db.StringProperty(default='')
     img = db.BlobProperty()
     shareCount = db.IntegerProperty(default=0)
     commentCount = db.IntegerProperty(default=0)
@@ -72,20 +76,35 @@ class Profile(db.Model):
         if not Profile.regUsername.match(username):
             raise Error("Invalid nickname: %s" % username, 'Fail/Auth')
 
-    def GetFormVars(self):
-        vars = {}
-        for field in self.mpFormFields:
-            vars[field] = getattr(self, self.mpFormFields[field])
-        return vars 
-    
     def FForm(self, mpForm):
         # TODO: Since we're not on Django 1.0 - can't use the nifty forms package.
-        for field in self.mpFormFields:
-            if field in mpForm:
-                logging.info("setting %s to %s", self.mpFormFields[field], mpForm[field])
-                setattr(self, self.mpFormFields[field], mpForm[field])
-        self.put()
-        AddToResponse({'error_message': "NYI"})
-        return True
+        try:
+            if not self.username:
+                sUser = mpForm['username'].strip()
+                if not self.regUsername.match(sUser):
+                    raise Error("Invalid username: %s" % sUser)
+                self.username = mpForm.get('username', '')
+
+            if mpForm.get('birth'):
+                parts = self.regDate.match(mpForm['birth'])
+                if not parts:
+                    raise Error("Please enter a valid date (m/d/y)")
+                yr = int(parts.group(3))
+                if yr < 100:
+                    yr += 1900;
+                self.dateBirth = datetime.date(yr, int(parts.group(1)), int(parts.group(2)))
+            
+            self.sLocation = mpForm.get('loc', '')
+            
+            if mpForm.get('home'):
+                pass
+            self.put()
+            return True
+        except Error, e:
+            logging.info("error %r" % e.obj['message'])
+            AddToResponse({'error_message': e.obj['message']})
+        except:
+            AddToResponse({'error_message': "Application Error"})
+        return False
     
     

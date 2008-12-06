@@ -427,6 +427,225 @@ Go2.ScriptData.Cancel = function(rid)
 		}
 };
 
+Go2.optionsProfile = {
+	focus: "user",
+	enter: "save",
+	message: "message",
+	fields: {
+		message:{hidden: true, value:"", type: 'message'},
+		username:{label: "Nickname", type: 'text', required:true},
+		comments:{label: "Page Comments", type: 'note'}
+		},
+	fieldsBottom: {
+		captcha:{type: "captcha", required:true, labelShort:"Proof of Humanity"},
+		tos:{label: 'I agree to the <a tabindex="-1" href="/terms-of-service">Terms of Service</a>',
+			type: "checkbox", required:true, labelShort:"Terms of Service"}
+		},
+	buttons: {
+		save:{label: "Save", type: 'button'}
+		}
+	};
+
+// Javascript Form
+// Usage:
+// var db = new Go2.JSForm(divForm);
+// db.Init({title:,fields:,fieldsBottom:,buttons:}, fnCallback);
+// -> fnCallback(options) (fields have .value properties added)
+	
+Go2.JSForm = function(divForm)
+{
+	this.divForm = divForm;
+};
+
+Go2.JSForm.prototype = {
+	constructor: Go2.JSForm,
+	tokens: {
+		required: " is required.",
+		idPre: "_JF"
+		},
+	errors: [],
+
+	htmlPatterns: {
+		title: '<h1>{title}</h1>',
+		text: '<label for="_JF{n}">{label}:</label><input id="_JF{n}" type="text" value="{value}"/>',
+		password: '<label>{label}:</label><input id="_JF{n}" type="password"/>',
+		checkbox: '<label class="checkbox" for="_JF{n}"><input id="_JF{n}" type="checkbox"/>{label}</label>',
+		note: '<label>{label}:</label><textarea id="_JF{n}" rows="5">{value}</textarea>',
+		captcha: '<label>What does {q} =<input id="_JF{n}" type="text"/></label>',
+		message: '<span id="_JF{n}">{value}</span>',
+		button: '<input type="button" value="{label}" onclick="Go2.JSForm.ButtonClick(\'{name}\');"/>'
+		},
+
+Init: function (options)
+	{
+	if (this.fShow)
+		throw Error("Cannot re-initialize dialog box while modal dialog dispayed.");
+
+	this.options = {};
+	Go2.ExtendCopy(this.options, this.optionsDefault, options);
+	this.ifld = 0;
+
+	this.InitDiv(this.divTop, [{type: 'title', title:this.options.title}]); 
+	this.InitDiv(this.divMiddle, this.options.fields);
+	this.InitDiv(this.divBottom, this.options.fieldsBottom);
+	this.InitDiv(this.divButtons, this.options.buttons);
+	console.log(this.divClip.innerHTML);
+	
+	this.InitFields(this.options.fields);
+	this.InitFields(this.options.fieldsBottom);
+	
+	this.ResizeBox(true);
+	},
+	
+//Size the Middle section to fit the elements within it
+ResizeBox: function(fHidden)
+	{
+	if (fHidden)
+		{
+		this.divClip.style.visibility = "hidden";
+		this.divClip.style.display = "block";
+		}
+	var elt = this.divMiddle.lastChild;
+	var ptMid = Go2.DOM.PtClient(this.divMiddle);
+	var ptElt = Go2.DOM.PtClient(elt);
+	this.dyMiddle = ptElt[1] - ptMid[1] + elt.offsetHeight + 4;
+	this.divMiddle.style.height = this.dyMiddle + "px";
+	if (fHidden)
+		{
+		this.divClip.style.display = "none";
+		this.divClip.style.visibility = "visible";
+		}
+	},
+
+//Additional field initialization after building HTML for the form	
+InitFields: function(fields)
+	{
+	for (var prop in fields)
+		{
+		var fld = this.GetField(prop);
+		
+		// Hide any "hidden" fields
+		if (fld.hidden)
+			fld.elt.style.display = "none";
+		}
+	},
+	
+InitDiv: function(div, fields, fResize)
+	{
+	var stb = new Go2.StBuf();
+	for (var prop in fields)
+		{
+		var fld = fields[prop];
+		fld.n = this.ifld++;
+		var keys = {q:"2+2", name:prop};
+		Go2.Extend(keys, fld);
+		stb.Append(Go2.ReplaceKeys(this.htmlPatterns[fld.type], keys));
+		}
+	div.innerHTML = stb.toString();
+	},
+	
+FieldError: function(fld, stError)
+	{
+	this.errors.push({fld:fld, error:stError});
+	},
+	
+ExtractValues: function(fields)
+	{
+	for (var prop in fields)
+		{
+		var fld = this.GetField(prop);
+		if (!fld.elt)
+			continue;
+
+		switch (fld.elt.tagName.toLowerCase())
+			{
+		case "input":
+			if (fld.elt.type == "checkbox")
+				{
+				fld.value = fld.elt.checked;
+				if (fld.required && !fld.value)
+					this.FieldError(fld, (fld.labelShort || fld.label) + this.tokens.required);
+				}
+			else
+				{
+				fld.value = fld.elt.value.Trim();
+				if (fld.required && fld.value.length == 0)
+					this.FieldError(fld, (fld.labelShort || fld.label) + this.tokens.required);
+				}
+			break;
+		case "textarea":
+			fld.value = fld.elt.value.Trim();
+			break;
+			}
+		}
+	},
+	
+ButtonClick: function(stButton)
+	{
+	this.errors = [];
+	this.ExtractValues(this.options.fields);
+	this.ExtractValues(this.options.fieldsBottom);
+
+	if (this.errors.length > 0)
+		{
+		if (this.options.message)
+			{
+			var fld = this.GetField(this.options.message);
+			fld.elt.firstChild.nodeValue = this.errors[0].error;
+			fld.elt.style.display = "block";
+			}
+		else
+			alert(this.errors[0].error);
+		this.errors[0].fld.elt.focus();
+		this.errors[0].fld.elt.select();
+		this.ResizeBox();
+		return;
+		}
+		
+	if (this.fnCallback)
+		{
+		var fields = {button:stButton};
+		Go2.Extend(fields, this.options.fields, this.options.fieldsBottom);
+		this.fnCallback(fields);
+		}
+	this.Show(false);
+	},
+	
+GetField: function(stName)
+	{
+	var fld = this.options.fields[stName];
+	if (!fld)
+		fld = this.options.fieldsBottom[stName];
+	if (fld)
+		fld.elt = document.getElementById(this.tokens.idPre + fld.n);
+	return fld;
+	},
+
+Focus: function(evt)
+	{
+	this.hasFocus = evt.target;
+	},
+	
+KeyDown: function(evt)
+	{
+	if (evt.keyCode == 27)
+		{
+		this.Show(false);
+		evt.preventDefault();
+		}
+	
+	// Hit the OK button on Enter - unless we have a textarea selected	
+	if (evt.keyCode == 13 && this.options.enter &&
+		this.hasFocus && this.hasFocus.tagName.toLowerCase() != "textarea")
+		{
+		this.ButtonClick(this.options.enter);
+		evt.preventDefault();
+		}
+		
+	}
+};
+
+
 // Some extensions to built-it JavaScript objects (sorry!)
 
 Function.prototype.FnMethod = function(obj)

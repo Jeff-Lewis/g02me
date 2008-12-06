@@ -122,8 +122,6 @@ def UserProfile(req):
         local.requser.Require('post')
         if local.requser.profile.FForm(local.mpParams):
             return HttpResponseRedirect('/')
-    else:
-        AddToResponse(local.requser.profile.GetFormVars())
 
     return render_to_response('profile.html', FinalResponse())
 

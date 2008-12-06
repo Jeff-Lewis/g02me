@@ -2,6 +2,56 @@
 {% load humanize %}
 {% load custom %}
 {% block subTitle %}{{username}}'s profile{% endblock %}
+
+{% block script %}
+Go2.SetCSRF("{{csrf}}");
+
+var formProfile;
+
+function Loaded()
+{
+	txtUsername = document.getElementById("username")
+	if (txtUsername)
+		Go2.AddEventFn(txtUsername, "keydown", KeyDownUsername);
+
+	txtComment = document.getElementById("comment");
+	txtComment.focus();
+	Go2.AddEventFn(txtComment, "keydown", KeyDownComment);
+}
+
+function Click()
+{
+	// Call the Click function in our parent window in case we're in a Frame
+	if (window.parent && window.parent.Go2MeParentClick != undefined)
+		window.parent.Go2MeParentClick();
+}
+
+function PostComment()
+{
+	Go2.PostComment("{{map.GetId}}", txtUsername ? txtUsername.value : '', txtComment.value);
+}
+
+function KeyDownUsername(evt)
+{
+	if (evt.keyCode == 13)
+		{
+		txtComment.focus();
+		evt.preventDefault();
+		}
+}	
+
+function KeyDownComment(evt)
+{
+	if (evt.keyCode == 13)
+		{
+		PostComment();
+		evt.preventDefault();
+		}
+}
+
+window.onclick = Click;
+{% endblock %}
+
 {% block pagebody %}
 <div class="page">
 <div class="head">
@@ -11,22 +61,31 @@
 </div>
 
 {% if error_message %}
-<p class="error">{{error_message}}</p>
+<p class="error">{{error_message}}.</p>
 {% endif %}
 
 <form action="/profile" method="POST">
 <input type="hidden" name="csrf" value="{{csrf}}"/>
 <table>
 	<tr>
-		<th><label for="dev">Nickname:</label></th>
+		<th><label for="username">Nickname:</label></th>
 		<td>
 		{% if not profile.username %}
 			<input type="text" id="username" name="username" value=""/>
 		{% else %}
 			{{ profile.username }}
 		{% endif %}
-		</td></tr>
-	<tr><th><label for="loc">Location:</label></th><td><input type="text" id="loc" name="loc" value="{{profile.location|escape}}"/></td></tr>
+		</td>
+	</tr>
+	<tr><th><label for="loc">Location:</label></th>
+		<td><input type="text" id="loc" name="loc" value="{{profile.sLocation|escape}}"/></td></tr>
+	<tr><th><label for="birth">Birthdate:</label></th>
+		<td><input type="text" id="birth" name="birth" value="{{profile.dateBirth|date:"n/j/Y"}}"/></td></tr>
+	<tr><th><label for="home">Home Page:</label></th>
+		<td><input type="text" id="home" name="home" value="{{profile.urlHome|escape}}"/></td></tr>
+	<tr><th><label for="about">Home Page:</label></th>
+		<td><textarea id="about" name="about" value="{{profile.sAbout|escape}}"></textarea></td></tr>
+
 	<tr><th></th><td><input type="submit" value="Save"/></td></tr>
 </table>
 </form>
