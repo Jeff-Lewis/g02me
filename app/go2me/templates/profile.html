@@ -50,7 +50,7 @@ window.onclick = Click;
 	<tr><th><label for="sLocation">Location:</label></th>
 		<td><input type="text" id="sLocation" name="sLocation" value="{{profileForm.sLocation|escape}}"/></td></tr>
 	<tr><th><label for="dateBirth">Birthdate:</label></th>
-		<td><input type="text" id="dateBirth" name="dateBirth" value="{{profileForm.dateBirth|date:"n/j/Y"}}"/></td></tr>
+		<td><input type="text" id="dateBirth" name="dateBirth" value="{{profileForm.dateBirth|escape}}"/></td></tr>
 	<tr><th><label for="urlHome">Home Page:</label></th>
 		<td><input type="text" id="urlHome" name="urlHome" value="{{profileForm.urlHome|escape}}"/></td></tr>
 	<tr><th><label for="sAbout">About me:</label></th>

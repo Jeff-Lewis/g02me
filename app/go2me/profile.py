@@ -19,7 +19,7 @@ class Profile(db.Model):
     """
     ss = ScoreSet.GetSet("karma", [hrsWeek, hrsMonth])
     regUsername = re.compile(r"^[a-zA-Z0-9_\.\-]{1,20}$")
-    regDate = re.compile(r"^\s*(\d{1,2})\s*/\s*(\d{1,2})\s*/\s*(\d{1,2})\s*$")
+    regDate = re.compile(r"^\s*(\d{1,2})\s*/\s*(\d{1,2})\s*/\s*(\d{2}|\d{4})\s*$")
     
     # Account identifiers
     user = db.UserProperty(required=True)               # Google account
@@ -40,7 +40,7 @@ class Profile(db.Model):
     dateBirth = db.DateProperty()
     sLocation = db.StringProperty(default='')
     urlHome = db.StringProperty(default='')
-    sAbout = db.StringProperty(default='')
+    sAbout = db.TextProperty(default='')
     img = db.BlobProperty()
     shareCount = db.IntegerProperty(default=0)
     commentCount = db.IntegerProperty(default=0)
@@ -70,8 +70,19 @@ class Profile(db.Model):
     def RequireValidUsername(username):
         if not Profile.regUsername.match(username):
             raise Error("Invalid nickname: %s" % username, 'Fail/Auth')
+        
+    def GetForm(self):
+        mpForm = {
+            'username': self.username,
+            'dateBirth': (self.dateBirth and self.dateBirth.strftime("%m/%d/%Y")) or '',
+            'sLocation': self.sLocation,
+            'sAbout': self.sAbout,
+            'urlHome': self.urlHome
+            }
+        logging.info("Form: %r" % mpForm)
+        return mpForm
 
-    def FForm(self, mpForm):
+    def SetForm(self, mpForm):
         # TODO: Since we're not on Django 1.0 - can't use the nifty forms package.
         try:
             if not self.username:
@@ -82,20 +93,20 @@ class Profile(db.Model):
             else:
                 mpForm['username'] = self.username
 
-            if mpForm.get('dateBirth'):
+            if mpForm['dateBirth']:
+                logging.info("Date: %r" % [ch for ch in mpForm['dateBirth']])
                 parts = self.regDate.match(mpForm['dateBirth'])
                 if not parts:
-                    raise Error("Please enter a valid date (m/d/y)")
+                    raise Error("Please enter a valid date (m/d/yyyy)")
                 yr = int(parts.group(3))
                 if yr < 100:
                     yr += 1900;
                 self.dateBirth = datetime.date(yr, int(parts.group(1)), int(parts.group(2)))
             
-            self.sLocation = mpForm.get('sLocation', '')
-            self.sAbout = mpForm.get('sAbout', '')
+            self.sLocation = mpForm['sLocation']
+            self.urlHome = NormalizeUrl(mpForm['urlHome'])
+            self.sAbout = mpForm['sAbout']
             
-            if mpForm.get('home'):
-                pass
             self.put()
             return True
         except Error, e:

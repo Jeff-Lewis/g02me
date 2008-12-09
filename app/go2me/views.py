@@ -49,9 +49,7 @@ def SetUsername(req):
     return HttpResponseRedirect('/')
 
 def Login(req):
-    logging.info("Login")
     local.requser.Require('user')
-    logging.info("Login has user")
     return HttpResponseRedirect("/")
 
 def DoComment(req, command=None):
@@ -118,12 +116,13 @@ def UserView(req, username):
 
 def UserProfile(req):
     local.requser.Require('user')
-    profileForm = local.requser.profile
     if local.req.method == 'POST':
         local.requser.Require('post')
-        if local.requser.profile.FForm(local.mpParams):
+        profileForm = local.mpParams.copy()
+        if local.requser.profile.SetForm(profileForm):
             return HttpResponseRedirect('/')
-        profileForm = local.mpParams
+    else:
+        profileForm = local.requser.profile.GetForm()
 
     AddToResponse({'profileForm':profileForm})
     return render_to_response('profile.html', FinalResponse())
