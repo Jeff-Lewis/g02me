@@ -379,7 +379,7 @@ class ReqUser(object):
         
     def SetOpenUsername(self, username, fSetEmpty=True, fForce=False):
         # Will only set username that is "available" (not used in an unbanned Profile, and will only allow
-        # setting of names already used in comments if fForce is True
+        # setting of names already used in comments if fForce is True)
         from go2me.models import Comment
         from go2me.profile import Profile
         if username == '':

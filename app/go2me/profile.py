@@ -49,16 +49,25 @@ class Profile(db.Model):
     
     @staticmethod
     def FindOrCreate(user, username, userid):
-        # First try lookup by username (and create if not taken)
-        profile = None
+        profile = Profile.gql('WHERE user = :1', user).get()
+        if profile:
+            return profile
+    
+        # User creates Google Account before selecting a username - try the nickname
         if username:
             Profile.RequireValidUsername(username)
             profile = Profile.get_or_insert(key_name='U:' + username, user=user, username=username, userAuthFirst=userid,
                       dateCreated=local.dtNow)
 
-        if not profile or profile.user != user:
-            # username and user do not match - switch to the user's account - ignore username
-            profile = Profile.gql('WHERE user = :1', user).get()
+        # If username was already used, we can't return another user's profile.  Try to create a unique one
+        # from the account's nickname.
+        if profile is None or profile.user != user:
+            username = re.sub('@.*', '', user.nickname())
+            profile = Profile.get_or_insert(key_name='U:' + username, user=user, username=username, userAuthFirst=userid,
+                      dateCreated=local.dtNow)
+            if profile.user != user:
+                return None
+
         return profile
     
     @staticmethod
@@ -94,7 +103,6 @@ class Profile(db.Model):
                 mpForm['username'] = self.username
 
             if mpForm['dateBirth']:
-                logging.info("Date: %r" % [ch for ch in mpForm['dateBirth']])
                 parts = self.regDate.match(mpForm['dateBirth'])
                 if not parts:
                     raise Error("Please enter a valid date (m/d/yyyy)")
@@ -103,9 +111,13 @@ class Profile(db.Model):
                     yr += 1900;
                 self.dateBirth = datetime.date(yr, int(parts.group(1)), int(parts.group(2)))
             
-            self.sLocation = mpForm['sLocation']
-            self.urlHome = NormalizeUrl(mpForm['urlHome'])
-            self.sAbout = mpForm['sAbout']
+            self.sLocation = mpForm['sLocation'].strip()
+            sURL = mpForm['urlHome'].strip()
+            if sURL == '':
+                self.urlHome = ''
+            else:
+                self.urlHome = NormalizeUrl(sURL)
+            self.sAbout = mpForm['sAbout'].strip()
             
             self.put()
             return True
