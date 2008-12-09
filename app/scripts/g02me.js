@@ -32,7 +32,10 @@ SetUsername: function(sUsername)
 			{
 		case 'OK':
 			// Refresh the page to reset the display for the new server-set cookie
-			window.location.href = window.location.href;
+			if (obj.username == '')
+				window.location.href = "/";
+			else
+				window.location.href = window.location.href;
 			break;
 		case 'Fail/Auth/Used':
 			if (confirm("The nickname, " + sUsername + ", is already in use.  Are you sure you want to use it?"))

@@ -43,9 +43,11 @@ def SetUsername(req):
     # Setting to '' is a log-out command - be sure to clear the Google Login too
     if local.requser.username == '' and local.requser.profile is not None:
         local.requser.profile = None
-        return HttpResponseRedirect(users.create_logout_url(local.req.get_full_path()))
+        return HttpResponseRedirect(users.create_logout_url(req.get_full_path()))
+
     if IsJSON():
         return HttpJSON(req, obj={'username':local.requser.username})
+    
     return HttpResponseRedirect('/')
 
 def Login(req):
@@ -120,7 +122,7 @@ def UserProfile(req):
         local.requser.Require('post')
         profileForm = local.mpParams.copy()
         if local.requser.profile.SetForm(profileForm):
-            return HttpResponseRedirect('/')
+            return HttpResponseRedirect('/profile#saved')
     else:
         profileForm = local.requser.profile.GetForm()
 

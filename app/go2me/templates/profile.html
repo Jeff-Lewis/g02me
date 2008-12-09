@@ -30,31 +30,39 @@ window.onclick = Click;
 	<div style='clear:both;'></div>
 </div>
 
+<script>
+	if (location.hash == "#saved")
+		document.write("<p class='error'>Profile Saved.</p>");
+</script>
 {% if error_message %}
 <p class="error">{{error_message}}.</p>
 {% endif %}
 
 <form action="/profile" method="POST">
 <input type="hidden" name="csrf" value="{{csrf}}"/>
-<table>
+<table class="form">
 	<tr>
 		<th><label for="username">Nickname:</label></th>
 		<td>
 		{% if not profileForm.username %}
 			<input type="text" id="username" name="username" value=""/>
 		{% else %}
-			{{ profileForm.username }}
+			<p class="static">{{ profileForm.username }}</p>
 		{% endif %}
 		</td>
 	</tr>
 	<tr><th><label for="sLocation">Location:</label></th>
-		<td><input type="text" id="sLocation" name="sLocation" value="{{profileForm.sLocation|escape}}"/></td></tr>
+		<td><input type="text" id="sLocation" name="sLocation" value="{{profileForm.sLocation|escape}}"/>
+		    <p class="help">Where are you?</p></td></tr>
 	<tr><th><label for="dateBirth">Birthdate:</label></th>
-		<td><input type="text" id="dateBirth" name="dateBirth" value="{{profileForm.dateBirth|escape}}"/></td></tr>
+		<td><input type="text" id="dateBirth" name="dateBirth" value="{{profileForm.dateBirth|escape}}"/>
+			<p class="help">We won't share with anyone else.  Enter M/D/YYYY.</p></td></tr>
 	<tr><th><label for="urlHome">Home Page:</label></th>
-		<td><input type="text" id="urlHome" name="urlHome" value="{{profileForm.urlHome|escape}}"/></td></tr>
+		<td><input type="text" class="full" id="urlHome" name="urlHome" value="{{profileForm.urlHome|escape}}"/>
+			<p class="help">Enter a URL for your home page, if you have one.</p></td></tr>
 	<tr><th><label for="sAbout">About me:</label></th>
-		<td><textarea id="sAbout" name="sAbout">{{profileForm.sAbout|escape}}</textarea></td></tr>
+		<td><textarea id="sAbout" name="sAbout">{{profileForm.sAbout|escape}}</textarea>
+			<p class="help">Tell people about yourself.</p></td></tr>
 
 	<tr><th></th><td><input type="submit" value="Save"/></td></tr>
 </table>
