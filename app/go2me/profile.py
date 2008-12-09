@@ -20,11 +20,6 @@ class Profile(db.Model):
     ss = ScoreSet.GetSet("karma", [hrsWeek, hrsMonth])
     regUsername = re.compile(r"^[a-zA-Z0-9_\.\-]{1,20}$")
     regDate = re.compile(r"^\s*(\d{1,2})\s*/\s*(\d{1,2})\s*/\s*(\d{1,2})\s*$")
-    mpFormFields = {'username':'username',
-                    'birth':'dateBirth',
-                    'home':'urlHome',
-                    'loc':'sLocation',
-                    'about':'sAbout'}
     
     # Account identifiers
     user = db.UserProperty(required=True)               # Google account
@@ -83,10 +78,12 @@ class Profile(db.Model):
                 sUser = mpForm['username'].strip()
                 if not self.regUsername.match(sUser):
                     raise Error("Invalid username: %s" % sUser)
-                self.username = mpForm.get('username', '')
+                self.username = sUser
+            else:
+                mpForm['username'] = self.username
 
-            if mpForm.get('birth'):
-                parts = self.regDate.match(mpForm['birth'])
+            if mpForm.get('dateBirth'):
+                parts = self.regDate.match(mpForm['dateBirth'])
                 if not parts:
                     raise Error("Please enter a valid date (m/d/y)")
                 yr = int(parts.group(3))
@@ -94,7 +91,8 @@ class Profile(db.Model):
                     yr += 1900;
                 self.dateBirth = datetime.date(yr, int(parts.group(1)), int(parts.group(2)))
             
-            self.sLocation = mpForm.get('loc', '')
+            self.sLocation = mpForm.get('sLocation', '')
+            self.sAbout = mpForm.get('sAbout', '')
             
             if mpForm.get('home'):
                 pass

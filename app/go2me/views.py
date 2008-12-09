@@ -118,11 +118,14 @@ def UserView(req, username):
 
 def UserProfile(req):
     local.requser.Require('user')
+    profileForm = local.requser.profile
     if local.req.method == 'POST':
         local.requser.Require('post')
         if local.requser.profile.FForm(local.mpParams):
             return HttpResponseRedirect('/')
+        profileForm = local.mpParams
 
+    AddToResponse({'profileForm':profileForm})
     return render_to_response('profile.html', FinalResponse())
 
 def TagView(req, tag):
