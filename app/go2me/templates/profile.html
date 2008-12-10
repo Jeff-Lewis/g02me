@@ -51,12 +51,15 @@ window.onclick = Click;
 		{% endif %}
 		</td>
 	</tr>
+	<tr><th><label for="sFullname">Full Name:</label></th>
+		<td><input type="text" id="sFullname" name="sFullname" value="{{profileForm.sFullname|escape}}"/>
+		    <p class="help">What's your real name?</p></td></tr>
 	<tr><th><label for="sLocation">Location:</label></th>
 		<td><input type="text" id="sLocation" name="sLocation" value="{{profileForm.sLocation|escape}}"/>
 		    <p class="help">Where are you?</p></td></tr>
-	<tr><th><label for="dateBirth">Birthdate:</label></th>
+	<tr><th><label for="dateBirth">Birth Date:</label></th>
 		<td><input type="text" id="dateBirth" name="dateBirth" value="{{profileForm.dateBirth|escape}}"/>
-			<p class="help">We won't share with anyone else.  Enter M/D/YYYY.</p></td></tr>
+			<p class="help">Confirm your age.  We won't share with anyone else.  Enter as M/D/YYYY.</p></td></tr>
 	<tr><th><label for="urlHome">Home Page:</label></th>
 		<td><input type="text" class="full" id="urlHome" name="urlHome" value="{{profileForm.urlHome|escape}}"/>
 			<p class="help">Enter a URL for your home page, if you have one.</p></td></tr>

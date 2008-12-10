@@ -335,3 +335,4 @@ X Embedded links in comments need to target _top
 X Uneven margins in safari and Chrome.
 X Chrome table extends beyond the bounds of the page
 - Usernames are case sensitive
+X Can share domains beginning with numbers! - http://www.3rivers.net/~cmac/index.html

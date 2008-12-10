@@ -38,6 +38,7 @@ class Profile(db.Model):
     
     # Personal/profile information
     dateBirth = db.DateProperty()
+    sFullname = db.StringProperty(default='')
     sLocation = db.StringProperty(default='')
     urlHome = db.StringProperty(default='')
     sAbout = db.TextProperty(default='')
@@ -83,6 +84,7 @@ class Profile(db.Model):
     def GetForm(self):
         mpForm = {
             'username': self.username,
+            'sFullname': self.sFullname,
             'dateBirth': (self.dateBirth and self.dateBirth.strftime("%m/%d/%Y")) or '',
             'sLocation': self.sLocation,
             'sAbout': self.sAbout,
@@ -105,12 +107,13 @@ class Profile(db.Model):
             if mpForm['dateBirth']:
                 parts = self.regDate.match(mpForm['dateBirth'])
                 if not parts:
-                    raise Error("Please enter a valid date (m/d/yyyy)")
+                    raise Error("Please enter a valid date (M/D/YYYY)")
                 yr = int(parts.group(3))
                 if yr < 100:
                     yr += 1900;
                 self.dateBirth = datetime.date(yr, int(parts.group(1)), int(parts.group(2)))
             
+            self.sFullname = mpForm['sFullname'].strip()
             self.sLocation = mpForm['sLocation'].strip()
             sURL = mpForm['urlHome'].strip()
             if sURL == '':
