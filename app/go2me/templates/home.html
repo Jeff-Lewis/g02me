@@ -150,7 +150,8 @@ using this form:</p>
 		<td class="num">{{page.model.CommentCount|intcomma}}</td>
 		<td class="age">{{page.model.dateCreated|Age}}
 			{% if page.model.Creator %}
-				by <a href="/user/{{page.model.Creator}}">{{page.model.Creator}}</a>
+				by <a href="/user/{{page.model.Creator}}">{{page.model.Creator}}
+				<img class="inline" src="/user/{{page.model.Creator}}/picture_thumb"></a>
 			{% endif %}
 		</td>
 		<td style="width:200px;" class="bar"><div class="bar" bar_value="{{page.ScoreNow|mult:24|floatformat:1}}"

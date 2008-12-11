@@ -85,7 +85,11 @@ padding-top: 2px;
 
 img.profile {
 float:left;
-padding:5px;"
+padding:5px;
+}
+
+img.inline {
+vertical-align:middle; 
 }
 
 img.x:hover {
@@ -277,4 +281,5 @@ width: 400px;
 padding: 10px;
 margin: 0 auto 25px auto;
 background-color: #D7E8ED;
+white-space: pre;
 }

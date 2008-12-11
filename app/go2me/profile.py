@@ -132,18 +132,24 @@ class Profile(db.Model):
             else:
                 AddToResponse({'error_field':'urlHome'})
                 self.urlHome = NormalizeUrl(sURL)
-                AddToResponse({'error_field':None})
+                AddToResponse({'error_field':''})
             self.sAbout = mpForm['sAbout'].strip()
             
-            if 'img' in local.req.FILES:
-                image = local.req.FILES['img']['content']
-                self.img_full = image
-                image = images.Image(image)
-                
-                image.resize(75, 75)
-                self.img_med = image.execute_transforms(output_encoding=images.PNG)
-                image.resize(25, 25)
-                self.img_thumb = image.execute_transforms(output_encoding=images.PNG)
+            try:
+                if 'img' in local.req.FILES:
+                    image = local.req.FILES['img']['content']
+                    self.img_full = image
+                    image = images.Image(image)
+                    
+                    image.resize(75, 75)
+                    self.img_med = image.execute_transforms(output_encoding=images.PNG)
+                    image.resize(25, 25)
+                    self.img_thumb = image.execute_transforms(output_encoding=images.PNG)
+            except:
+                self.img_full = None
+                self.img_med = None
+                self.img_thumb = None
+                raise Error("Error processing uploaded image")
             
             self.put()
             return True

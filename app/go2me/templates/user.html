@@ -7,17 +7,18 @@
 <div class="head">
 	<a target="_top" href="/" title="{{site_name}} Home | Popular Pages"><img class="logo" src="/images/logo.png"></a>
 	<a href="/user/{{usernamePage}}/picture_full"><img class="profile" src="/user/{{usernamePage}}/picture_med"></a>
-	<h1 style="padding-top: 40px;">{{usernamePage}}'s activity</h1>
+	<h1 style="padding-top: 40px;">
+		{% if profilePage.urlHome %}
+			<a href="{{profilePage.urlHome|escape}}">{{usernamePage}}</a>'s activity
+		{% else %}
+			{{usernamePage}}'s activity
+		{% endif %}
+	</h1>
 	<div style='clear:both;'></div>
 </div>
 
 {% if profilePage %}
-<div class="about">
-	{% if profilePage.sFullname %}
-		<b>About {{profilePage.sFullname|escape}}</b>:
-	{% endif %}
-	{{profilePage.sAbout|escape|urlize}}
-</div>
+<div class="about">{% if profilePage.sFullname %}<b>About {{profilePage.sFullname|escape}}</b>:{% endif %}{{profilePage.sAbout|escape|urlize}}</div>
 {% endif %}
 
 <table class="scores">
@@ -44,7 +45,11 @@
 		<td class="num">{{comment.map.CommentCount|intcomma}}</td>
 		<td class="age">{{comment.map.dateCreated|Age}}
 			{% if comment.map.Creator %}
-				by <a href="/user/{{comment.map.Creator}}">{{comment.map.Creator}}</a>
+				by <a href="/user/{{comment.map.Creator}}">{{comment.map.Creator}}
+				{% ifnotequal usernamePage comment.map.Creator %}
+				<img class="inline" src="/user/{{comment.map.Creator}}/picture_thumb">
+				{% endifnotequal %}
+				</a>
 			{% endif %}
 		</td>
 		{% with comment.map.ScoresNamed.day as scoreDay %}
