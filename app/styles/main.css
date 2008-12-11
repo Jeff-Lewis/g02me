@@ -271,3 +271,10 @@ margin: 0;
 padding: 0;
 cursor: default;
 }
+
+div.about {
+width: 400px;
+padding: 10px;
+margin: 0 auto 25px auto;
+background-color: #D7E8ED;
+}

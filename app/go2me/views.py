@@ -109,7 +109,8 @@ def UserView(req, username):
     if IsJSON():
         return HttpJSON(req, obj=Comment.ForUserJSON(username))
     comments = Comment.ForUser(username)
-    AddToResponse({'usernamePage':username, 'comments':comments})
+    profileU = profile.Profile.Lookup(username)
+    AddToResponse({'usernamePage':username, 'comments':comments, 'profilePage':profileU})
     return render_to_response('user.html', FinalResponse())
 
 def UserProfile(req):

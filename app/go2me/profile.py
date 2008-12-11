@@ -27,13 +27,8 @@ class Profile(db.Model):
     username = db.StringProperty(required=True)         # Go2.me nickname
     keyCrypt = db.StringProperty()                      # Per-user encryption key
     dateCreated = db.DateTimeProperty()
-    userTwitter = db.StringProperty()
-    passTwitterCipher = db.StringProperty()             # E(key, passPlain)
-    keyFriendFeed = db.StringProperty()                 # API Key for Friendfeed
     userAuthFirst = db.StringProperty()                 # Initial auth token for the creating user
     
-    username.foobar = 1
-
     fBanned = db.BooleanProperty(default=False)
     fAdmin = db.BooleanProperty(default=False)
     
@@ -46,10 +41,15 @@ class Profile(db.Model):
     img_full = db.BlobProperty()
     img_med = db.BlobProperty()
     img_thumb = db.BlobProperty()
+    
+    """
+    Future Properties
     shareCount = db.IntegerProperty(default=0)
     commentCount = db.IntegerProperty(default=0)
-
-    fBan = db.BooleanProperty(default=False)
+    userTwitter = db.StringProperty()
+    passTwitterCipher = db.StringProperty()             # E(key, passPlain)
+    keyFriendFeed = db.StringProperty()                 # API Key for Friendfeed
+    """
     
     @staticmethod
     def FindOrCreate(user, username, userid):
@@ -96,7 +96,6 @@ class Profile(db.Model):
             'sAbout': self.sAbout,
             'urlHome': self.urlHome
             }
-        logging.info("Form: %r" % mpForm)
         return mpForm
 
     def SetForm(self, mpForm):
@@ -136,7 +135,7 @@ class Profile(db.Model):
                 AddToResponse({'error_field':None})
             self.sAbout = mpForm['sAbout'].strip()
             
-            if local.req.FILES['img']:
+            if 'img' in local.req.FILES:
                 image = local.req.FILES['img']['content']
                 self.img_full = image
                 image = images.Image(image)
