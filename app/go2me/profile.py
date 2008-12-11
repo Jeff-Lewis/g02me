@@ -137,13 +137,14 @@ class Profile(db.Model):
             self.sAbout = mpForm['sAbout'].strip()
             
             if local.req.FILES['img']:
-                self.img_full = local.req.FILES.get('img').content
-                """
+                image = local.req.FILES['img']['content']
+                self.img_full = image
+                image = images.Image(image)
+                
                 image.resize(75, 75)
                 self.img_med = image.execute_transforms(output_encoding=images.PNG)
                 image.resize(25, 25)
                 self.img_thumb = image.execute_transforms(output_encoding=images.PNG)
-                """
             
             self.put()
             return True

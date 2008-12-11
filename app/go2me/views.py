@@ -126,12 +126,14 @@ def UserProfile(req):
     return render_to_response('profile.html', FinalResponse())
 
 def UserPicture(req, username, size):
-    logging.info("%s %s" % (username, size))
-    profileT = profile.Profile.Lookup(username)
-
-    img = getattr(profileT, 'img_%s' % size)
-    resp = HttpResponse(img, )
-    #resp.write(img)
+    try:
+        profileT = profile.Profile.Lookup(username)
+        img = getattr(profileT, 'img_%s' % size)
+        if img is None:
+            raise Exception()
+        resp = HttpResponse(img, mimetype="image")
+    except:
+        return HttpResponseRedirect('/images/picture_%s.png' % size)
     return resp
 
 

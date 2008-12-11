@@ -83,6 +83,11 @@ margin-right: 10px;
 padding-top: 2px;
 }
 
+img.profile {
+float:left;
+padding:5px;"
+}
+
 img.x:hover {
 cursor: pointer;
 }

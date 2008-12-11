@@ -182,8 +182,8 @@ class ReqFilter(object):
                 requser.Allow('api')
         except: pass
         
-        # Redirect to the profile page if the user profile is not complete
-        if not local.fJSON and requser.profile and not requser.profile.IsValid() and req.path != '/profile':
+        # Redirect from home to the profile page if the user profile is not complete
+        if not local.fJSON and requser.profile and not requser.profile.IsValid() and req.path == '/':
              return HttpResponseRedirect("/profile")  
         
     def process_response(self, req, resp):
