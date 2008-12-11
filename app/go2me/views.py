@@ -125,6 +125,16 @@ def UserProfile(req):
     AddToResponse({'profileForm':profileForm})
     return render_to_response('profile.html', FinalResponse())
 
+def UserPicture(req, username, size):
+    logging.info("%s %s" % (username, size))
+    profileT = profile.Profile.Lookup(username)
+
+    img = getattr(profileT, 'img_%s' % size)
+    resp = HttpResponse(img, )
+    #resp.write(img)
+    return resp
+
+
 def TagView(req, tag):
     if IsJSON():
         return HttpJSON(req, Map.TopJSON(tag=tag))

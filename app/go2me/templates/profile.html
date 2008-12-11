@@ -61,6 +61,8 @@ window.onclick = Click;
 	<tr><th><label for="sFullname">Full Name:</label></th>
 		<td><input type="text" id="sFullname" name="sFullname" value="{{profileForm.sFullname|escape}}"/>
 		    <p class="help">What's your real name?</p></td></tr>
+	<tr><th><label for="img">Profile picture:</label></th>
+		<td><input type="file" id="img" name="img" size="40"/></td></tr>	
 	<tr><th><label for="sLocation">Location:</label></th>
 		<td><input type="text" id="sLocation" name="sLocation" value="{{profileForm.sLocation|escape}}"/>
 		    <p class="help">Where are you?</p></td></tr>
@@ -75,6 +77,10 @@ window.onclick = Click;
 			<p class="help">Tell people about yourself.</p></td></tr>
 
 	<tr><th></th><td><input type="submit" value="Save"/></td></tr>
+	
+
 </table>
 </form>
+
+Picture: <img src="/user/{{profileForm.username}}/picture_full">
 {% endblock %}

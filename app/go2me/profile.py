@@ -1,5 +1,5 @@
 from google.appengine.ext import db
-from google.appengine.api import memcache
+from google.appengine.api import memcache, images
 
 from django import forms
 
@@ -43,7 +43,9 @@ class Profile(db.Model):
     sLocation = db.StringProperty(default='')
     urlHome = db.StringProperty(default='')
     sAbout = db.TextProperty(default='')
-    img = db.BlobProperty()
+    img_full = db.BlobProperty()
+    img_med = db.BlobProperty()
+    img_thumb = db.BlobProperty()
     shareCount = db.IntegerProperty(default=0)
     commentCount = db.IntegerProperty(default=0)
 
@@ -133,6 +135,15 @@ class Profile(db.Model):
                 self.urlHome = NormalizeUrl(sURL)
                 AddToResponse({'error_field':None})
             self.sAbout = mpForm['sAbout'].strip()
+            
+            if local.req.FILES['img']:
+                self.img_full = local.req.FILES.get('img').content
+                """
+                image.resize(75, 75)
+                self.img_med = image.execute_transforms(output_encoding=images.PNG)
+                image.resize(25, 25)
+                self.img_thumb = image.execute_transforms(output_encoding=images.PNG)
+                """
             
             self.put()
             return True
