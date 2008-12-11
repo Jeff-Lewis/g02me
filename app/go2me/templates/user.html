@@ -18,7 +18,12 @@
 </div>
 
 {% if profilePage %}
-<div class="about">{% if profilePage.sFullname %}<b>About {{profilePage.sFullname|escape}}</b>:{% endif %}{{profilePage.sAbout|escape|urlize}}</div>
+<div class="about">
+	{% if profilePage.sFullname %}
+	<b>About {{profilePage.sFullname|escape}}</b>:
+	{% endif %}
+	{{profilePage.sAbout|escape|urlize}}
+</div>
 {% endif %}
 
 <table class="scores">
