@@ -15,9 +15,9 @@ username, account, matched
 1. New username and new Google Account
 
 - Sign Out (no nickname)
-- Use nickname, mckoss
+- Use nickname, test
   -> (Create Account)
-- Create Account/mike@mckoss.com
+- Create Account/test@example
   -> ProfilePage/username non-editable [!]
   - Fill out profile/OK
   	-> Home page (Profile link)
@@ -26,29 +26,45 @@ username, account, matched
   
 4. Existing username and corresponding Google Account
 
-- Use nickname, mckoss
+- Use nickname, test
   -> requires login -> Cancel, OK
-- Sign in, mike@mckoss.com
+- Sign in, test@example.com
   -> (Profile link available)
 - Sign Out
 
 3. Reuse username, but unattached Google Account
 
-- Use nickname, mckoss (OK)
-- Sign in, mike2@mckoss.com (no nickname)
+- Use nickname, test (OK)
+- Sign in, test2@example.com (no nickname)
   -> Profile page w editable username [!]
-  -> Set username to mckoss2
+  -> Set username to test2
 - Sign Out
 
 5. Reuse username, but switch to attached Google Account
 
-- Use nickname, mckoss
-- Sign in as mike2@mckoss.com
-  -> Home page as mckoss2
+- Use nickname, test
+- Sign in as test2@mckoss.com
+  -> Home page as test2
 - Sign Out
 
 2. New username switch to existing Google Account
 
-- Use nickname, mckoss3
-- Sign in as mike@mckoss.com
-  -> Home page as mckoss
+- Use nickname, test3
+- Create Account as test@example.com
+  -> Profile as test
+  
+Incomplete profile redirect
+
+- Click to Home w/o filling out profile
+  -> Redirect to /profile until completed
+  
+Login via /profile
+
+- Connect to /profile
+- Login as test3@example.com
+  -> Create user test3 to Profile page
+
+Try to create new account for existing alias
+
+- Connect to /profile as test@foo.com
+  -> Redirect back to login page - test already take (unfortunately, no error message)

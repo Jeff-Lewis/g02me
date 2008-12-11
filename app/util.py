@@ -180,7 +180,11 @@ class ReqFilter(object):
             if dtExpires > local.dtNow:
                 requser.SetMaxRate('write', dev, rate)
                 requser.Allow('api')
-        except: pass   
+        except: pass
+        
+        # Redirect to the profile page if the user profile is not complete
+        if not local.fJSON and requser.profile and not requser.profile.IsValid() and req.path != '/profile':
+             return HttpResponseRedirect("/profile")  
         
     def process_response(self, req, resp):
         # If the user has no valid userAuth token, given them one for the next request
@@ -202,9 +206,10 @@ class ReqFilter(object):
         if isinstance(e, DirectResponse):
             return e.resp
         if isinstance(e, Error):
+            logging.error("Exception: %r" % e)
             return HttpError(req, e.obj['message'], obj=e.obj)
         # TODO - write exception backtrace into log file
-        logging.error("Uncaught exception")
+        logging.error("Unknown exception: %r" % e)
         if not settings.DEBUG:
             return HttpError(req, "Application Error", {'status': 'Fail'})
         
@@ -237,6 +242,7 @@ class ReqUser(object):
         self.fAnon = True
         self.mpRates = {}
         self.username = ''
+        self.usernameSigned = ''
         self.profile = None
         
         # Nothing allowed by default!
@@ -268,16 +274,27 @@ class ReqUser(object):
                 sSignin = req.COOKIES['signin']
                 self.username = SGetSigned('signin', sSignin)
                 self.profile = Profile.Lookup(self.username)
+                if self.profile:
+                    self.usernameSigned = sSignin
             except: pass
         
         if not self.profile:    
             try:
                 self.SetOpenUsername(req.COOKIES.get('username', ''), fForce=True)
             except: pass
+            
+        # Logout any banned usernames
+        if self.profile and self.profile.fBanned:
+            self.profile = None
+            self.username = ''
+            self.usernameSigned = ''
 
-        if self.profile and not self.profile.fBanned:
+        if self.profile:
+            # User must fill out a valid profile before using it
             self.Allow('user')
             self.username = self.profile.username
+            if not self.usernameSigned:
+                self.usernameSigned = SSign('signin', self.profile.username)
             if self.profile.fAdmin or users.is_current_user_admin():
                 self.Allow('admin')
             
@@ -374,7 +391,7 @@ class ReqUser(object):
     def UserCookies(self):
         return {'userAuth': self.uidSigned,
                 'username': self.username,
-                'signin': self.profile and SSign('signin', self.profile.username)
+                'signin': self.usernameSigned,
                 }
         
     def SetOpenUsername(self, username, fSetEmpty=True, fForce=False):
@@ -385,7 +402,8 @@ class ReqUser(object):
         if username == '':
             if not fSetEmpty:
                 return;
-            self.username = username;
+            self.username = '';
+            self.usernameSigned = ''
         
         if username == self.username:
             return
@@ -393,7 +411,7 @@ class ReqUser(object):
         Profile.RequireValidUsername(username)
 
         profile = Profile.Lookup(username)
-        if (profile and not profile.fBanned):
+        if profile and not profile.fBanned:
             if IsJSON():
                 raise Error("Username (%s) requires login" % username, 'Fail/Auth/user',
                     {'urlLogin': users.create_login_url('/')})
@@ -471,7 +489,9 @@ class Block(db.Model):
 # Response object for error reporting - handles JSON calls as well
 # --------------------------------------------------------------------
 
-def HttpError(req, stError, obj={}):
+def HttpError(req, stError, obj=None):
+    if obj is None:
+        obj = {}
     if not 'status' in obj:
         obj['status'] = 'Fail'
     obj['message'] = stError

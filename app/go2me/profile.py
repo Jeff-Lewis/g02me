@@ -6,6 +6,7 @@ from django import forms
 from util import *
 from timescore.models import ScoreSet, hrsMonth, hrsWeek
 import settings
+from templatetags import custom
 
 import logging
 from urlparse import urlsplit
@@ -81,6 +82,9 @@ class Profile(db.Model):
         if not Profile.regUsername.match(username):
             raise Error("Invalid nickname: %s" % username, 'Fail/Auth')
         
+    def IsValid(self):
+        return self.dateBirth is not None
+        
     def GetForm(self):
         mpForm = {
             'username': self.username,
@@ -99,7 +103,7 @@ class Profile(db.Model):
             if not self.username:
                 sUser = mpForm['username'].strip()
                 if not self.regUsername.match(sUser):
-                    raise Error("Invalid username: %s" % sUser)
+                    raise Error("Invalid username: %s" % sUser, obj={'error_field':'username'})
                 self.username = sUser
             else:
                 mpForm['username'] = self.username
@@ -107,11 +111,17 @@ class Profile(db.Model):
             if mpForm['dateBirth']:
                 parts = self.regDate.match(mpForm['dateBirth'])
                 if not parts:
-                    raise Error("Please enter a valid date (M/D/YYYY)")
+                    raise Error(sValidDate, obj={'error_field':'dateBirth'})
                 yr = int(parts.group(3))
                 if yr < 100:
                     yr += 1900;
                 self.dateBirth = datetime.date(yr, int(parts.group(1)), int(parts.group(2)))
+                
+                ddt = local.dtNow.date() - self.dateBirth
+                if ddt.days < 365*13:
+                    raise Error(sAgeRequirement % (custom.SAgeDdt(ddt), (settings.sSiteName)), obj={'error_field':'dateBirth'}) 
+            else:
+                raise Error(sValidDate, obj={'error_field':'dateBirth'})
             
             self.sFullname = mpForm['sFullname'].strip()
             self.sLocation = mpForm['sLocation'].strip()
@@ -119,16 +129,20 @@ class Profile(db.Model):
             if sURL == '':
                 self.urlHome = ''
             else:
+                AddToResponse({'error_field':'urlHome'})
                 self.urlHome = NormalizeUrl(sURL)
+                AddToResponse({'error_field':None})
             self.sAbout = mpForm['sAbout'].strip()
             
             self.put()
             return True
         except Error, e:
-            logging.info("error %r" % e.obj['message'])
-            AddToResponse({'error_message': e.obj['message']})
-        except:
-            AddToResponse({'error_message': "Application Error"})
+            logging.info("Error: %r" % e.obj)
+            AddToResponse(e.obj)
+        except Exception, e:
+            logging.info("Unknown error: %r" % e)
+            AddToResponse({'message': "Application Error"})
         return False
     
-    
+sValidDate = "Please enter a valid date (M/D/YYYY)"
+sAgeRequirement = "You were born %s - you must be 13 years old to use %s"

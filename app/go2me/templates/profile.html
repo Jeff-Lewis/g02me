@@ -10,6 +10,13 @@ var formProfile;
 
 function Loaded()
 {
+	idFocus = "{{error_field}}";
+	
+	if (!idFocus)
+		idFocus = "sFullname";
+	
+	var txtFocus = document.getElementById(idFocus);
+	txtFocus.focus();
 }
 
 function Click()
@@ -32,10 +39,10 @@ window.onclick = Click;
 
 <script>
 	if (location.hash == "#saved")
-		document.write("<p class='error'>Profile Saved.</p>");
+		document.write('<p style="text-align:center;" class="help">Profile Saved. Return to <a href="/">Home</a></p>');
 </script>
-{% if error_message %}
-<p class="error">{{error_message}}.</p>
+{% if message %}
+<p class="error">{{message}}.</p>
 {% endif %}
 
 <form action="/profile" method="POST">
@@ -57,7 +64,7 @@ window.onclick = Click;
 	<tr><th><label for="sLocation">Location:</label></th>
 		<td><input type="text" id="sLocation" name="sLocation" value="{{profileForm.sLocation|escape}}"/>
 		    <p class="help">Where are you?</p></td></tr>
-	<tr><th><label for="dateBirth">Birth Date:</label></th>
+	<tr><th><label for="dateBirth">Birth Date:<br/>(required)</label></th>
 		<td><input type="text" id="dateBirth" name="dateBirth" value="{{profileForm.dateBirth|escape}}"/>
 			<p class="help">Confirm your age.  We won't share with anyone else.  Enter as M/D/YYYY.</p></td></tr>
 	<tr><th><label for="urlHome">Home Page:</label></th>

@@ -50,10 +50,6 @@ def SetUsername(req):
     
     return HttpResponseRedirect('/')
 
-def Login(req):
-    local.requser.Require('user')
-    return HttpResponseRedirect("/")
-
 def DoComment(req, command=None):
     local.requser.Require('api', 'write', 'comment')
     

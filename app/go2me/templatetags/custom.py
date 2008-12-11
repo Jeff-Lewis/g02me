@@ -47,7 +47,7 @@ def SAgeReq(dt):
 def SAgeDdt(ddt):
     """ Format a date as an "age" """
     if ddt.days < 0:
-        return "future?"
+        return "in the future?"
     months = int(ddt.days*12/365)
     years = int(ddt.days/365)
     if years >= 1:
