@@ -51,14 +51,15 @@
 		<td class="num">{{comment.map.shareCount|intcomma}}</td>
 		<td class="num">{{comment.map.viewCount|intcomma}}</td>
 		<td class="num">{{comment.map.CommentCount|intcomma}}</td>
-		<td class="age">{{comment.map.dateCreated|Age}}
+		<td class="age">
 			{% if comment.map.Creator %}
-				by <a href="/user/{{comment.map.Creator}}">{{comment.map.Creator}}
 				{% ifnotequal usernamePage comment.map.Creator %}
-				<img class="inline" src="/user/{{comment.map.Creator}}/picture_thumb">
+				<a href="/user/{{comment.map.Creator}}">
+					<img class="inline" src="/user/{{comment.map.Creator}}/picture_thumb"></a>
 				{% endifnotequal %}
-				</a>
+				<a href="/user/{{comment.map.Creator}}">{{comment.map.Creator}}</a> -
 			{% endif %}
+			{{comment.map.dateCreated|Age}}
 		</td>
 		{% with comment.map.ScoresNamed.day as scoreDay %}
 		<td class="bar"><div class="bar" bar_value="{{scoreDay|mult:24|floatformat:1}}"

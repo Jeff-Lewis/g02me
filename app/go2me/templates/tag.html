@@ -21,11 +21,13 @@
 		<td class="num">{{page.model.shareCount|intcomma}}</td>
 		<td class="num">{{page.model.viewCount|intcomma}}</td>
 		<td class="num">{{page.model.CommentCount|intcomma}}</td>
-		<td class="age">{{page.model.dateCreated|Age}}
+		<td class="age">
 			{% if page.model.Creator %}
-				by <a href="/user/{{page.model.Creator}}">{{page.model.Creator}}
-				<img class="inline" src="/user/{{page.model.Creator}}/picture_thumb"></a>
+				<a href="/user/{{page.model.Creator}}">
+					<img class="inline" src="/user/{{page.model.Creator}}/picture_thumb"></a>
+				<a href="/user/{{page.model.Creator}}">{{page.model.Creator}}</a> -
 			{% endif %}
+			{{page.model.dateCreated|Age}}
 		</td>
 		<td class="bar"><div class="bar" bar_value="{{page.ScoreNow|mult:24|floatformat:1}}"
 			title="{{page.ScoreNow|mult:24|floatformat:1}} points per day">&nbsp;</div></td>
