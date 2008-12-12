@@ -33,7 +33,7 @@ pageTracker._trackPageview();
 </script>
 </head>
 <frameset rows="137,*">
-<frame src="/info/{{map.GetId}}" marginwidth="0" marginheight="0"/>
+<frame src="/info/{{map.GetId}}?{{req.META.QUERY_STRING}}" marginwidth="0" marginheight="0"/>
 <frame src="{{map.Href}}"/>
 <noframes>
 <body>

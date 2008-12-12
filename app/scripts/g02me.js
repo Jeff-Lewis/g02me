@@ -83,7 +83,7 @@ PostComment: function(sID, sUsername, sComment)
 			{
 		case 'OK':
 			// Refresh the page to reset the display for the new header
-			window.location.href = window.location.href;
+			window.location.href = '/info/' + sID;
 			break;
 		case 'Fail/Auth/Used':
 			if (confirm("The nickname, " + sUsername + ", is already in use.  Are you sure you want to use it?"))
