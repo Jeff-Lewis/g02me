@@ -17,14 +17,17 @@
 	<div style='clear:both;'></div>
 </div>
 
-{% if profilePage %}
-<div class="about">
-	{% if profilePage.sFullname %}
-	<b>About {{profilePage.sFullname|escape}}</b>:
-	{% endif %}
+{% if profilePage.sAbout %}
+	<div class="about">
+	About <b>{% if profilePage.sFullname %}{{profilePage.sFullname|escape}}
+			 {% else %}{{profilePage.username}}{% endif %}</b>:
 	{{profilePage.sAbout|escape|urlize}}
 </div>
-{% endif %}
+{% else %}{% if profilePage.sFullname %}
+	<div style="text-align:center;" class="about">
+	<b>{{profilePage.sFullname|escape}}</b>
+	</div>
+{% endif %}{% endif %}
 
 <table class="scores">
 <tr><th></th><th>Title</th><th>Shared</th><th>Viewed</th><th>Comments</th><th>Created</th><th>Scores</th></tr>

@@ -34,7 +34,7 @@ function KeyDown(evt)
 	{% else %}
 		(<a href="/profile" title="You nickname is temporary until you create a (free) account.">Create Account</a>)
 	{% endif %} |
-	<a href="javascript:Go2.SetUsername('');">Sign out</a>
+	<a href="/cmd/setusername?username=">Sign out</a>
 {% else %}
 	<div id="sign-in">
 	    <label for="username">Nickname: </label>

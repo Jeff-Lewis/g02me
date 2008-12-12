@@ -20,7 +20,7 @@ class Profile(db.Model):
     """
     ss = ScoreSet.GetSet("karma", [hrsWeek, hrsMonth])
     regUsername = re.compile(r"^[a-zA-Z0-9_\.\-]{1,20}$")
-    regDate = re.compile(r"^\s*(\d{1,2})\s*/\s*(\d{1,2})\s*/\s*(\d{2}|\d{4})\s*$")
+    regDate = re.compile(r"^\s*(?P<mon>\d{1,2})\s*(?:\.|-|/)\s*(?P<day>\d{1,2})\s*(?:\.|-|/)\s*(?P<year>\d{2}|\d{4})\s*$")
     
     # Account identifiers
     user = db.UserProperty(required=True)               # Google account
@@ -110,13 +110,13 @@ class Profile(db.Model):
                 mpForm['username'] = self.username
 
             if mpForm['dateBirth']:
-                parts = self.regDate.match(mpForm['dateBirth'])
-                if not parts:
+                m = self.regDate.match(mpForm['dateBirth'])
+                if not m:
                     raise Error(sValidDate, obj={'error_field':'dateBirth'})
-                yr = int(parts.group(3))
+                yr = int(m.group('year'))
                 if yr < 100:
                     yr += 1900;
-                self.dateBirth = datetime.date(yr, int(parts.group(1)), int(parts.group(2)))
+                self.dateBirth = datetime.date(yr, int(m.group('mon')), int(m.group('day')))
                 
                 ddt = local.dtNow.date() - self.dateBirth
                 if ddt.days < 365*13:

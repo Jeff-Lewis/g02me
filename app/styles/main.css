@@ -42,6 +42,13 @@ color: red;
 text-align:center;
 }
 
+p.message {
+font-style: italic;
+text-align:center;
+padding: 10px;
+background-color: #D7E8ED;
+}
+
 p.url {
 font-size: 10px;
 white-space: nowrap;

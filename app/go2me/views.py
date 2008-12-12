@@ -40,14 +40,17 @@ def Lookup(req):
 def SetUsername(req):
     local.requser.SetOpenUsername(req.REQUEST.get('username', ''), fForce=req.GET.get('force', False))
 
+    if IsJSON():
+        return HttpJSON(req)
+    
     # Setting to '' is a log-out command - be sure to clear the Google Login too
+    # BUG - Google uses an HTML page re-direct - so it DOES NOT work for JSON
+    # requests - so can't log out from Google Account using JSON - fix would be to
+    # manually over-ride the Google Login Cookie
     if local.requser.username == '' and local.requser.profile is not None:
         local.requser.profile = None
         return HttpResponseRedirect(users.create_logout_url(req.get_full_path()))
 
-    if IsJSON():
-        return HttpJSON(req, obj={'username':local.requser.username})
-    
     return HttpResponseRedirect('/')
 
 def DoComment(req, command=None):
