@@ -343,7 +343,7 @@ class ReqUser(object):
                     raise DirectResponse(HttpResponseRedirect(users.create_logout_url(local.req.get_full_path())))               
 
             if self.sPermFail in ['user', 'admin']:
-                raise Error(self.message, self.code, {'urlLogin': users.create_login_url('/')})
+                raise Error(self.message, self.code, {'urlLogin': SURLLoginPattern()})
             raise Error(self.message, self.code)
     
     def FAllow(self, *args):
@@ -414,7 +414,7 @@ class ReqUser(object):
         if profile and not profile.fBanned:
             if IsJSON():
                 raise Error("Username (%s) requires login" % username, 'Fail/Auth/user',
-                    {'urlLogin': users.create_login_url('/')})
+                    {'urlLogin': SURLLoginPattern()})
             self.Require('user')
 
         if not fForce and Comment.FUsernameUsed(username):
@@ -520,6 +520,9 @@ class Error(Exception):
             obj['status'] = status
         obj['message'] = message
         self.obj = obj
+        
+def SURLLoginPattern():
+    return users.create_login_url('http://pattern.com').replace(r'http%3A//pattern.com', 'URLPATTERN')
         
 class DirectResponse(Exception):
     def __init__(self, resp):

@@ -43,7 +43,10 @@ SetUsername: function(sUsername)
 			break;
 		case 'Fail/Auth/user':
 			if (confirm("The nickname, " + sUsername + ", is already in use and requires a login.  Do you want to log in now?"))
-				window.location.href = obj.urlLogin;
+				{
+				var sURL = obj.urlLogin.replace("URLPATTERN", encodeURIComponent(window.location.href));
+				window.location.href = sURL;
+				}
 			break;
 		default:
 			alert(Go2.sSiteName + ": " + obj.message);
@@ -73,11 +76,19 @@ PostComment: function(sID, sUsername, sComment)
 			// Refresh the page to reset the display for the new header
 			window.location.href = window.location.href;
 			break;
-		case 'Fail/Used':
+		case 'Fail/Auth/Used':
 			if (confirm(obj.message + "  Are you sure you want to use it?"))
 				{
 				objCall.force = true;
 				sd.Call(objCall, PCCallback);
+				}
+			break;
+		case 'Fail/Auth/user':
+			if (confirm("The nickname, " + sUsername + ", is already in use and requires a login.  Do you want to log in now?"))
+				{
+				var sURL = 'http://' + window.location.host + '/' + sID + '?comment=' + encodeURIComponent(sComment);
+				sURL = obj.urlLogin.replace("URLPATTERN", encodeURIComponent(sURL));
+				window.parent.location.href = sURL;
 				}
 			break;
 		default:
@@ -207,6 +218,39 @@ StParams: function(obj)
 	if (obj._anchor)
 		stParams += "#" + encodeURIComponent(obj._anchor);
 	return stParams;
+	},
+	
+ParseParams: function(stURL)
+	{
+	var rgQuery = stURL.match(/([^?#]*)(#.*)?$/);
+	if (!rgQuery) return {};
+	
+	var objParse = {};
+	
+	if (rgQuery[2])
+		objParse._anchor = decodeURIComponent(rgQuery[2].substring(1));
+		
+	var rgParams = rgQuery[1].split("&");
+	for (var i = 0; i < rgParams.length; i++)
+		{
+		var ich = rgParams[i].indexOf("=");
+		var stName;
+		var stValue;
+		if (ich == -1)
+			{
+			stName = rgParams[i];
+			stValue = "";
+			continue;
+			}
+		else
+			{
+			stName = rgParams[i].substring(0, ich);
+			stValue = rgParams[i].substring(ich+1);
+			}
+		objParse[decodeURIComponent(stName)] = decodeURIComponent(stValue);
+		}
+		
+	return objParse;
 	},
 	
 // Level 2, IE, or Level 0 event models supported.

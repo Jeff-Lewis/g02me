@@ -17,7 +17,11 @@ function Loaded()
 		Go2.AddEventFn(txtUsername, "keydown", KeyDownUsername);
 
 	txtComment = document.getElementById("comment");
+	var objParams = Go2.ParseParams(window.parent.location.href);
+	if (objParams.comment)
+		txtComment.value = objParams.comment;
 	txtComment.focus();
+
 	Go2.AddEventFn(txtComment, "keydown", KeyDownComment);
 }
 

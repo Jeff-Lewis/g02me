@@ -59,7 +59,7 @@
   - Alternativly, "Follow" the infopage?
   - Help users make live bookmarks?
 X Add thousands sep for counts in analytics (info, home, tags, user)
-  - Add as Django filter -> already exists in humanize!
+  X Add as Django filter -> already exists in humanize!
 - Paging control for user activity pages
   - Implement as month ranges
   - Indicate in page header that older pages have NOT been updated (no need for crawlers to re-index)
@@ -106,6 +106,12 @@ X Add thousands sep for counts in analytics (info, home, tags, user)
   - Tags
   - Users
   - Domains
+- Move icons to left of created column
+- Save version 10 tag
+- Real-time commenting in side bar
+  - IFrame main page
+  - exponential backoff polling for visits, comments, etc.
+  - notification (sound) option on people entering/leaving the "room"
   
 ------------------------------------------------------------
         PLATFORMS, SYNDICATION, IMPORT/EXPORT
@@ -147,7 +153,7 @@ X Add thousands sep for counts in analytics (info, home, tags, user)
   ! User Profile Page - twitter info
   - Anonymous twitter encrypted cookie
   ! RSS Feed auto-twitter
-  - Claim your account button
+  X Claim your account button
   - Allow claiming of account with pseudonomyous twitter user name
   X Can put encryption key to decode twitter password in a cookie - ensures we don't
     store an offline usable twitter password on the server
@@ -163,22 +169,22 @@ X Add thousands sep for counts in analytics (info, home, tags, user)
 	- Per-user setting to open all URLs in info-mode
 	- Mark as spam/adult
 - Use google safebrowsing api to warn about viewing of unsafe urls
-! User account
-  - Claim a username by signing in
-  - Claim your account (provide google, twitter, or Go2.me password)
-  - Require login to comment using a claimed username
-  - Protects your comments from being edited or deleted by others
+X User account
+  X Claim a username by signing in
+  X Claim your account (provide google, twitter, or Go2.me password) - just Google now
+  X Require login to comment using a claimed username
+  X Protects your comments from being edited or deleted by others
   - Just hide non-anonymous comments - based on vote threshold
   - Ability to mark even claimed comments as "spam/bad"
     - two (independent) votes will hide that comment from all but the author of the comment.
   ! Mark URL as Spam - info-mode only AND prominently flagged as SPAM
   ! Mark URL as Adult - require login and affirmation of over 18 and OK to view adult content
-  - Profile image
+  X Profile image
   - Friend feed and twitter account info
 - Admin interface to block/throttle IP's, users, domains, referers
 - Spam - faked title - /3f
-- Google User Accounts
-  - Persistent cookie (30 days) in lieu of Google Auth
+X Google User Accounts
+  X Persistent cookie (30 days) in lieu of Google Auth
 
 ------------------------------------------------------------
                         PERFORMANCE
@@ -334,5 +340,7 @@ X Require that domains have a . in them to be valid (no intranet domains)
 X Embedded links in comments need to target _top
 X Uneven margins in safari and Chrome.
 X Chrome table extends beyond the bounds of the page
-- Usernames are case sensitive
+- Usernames are case sensitive - shouldn't be
 X Can share domains beginning with numbers! - http://www.3rivers.net/~cmac/index.html
+- Have to hit signout twice to sign out of account (first times out)
+- Losing username saved in cookie?
