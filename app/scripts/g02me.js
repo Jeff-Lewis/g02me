@@ -23,8 +23,9 @@ SetCSRF: function(sCSRF)
 SetUsername: function(sUsername)
 	{
 	var sd = new Go2.ScriptData('/cmd/setusername');
+	var objCall = {username:sUsername, urlLogin:window.location.href};
 	Go2.TrackEvent('username');
-	sd.Call({username:sUsername}, SUCallback);
+	sd.Call(objCall, SUCallback);
 		
 	function SUCallback(obj)
 		{
@@ -39,13 +40,15 @@ SetUsername: function(sUsername)
 			break;
 		case 'Fail/Auth/Used':
 			if (confirm("The nickname, " + sUsername + ", is already in use.  Are you sure you want to use it?"))
-				sd.Call({username:sUsername, force:true}, SUCallback);
+				{
+				objCall.force = true;
+				sd.Call(objCall, SUCallback);
+				}
 			break;
 		case 'Fail/Auth/user':
 			if (confirm("The nickname, " + sUsername + ", is already in use and requires a login.  Do you want to log in now?"))
 				{
-				var sURL = obj.urlLogin.replace("URLPATTERN", encodeURIComponent(window.location.href));
-				window.location.href = sURL;
+				window.location.href = obj.urlLogin;
 				}
 			break;
 		default:
@@ -63,7 +66,13 @@ Map: function(sURL, sTitle)
 PostComment: function(sID, sUsername, sComment)
 	{
 	var sd = new Go2.ScriptData('/comment/');
-	var objCall = {id:sID, csrf:Go2.sCSRF, username:sUsername, comment:sComment};
+	var objCall = {
+		id:sID,
+		csrf:Go2.sCSRF,
+		username:sUsername,
+		comment:sComment,
+		urlLogin: '/' + sID + '?comment=' + encodeURIComponent(sComment)
+		};
 	Go2.TrackEvent('comment');
 
 	sd.Call(objCall, PCCallback);
@@ -77,7 +86,7 @@ PostComment: function(sID, sUsername, sComment)
 			window.location.href = window.location.href;
 			break;
 		case 'Fail/Auth/Used':
-			if (confirm(obj.message + "  Are you sure you want to use it?"))
+			if (confirm("The nickname, " + sUsername + ", is already in use.  Are you sure you want to use it?"))
 				{
 				objCall.force = true;
 				sd.Call(objCall, PCCallback);
@@ -86,9 +95,7 @@ PostComment: function(sID, sUsername, sComment)
 		case 'Fail/Auth/user':
 			if (confirm("The nickname, " + sUsername + ", is already in use and requires a login.  Do you want to log in now?"))
 				{
-				var sURL = 'http://' + window.location.host + '/' + sID + '?comment=' + encodeURIComponent(sComment);
-				sURL = obj.urlLogin.replace("URLPATTERN", encodeURIComponent(sURL));
-				window.parent.location.href = sURL;
+				window.parent.location.href = obj.urlLogin;
 				}
 			break;
 		default:
