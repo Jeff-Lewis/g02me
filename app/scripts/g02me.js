@@ -86,14 +86,14 @@ PostComment: function(sID, sUsername, sComment)
 			window.location.href = '/info/' + sID;
 			break;
 		case 'Fail/Auth/Used':
-			if (confirm("The nickname, " + sUsername + ", is already in use.  Are you sure you want to use it?"))
+			if (confirm(obj.message + ".  Are you sure you want to use it?"))
 				{
 				objCall.force = true;
 				sd.Call(objCall, PCCallback);
 				}
 			break;
 		case 'Fail/Auth/user':
-			if (confirm("The nickname, " + sUsername + ", is already in use and requires a login.  Do you want to log in now?"))
+			if (confirm(obj.message + ".  Do you want to log in now?"))
 				{
 				window.parent.location.href = obj.urlLogin;
 				}

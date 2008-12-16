@@ -344,3 +344,4 @@ X Chrome table extends beyond the bounds of the page
 X Can share domains beginning with numbers! - http://www.3rivers.net/~cmac/index.html
 - Have to hit signout twice to sign out of account (first times out)
 - Losing username saved in cookie?
+- When logged in - can't over-ride switch to non-logged in account (e.g., "anon: foo") - unit test failure!
