@@ -41,7 +41,7 @@ def SetUsername(req):
     local.requser.SetOpenUsername(req.REQUEST.get('username', ''), fForce=req.GET.get('force', False))
 
     if IsJSON():
-        return HttpJSON(req)
+        return HttpJSON(req, {'username': local.requser.username})
     
     # Setting to '' is a log-out command - be sure to clear the Google Login too
     # BUG - Google uses an HTML page re-direct - so it DOES NOT work for JSON
