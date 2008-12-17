@@ -273,7 +273,7 @@ ts.AddTest("Comment", function(ut)
 		function(ut)
 			{
 			tagUniq = "dm-" + Math.floor(Math.random()*1000);
-			new Go2.ScriptData("/comment/").Call({id:objInit.id, comment:"mckoss :  [" + tagUniq + "]", apikey:sAPIKey}, ut.FnWrap(function (obj) {
+			new Go2.ScriptData("/comment/").Call({id:objInit.id, force: true, comment:"mckoss :  [" + tagUniq + "]", apikey:sAPIKey}, ut.FnWrap(function (obj) {
 				ut.AssertContains(obj, {status:"OK", url:"http://google.com/"});
 				ut.AssertContains(obj.comments[0], {comment:"", user:"mckoss", tags:tagUniq});
 				com2= obj.comments[0];

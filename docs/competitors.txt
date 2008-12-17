@@ -17,6 +17,7 @@ List of URL Shortening services:
 - is.gd (URLS=2M, Alexa=29K)
 - budurl.com (Alexa=75K)
 - tr.im (Alexa 113K)
+- sqrl.it (iterasi.net)
 
 - Go2.me (URLS=500, Alexa=650K)
 
