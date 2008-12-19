@@ -90,10 +90,14 @@ Try it:
 	<li><b>It's Free</b> - add the Bookmarklet to get started.</li>
 </ul>
 
+<h2 style="text-align:center;">Take a 4 minute video tour of Go2.me</h2>
 <div style="text-align:center;">
-<a href="/images/fullscreen.png" title="Click to see full size screen shot.">
-	<img alt="Go2.me Screenshot" src="/images/thumbnail.png">
-</a>
+	<object width="425" height="344">
+		<param name="movie" value="http://www.youtube.com/v/szsHrobNSUk&hl=en&fs=1&rel=0&color1=0x006699&color2=0x54abd6"></param>
+		<param name="allowFullScreen" value="true"></param>
+		<param name="allowscriptaccess" value="always"></param>
+		<embed src="http://www.youtube.com/v/szsHrobNSUk&hl=en&fs=1&rel=0&color1=0x006699&color2=0x54abd6" type="application/x-shockwave-flash" allowscriptaccess="always" allowfullscreen="true" width="425" height="344"></embed>
+	</object>
 </div>
 
 </div> <!-- left -->
@@ -132,10 +136,9 @@ using this form:</p>
 
 </div> <!-- right -->
 
-{% cache 60 home %}
+{% cache 180 home %}
 <div style="clear:both;padding-top:15px;">
-<h2>Recently popular links</h2>
-<p class="subhead">{{total_pages|intcomma}} links shared to date.</p>
+<h2>Recently popular links ({{total_pages|intcomma}} links shared to date)</h2>
 <table class="scores">
 <tr><th></th><th>Title</th><th>Shared</th><th>Viewed</th><th>Comments</th><th>Created</th><th>Score</th></tr>
 {% for page in pages %}

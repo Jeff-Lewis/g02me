@@ -7,20 +7,14 @@
 <link rel="stylesheet" type="text/css" href="/styles/main.css"/>
 <link rel="icon" type="image/png" href="/images/favicon.png">
 
-<script type="text/javascript" src="http://shots.snap.com/ss/{{snapshots_code}}/snap_shots.js"></script>
-
-<!-- ClickTale Top part -->
-<script type="text/javascript">
-var WRInitTime=(new Date()).getTime();
-</script>
-<!-- ClickTale end of Top part -->
+{% block script_includes %}{% endblock %}
 
 <script src="/scripts/g02me.js"></script>
 <script src="http://www.google.com/jsapi"></script>
 
 <script>
 google.load("jquery", "1.2.6");
-//google.load("jqueryui", "1.5.2");
+
 {% block script %}
 Go2.SetCSRF("{{csrf}}");
 function Loaded() {}
@@ -67,15 +61,9 @@ pageTracker._trackPageview();
 {% endfor %}
 </script>
 
-<!-- ClickTale Bottom part -->
-<div id="ClickTaleDiv" style="display: none;"></div>
-<script src="http://s.clicktale.net/WRb.js" type="text/javascript"></script>
-<script type="text/javascript">
-if(typeof ClickTale=='function') ClickTale(24739,0.225);
-</script>
-<!-- ClickTale end of Bottom part -->
-
 {% endblock %}
+
+{% block page_end %}{% endblock %}
 
 </body>
 </html>
