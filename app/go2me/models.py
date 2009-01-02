@@ -106,8 +106,8 @@ class Map(db.Model):
             if self.tags[tag] <= 0:
                 del self.tags[tag]
         
-    def TopTags(self, limit=10):
-        # Return to top 10 tags (by use) for this url
+    def TopTags(self, limit=20):
+        # Return to top 20 tags (by use) for this url
         self.ReifyTags()
         a = [(tag, self.tags[tag]) for tag in self.tags]
         a.sort(lambda x,y: y[1]-x[1])
