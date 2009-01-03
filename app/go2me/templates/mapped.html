@@ -1,10 +1,11 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html>
-<head>
-<link rel="icon" type="image/png" href="/images/favicon.png">
-<title>{{site_name}} - {{map.title|escape}}</title>
-<script src='http://www.google-analytics.com/ga.js'></script>
-<script>
+{% extends "master.html" %}
+{% load humanize %}
+{% load custom %}
+
+{% block subTitle %}{{map.title|escape}}{% endblock %}
+
+{% block script %}
+Go2.SetCSRF("{{csrf}}");
 msLoaded = new Date().getTime();
 
 function BeforeUnload(evt)
@@ -21,24 +22,110 @@ function BeforeUnload(evt)
 
 window.onbeforeunload = BeforeUnload;
 
-function Go2MeParentClick()
+var txtUsername;
+var txtComment;
+
+function Loaded()
+{
+	txtUsername = document.getElementById("username")
+	if (txtUsername)
+		Go2.AddEventFn(txtUsername, "keydown", KeyDownUsername);
+
+	txtComment = document.getElementById("comment");
+	var objParams = Go2.ParseParams(window.location.href);
+	if (objParams.comment)
+		txtComment.value = objParams.comment;
+	txtComment.focus();
+
+	Go2.AddEventFn(txtComment, "keydown", KeyDownComment);
+}
+
+function Click()
 {
 	msLoaded = 0;
 }
 
-window.onclick = Go2MeParentClick;
+window.onclick = Click;
+{% endblock %}
 
-var pageTracker = _gat._getTracker("UA-5439059-1");
-pageTracker._trackPageview();
-</script>
-</head>
-<frameset rows="137,*">
-<frame src="/info/{{map.GetId}}?{{req.META.QUERY_STRING}}" marginwidth="0" marginheight="0"/>
-<frame src="{{map.Href}}"/>
-<noframes>
-<body>
-Your browser does not support frames.  Your can visit the target page at {{ map.url|escape }}
-</body>
-</noframes>
-</frameset>
-</html>
+{% block body %}
+<table id="frame">
+<tr><td style="width:375px;">
+	<div id="info-status">
+		<p class="stats-header">
+			<a style="float:right;padding-top:2px;padding-right:2px;" target="_top" href="{{map.Href}}" title="Close Frame"><img class="x" src="/images/x.png"/></a>
+			Stats
+		</p>
+		<p>Created: {{map.dateCreated|Age}}</p>
+		{% if map.Creator %}
+		<p>By: <a href="/user/{{map.Creator}}" target="_top">{{map.Creator}}</a></p>
+		{% endif %}
+		<p>Shared: {{map.shareCount|intcomma}}</p>
+		<p>Viewed: {{map.viewCount|intcomma}}</p>
+		<p>Comments: {{map.CommentCount|intcomma}}</p>
+		<p>Tags: 
+		{% for tag in TopTags %}
+			<a target="_top" href="/tag/{{tag}}" title="Recently popular | {{tag}}">{{tag|escape}}</a>{% if not forloop.last %}, {% endif %}
+		{% endfor %}
+		</p>
+		{% if is_admin %}<p style="text-align:center;">
+			<input type="button" onclick="Go2.BanishId('{{map.GetId}}', '{{map.Banished}}'=='False');" value="{% if map.Banished%}Un-{% endif %}Ban"/>
+		</p>{% endif %}
+	</div> <!-- info-status -->
+	
+	<div id="info-body">
+	<a target="_top" href="/" title="{{site_name}} Home | Popular Pages"><img class="logo-small" src="/images/logo-small.png"></a>
+	<h1><a target="_top" href="{{map.Href}}" title="{{map.url|escape}}">{{map.title|ellipsis:100|escape}}</a></h1>
+	<p class="url">{{map.url|escape}}</p>
+	
+	<div id="info-form">
+		{% if username %}
+		<div style="float:left;width:70px;height:22px;margin-top:4px;">
+		{% else %}
+		<div style="float:left;width:220px;">
+		{% endif %}
+			{% if not username %}
+			<label for="username">Nickname: </label>
+			<input maxlength="20" style="width:70px;" type="text" id="username" name="username" tabindex="1"/>
+			{% endif %}
+			<label for="comment">Comment: </label>
+		</div>
+	
+		<input onclick="PostComment();" style="float:right;width:70px;" type="button" value="Post" tabindex="3"/>
+	
+		{% if username %}
+		<div style="margin-left:70px;margin-right:80px;">
+		{% else %}
+		<div style="margin-left:230px;margin-right:80px;">
+		{% endif %}
+			<input style="width:97%;" type="text" id="comment" name="comment" tabindex="2"/>
+		</div>
+	
+		<p style="clear:left;" class="help">Comment format: "nickname: text of your comment [tag1, tag2, ...]"</p>
+	</div>
+	
+	<div class="comments">
+	{% for comment in map.Comments %}
+		{% spaceless %}<p>
+	    {% if comment.username %}<a target="_top" href="/user/{{comment.username}}" title="{{comment.username}}'s activity">{{comment.username}}</a>:{% endif %}
+	    {{comment.comment|escape|urlizetop}}
+	    {% if comment.tags %}
+	    	[{% for tag in comment.TagList %}<a target="_top" href="/tag/{{tag}}" title="{{tag}} pages">{{tag}}</a>{% if not forloop.last %}, {% endif %}{% endfor %}]
+	    {% endif %}
+	    - {{ comment.dateCreated|Age }}
+	    {% if comment.AllowDelete %}
+	    <img class="x" onclick="Go2.DeleteComment('{{comment.DelKey}}');" src="/images/x.png"/>
+	    {% endif %}
+	    </p>{% endspaceless %}
+	{% endfor %}
+	</div>
+	
+	</div> <!-- info-body -->
+	</td>
+
+	<td style="width:90%">
+	<iframe src="{{map.Href}}"/>
+	Your browser does not support frames.
+	</iframe></td>
+</tr></table>
+{% endblock %}

@@ -135,7 +135,7 @@ def UserPicture(req, username, size):
         img = getattr(profileT, 'img_%s' % size)
         if img is None:
             raise Exception()
-        resp = HttpResponse(img, mimetype="image")
+        resp = HttpResponse(img, mimetype="image/png")
     except:
         return HttpResponseRedirect('/images/picture_%s.png' % size)
     return resp

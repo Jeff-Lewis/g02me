@@ -110,6 +110,23 @@ margin-bottom: 3px;
 }
 
 /* Info-bar styles (for head.html) */
+#frame td {
+vertical-align: top;
+margin: 0;
+padding: 0;
+}
+
+#info {
+float: left;
+width: 375px;
+border: 1px solid red;
+}
+
+iframe {
+border: 1px solid green;
+width: 100%;
+height: 5000px;
+}
 
 #info-status {
 float: right;
