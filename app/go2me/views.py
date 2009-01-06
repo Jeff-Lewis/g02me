@@ -105,7 +105,7 @@ def FrameSet(req, id):
     if IsJSON():
         map.Viewed()
         return HttpJSON(req, obj=map.JSON())
-    AddToResponse({'map':map})
+    AddToResponse({'map':map, 'TopTags':map.TopTags()})
     return render_to_response('mapped.html', FinalResponse())
 
 def UserView(req, username):

@@ -83,7 +83,7 @@ PostComment: function(sID, sUsername, sComment)
 			{
 		case 'OK':
 			// Refresh the page to reset the display for the new header
-			window.location.href = '/info/' + sID;
+			window.location.href = '/' + sID;
 			break;
 		case 'Fail/Auth/Used':
 			if (confirm(obj.message + ".  Are you sure you want to use it?"))
