@@ -110,6 +110,11 @@ margin-bottom: 3px;
 }
 
 /* Info-bar styles (for head.html) */
+div.border-h {
+background: url(/images/Border-H.png) repeat-x scroll top;
+height: 6px;
+}
+
 #info {
 position: absolute;
 top: 0;
