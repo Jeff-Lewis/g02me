@@ -26,6 +26,9 @@ var txtUsername;
 var txtComment;
 var divContent;
 var divInfo;
+var divInfoBottom;
+var divComments;
+var divBorderV;
 var iframe;
 var spanLinkLabel;
 var spanCloseLabel;
@@ -46,6 +49,9 @@ function Loaded()
 	
 	divContent = document.getElementById("content");
 	divInfo = document.getElementById("info");
+	divComments = document.getElementById("comments");
+	divBorderV = document.getElementById("border-v");
+	divInfoBottom = document.getElementById("info-bottom");
 	Go2.AddEventFn(window, "resize", OnResize);
 	
 	iframe = document.getElementById("iframe");
@@ -60,11 +66,17 @@ function Loaded()
 function OnResize()
 {
 	var rcWindow = Go2.DOM.RcWindow();
-	var ptContent = Go2.DOM.PtClient(divContent);
 	var dyMax = rcWindow[3];
 
+	var ptContent = Go2.DOM.PtClient(divContent);
 	divContent.style.height = (dyMax - ptContent[1]) + "px"; 
 	divInfo.style.height = dyMax + "px";
+	divBorderV.style.height = dyMax + "px";
+	
+	var ptComments = Go2.DOM.PtClient(divComments);
+	var ptInfoBottom = Go2.DOM.PtSize(divInfoBottom);
+	var dyComments = Math.max(90, dyMax - ptComments[1] - ptInfoBottom[1]);
+	divComments.style.height = dyComments + "px";
 }
 
 var fResetFrame = false; 
@@ -125,10 +137,9 @@ window.onclick = Click;
 {% block body %}
 <div id="info">
 	<div id="info-status">
-		<div class="border-h"><div class="boarder-ul"></div><div class="border-ur"></div></div>
 		<p class="stats-header">
 			<a style="float:right;padding-top:2px;padding-right:2px;" target="_top" href="{{map.Href}}" title="Close Frame"><img class="x" src="/images/x.png"/></a>
-			Go2.me
+			<a target="_top" href="/" title="{{site_name}} Home | Popular Pages">{{site_name}}</a>
 		</p>
 		<p>Created: {{map.dateCreated|Age}}
 			{% if map.Creator %}
@@ -148,8 +159,9 @@ window.onclick = Click;
 		</p>{% endif %}
 	</div> <!-- info-status -->
 	
-	<div class="comments">
-	<div class="border-h"><div class="boarder-ul"></div><div class="border-ur"></div></div>
+	<div class="border-h"></div>
+	
+	<div id="comments" class="comments">
 	{% for comment in map.Comments %}
 		<p>
 	    {% if comment.username %}<a target="_top" href="/user/{{comment.username}}" title="{{comment.username}}'s activity">{{comment.username}}</a>:{% endif %}
@@ -165,44 +177,48 @@ window.onclick = Click;
 	{% endfor %}
 	</div>
 
-	<div id="info-form">
-		<div class="border-h"><div class="boarder-ul"></div><div class="border-ur"></div></div>
-		<p>
-			<label for="username">Nickname:</label>
-			{% if username %}
-				<a href="/user/{{username}}" title="{{username}}'s activity">{{username}}</a>
-				(<a onclick="Go2.SetUsername('');return false;" href="#">Sign out</a>)
-			{% else %}
-			<input maxlength="20" style="width:70px;" type="text" id="username" name="username" tabindex="1"/>
-			{% endif %}
-		</p>
+	<div id="info-bottom">
+		<div class="border-h"></div>
+	
+		<div id="info-form">
+			<p>
+				<label for="username">Nickname:</label>
+				{% if username %}
+					<a href="/user/{{username}}" title="{{username}}'s activity">{{username}}</a>
+					(<a onclick="Go2.SetUsername('');return false;" href="#">Sign out</a>)
+				{% else %}
+				<input maxlength="20" style="width:70px;" type="text" id="username" name="username" tabindex="1"/>
+				{% endif %}
+			</p>
+			
+			<p>
+				<label for="comment">Comment:<br/></label>
+				<input style="float: right;" onclick="PostComment();" type="button" value="Post" tabindex="3"/>
+			
+				<input style="width:300px;height:40px;" type="text" id="comment" name="comment" tabindex="2"/>
+			</p>
 		
-		<p>
-			<label for="comment">Comment:<br/></label>
-			<input style="float: right;" onclick="PostComment();" type="button" value="Post" tabindex="3"/>
+			<p style="clear:left;" class="help">Comment format: "nickname: text of your comment [tag1, tag2, ...]"</p>
+		</div>
 		
-			<input style="width:300px;height:40px;" type="text" id="comment" name="comment" tabindex="2"/>
-		</p>
-	
-		<p style="clear:left;" class="help">Comment format: "nickname: text of your comment [tag1, tag2, ...]"</p>
+		<div class="bottom">
+			<a target="_top" href="/" title="{{site_name}} Home | Popular Pages"><img class="logo-small" src="/images/logo-small.png"></a>
+			<br/>
+			<a href="http://code.google.com/p/g02me/wiki/AboutUs">About Us</a> |
+			<a href="http://blog.go2.me">Blog</a> |
+			<a href="http://getsatisfaction.com/g02me/products/g02me_g02me">Feedback</a>
+		</div>
 	</div>
-	
-
-	
-	<div class="bottom">
-		<a target="_top" href="/" title="{{site_name}} Home | Popular Pages"><img class="logo-small" src="/images/logo-small.png"></a>
-	</div>
-	
-	<div class="border-h"><div class="boarder-ul"></div><div class="border-ur"></div></div>
 	
 </div> <!-- sidebar -->
 
-<div id="address">
-	<a style="float:right;padding-top:2px;padding-right:2px;" target="_top" href="{{map.Href}}" title="Close Frame"><span id="closeLabel">Close</span> <img class="x" src="/images/x.png"/></a>
-	<p id="url" class="url"><span id="linkLabel">Link</span>: <a onclick="ResetFrame();return false;" href="{{map.Href}}" title="{{map.title|escape}}">{{map.url|escape}}</a></p>
-</div>
+<div id="border-v" style="position:absolute;top:0;left:369px;" class="border-v"></div>
 
-<div class="border-h"><div class="boarder-ul"></div><div class="border-ur"></div></div>
+<div id="address">
+	<a style="float:right;" target="_top" href="{{map.Href}}" title="Close Frame"><span id="closeLabel">Close</span> <img class="x" src="/images/x.png"/></a>
+	<p class="url"><span id="linkLabel">Link</span>: <a onclick="ResetFrame();return false;" href="{{map.Href}}" title="{{map.title|escape}}">{{map.url|escape}}</a></p>
+	<div class="border-h"></div>
+</div>
 
 
 <div id="content">

@@ -182,7 +182,7 @@ class Map(db.Model):
     
     def Comments(self, limit=100):
         # Just return "true" comments (not sharing events)
-        comments = self.comment_set.order('dateCreated').fetch(limit)
+        comments = self.comment_set.order('-dateCreated').fetch(limit)
         return [comment for comment in comments if not comment.comment.startswith('__')]
     
     def Shared(self):
