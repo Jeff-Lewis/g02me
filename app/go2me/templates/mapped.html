@@ -27,6 +27,8 @@ var txtComment;
 var divContent;
 var divInfo;
 var iframe;
+var spanLinkLabel;
+var spanCloseLabel;
 
 function Loaded()
 {
@@ -47,7 +49,10 @@ function Loaded()
 	Go2.AddEventFn(window, "resize", OnResize);
 	
 	iframe = document.getElementById("iframe");
-	Go2.AddEventFn(iframe, "load", Navigate);
+	Go2.AddEventFn(iframe, "load", OnNavigate);
+	
+	spanLinkLabel = document.getElementById("linkLabel");
+	spanCloseLabel = document.getElementById("closeLabel");
 	
 	OnResize();
 }
@@ -62,18 +67,28 @@ function OnResize()
 	divInfo.style.height = dyMax + "px";
 }
 
-function Navigate()
+var fResetFrame = false; 
+
+function OnNavigate()
 {
-	console.log("Src: ", iframe.src);
-	console.log("Doc: ", iframe.contentDocument);
-	console.log("Win: ", iframe.contentWindow);
-	try {
-	console.log("href: " + iframe.contentDocument.location.href);
-	}
-	catch (e)
-	{
-		console.log("Error", e);
-	}
+	// Can't get URL of user-navigated frame due to browser security.
+	if (fResetFrame)
+		{
+		fResetFrame = false;
+		return;
+		}
+	
+	spanLinkLabel.innerHTML = "Original Link";
+	spanCloseLabel.innerHTML = "Return to Link";
+}
+
+function ResetFrame()
+{
+	iframe.src = "{{map.Href}}";
+	fResetFrame = true;
+
+	spanLinkLabel.innerHTML = "Link";
+	spanCloseLabel.innerHTML = "Close";
 }
 
 function Click()
@@ -179,8 +194,8 @@ window.onclick = Click;
 </div> <!-- sidebar -->
 
 <div id="address">
-	<input id="url" type="text"/ value="{{map.url|escape}}">
-	
+	<a style="float:right;padding-top:2px;padding-right:2px;" target="_top" href="{{map.Href}}" title="Close Frame"><span id="closeLabel">Close</span> <img class="x" src="/images/x.png"/></a>
+	<p id="url" class="url"><span id="linkLabel">Link</span>: <a onclick="ResetFrame();return false;" href="{{map.Href}}" title="{{map.title|escape}}">{{map.url|escape}}</a></p>
 </div>
 
 <div id="content">
