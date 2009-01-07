@@ -135,12 +135,17 @@ window.onclick = Click;
 {% endblock %}
 
 {% block body %}
-<div id="info">
-	<div id="info-status">
-		<p class="stats-header">
+<div id="info" class="info">
+	<div class="header">
+		<div class="block-top"></div>
+		<div style="height: 30px;" class="block-left"></div>
+		<div style="height: 30px;" class="block-right"></div>
 			<a style="float:right;padding-top:2px;padding-right:2px;" target="_top" href="{{map.Href}}" title="Close Frame"><img class="x" src="/images/x.png"/></a>
 			<a target="_top" href="/" title="{{site_name}} Home | Popular Pages">{{site_name}}</a>
-		</p>
+		<div class="block-bottom"></div>
+	</div>
+
+	<div id="status">
 		<p>Created: {{map.dateCreated|Age}}
 			{% if map.Creator %}
 			by <a href="/user/{{map.Creator}}" target="_top">{{map.Creator}}</a>
@@ -212,7 +217,7 @@ window.onclick = Click;
 	
 </div> <!-- sidebar -->
 
-<div id="border-v" style="position:absolute;top:0;left:369px;" class="border-v"></div>
+<div id="border-v" style="position:absolute;top:0;left:294px;" class="border-v"></div>
 
 <div id="address">
 	<a style="float:right;" target="_top" href="{{map.Href}}" title="Close Frame"><span id="closeLabel">Close</span> <img class="x" src="/images/x.png"/></a>

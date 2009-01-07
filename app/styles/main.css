@@ -125,21 +125,31 @@ width: 6px;
 height: 100%;
 }
 
+div.block-top {
+background: url(/images/Block-H.png) repeat-x scroll top;
+height: 6px;
+}
+
+div.block-bottom {
+clear: both;
+background: url(/images/Block-H.png) repeat-x scroll bottom;
+height: 6px;
+}
+
 #info {
 position: absolute;
 top: 0;
 left: 0;
-width: 369px;
-height: 900px;
+width: 294px;
 }
 
 #content {
-margin: 0 0 0 375px;
+margin: 0 0 0 300px;
 height: 100%;
 }
 
 #address {
-margin: 0 0 0 375px;
+margin: 0 0 0 300px;
 font-size: 10px;
 }
 
@@ -158,38 +168,54 @@ height: 100%;
 border: 0;
 }
 
-#info-status {
-padding-bottom: 5px;
-}
-
-p.stats-header {
-text-align: center;
+.info div.header {
 font-weight: bold;
 color: white;
-background-color: #45AFD1;
+background: url(/images/Block.png) repeat scroll;
 }
 
-p.stats-header a {
+div.block-left
+{
+float: left;
+background: url(/images/Block-V.png) repeat-y scroll top left;
+width: 6px;
+height: 100%;
+}
+
+div.block-right
+{
+float: right;
+background: url(/images/Block.png-V) repeat-y scroll top right;
+width: 6px;
+height: 100%;
+}
+
+.info div.header a {
 color: white;
 }
 
-p.stats-header img {
+.info div.header img.x {
+float: right;
 position: relative;
 top: 2px;
 }
 
-#info-status p
+.info #status {
+padding-bottom: 5px;
+}
+
+.info #status p
 {
 margin: 0;
 padding: 0 4px 1px 5px;
 }
 
-#info-form {
+.info #info-form {
 padding: 0;
 margin: 0 0 0 5px;
 }
 
-label {
+.info label {
 font-size: 12px;
 }
 
@@ -249,7 +275,7 @@ text-align:center;
 div.bottom {
 clear:both;
 text-align:center;
-padding-top: 25px;
+padding: 15px 0 5px 0;
 }
 
 table {
