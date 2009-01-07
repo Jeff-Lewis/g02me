@@ -149,6 +149,7 @@ window.onclick = Click;
 	</div> <!-- info-status -->
 	
 	<div class="comments">
+	<div class="border-h"><div class="boarder-ul"></div><div class="border-ur"></div></div>
 	{% for comment in map.Comments %}
 		<p>
 	    {% if comment.username %}<a target="_top" href="/user/{{comment.username}}" title="{{comment.username}}'s activity">{{comment.username}}</a>:{% endif %}
@@ -165,6 +166,7 @@ window.onclick = Click;
 	</div>
 
 	<div id="info-form">
+		<div class="border-h"><div class="boarder-ul"></div><div class="border-ur"></div></div>
 		<p>
 			<label for="username">Nickname:</label>
 			{% if username %}
@@ -191,12 +193,17 @@ window.onclick = Click;
 		<a target="_top" href="/" title="{{site_name}} Home | Popular Pages"><img class="logo-small" src="/images/logo-small.png"></a>
 	</div>
 	
+	<div class="border-h"><div class="boarder-ul"></div><div class="border-ur"></div></div>
+	
 </div> <!-- sidebar -->
 
 <div id="address">
 	<a style="float:right;padding-top:2px;padding-right:2px;" target="_top" href="{{map.Href}}" title="Close Frame"><span id="closeLabel">Close</span> <img class="x" src="/images/x.png"/></a>
 	<p id="url" class="url"><span id="linkLabel">Link</span>: <a onclick="ResetFrame();return false;" href="{{map.Href}}" title="{{map.title|escape}}">{{map.url|escape}}</a></p>
 </div>
+
+<div class="border-h"><div class="boarder-ul"></div><div class="border-ur"></div></div>
+
 
 <div id="content">
 	<iframe id="iframe" src="{{map.Href}}"/>
