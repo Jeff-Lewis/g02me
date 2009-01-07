@@ -24,6 +24,9 @@ window.onbeforeunload = BeforeUnload;
 
 var txtUsername;
 var txtComment;
+var divContent;
+var divInfo;
+var iframe;
 
 function Loaded()
 {
@@ -38,6 +41,39 @@ function Loaded()
 	txtComment.focus();
 
 	Go2.AddEventFn(txtComment, "keydown", KeyDownComment);
+	
+	divContent = document.getElementById("content");
+	divInfo = document.getElementById("info");
+	Go2.AddEventFn(window, "resize", OnResize);
+	
+	iframe = document.getElementById("iframe");
+	Go2.AddEventFn(iframe, "load", Navigate);
+	
+	OnResize();
+}
+
+function OnResize()
+{
+	var rcWindow = Go2.DOM.RcWindow();
+	var ptContent = Go2.DOM.PtClient(divContent);
+	var dyMax = rcWindow[3];
+
+	divContent.style.height = (dyMax - ptContent[1]) + "px"; 
+	divInfo.style.height = dyMax + "px";
+}
+
+function Navigate()
+{
+	console.log("Src: ", iframe.src);
+	console.log("Doc: ", iframe.contentDocument);
+	console.log("Win: ", iframe.contentWindow);
+	try {
+	console.log("href: " + iframe.contentDocument.location.href);
+	}
+	catch (e)
+	{
+		console.log("Error", e);
+	}
 }
 
 function Click()
@@ -117,7 +153,7 @@ window.onclick = Click;
 			<label for="username">Nickname:</label>
 			{% if username %}
 				<a href="/user/{{username}}" title="{{username}}'s activity">{{username}}</a>
-				(<a href="/cmd/setusername?username=">Sign out</a>)
+				(<a onclick="Go2.SetUsername('');return false;" href="#">Sign out</a>)
 			{% else %}
 			<input maxlength="20" style="width:70px;" type="text" id="username" name="username" tabindex="1"/>
 			{% endif %}
@@ -148,7 +184,7 @@ window.onclick = Click;
 </div>
 
 <div id="content">
-	<iframe src="{{map.Href}}"/>
+	<iframe id="iframe" src="{{map.Href}}"/>
 		Your browser does not support frames.
 	</iframe>
 </div>

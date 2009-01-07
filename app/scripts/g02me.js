@@ -11,6 +11,10 @@ if (!window.console || !console.firebug)
         window.console[names[i]] = function() {}
 		})();
 
+//--------------------------------------------------------------------------
+// Go2.me Application Functions
+//--------------------------------------------------------------------------
+
 var Go2 = {
 sSiteName: "Go2.me",
 sCSRF: "",
@@ -33,10 +37,8 @@ SetUsername: function(sUsername)
 			{
 		case 'OK':
 			// Refresh the page to reset the display for the new server-set cookie
-			if (obj.username == '')
-				window.location.href = "/";
-			else
-				window.location.href = window.location.href;
+			console.log("redir")
+			window.location.href = window.location.href;
 			break;
 		case 'Fail/Auth/Used':
 			if (confirm("The nickname, " + sUsername + ", is already in use.  Are you sure you want to use it?"))
@@ -334,6 +336,301 @@ GetCookies: function()
 	}
 };  // Go2
 
+//--------------------------------------------------------------------------
+// DOM Functions
+// Points (pt) are [x,y]
+// Rectangles (rc) are [xTop, yLeft, xRight, yBottom]
+//--------------------------------------------------------------------------
+
+Go2.DOM = {
+// Get absolute position on the page for the upper left of the element.
+PtClient: function(elt)
+	{
+	var pt = [0,0];
+
+	while (elt.offsetParent != null)
+		{
+		pt[0] += elt.offsetLeft;
+		pt[1] += elt.offsetTop;
+		elt = elt.offsetParent;
+		}
+	return pt;
+	},
+
+// Return size of a DOM element in a Point - includes borders, but not margins
+PtSize: function(elt)
+	{
+	return [elt.offsetWidth, elt.offsetHeight];
+	},
+
+// Return absolute bounding rectangle for a DOM element: [x, y, x+dx, y+dy]
+RcClient: function(elt)
+	{
+	var rc = Go2.DOM.PtClient(elt);
+	var ptSize = Go2.DOM.PtSize(elt);
+	rc.push(rc[0]+ptSize[0], rc[1]+ptSize[1]);
+	return rc;
+	},
+	
+PtMouse: function(evt)
+	{
+	var x = document.documentElement.scrollLeft || document.body.scrollLeft;
+	var y = document.documentElement.scrollTop || document.body.scrollTop;
+	return [x+evt.clientX, y+evt.clientY];
+	},
+	
+RcWindow: function()
+	{
+	var x = document.documentElement.scrollLeft || document.body.scrollLeft;
+	var y = document.documentElement.scrollTop || document.body.scrollTop;
+	var dx = window.innerWidth || document.documentElement.clientWidth ||	document.body.clientWidth;
+	var dy = window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight;
+	return [x, y, x+dx, y+dy];
+	},
+	
+SetAbsPosition: function(elt, pt)
+	{
+	elt.style.top = pt[1] + 'px';
+	elt.style.left = pt[0] + 'px';
+	},
+	
+SetSize: function(elt, pt)
+	{
+	elt.style.width = pt[0] + 'px';
+	elt.style.height = pt[1] + 'px';
+	},
+	
+SetRc: function(elt, rc)
+	{
+	this.SetAbsPosition(elt, Go2.Vector.UL(rc));
+	this.SetSize(elt, Go2.Vector.Size(rc));
+	},
+	
+RemoveChildren: function(node)
+	{
+	for (var child = node.firstChild; child; child = node.firstChild);
+		node.removeChild(child);
+	}
+}; // Go2.DOM
+
+console.log(Go2.DOM);
+
+// --------------------------------------------------------------------------
+// Vector Functions
+// --------------------------------------------------------------------------
+
+Go2.Vector = {
+SubFrom: function(v1, v2)
+	{
+	for (var i = 0; i < v1.length; i++)
+		v1[i] = v1[i] - v2[i];
+	return v1;
+	},
+
+Sub: function(v1, v2)
+	{
+	
+	var vDiff = Go2.Vector.Copy(v1);
+	return Go2.Vector.SubFrom(vDiff, v2);
+	},
+
+//In-place vector addition	
+AddTo: function(vSum)
+	{
+	for (var iarg = 1; iarg < arguments.length; iarg++)
+		{
+		var v = arguments[iarg];
+		for (var i = 0; i < v.length; i++)
+			vSum[i] += v[i];
+		}
+	return vSum;
+	},	
+
+//Add corresponding elements of all arguments	
+Add: function()
+	{
+	var vSum = Go2.Vector.Copy(arguments[0]);
+	var args = Go2.Vector.Copy(arguments);
+	args[0] = vSum;
+	return Go2.Vector.AddTo.apply(undefined, args);
+	},
+	
+//Return new vector with element-wise max
+//All arguments must be same dimensioned array
+//TODO: Allow mixing scalars - share code with Mult - iterator/callback pattern
+Max: function()
+	{
+	var vMax = Go2.Vector.Copy(arguments[0]);
+	for (var iarg = 1; iarg < arguments.length; iarg++)
+		{
+		var v = arguments[iarg];
+		for (var i = 0; i < vMax.length; i++)
+			{
+			if (v[i] > vMax[i])
+				vMax[i] = v[i];
+			}
+		}
+	return vMax;
+	},
+
+//Multiply corresponding elements of all arguments (including scalars)
+//All vectors must be the same dimension (length).
+Mult: function()
+	{
+	var vProd = 1;
+
+	for (var iarg = 0; iarg < arguments.length; iarg++)
+		{
+		var v = arguments[iarg];
+		if (typeof v == "number")
+			{
+			// Mult(scalar, scalar)
+			if (typeof vProd == "number")
+				vProd *= v;
+			// Mult(vector, scalar)
+			else
+				{
+				for (var i = 0; i < vProd.length; i++)
+					vProd[i] *= v;
+				}				
+			}
+		else
+			{
+			// Mult(scalar, vector)
+			if (typeof vProd == "number")
+				{
+				var vT = vProd;
+				vProd = Go2.Vector.Copy(v);
+				for (var i = 0; i < vProd.length; i++)
+					vProd[i] *= vT;
+				}
+			// Mult(vector, vector)
+			else
+				{
+				if (v.length != vProd.length)
+					throw new Error("Mismatched Vector Size");
+				for (var i = 0; i < vProd.length; i++)
+					vProd[i] *= v[i];
+				}
+			}
+		}
+	return vProd;
+	},
+	
+Floor: function(v)
+	{
+	var vFloor = [];
+	for (var i = 0; i < v.length; i++)
+		vFloor[i] = Math.floor(v[i]);
+	return vFloor;
+	},
+	
+DotProduct: function()
+	{
+	var v = Go2.Vector.Mult.apply(undefined, arguments);
+	var s = 0;
+	for (var i = 0; i < v.length; i++)
+		s += v[i];
+	return s;
+	},
+
+//Append all arrays into a new array (Append(v) is same as Copy(v)
+Append: function()
+	{
+	var vAppend = [];
+	for (var iarg = 0; iarg < arguments.length; iarg++)
+		{
+		var v = arguments[iarg];
+		for (var i = 0; i < v.length; i++)
+			vAppend.push(v[i]);
+		}
+	return vAppend;
+	},
+
+//Do a (shallow) comparison of two arrays	
+Equal: function(v1, v2)
+	{
+	for (var i = 0; i < v1.length; i++)
+		if (v1[i] != v2[i])
+			return false;
+	return true;
+	},
+	
+//Routines for dealing with Points [x, y] and Rects [left, top, bottom, right]
+
+UL: function(rc)
+	{
+	return rc.slice(0, 2);
+	},
+	
+LR: function(rc)
+	{
+	return rc.slice(2, 4);
+	},
+	
+Size: function(rc)
+	{
+	return Go2.Vector.Sub(Go2.Vector.LR(rc), Go2.Vector.UL(rc));
+	},
+	
+NumInRange: function(num, numMin, numMax)
+	{
+	return num >= numMin && num <= numMax;
+	},
+	
+PtInRect: function(pt, rc)
+	{
+	return Go2.Vector.NumInRange(pt[0], rc[0], rc[2]) &&
+		Go2.Vector.NumInRange(pt[1], rc[1], rc[3]);
+	},
+	
+//Return pt (1-scale) * UL + scale * LR
+PtCenter: function(rc, scale)
+	{
+	if (scale == undefined)
+		scale = 0.5;
+	if (typeof scale == "number")
+		scale = [scale, scale];
+	var pt = Go2.Vector.Mult(scale, Go2.Vector.LR(rc));
+	scale = Go2.Vector.Sub([1,1], scale);
+	Go2.Vector.AddTo(pt, Go2.Vector.Mult(scale, Go2.Vector.UL(rc)));
+	return pt;
+	},
+
+//Return the bounding box of the collection of pt's and rect's passed in	
+BoundingBox: function()
+	{
+	var vPoints = Go2.Vector.Append.apply(undefined, arguments);
+	if (vPoints.length % 2 != 0)
+		throw Error("Invalid arguments to BoundingBox");
+	
+	var ptMin = vPoints.slice(0,2),
+		ptMax = vPoints.slice(0,2);
+
+	for (var ipt = 2; ipt < vPoints.length; ipt += 2)
+		{
+		var pt = vPoints.slice(ipt, ipt+2);
+		if (pt[0] < ptMin[0])
+			ptMin[0] = pt[0];
+		if (pt[1] < ptMin[1])
+			ptMin[1] = pt[1];
+		if (pt[0] > ptMax[0])
+			ptMax[0] = pt[0];
+		if (pt[1] > ptMax[1])
+			ptMax[1] = pt[1];
+		}
+
+	return [ptMin[0], ptMin[1], ptMax[0], ptMax[1]];
+	}
+}; // Go2.Vector
+
+//Synonym - Copy(v) is same as Append(v)
+Go2.Vector.Copy = Go2.Vector.Append;
+
+//--------------------------------------------------------------------------
+// Timer Functions
+//--------------------------------------------------------------------------
+
 Go2.Timer = function(fnCallback, ms)
 {
 	this.ms = ms;
@@ -397,6 +694,10 @@ Active: function(fActive)
 	return this;
 }
 }; // Go2.Timer
+
+//--------------------------------------------------------------------------
+// AJAX Helper Functions
+//--------------------------------------------------------------------------
 
 Go2.ScriptData = function(stURL)
 {
@@ -481,6 +782,11 @@ Go2.ScriptData.Cancel = function(rid)
 		}
 };
 
+
+//--------------------------------------------------------------------------
+// Go2.me Client side profile form (not used!)
+//--------------------------------------------------------------------------
+
 Go2.optionsProfile = {
 	focus: "user",
 	enter: "save",
@@ -500,11 +806,14 @@ Go2.optionsProfile = {
 		}
 	};
 
-// Javascript Form
+
+//--------------------------------------------------------------------------
+// JSForm - Client side Form Functions (not used)
 // Usage:
 // var db = new Go2.JSForm(divForm);
 // db.Init({title:,fields:,fieldsBottom:,buttons:}, fnCallback);
 // -> fnCallback(options) (fields have .value properties added)
+//--------------------------------------------------------------------------
 	
 Go2.JSForm = function(divForm)
 {
