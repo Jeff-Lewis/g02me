@@ -112,6 +112,63 @@ X Add thousands sep for counts in analytics (info, home, tags, user)
   - IFrame main page
   - exponential backoff polling for visits, comments, etc.
   - notification (sound) option on people entering/leaving the "room"
+- Map Page checklist
+  - Header (32px high)
+  	- Logo
+  	- Link/Return to Link: http://...
+  	- Close box
+  	- Private (link)
+  	- Google Link Unit
+  - Vertical divider (@300px - 6px wide)
+  - Side Panel (300 px)
+	  - Stats (min/open)
+	  	- Creator image (50x50)
+	  	- nickname
+	  	- Created date
+	  	- Viewers
+	  	- Score
+	  	- Tags
+	  	- Referers: google, twitter (link back to pages - nofollow?)
+	  	- Report (Adult, Spam dropdown) -> adds tag (NSFW, other tags imply Adult)
+	  	- Ban button (Admin)
+	  - Poll (min/open)
+	  	- Author view:
+	  		- 2 to 5 textboxes (on-demand creation)
+	  		- Create/Edit Button
+	  	- Unanswered view:
+	  		- Choice Buttons
+	  	- (?)
+	  - Chat (min/open)
+	    - User image list
+	      - image (25x25)
+	      - nickname
+	  	- Image (25x25)
+	  	- nickname
+	  	- (URL's shortened)
+	  	- Voice baloon - owner on left, guests on right
+	  	- Text entry/Post button
+	  - Sponsors panel (min/open)
+	  	- house ad, sponsor, 
+	  - 
+- Home Page checklist
+  - Logo
+  - nickname, signout, create account
+  - What is Go2.me?
+  - Benefits
+  - Bookmarklet install
+  - Create link form
+  - Video (link)
+  - Press logos/links (Tech, Blog/reviews)
+  - # Links
+  - # Viewers (Day/Month)
+  - Top links (Day/Month)
+  - Tag Cloud (Month)
+  - Top users (Day/Month)
+  - Display time
+  - Footer links
+  
+	  
+  
   
 ------------------------------------------------------------
         PLATFORMS, SYNDICATION, IMPORT/EXPORT
