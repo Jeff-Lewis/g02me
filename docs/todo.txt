@@ -112,7 +112,7 @@ X Add thousands sep for counts in analytics (info, home, tags, user)
   - IFrame main page
   - exponential backoff polling for visits, comments, etc.
   - notification (sound) option on people entering/leaving the "room"
-- Map Page checklist
+- Map Page Redesign Checklist
   - Header (32px high)
   	- Logo
   	- Link/Return to Link: http://...

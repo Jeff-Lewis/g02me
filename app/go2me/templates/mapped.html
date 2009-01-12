@@ -31,7 +31,6 @@ var divComments;
 var divBorderV;
 var iframe;
 var spanLinkLabel;
-var spanCloseLabel;
 
 function Loaded()
 {
@@ -58,7 +57,6 @@ function Loaded()
 	Go2.AddEventFn(iframe, "load", OnNavigate);
 	
 	spanLinkLabel = document.getElementById("linkLabel");
-	spanCloseLabel = document.getElementById("closeLabel");
 	
 	OnResize();
 }
@@ -70,12 +68,12 @@ function OnResize()
 
 	var ptContent = Go2.DOM.PtClient(divContent);
 	divContent.style.height = (dyMax - ptContent[1]) + "px"; 
-	divInfo.style.height = dyMax + "px";
-	divBorderV.style.height = dyMax + "px";
+	divInfo.style.height = (dyMax-32) + "px";
+	divBorderV.style.height = (dyMax-32) + "px";
 	
 	var ptComments = Go2.DOM.PtClient(divComments);
 	var ptInfoBottom = Go2.DOM.PtSize(divInfoBottom);
-	var dyComments = Math.max(90, dyMax - ptComments[1] - ptInfoBottom[1]);
+	var dyComments = Math.max(90, dyMax - ptInfoBottom[1] - ptComments[1]);
 	divComments.style.height = dyComments + "px";
 }
 
@@ -91,16 +89,15 @@ function OnNavigate()
 		}
 	
 	spanLinkLabel.innerHTML = "Original Link";
-	spanCloseLabel.innerHTML = "Return to Link";
 }
 
 function ResetFrame()
 {
+	msLoaded = new Date().getTime();
 	iframe.src = "{{map.Href}}";
 	fResetFrame = true;
 
 	spanLinkLabel.innerHTML = "Link";
-	spanCloseLabel.innerHTML = "Close";
 }
 
 function Click()
@@ -131,10 +128,21 @@ function KeyDownComment(evt)
 		}
 }
 
-window.onclick = Click;
+Go2.AddEventFn(window, "click", Click)
 {% endblock %}
 
 {% block body %}
+<div class="title">
+	<img class="title-logo" src="/images/title-logo.png"/>
+	<a href="{{map.Href}}" title="Close Frame"><img class="close-box" src="/images/close-box.png"/></a>
+	<p class="link">
+		<span id="linkLabel">Link</span>:
+		<a onclick="ResetFrame();return false;" href="{{map.Href}}" alt="{{map.title|escape}}" title="{{map.title|escape}}">
+			{{map.url|escape}}
+		</a>
+	</p>
+</div>
+
 <div id="info" class="info">
 	<div class="header">
 		<div class="block-top"></div>
@@ -217,18 +225,13 @@ window.onclick = Click;
 	
 </div> <!-- sidebar -->
 
-<div id="border-v" style="position:absolute;top:0;left:294px;" class="border-v"></div>
-
-<div id="address">
-	<a style="float:right;" target="_top" href="{{map.Href}}" title="Close Frame"><span id="closeLabel">Close</span> <img class="x" src="/images/x.png"/></a>
-	<p class="url"><span id="linkLabel">Link</span>: <a onclick="ResetFrame();return false;" href="{{map.Href}}" title="{{map.title|escape}}">{{map.url|escape}}</a></p>
-	<div class="border-h"></div>
-</div>
-
+<div id="border-v" style="position:absolute;top:32;left:300px;" class="border-v"></div>
 
 <div id="content">
-	<iframe id="iframe" src="{{map.Href}}"/>
-		Your browser does not support frames.
+	<iframe id="iframe" name="dummy" src="{{map.Href}}"/>
+		Your browser does not support frames.  You can visit the page by clicking
+		this link:
+		<a href="{{map.Href}}" alt="{{map.title|escape}}" title="{{map.title|escape}}">.
 	</iframe>
 </div>
 {% endblock %}

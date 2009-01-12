@@ -16,14 +16,14 @@ indexes:
   - name: map
   - name: dateCreated
 
-# Used 2 times in query history.
+# Used 87 times in query history.
 - kind: Comment
   properties:
   - name: map
   - name: dateCreated
     direction: desc
 
-# Unused in query history -- copied from input.
+# Used once in query history.
 - kind: Comment
   properties:
   - name: username
