@@ -345,3 +345,5 @@ X Can share domains beginning with numbers! - http://www.3rivers.net/~cmac/index
 - Have to hit signout twice to sign out of account (first times out)
 - Losing username saved in cookie?
 - When logged in - can't over-ride switch to non-logged in account (e.g., "anon: foo") - unit test failure!
+! Resetting iframe is navigating the parent frame???
+- Rename "views" to "viewers" and "comments" to "commenters" and "shared" to "sharers".

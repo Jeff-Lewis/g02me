@@ -138,9 +138,10 @@ class Profile(db.Model):
             try:
                 if 'img' in local.req.FILES:
                     image = local.req.FILES['img']['content']
-                    self.img_full = image
                     image = images.Image(image)
                     
+                    image.resize(300, 300)
+                    self.img_full = image.execute_transforms(output_encoding=images.PNG)
                     image.resize(75, 75)
                     self.img_med = image.execute_transforms(output_encoding=images.PNG)
                     image.resize(25, 25)
