@@ -33,7 +33,7 @@ window.onclick = Click;
 <div class="page">
 <div class="head">
 	<a target="_top" href="/" title="{{site_name}} Home | Popular Pages"><img class="logo" src="/images/logo.png"></a>
-	<a href="/user/{{profileForm.username}}/picture_full"><img class="profile" src="/user/{{profileForm.username}}/picture_med"></a>
+	<a href="/user/{{profileForm.username}}/picture_full"><img class="profile-med" src="/user/{{profileForm.username}}/picture_med"></a>
 	<h1 style="padding-top: 40px;">{{username}}'s profile</h1>
 	<div style='clear:both;'></div>
 </div>
@@ -64,7 +64,7 @@ window.onclick = Click;
 		    <p class="help">What's your real name?</p></td></tr>
 	<tr><th><label for="img">Profile picture:</label></th>
 		<td><input type="file" size="40" id="img" name="img" accept="image"/>
-			<br/><img class="profile" src="/user/{{profileForm.username}}/picture_med">
+			<br/><img class="profile-med" src="/user/{{profileForm.username}}/picture_med">
 			<p class="help">Upload an image file (PNG, JPG, or GIF) to change your profile picture.</p>
 		</td></tr>	
 	<tr><th><label for="sLocation">Location:</label></th>

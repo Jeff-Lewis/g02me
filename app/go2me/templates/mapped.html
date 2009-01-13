@@ -26,9 +26,10 @@ var txtUsername;
 var txtComment;
 var divContent;
 var divInfo;
-var divInfoBottom;
+var divCommentForm;
 var divComments;
 var divBorderV;
+var divSponsor;
 var iframe;
 var spanLinkLabel;
 
@@ -50,7 +51,8 @@ function Loaded()
 	divInfo = document.getElementById("info");
 	divComments = document.getElementById("comments");
 	divBorderV = document.getElementById("border-v");
-	divInfoBottom = document.getElementById("info-bottom");
+	divCommentForm = document.getElementById("comment-form");
+	divSponsor = document.getElementById("sponsor-panel");
 	Go2.AddEventFn(window, "resize", OnResize);
 	
 	iframe = document.getElementById("iframe");
@@ -72,8 +74,9 @@ function OnResize()
 	divBorderV.style.height = (dyMax-32) + "px";
 	
 	var ptComments = Go2.DOM.PtClient(divComments);
-	var ptInfoBottom = Go2.DOM.PtSize(divInfoBottom);
-	var dyComments = Math.max(90, dyMax - ptInfoBottom[1] - ptComments[1]);
+	var ptCommentForm = Go2.DOM.PtSize(divCommentForm);
+	var ptSponsor = Go2.DOM.PtSize(divSponsor);
+	var dyComments = Math.max(90, dyMax - ptCommentForm[1] - ptSponsor[1] - ptComments[1]);
 	divComments.style.height = dyComments + "px";
 }
 
@@ -133,7 +136,9 @@ Go2.AddEventFn(window, "click", Click)
 
 {% block body %}
 <div class="title">
-	<img class="title-logo" src="/images/title-logo.png"/>
+	<a target="_top" href="/" title="{{site_name}} Home | Popular Pages">
+		<img class="title-logo" src="/images/title-logo.png"/>
+	</a>
 	<a href="{{map.Href}}" title="Close Frame"><img class="close-box" src="/images/close-box.png"/></a>
 	<p class="link">
 		<span id="linkLabel">Link</span>:
@@ -144,77 +149,88 @@ Go2.AddEventFn(window, "click", Click)
 </div>
 
 <div id="info" class="info">
-	<div class="header">
-		<div class="block-top"></div>
-		<div style="height: 30px;" class="block-left"></div>
-		<div style="height: 30px;" class="block-right"></div>
-			<a style="float:right;padding-top:2px;padding-right:2px;" target="_top" href="{{map.Href}}" title="Close Frame"><img class="x" src="/images/x.png"/></a>
-			<a target="_top" href="/" title="{{site_name}} Home | Popular Pages">{{site_name}}</a>
-		<div class="block-bottom"></div>
-	</div>
 
-	<div id="status">
-		<p>Created: {{map.dateCreated|Age}}
+	<!-- Statistics Panel -->
+	<div id="stats-panel" class="panel">
+		<div class="panel-body stats">
 			{% if map.Creator %}
-			by <a href="/user/{{map.Creator}}" target="_top">{{map.Creator}}</a>
+				<div class="creator">
+				<a href="/user/{{map.Creator}}">
+					<img class="profile-med" src="/user/{{map.Creator}}/picture_med">
+				</a><br/>
+				<a href="/user/{{map.Creator}}">{{map.Creator}}</a>
+				</div>
 			{% endif %}
-		</p>
-		<p>Shared: {{map.shareCount|intcomma}}</p>
-		<p>Viewed: {{map.viewCount|intcomma}}</p>
-		<p>Comments: {{map.CommentCount|intcomma}}</p>
-		<p>Tags: 
-		{% for tag in TopTags %}
-			<a target="_top" href="/tag/{{tag}}" title="Recently popular | {{tag}}">{{tag|escape}}</a>{% if not forloop.last %}, {% endif %}
-		{% endfor %}
-		</p>
-		{% if is_admin %}<p style="text-align:center;">
-			<input type="button" onclick="Go2.BanishId('{{map.GetId}}', '{{map.Banished}}'=='False');" value="{% if map.Banished%}Un-{% endif %}Ban"/>
-		</p>{% endif %}
-	</div> <!-- info-status -->
+			<p>Created: {{map.dateCreated|Age}}</p>
+			<p>Shared: {{map.shareCount|intcomma}}</p>
+			<p>Viewers: {{map.viewCount|intcomma}}</p>
+			<p>Commenters: {{map.CommentCount|intcomma}}</p>
+			<p>Tags: 
+			{% for tag in TopTags %}
+				<a target="_top" href="/tag/{{tag}}" title="Recently popular | {{tag}}">{{tag|escape}}</a>{% if not forloop.last %}, {% endif %}
+			{% endfor %}
+			</p>
+			{% if is_admin %}<p style="text-align:center;">
+				<input type="button" onclick="Go2.BanishId('{{map.GetId}}', '{{map.Banished}}'=='False');" value="{% if map.Banished%}Un-{% endif %}Ban"/>
+			</p>{% endif %}
+		</div>
+	</div>
 	
-	<div class="border-h"></div>
-	
-	<div id="comments" class="comments">
-	{% for comment in map.Comments %}
-		<p>
-	    {% if comment.username %}<a target="_top" href="/user/{{comment.username}}" title="{{comment.username}}'s activity">{{comment.username}}</a>:{% endif %}
-	    {{comment.comment|escape|urlizetop}}
-	    {% if comment.tags %}
-	    	[{% for tag in comment.TagList %}<a target="_top" href="/tag/{{tag}}" title="{{tag}} pages">{{tag}}</a>{% if not forloop.last %}, {% endif %}{% endfor %}]
-	    {% endif %}
-	    - {{ comment.dateCreated|Age }}
-	    {% if comment.AllowDelete %}
-	    <img class="x" onclick="Go2.DeleteComment('{{comment.DelKey}}');" src="/images/x.png"/>
-	    {% endif %}
-	    </p>
-	{% endfor %}
+	<!-- Chat/Comments Panel -->
+	<div id="chat-panel" class="panel">
+		<div class="panel-header">
+			<div class="panel-expand"></div>
+			Chat
+		</div>
+		<div class="panel-body">
+			<!-- Variable height -->
+			<div id="comments" class="comments">
+				{% for comment in map.Comments %}
+				<p>
+			    {% if comment.username %}<a target="_top" href="/user/{{comment.username}}" title="{{comment.username}}'s activity">{{comment.username}}</a>:{% endif %}
+			    {{comment.comment|escape|urlizetop}}
+			    {% if comment.tags %}
+			    	[{% for tag in comment.TagList %}<a target="_top" href="/tag/{{tag}}" title="{{tag}} pages">{{tag}}</a>{% if not forloop.last %}, {% endif %}{% endfor %}]
+			    {% endif %}
+			    - {{ comment.dateCreated|Age }}
+			    {% if comment.AllowDelete %}
+			    <img class="x" onclick="Go2.DeleteComment('{{comment.DelKey}}');" src="/images/x.png"/>
+			    {% endif %}
+			    </p>
+				{% endfor %}
+			</div>
+			
+			<div id="comment-form" class="comment-form">
+				<div class="divider-h"></div>
+				<p>
+					<label for="username">Nickname:</label>
+					{% if username %}
+						<a href="/user/{{username}}" title="{{username}}'s activity">{{username}}</a>
+						(<a onclick="Go2.SetUsername('');return false;" href="#">Sign out</a>)
+					{% else %}
+					<input maxlength="20" style="width:70px;" type="text" id="username" name="username" tabindex="1"/>
+					{% endif %}
+				</p>
+				
+				<p>
+					<label for="comment">Comment:<br/></label>
+					<input style="float: right;" onclick="PostComment();" type="button" value="Post" tabindex="3"/>
+				
+					<input style="width:300px;height:40px;" type="text" id="comment" name="comment" tabindex="2"/>
+				</p>
+			
+				<p style="clear:left;" class="help">Comment format: "nickname: text of your comment [tag1, tag2, ...]"</p>
+			</div>
+		</div>
 	</div>
 
-	<div id="info-bottom">
-		<div class="border-h"></div>
-	
-		<div id="info-form">
-			<p>
-				<label for="username">Nickname:</label>
-				{% if username %}
-					<a href="/user/{{username}}" title="{{username}}'s activity">{{username}}</a>
-					(<a onclick="Go2.SetUsername('');return false;" href="#">Sign out</a>)
-				{% else %}
-				<input maxlength="20" style="width:70px;" type="text" id="username" name="username" tabindex="1"/>
-				{% endif %}
-			</p>
-			
-			<p>
-				<label for="comment">Comment:<br/></label>
-				<input style="float: right;" onclick="PostComment();" type="button" value="Post" tabindex="3"/>
-			
-				<input style="width:300px;height:40px;" type="text" id="comment" name="comment" tabindex="2"/>
-			</p>
-		
-			<p style="clear:left;" class="help">Comment format: "nickname: text of your comment [tag1, tag2, ...]"</p>
+	<!-- Sponsor Panel -->
+	<div id="sponsor-panel" class="panel">
+		<div class="panel-header">
+			<div class="panel-expand"></div>
+			Sponsored By
 		</div>
-		
-		<div class="bottom">
+		<div style="text-align:center;" class="p-body">
 			<a target="_top" href="/" title="{{site_name}} Home | Popular Pages"><img class="logo-small" src="/images/logo-small.png"></a>
 			<br/>
 			<a href="http://code.google.com/p/g02me/wiki/AboutUs">About Us</a> |
@@ -222,8 +238,8 @@ Go2.AddEventFn(window, "click", Click)
 			<a href="http://getsatisfaction.com/g02me/products/g02me_g02me">Feedback</a>
 		</div>
 	</div>
-	
-</div> <!-- sidebar -->
+
+</div> <!-- info sidebar -->
 
 <div id="border-v" style="position:absolute;top:32;left:300px;" class="border-v"></div>
 

@@ -3,7 +3,7 @@ margin: 0;
 padding: 0;
 font-family: verdana, arial, sans-serif;
 font-size: 14px;
-color: #3d94b0;
+color: #6b5251;
 }
 
 div {
@@ -37,7 +37,7 @@ margin: 3px 0;
 p.help {
 font-size: 12px;
 font-style: italic;
-color: #CDAC6D;
+color: #df8484;
 margin: 0 0 3px 0;
 }
 
@@ -51,11 +51,11 @@ p.message {
 font-style: italic;
 text-align:center;
 padding: 10px;
-background-color: #D7E8ED;
+background-color: #d4bcbc;
 }
 
 a {
-color: #45AFD1;
+color: #d70e0d;
 text-decoration: none;
 }
 
@@ -87,7 +87,11 @@ margin-right: 10px;
 padding-top: 2px;
 }
 
-img.profile {
+img.profile-med {
+width: 75px;
+}
+
+.form img.profile-med {
 float:left;
 padding:5px;
 }
@@ -106,7 +110,9 @@ margin-left: -5px;
 margin-bottom: 3px;
 }
 
-/* Info-bar styles */
+/* ================================================= */
+/* Info (sidebar) Styles */
+/* ================================================= */
 
 div.title {
 background: url(/images/title-background.png) repeat-x scroll top;
@@ -143,9 +149,10 @@ div.title p.link a {
 color: white;
 }
 
-div.border-h {
-background: url(/images/Border-H.png) repeat-x scroll top;
-height: 6px;
+div.divider-h {
+background: url(/images/Divider-H.png) repeat-x scroll top;
+height: 2px;
+margin: 0 20px 0 20px;
 }
 
 div.border-v {
@@ -153,6 +160,10 @@ background: url(/images/Border-V.png) repeat-y scroll top;
 width: 6px;
 height: 100%;
 }
+
+/* ================================================= */
+/* Info (sidebar) Styles */
+/* ================================================= */
 
 #info {
 position: absolute;
@@ -172,31 +183,37 @@ height: 100%;
 border: 0;
 }
 
-.info div.header {
+div.panel {
+margin: 0;
+}
+
+div.panel-header {
 font-weight: bold;
 color: white;
 background: url(/images/title-background.png) repeat-x scroll;
+height: 20px;
+text-align: center;
+padding: 2px;
 }
 
-.info div.header a {
-color: white;
+div.panel-body {
+padding: 7px 5px 4px 7px;
 }
 
-.info div.header img.x {
-float: right;
-position: relative;
-top: 2px;
-}
-
-.info #status {
-padding-bottom: 5px;
-}
-
-.info #status p
+div.panel-body p
 {
 margin: 0;
 padding: 0 4px 1px 5px;
 }
+
+
+div.creator {
+text-align:center;
+float:left;
+padding: 0 5px 5px 0;
+}
+
+
 
 .info #info-form {
 padding: 0;
@@ -220,13 +237,14 @@ overflow: auto;
 }
 
 div.comments p {
-color: #AAA;
 margin: 0;
-padding: 0 4px 2px 5px;
+padding-bottom: 4px;
 }
 
-/* Page-specific styles (based on pages.html master template) */
-
+/* ================================================= */
+/* Page-specific styles (based on pages.html master
+   template) */
+/* ================================================= */
 div.page {
 width: 910px;
 margin: auto;
@@ -239,6 +257,11 @@ white-space: nowrap;
 
 div.head {
 padding-bottom: 20px;
+}
+
+div.head img.profile-med {
+float: left;
+padding: 5px;
 }
 
 div.left {
@@ -340,8 +363,8 @@ width: 70px;
 }
 
 div.bar {
-background-color: #E39000;
-border: 1px solid #9E6700;
+background-color: #be0b0a;
+border: 1px solid #7c0908;
 width: 0;
 margin: 0;
 padding: 0;
@@ -352,5 +375,5 @@ div.about {
 width: 400px;
 padding: 10px;
 margin: 0 auto 25px auto;
-background-color: #D7E8ED;
+background-color: #d4bcbc;
 }
