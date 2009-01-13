@@ -72,6 +72,24 @@ img {
 border: 0;
 }
 
+/* ================================================= */
+/* Home Page */
+/* ================================================= */
+
+.extlogo {
+border:1px solid #6b5251;
+margin:0 0 7px 20px;
+padding: 0;
+width: 220px;
+display: block;
+}
+
+p.exttext {
+margin:-20px 0 5px 0;
+padding:0;
+text-align:right;
+}
+
 img.logo {
 width: 200px;
 height: 73px;
@@ -86,6 +104,10 @@ height: 34px;
 margin-right: 10px;
 padding-top: 2px;
 }
+
+/* ================================================= */
+/* Profile and User Pages */
+/* ================================================= */
 
 img.profile-med {
 width: 75px;
@@ -111,7 +133,7 @@ margin-bottom: 3px;
 }
 
 /* ================================================= */
-/* Info (sidebar) Styles */
+/* Mapped Page */
 /* ================================================= */
 
 div.title {
@@ -152,7 +174,7 @@ color: white;
 div.divider-h {
 background: url(/images/Divider-H.png) repeat-x scroll top;
 height: 2px;
-margin: 0 20px 0 20px;
+margin: 0;
 }
 
 div.border-v {
@@ -160,10 +182,6 @@ background: url(/images/Border-V.png) repeat-y scroll top;
 width: 6px;
 height: 100%;
 }
-
-/* ================================================= */
-/* Info (sidebar) Styles */
-/* ================================================= */
 
 #info {
 position: absolute;
@@ -183,8 +201,13 @@ height: 100%;
 border: 0;
 }
 
+/* ================================================= */
+/* Mapped Page Sidebar Panels */
+/* ================================================= */
+
 div.panel {
 margin: 0;
+overflow: hidden;
 }
 
 div.panel-header {
