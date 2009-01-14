@@ -135,6 +135,17 @@ margin-bottom: 3px;
 div.title {
 background: url(/images/title-background.png) repeat-x scroll top;
 height: 32px;
+color:white;
+}
+
+div.title a {
+color: white;
+}
+
+div.title-account {
+position: absolute;
+top: 3px;
+right: 30px;
 }
 
 img.title-logo {

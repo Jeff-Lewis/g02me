@@ -37,7 +37,13 @@ function Loaded()
 {
 	txtUsername = document.getElementById("username")
 	if (txtUsername)
-		Go2.AddEventFn(txtUsername, "keydown", KeyDownUsername);
+		{
+		txtUsername.focus();
+		Go2.AddEventFn(txtUsername, "keydown", function(evt) {
+			if (evt.keyCode == 13)
+				Go2.SetUsername(txtUsername.value);
+			});
+		}
 
 	txtComment = document.getElementById("comment");
 	var objParams = Go2.ParseParams(window.location.href);
@@ -110,17 +116,8 @@ function Click()
 
 function PostComment()
 {
-	Go2.PostComment("{{map.GetId}}", txtUsername ? txtUsername.value : '', txtComment.value);
+	Go2.PostComment("{{map.GetId}}", txtComment.value);
 }
-
-function KeyDownUsername(evt)
-{
-	if (evt.keyCode == 13)
-		{
-		txtComment.focus();
-		evt.preventDefault();
-		}
-}	
 
 function KeyDownComment(evt)
 {
@@ -140,6 +137,27 @@ Go2.AddEventFn(window, "click", Click)
 		<img class="title-logo" src="/images/title-logo.png"/>
 	</a>
 	<a href="{{map.Href}}" title="Close Frame"><div class="close-box"></div></a>
+	
+	<div class="title-account">
+	{% if username %}
+		<div style="margin-top: 4px;">
+			<a href="/user/{{username}}" title="{{username}}'s activity">{{username}}</a>
+			{% if profile %}
+				(<a href="/profile" title="{{username}}'s profile">Profile</a>)
+			{% else %}
+				(<a href="/profile" title="Your nickname is temporary until you create a (free) account.">Create Account</a>)
+			{% endif %} |
+			<a href="#" onclick="Go2.SetUsername('');return false;">Sign out</a>
+		</div>
+	{% else %}
+		<div id="sign-in">
+		    <label for="username">Nickname: </label>
+		    <input maxlength="20" style="width:70px;" type="text" id="username" name="username"/>
+			<input onclick="Go2.SetUsername(txtUsername.value);" style="width:70px;" type="button" value="Set It"/>
+		</div>
+	{% endif %}
+	</div>
+
 	<p class="link">
 		<span id="linkLabel">Link</span>:
 		<a onclick="ResetFrame();return false;" href="{{map.Href}}" alt="{{map.title|escape}}" title="{{map.title|escape}}">
@@ -216,16 +234,6 @@ Go2.AddEventFn(window, "click", Click)
 			
 			<div id="comment-form" class="comment-form">
 				<div class="divider-h"></div>
-				<p>
-					<label for="username">Nickname:</label>
-					{% if username %}
-						<a href="/user/{{username}}" title="{{username}}'s activity">{{username}}</a>
-						(<a onclick="Go2.SetUsername('');return false;" href="#">Sign out</a>)
-					{% else %}
-					<input maxlength="20" style="width:70px;" type="text" id="username" name="username" tabindex="1"/>
-					{% endif %}
-				</p>
-				
 				<p>
 					<label for="comment">Comment:<br/></label>
 					<input style="float: right;" onclick="PostComment();" type="button" value="Post" tabindex="3"/>

@@ -36,7 +36,7 @@ function KeyDown(evt)
 	{% if profile %}
 		(<a href="/profile" title="{{username}}'s profile">Profile</a>)
 	{% else %}
-		(<a href="/profile" title="You nickname is temporary until you create a (free) account.">Create Account</a>)
+		(<a href="/profile" title="Your nickname is temporary until you create a (free) account.">Create Account</a>)
 	{% endif %} |
 	<a href="/cmd/setusername?username=">Sign out</a>
 {% else %}
