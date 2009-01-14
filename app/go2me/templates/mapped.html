@@ -172,19 +172,20 @@ Go2.AddEventFn(window, "click", Click)
 				<p>Shared: {{map.shareCount|intcomma}}</p>
 				<p>Viewers: {{map.viewCount|intcomma}}</p>
 				<p>Commenters: {{map.CommentCount|intcomma}}</p>
-				<p>Faved: {{map.
+				<p>Faved: {{map.FavoriteCount|intcomma}}</p>
+				<p>Alexa Rank: 45,436</p>
 				<p>Tags: 
 				{% for tag in TopTags %}
 					<a target="_top" href="/tag/{{tag}}" title="Recently popular | {{tag}}">{{tag|escape}}</a>{% if not forloop.last %}, {% endif %}
 				{% endfor %}
 				</p>
-				<div style="margin: 5px 5px 2px 0;text-align:right;">
-					<a href="#">Make Private</a> |
-					<a href="#">Report Page</a>
-					{% if is_admin %}
-						<a href="#" onclick="Go2.BanishId('{{map.GetId}}', '{{map.Banished}}'=='False'); return false;">{% if map.Banished%}Un-{% endif %}Ban</a>
-					{% endif %}
-				</div>
+			</div>
+			<div style="margin: 5px 5px 2px 0;text-align:right;">
+				<a href="#">Make Private</a> |
+				<a href="#">Report Page</a>
+				{% if is_admin %}
+					| <a href="#" onclick="Go2.BanishId('{{map.GetId}}', '{{map.Banished}}'=='False'); return false;">{% if map.Banished%}Un-{% endif %}Ban</a>
+				{% endif %}
 			</div>
 		</div>
 	</div>

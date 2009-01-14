@@ -166,6 +166,16 @@ X Add thousands sep for counts in analytics (info, home, tags, user)
   - Top users (Day/Month)
   - Display time
   - Footer links
+  X cursor: pointer
+  X status div margin
+	- expand/collapse JS
+	- star/unstar JS
+	- Faved: N
+	- Adsense
+	- fix 2 pixel discrepancy
+	- comments scroll full width
+	- divider full width
+	- fix inline graph bar height
   
 	  
   
