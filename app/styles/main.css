@@ -122,10 +122,6 @@ img.inline {
 vertical-align:middle; 
 }
 
-img.x:hover {
-cursor: pointer;
-}
-
 li {
 line-height: 18px;
 margin-left: -5px;
@@ -147,12 +143,14 @@ top: 3px;
 left: 14px;
 }
 
-img.close-box {
+div.close-box {
+background: url(/images/close-box.png) scroll top;
 width: 11px;
 height: 11px;
+cursor: pointer;
 }
 
-div.title img.close-box {
+div.title div.close-box {
 position: absolute;
 right: 10px;
 top: 10px;
@@ -188,11 +186,12 @@ position: absolute;
 top: 32px;
 left: 0;
 width: 300px;
+height: 3000px;
 }
 
 #content {
 margin: 0 0 0 306px;
-height: 100%;
+height: 3000px;
 }
 
 iframe {
@@ -211,6 +210,9 @@ overflow: hidden;
 }
 
 div.panel-header {
+position: relative;
+top: 0;
+left: 0;
 font-weight: bold;
 color: white;
 background: url(/images/title-background.png) repeat-x scroll;
@@ -219,8 +221,76 @@ text-align: center;
 padding: 2px;
 }
 
+div.expanded {
+background: url(/images/expanded.png) scroll top;
+width: 13px;
+height: 12px;
+cursor: pointer;
+}
+
+div.expanded:hover {
+background: url(/images/collapsed.png) scroll top;
+}
+
+div.collapsed {
+background: url(/images/collapsed.png) scroll top;
+width: 13px;
+height: 12px;
+cursor: pointer;
+}
+
+div.collapsed:hover {
+background: url(/images/expanded.png) scroll top;
+}
+
+#stats-panel div.expanded {
+position: absolute;
+top: -22px;
+right: 5px;
+}
+
+#stats-panel div.content {
+margin-left: 80px;
+}
+
+div.panel-header div.expanded {
+position: absolute;
+right: 10px;
+top: 5px;
+}
+
+div.open-star {
+background: url(/images/open-star.png) scroll top;
+width: 32px;
+height: 30px;
+cursor: pointer;
+}
+
+div.open-star:hover {
+background: url(/images/closed-star.png) scroll top;
+}
+
+div.closed-star {
+background: url(/images/closed-star.png) scroll top;
+width: 32px;
+height: 30px;
+cursor: pointer;
+}
+
+div.closed-star: hover {
+background: url(/images/open-star.png) scroll top;
+}
+
+div.panel-body div.open-star {
+float: right;
+}
+
+div.panel-body div.closed-star {
+float: right;
+}
+
 div.panel-body {
-padding: 7px 5px 4px 7px;
+padding: 0;
 }
 
 div.panel-body p
@@ -229,14 +299,14 @@ margin: 0;
 padding: 0 4px 1px 5px;
 }
 
-
 div.creator {
+position: absolute;
+top: 0;
+left: 0;
+width: 75px;
 text-align:center;
-float:left;
-padding: 0 5px 5px 0;
+padding: 7px 0 0 7px;
 }
-
-
 
 .info #info-form {
 padding: 0;

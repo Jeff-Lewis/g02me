@@ -139,7 +139,7 @@ Go2.AddEventFn(window, "click", Click)
 	<a target="_top" href="/" title="{{site_name}} Home | Popular Pages">
 		<img class="title-logo" src="/images/title-logo.png"/>
 	</a>
-	<a href="{{map.Href}}" title="Close Frame"><img class="close-box" src="/images/close-box.png"/></a>
+	<a href="{{map.Href}}" title="Close Frame"><div class="close-box"></div></a>
 	<p class="link">
 		<span id="linkLabel">Link</span>:
 		<a onclick="ResetFrame();return false;" href="{{map.Href}}" alt="{{map.title|escape}}" title="{{map.title|escape}}">
@@ -152,7 +152,9 @@ Go2.AddEventFn(window, "click", Click)
 
 	<!-- Statistics Panel -->
 	<div id="stats-panel" class="panel">
-		<div class="panel-body stats">
+		<div class="expanded"></div>
+		<div class="panel-body">
+			<div class="open-star" title="Make a Favorite"></div>
 			{% if map.Creator %}
 				<div class="creator">
 				<a href="/user/{{map.Creator}}">
@@ -160,26 +162,37 @@ Go2.AddEventFn(window, "click", Click)
 				</a><br/>
 				<a href="/user/{{map.Creator}}">{{map.Creator}}</a>
 				</div>
+			{% else %}
+				<div class="creator">
+					<img class="profile-med" src="/images/picture_med.png">
+				</div>				
 			{% endif %}
-			<p>Created: {{map.dateCreated|Age}}</p>
-			<p>Shared: {{map.shareCount|intcomma}}</p>
-			<p>Viewers: {{map.viewCount|intcomma}}</p>
-			<p>Commenters: {{map.CommentCount|intcomma}}</p>
-			<p>Tags: 
-			{% for tag in TopTags %}
-				<a target="_top" href="/tag/{{tag}}" title="Recently popular | {{tag}}">{{tag|escape}}</a>{% if not forloop.last %}, {% endif %}
-			{% endfor %}
-			</p>
-			{% if is_admin %}<p style="text-align:center;">
-				<input type="button" onclick="Go2.BanishId('{{map.GetId}}', '{{map.Banished}}'=='False');" value="{% if map.Banished%}Un-{% endif %}Ban"/>
-			</p>{% endif %}
+			<div class="content">
+				<p>Created: {{map.dateCreated|Age}}</p>
+				<p>Shared: {{map.shareCount|intcomma}}</p>
+				<p>Viewers: {{map.viewCount|intcomma}}</p>
+				<p>Commenters: {{map.CommentCount|intcomma}}</p>
+				<p>Faved: {{map.
+				<p>Tags: 
+				{% for tag in TopTags %}
+					<a target="_top" href="/tag/{{tag}}" title="Recently popular | {{tag}}">{{tag|escape}}</a>{% if not forloop.last %}, {% endif %}
+				{% endfor %}
+				</p>
+				<div style="margin: 5px 5px 2px 0;text-align:right;">
+					<a href="#">Make Private</a> |
+					<a href="#">Report Page</a>
+					{% if is_admin %}
+						<a href="#" onclick="Go2.BanishId('{{map.GetId}}', '{{map.Banished}}'=='False'); return false;">{% if map.Banished%}Un-{% endif %}Ban</a>
+					{% endif %}
+				</div>
+			</div>
 		</div>
 	</div>
 	
 	<!-- Chat/Comments Panel -->
 	<div id="chat-panel" class="panel">
 		<div class="panel-header">
-			<div class="panel-expand"></div>
+			<div class="expanded"></div>
 			Chat
 		</div>
 		<div class="panel-body">
@@ -227,9 +240,10 @@ Go2.AddEventFn(window, "click", Click)
 	<!-- Sponsor Panel -->
 	<div id="sponsor-panel" class="panel">
 		<div class="panel-header">
-			<div class="panel-expand"></div>
+			<div class="expanded"></div>
 			Sponsored By
 		</div>
+		<a href="#">Buy Zach's Watermelon Flavored Cheese</a>
 		<div style="text-align:center;" class="p-body">
 			<a target="_top" href="/" title="{{site_name}} Home | Popular Pages"><img class="logo-small" src="/images/logo-small.png"></a>
 			<br/>
@@ -241,7 +255,7 @@ Go2.AddEventFn(window, "click", Click)
 
 </div> <!-- info sidebar -->
 
-<div id="border-v" style="position:absolute;top:32;left:300px;" class="border-v"></div>
+<div id="border-v" style="position:absolute;top:32;left:300px;height:3000px;" class="border-v"></div>
 
 <div id="content">
 	<iframe id="iframe" name="dummy" src="{{map.Href}}"/>
