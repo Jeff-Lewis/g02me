@@ -206,7 +206,7 @@ class ReqFilter(object):
         if isinstance(e, DirectResponse):
             return e.resp
         if isinstance(e, Error):
-            logging.error("Exception: %r" % e)
+            logging.info("Exception: %r" % e)
             return HttpError(req, e.obj['message'], obj=e.obj)
         # TODO - write exception backtrace into log file
         logging.error("Unknown exception: %r" % e)
@@ -408,8 +408,6 @@ class ReqUser(object):
         if username == self.username:
             return
         
-        Profile.RequireValidUsername(username)
-
         profile = Profile.Lookup(username)
         if profile and not profile.fBanned:
             if IsJSON():
@@ -523,6 +521,9 @@ class Error(Exception):
         
 def JSONLoginURL():
     return users.create_login_url(local.mpParams.get('urlLogin', '/'))
+
+def JSONLogoutURL():
+    return users.create_logout_url(local.mpParams.get('urlLogin', '/'))
         
 class DirectResponse(Exception):
     def __init__(self, resp):

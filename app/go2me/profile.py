@@ -53,21 +53,25 @@ class Profile(db.Model):
     
     @staticmethod
     def FindOrCreate(user, username, userid):
+        # Find Profile associated with the user (Google Account).  If not present
+        # create a new Profile for the account.  The username must be unique (not associated
+        # with another profile.
         profile = Profile.gql('WHERE user = :1', user).get()
         if profile:
-            return profile
-    
-        # User creates Google Account before selecting a username - try the nickname
+            return profile       
+        
+        # Get or create a Profile for the chosen username
         if username:
             Profile.RequireValidUsername(username)
-            profile = Profile.get_or_insert(key_name='U:' + username, user=user, username=username, userAuthFirst=userid,
+            profile = Profile.get_or_insert(key_name='U:' + username.lower(), user=user, username=username, userAuthFirst=userid,
                       dateCreated=local.dtNow)
 
         # If username was already used, we can't return another user's profile.  Try to create a unique one
         # from the account's nickname.
         if profile is None or profile.user != user:
             username = re.sub('@.*', '', user.nickname())
-            profile = Profile.get_or_insert(key_name='U:' + username, user=user, username=username, userAuthFirst=userid,
+            Profile.RequireValidUsername(username)
+            profile = Profile.get_or_insert(key_name='U:' + username.lower(), user=user, username=username, userAuthFirst=userid,
                       dateCreated=local.dtNow)
             if profile.user != user:
                 return None
@@ -76,8 +80,8 @@ class Profile(db.Model):
     
     @staticmethod
     def Lookup(username):
-        profile = Profile.gql('WHERE username = :1', username).get()
-        return profile
+        Profile.RequireValidUsername(username)
+        return Profile.get(db.Key.from_path('Profile', 'U:' + username.lower()))
     
     @staticmethod
     def RequireValidUsername(username):

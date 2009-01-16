@@ -38,20 +38,16 @@ def Lookup(req):
     return HttpResponseRedirect("/%s" % map.GetId())
 
 def SetUsername(req):
+    if not IsJSON():
+        raise Error("Can only use API to set nickname.");
+    
     local.requser.SetOpenUsername(req.REQUEST.get('username', ''), fForce=req.GET.get('force', False))
 
-    if IsJSON():
-        return HttpJSON(req, {'username': local.requser.username})
-    
-    # Setting to '' is a log-out command - be sure to clear the Google Login too
-    # BUG - Google uses an HTML page re-direct - so it DOES NOT work for JSON
-    # requests - so can't log out from Google Account using JSON - fix would be to
-    # manually over-ride the Google Login Cookie
-    if local.requser.username == '' and local.requser.profile is not None:
-        local.requser.profile = None
-        return HttpResponseRedirect(users.create_logout_url(req.get_full_path()))
+    if local.requser.profile is not None and local.requser.username != local.requser.profile.username:
+        raise Error("Require Google Logout", 'Fail/Auth/Logout',
+                    {'urlLogout': JSONLogoutURL()})
 
-    return HttpResponseRedirect('/')
+    return HttpJSON(req, {'username': local.requser.username})
 
 def DoComment(req, command=None):
     local.requser.Require('api', 'write', 'comment')

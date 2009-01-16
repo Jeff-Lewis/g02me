@@ -7,25 +7,27 @@
 <div class="head">
 	<a target="_top" href="/" title="{{site_name}} Home | Popular Pages"><img class="logo" src="/images/logo.png"></a>
 	<a href="/user/{{usernamePage}}/picture_full"><img class="profile-med" src="/user/{{usernamePage}}/picture_med"></a>
-	<h1 style="padding-top: 40px;">
-		{% if profilePage.urlHome %}
-			<a href="{{profilePage.urlHome|escape}}">{{usernamePage}}</a>'s activity
-		{% else %}
-			{{usernamePage}}'s activity
-		{% endif %}
-	</h1>
+	<h1 style="padding-top: 40px;">{{usernamePage}}'s activity</h1>
 	<div style='clear:both;'></div>
 </div>
 
-{% if profilePage.sAbout %}
+{% if profilePage.sAbout or profilePage.urlHome %}
 	<div class="about">
-	About <b>{% if profilePage.sFullname %}{{profilePage.sFullname|escape}}
-			 {% else %}{{profilePage.username}}{% endif %}</b>:
-	{{profilePage.sAbout|escape|urlize}}
-</div>
+		About <b>
+		{% if profilePage.sFullname %}
+			{{profilePage.sFullname|escape}}
+		{% else %}
+			{{profilePage.username}}
+		{% endif %}
+		{% if profilePage.sLocation %}({{profilePage.sLocation|escape}}){% endif %}</b>:
+		{% if profilePage.urlHome %}
+			<a href="profilePage.urlHome|escape">{{ profilePage.urlHome|escape }}</a><br/>
+		{% endif %}
+		{{profilePage.sAbout|escape|urlize}}
+	</div>
 {% else %}{% if profilePage.sFullname %}
 	<div style="text-align:center;" class="about">
-	<b>{{profilePage.sFullname|escape}}</b>
+		<b>{{profilePage.sFullname|escape}}</b>
 	</div>
 {% endif %}{% endif %}
 

@@ -168,14 +168,15 @@ X Add thousands sep for counts in analytics (info, home, tags, user)
   - Footer links
   X cursor: pointer
   X status div margin
-	- expand/collapse JS
-	- star/unstar JS
-	- Faved: N
-	- Adsense
-	- fix 2 pixel discrepancy
-	- comments scroll full width
-	- divider full width
-	- fix inline graph bar height
+  - expand/collapse JS
+  - star/unstar JS
+  - Faved: N
+  - Adsense
+  - fix 2 pixel discrepancy
+  - comments scroll full width
+  - divider full width
+  ! fix inline graph bar height
+  ! signout for registered uses on mapped page not working
   
 	  
   
