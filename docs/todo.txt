@@ -177,6 +177,7 @@ X Add thousands sep for counts in analytics (info, home, tags, user)
   - divider full width
   ! fix inline graph bar height
   ! signout for registered uses on mapped page not working
+  - only set focus on home page if control is visible in the window! (avoid scroll)
   
 	  
   

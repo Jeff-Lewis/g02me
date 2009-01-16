@@ -81,7 +81,13 @@ class Profile(db.Model):
     @staticmethod
     def Lookup(username):
         Profile.RequireValidUsername(username)
-        return Profile.get(db.Key.from_path('Profile', 'U:' + username.lower()))
+        profile = Profile.get(db.Key.from_path('Profile', 'U:' + username.lower()))
+        if profile:
+            return profile
+        # Didn't start with canonical (lowercase) usernames - so look for those that have
+        # mixed case (as typed by the user) as well.
+        profile = Profile.get(db.Key.from_path('Profile', 'U:' + username))
+        return profile
     
     @staticmethod
     def RequireValidUsername(username):
