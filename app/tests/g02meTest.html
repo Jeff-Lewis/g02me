@@ -14,9 +14,9 @@ var ts = new UT.TestSuite();
 ts.DWOutputDiv();
 
 // API Keys signed with the default (local) secret key (will not work on hosted Go2.me)
-var sAPIKey = "api~test~120~2009-01-01~E9C9F3E0585A8B859EE36C04B74F65E762BBAC2A";
+var sAPIKey = "api~test~120~2010-01-01~1060232359B7C42E6E1B3063CCE84497501C3099";
 var sAPIKeyExpired = "api~test~10~2008-01-01~51B2192FF5481272A0031774B41259EA51D728F7";
-var sAPIKeySlow = "api~test-slow~1~2009-01-01~8A0044AD938E5186EA17D385F13DC58BF107E18B";
+var sAPIKeySlow = "api~test-slow~1~2010-01-01~D434157843F1A7742C9BADB27A673BBB749A3D81";
 
 ts.AddTest("Map", function(ut)
 {
@@ -169,7 +169,7 @@ ts.AddTest("Info", function(ut)
 	ut.AsyncSequence([
 		function(ut)
 			{
-			new Go2.ScriptData("/map/").Call({url:"http://google.com"}, function(obj) {
+			new Go2.ScriptData("/map/").Call({url:"http://google.com", apikey:sAPIKey}, function(obj) {
 				ut.AssertContains(obj, {status:"OK", url:"http://google.com/"});
 				objInit = obj;
 				ut.NextFn();
@@ -209,7 +209,7 @@ ts.AddTest("Comment", function(ut)
 	ut.AsyncSequence([
 		function(ut)
 			{
-			new Go2.ScriptData("/map/").Call({url:"http://google.com"}, function(obj) {
+			new Go2.ScriptData("/map/").Call({url:"http://google.com", apikey:sAPIKey}, function(obj) {
 				ut.AssertContains(obj, {status:"OK", url:"http://google.com/"});
 				objInit = obj;
 				ut.NextFn();
@@ -499,6 +499,37 @@ ts.AddTest("Ban", function(ut)
 		]);
 }).Async(true);
 
+ts.AddTest("Client API Key", function(ut)
+{
+	var sClientKey;
+	
+	ut.AsyncSequence([
+		function(ut)
+  			{
+  			new Go2.ScriptData("/init/").Call({}, function(obj) {
+  				ut.AssertContains(obj, {status:"OK"});
+  				ut.AssertType(obj.apikey, "string");
+  				sClientKey = obj.apikey;
+  				ut.NextFn();
+  				});
+  			},
+  		function(ut)
+			{
+			new Go2.ScriptData("/map/").Call({url:"http://unique.com", apikey:sClientKey}, function(obj) {
+				ut.AssertContains(obj, {status:"OK", url:"http://unique.com/"});
+				ut.NextFn();
+				});
+			},     			
+		function(ut)
+			{
+			new Go2.ScriptData("/map/").Call({url:"http://unique.com", apikey:sClientKey+"x"}, function(obj) {
+				ut.AssertContains(obj, {status:"Fail/Auth/api"});
+				ut.NextFn();
+				});
+			}              	
+    	]);
+}).Async(true);
+
 ts.AddTest("Throttle Writes", function(ut)
 {
 	var objInit;
@@ -506,7 +537,7 @@ ts.AddTest("Throttle Writes", function(ut)
 	ut.AsyncSequence([
   		function(ut)
   			{
-  			new Go2.ScriptData("/map/").Call({url:"http://google.com"}, function(obj) {
+  			new Go2.ScriptData("/map/").Call({url:"http://google.com", apikey:sAPIKey}, function(obj) {
   				ut.AssertContains(obj, {status:"OK", url:"http://google.com/"});
   				objInit = obj;
   				ut.NextFn();

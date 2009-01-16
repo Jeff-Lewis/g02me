@@ -117,7 +117,6 @@ class ReqFilter(object):
         local.dtNow = datetime.now()
         host = req.META["HTTP_HOST"]
         local.sSecret = models.Globals.SGet(settings.sSecretName, "test server key")
-        local.sAPIKey = models.Globals.SGet(settings.sAPIKeyName, "test-api-key")
         local.cookies = {}
         local.mpResponse = {}
 
@@ -170,9 +169,10 @@ class ReqFilter(object):
                 requser.Allow('api', 'post')
         except: pass
         
+        # Static apikey: dev~rate~yyyy-mm-dd (expiration date)
         try:
             sAPI = SGetSigned('api', local.mpParams['apikey'])
-            # Format: dev~rate~yyyy-mm-dd (expiration date)
+            
             rgAPI = sAPI.split('~')
             dev = str(rgAPI[0])
             rate = int(rgAPI[1])
@@ -181,6 +181,18 @@ class ReqFilter(object):
                 requser.SetMaxRate('write', dev, rate)
                 requser.Allow('api')
         except: pass
+        
+        # Client apikey: ip~rate
+        try:
+            sAPI = SGetSigned('apiIP', local.mpParams['apikey'])
+
+            rgAPI = sAPI.split('~')
+            ip = str(rgAPI[0])
+            rate = int(rgAPI[1])
+            if local.ipAddress == ip:
+                requser.SetMaxRate('write', ip, rate)
+                requser.Allow('api')
+        except: pass        
         
         # Redirect from home to the profile page if the user profile is not complete
         if not local.fJSON and requser.profile and not requser.profile.IsValid() and req.path == '/':
@@ -206,7 +218,7 @@ class ReqFilter(object):
         if isinstance(e, DirectResponse):
             return e.resp
         if isinstance(e, Error):
-            logging.error("Exception: %r" % e)
+            logging.info("Exception: %r" % e)
             return HttpError(req, e.obj['message'], obj=e.obj)
         # TODO - write exception backtrace into log file
         logging.error("Unknown exception: %r" % e)
@@ -532,6 +544,8 @@ def RaiseNotFound(id):
     raise Error("The %s page, %s/%s, does not exist" % (settings.sSiteName, local.stHost, id), obj={'id':id, 'status':'Fail/NotFound'})
 
 def HttpJSON(req, obj=None):
+    if not IsJSON():
+        raise Error("Missing ?callback= parameter for API call.")
     if obj is None:
         obj = {}
     if not 'status' in obj:

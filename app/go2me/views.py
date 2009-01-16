@@ -24,6 +24,8 @@ def CatchAll(req):
     raise Error("Page not found", "Fail/NotFound")
 
 def MakeAlias(req):
+    if IsJSON():
+        local.requser.Require('api')
     map = Map.FindOrCreateUrl(local.mpParams.get('url', ""), local.mpParams.get('title', ""))
     if IsJSON():
         return HttpJSON(req, obj=map.JSON())
@@ -52,6 +54,11 @@ def SetUsername(req):
         return HttpResponseRedirect(users.create_logout_url(req.get_full_path()))
 
     return HttpResponseRedirect('/')
+
+def InitAPI(req):
+    # Return an IP-specific API key to the client - 10 WPM
+    sKey = '~'.join((local.ipAddress, '10'))
+    return HttpJSON(req, obj={'apikey':SSign('apiIP', sKey)})
 
 def DoComment(req, command=None):
     local.requser.Require('api', 'write', 'comment')
