@@ -149,6 +149,11 @@ class Map(db.Model):
     def GetId(self):
         return self.key().name()[2:]
     
+    def TweetText(self):
+        sSuffix = " - http://%s/%s" % (settings.sSiteHost, self.GetId())
+        sText = self.title[:(140-len(sSuffix))]
+        return sText + sSuffix
+    
     def GetDict(self):
         return {'host':local.stHost,
                 'id':self.GetId(),

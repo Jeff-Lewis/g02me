@@ -56,6 +56,7 @@ def NormalizeUrl(url):
     return urlunsplit(rgURL)
 
 def Href(url):
+    # Quote url text so it can be embedded in an HTML href
     ich = url.find('//')
     path = url[ich+2:].replace('"', '%22')
     return url[0:ich+2] + path
@@ -560,6 +561,7 @@ def FinalResponse():
 
         'site_name': settings.sSiteName,
         'site_host': settings.sSiteHost,
+        'twitter_source': settings.sTwitterSource,
         'site_title': settings.sSiteTitle,
         'site_tagline': settings.sSiteTagline,
         'link_length': settings.nLinkLength,

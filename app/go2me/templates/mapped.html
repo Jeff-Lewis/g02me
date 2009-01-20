@@ -204,6 +204,11 @@ Go2.AddEventFn(window, "click", Click)
 				{% if is_admin %}
 					| <a href="#" onclick="Go2.BanishId('{{map.GetId}}', '{{map.Banished}}'=='False'); return false;">{% if map.Banished%}Un-{% endif %}Ban</a>
 				{% endif %}
+				<a target="_blank"
+				   href="http://twitter.com/home?source={{twitter_source}}&status={{map.TweetText|urlencode}}"
+				   title="Share Link on Twitter">
+					<img src="/images/twitter-logo.png">
+				</a>
 			</div>
 		</div>
 	</div>
