@@ -10,6 +10,8 @@ Go2.SetCSRF("{{csrf}}");
 var txtUsername;
 var txtComment;
 
+var tmUpdate;
+
 function Loaded()
 {
 	txtUsername = document.getElementById("username")
@@ -23,6 +25,16 @@ function Loaded()
 	txtComment.focus();
 
 	Go2.AddEventFn(txtComment, "keydown", KeyDownComment);
+	
+	tmUpdate = new Go2.Timer(Refresh, 60*1000).Active(true);
+}
+
+function Refresh()
+{
+	var sComment = "";
+	if (txtComment.value != "")
+		sComment = '?comment=' + encodeURIComponent(txtComment.value)
+	window.location.href = "/info/{{map.GetId}}" + sComment;
 }
 
 function Click()
@@ -34,6 +46,7 @@ function Click()
 
 function PostComment()
 {
+	tmUpdate.Active(false);
 	Go2.PostComment("{{map.GetId}}", txtUsername ? txtUsername.value : '', txtComment.value);
 }
 
