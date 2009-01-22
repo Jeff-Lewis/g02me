@@ -14,7 +14,7 @@ TEMPLATE_DEBUG = DEBUG
 CACHE_ON = not DEBUG
 
 ADMINS = (
-    ('Mike Koss', 'mckoss@gmail.com'),
+    ('Mike Koss', 'admin@go2.me'),
 )
 
 # Go2.me Specific Settings

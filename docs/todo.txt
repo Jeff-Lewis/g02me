@@ -149,6 +149,7 @@ X Add thousands sep for counts in analytics (info, home, tags, user)
 	  	- Text entry/Post button
 	  - Sponsors panel (min/open)
 	  	- house ad, sponsor, 
+- Allow Unicode/IDNA domains - http://en.wikipedia.org/wiki/IDNA
 - Home Page checklist
   - Logo
   - nickname, signout, create account
