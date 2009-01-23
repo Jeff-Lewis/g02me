@@ -205,6 +205,12 @@ Go2.AddEventFn(window, "click", Click)
 					| <a href="#" onclick="Go2.BanishId('{{map.GetId}}', '{{map.Banished}}'=='False'); return false;">{% if map.Banished%}Un-{% endif %}Ban</a>
 				{% endif %}
 				<a target="_blank"
+				   href="http://www.facebook.com/share.php?u=http://{{site_host}}/{{map.GetId}}"
+				   onclick="Go2.FacebookShare('http://{{site_host}}/{{map.GetId}}', '{{map.title|escape}}');return false;"
+				   title="Share Link on Facebook">
+					<img src="/images/facebook.png">
+				</a>
+				<a target="_blank"
 				   href="http://twitter.com/home?source={{twitter_source}}&status={{map.TweetText|urlencode}}"
 				   title="Share Link on Twitter">
 					<img src="/images/twitter-logo.png">

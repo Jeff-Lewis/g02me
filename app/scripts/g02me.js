@@ -192,6 +192,11 @@ TrackEvent: function(sEvent)
 	pageTracker._trackPageview('/meta/' + sEvent);
 	},
 	
+FacebookShare: function(u, t)
+	{
+	window.open('http://www.facebook.com/sharer.php?u='+encodeURIComponent(u)+'&t='+encodeURIComponent(t),'sharer','toolbar=0,status=0,width=626,height=436');
+	},
+	
 // Extend(dest, src1, src2, ... )
 // Shallow copy properties in turn into dest object
 Extend: function(dest)
