@@ -63,8 +63,7 @@ def Href(url):
 def TrimString(st):
     if st == None:
         st = ''
-    st = str(st)
-    return st.strip()
+    return re.sub('[\000-\037]', '', str(st)).strip()
 
 def Slugify(s):
     "Converts to lowercase, removes non-alpha chars and converts spaces to hyphens"
