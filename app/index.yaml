@@ -10,21 +10,21 @@ indexes:
 # automatically uploaded to the admin console when you next deploy
 # your application using appcfg.py.
 
-# Used 46 times in query history.
+# Used 90 times in query history.
 - kind: Comment
   properties:
   - name: map
   - name: dateCreated
     direction: desc
 
-# Used once in query history.
+# Used 2 times in query history.
 - kind: Comment
   properties:
   - name: username
   - name: dateCreated
     direction: desc
 
-# Used 4 times in query history.
+# Used 6 times in query history.
 - kind: Score
   properties:
   - name: hrsHalf
@@ -32,7 +32,7 @@ indexes:
   - name: LogS
     direction: desc
 
-# Used 5 times in query history.
+# Used 7 times in query history.
 - kind: Score
   properties:
   - name: hrsHalf

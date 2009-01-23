@@ -218,9 +218,15 @@ class Map(db.Model):
         return Href(self.url)
         
     def JSON(self):
-        obj = {'url':self.url, 'id':self.GetId(), 'title':self.title,
-               'viewed':self.viewCount, 'shared':self.shareCount, 'created':self.dateCreated,
-               'scores':self.ss.ScoresNamed(self), 'tags':self.TopTags()
+        obj = {'url':self.url,
+               'urlShort': r"http://%s/%s" % (settings.sSiteHost, self.GetId()),
+               'id':self.GetId(),
+               'title':self.title,
+               'viewed':self.viewCount,
+               'shared':self.shareCount,
+               'created':self.dateCreated,
+               'scores':self.ss.ScoresNamed(self),
+               'tags':self.TopTags()
                }
         rgComments = []
         for comment in self.Comments():
