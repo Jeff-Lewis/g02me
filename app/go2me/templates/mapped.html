@@ -204,6 +204,12 @@ Go2.AddEventFn(window, "click", Click)
 				{% if is_admin %}
 					| <a href="#" onclick="Go2.BanishId('{{map.GetId}}', '{{map.Banished}}'=='False'); return false;">{% if map.Banished%}Un-{% endif %}Ban</a>
 				{% endif %}
+			</div>
+			<div style="margin: 5px 5px 2px 0;text-align:right;">
+				<a href="mailto:?subject=Go2.me at {{map.title|escape}}&body=I've shared a link with you at http://{{site_host}}/{{map.GetId}}"
+				   title="Send Link by Email">
+					<img src="/images/email.png">
+				</a>
 				<a target="_blank"
 				   href="http://www.facebook.com/share.php?u=http://{{site_host}}/{{map.GetId}}"
 				   onclick="Go2.FacebookShare('http://{{site_host}}/{{map.GetId}}', '{{map.title|escape}}');return false;"

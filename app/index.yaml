@@ -16,7 +16,7 @@ indexes:
   - name: map
   - name: dateCreated
 
-# Used once in query history.
+# Used 4 times in query history.
 - kind: Comment
   properties:
   - name: map
