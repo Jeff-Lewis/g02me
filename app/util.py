@@ -68,7 +68,9 @@ def TrimString(st):
 def Slugify(s):
     "Converts to lowercase, removes non-alpha chars and converts spaces to hyphens"
     s = re.sub('[^\w\s-]', '', s).strip().lower()
-    return re.sub('[-\s]+', '-', s)
+    s = re.sub('[-\s]+', '-', s)
+    s = re.sub('(^-+)|(-+$)', '', s)
+    return s
 
 from simplejson import JSONEncoder
 from simplejson.encoder import Atomic
