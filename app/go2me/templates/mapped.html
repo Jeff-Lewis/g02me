@@ -5,6 +5,10 @@
 {% block subTitle %}{{map.title|escape}}{% endblock %}
 
 {% block script %}
+// Google Ad Manager
+GA_googleAddSlot("ca-pub-0345330507104463", "map-bottom");
+GA_googleFetchAds();
+
 Go2.SetCSRF("{{csrf}}");
 msLoaded = new Date().getTime();
 
@@ -24,13 +28,13 @@ window.onbeforeunload = BeforeUnload;
 
 var txtUsername;
 var txtComment;
+var frmContent;
 var divContent;
 var divInfo;
 var divCommentForm;
 var divComments;
 var divBorderV;
 var divSponsor;
-var iframe;
 var spanLinkLabel;
 
 function Loaded()
@@ -54,19 +58,19 @@ function Loaded()
 	Go2.AddEventFn(txtComment, "keydown", KeyDownComment);
 	
 	divContent = document.getElementById("content");
+	frmContent = document.getElementById("content-iframe");
 	divInfo = document.getElementById("info");
 	divComments = document.getElementById("comments");
 	divBorderV = document.getElementById("border-v");
 	divCommentForm = document.getElementById("comment-form");
 	divSponsor = document.getElementById("sponsor-panel");
-	Go2.AddEventFn(window, "resize", OnResize);
-	
-	iframe = document.getElementById("iframe");
-	Go2.AddEventFn(iframe, "load", OnNavigate);
-	
 	spanLinkLabel = document.getElementById("linkLabel");
 	
+	Go2.AddEventFn(frmContent, "load", OnNavigate);
+	
 	OnResize();
+
+	Go2.AddEventFn(window, "resize", OnResize);
 }
 
 function OnResize()
@@ -74,15 +78,22 @@ function OnResize()
 	var rcWindow = Go2.DOM.RcWindow();
 	var dyMax = rcWindow[3];
 
-	var ptContent = Go2.DOM.PtClient(divContent);
-	divContent.style.height = (dyMax - ptContent[1]) + "px"; 
-	divInfo.style.height = (dyMax-32) + "px";
-	divBorderV.style.height = (dyMax-32) + "px";
-	
 	var ptComments = Go2.DOM.PtClient(divComments);
 	var ptCommentForm = Go2.DOM.PtSize(divCommentForm);
 	var ptSponsor = Go2.DOM.PtSize(divSponsor);
-	var dyComments = Math.max(90, dyMax - ptCommentForm[1] - ptSponsor[1] - ptComments[1]);
+	var dyComments = dyMax - ptCommentForm[1] - ptSponsor[1] - ptComments[1];
+	
+	// Info bar needs to be taller than the window - force a scroll bar
+	if (dyComments < 120)
+		{
+		dyMax += 120 - dyComments;
+		dyComments = 120;
+		}
+
+	var ptContent = Go2.DOM.PtClient(divContent);
+	divContent.style.height = (dyMax - ptContent[1]) + "px";
+	divInfo.style.height = (dyMax-32) + "px";
+	divBorderV.style.height = (dyMax-32) + "px";
 	divComments.style.height = dyComments + "px";
 }
 
@@ -103,7 +114,7 @@ function OnNavigate()
 function ResetFrame()
 {
 	msLoaded = new Date().getTime();
-	iframe.src = "{{map.Href}}";
+	frmContent.src = "{{map.Href}}";
 	fResetFrame = true;
 
 	spanLinkLabel.innerHTML = "Link";
@@ -116,7 +127,7 @@ function Click()
 
 function PostComment()
 {
-	Go2.PostComment("{{map.GetId}}", txtComment.value);
+	Go2.PostComment("{{map.GetId}}", txtUsername ? txtUsername.value : '', txtComment.value);
 }
 
 function KeyDownComment(evt)
@@ -132,7 +143,7 @@ Go2.AddEventFn(window, "click", Click)
 {% endblock %}
 
 {% block body %}
-<div class="title">
+<div id="title" class="title">
 	<a target="_top" href="/" title="{{site_name}} Home | Popular Pages">
 		<img class="title-logo" src="/images/title-logo.png"/>
 	</a>
@@ -271,19 +282,9 @@ Go2.AddEventFn(window, "click", Click)
 		</div>
 		<div class="panel-body">
 			<div style="height:250px">
-				<script type="text/javascript">
-					google_ad_client = "pub-0345330507104463";
-					/* 300x250, map-bottom */
-					google_ad_slot = "5864034136";
-					google_ad_width = 300;
-					google_ad_height = 250;
-					//-->
-					</script>
-					<script type="text/javascript"
-					src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
-				</script>
+				<script>GA_googleFillSlot("map-bottom");</script>
 			</div>
-			<div style="text-align:center;" class="p-body">
+			<div style="text-align:center;">
 				<a href="http://code.google.com/p/g02me/wiki/AboutUs">About Us</a> |
 				<a href="http://blog.go2.me">Blog</a> |
 				<a href="http://getsatisfaction.com/g02me/products/g02me_g02me">Feedback</a>
@@ -296,10 +297,9 @@ Go2.AddEventFn(window, "click", Click)
 <div id="border-v" style="position:absolute;top:32;left:300px;height:3000px;" class="border-v"></div>
 
 <div id="content">
-	<iframe id="iframe" name="dummy" src="{{map.Href}}"/>
-		Your browser does not support frames.  You can visit the page by clicking
-		this link:
-		<a href="{{map.Href}}" alt="{{map.title|escape}}" title="{{map.title|escape}}">.
+	<iframe id="content-iframe" name="dummy" src="{{map.Href}}"/>
+		Your browser does not support frames.  You can visit the page, "" by clicking this link
+		<a href="{{map.Href}}" alt="{{map.title|escape}}" title="{{map.title|escape}}">{{map.title|escape}}</a>.
 	</iframe>
 </div>
 {% endblock %}
