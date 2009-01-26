@@ -568,7 +568,7 @@ def FinalResponse():
         'host': local.stHost,
 
         'analytics_code': settings.sAnalyticsCode,
-        'snapshots_code': settings.sSnapShotsCode,        
+        'ad_publisher_id': settings.sAdPublisherID,
         })
     return local.mpResponse
     

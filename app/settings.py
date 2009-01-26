@@ -37,8 +37,8 @@ sAPIKeyName = "api.1"
 # Google Analytics Tracking Code
 sAnalyticsCode = "UA-5439059-1"
 
-# Snap Shots account id
-sSnapShotsCode = "f915fa6309d2941121149a264c4aa7bf"
+# Google AdSense/AdManager Publisher ID
+sAdPublisherID = "ca-pub-0345330507104463"
 
 MANAGERS = ADMINS
 

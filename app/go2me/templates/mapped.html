@@ -6,7 +6,7 @@
 
 {% block script %}
 // Google Ad Manager
-GA_googleAddSlot("ca-pub-0345330507104463", "map-bottom");
+GA_googleAddSlot("{{ad_publisher_id}}", "map-bottom");
 GA_googleFetchAds();
 
 Go2.SetCSRF("{{csrf}}");

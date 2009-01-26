@@ -203,6 +203,9 @@ white-space: nowrap;
 table.scores td.bar-td {
 vertical-align: middle;
 padding-left: 5px;
+}
+
+div.bar-holder {
 width: 200px;
 }
 
@@ -433,7 +436,7 @@ height: 30px;
 cursor: pointer;
 }
 
-div.closed-star: hover {
+div.closed-star:hover {
 background: url(/images/open-star.png) scroll top;
 }
 

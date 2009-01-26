@@ -166,10 +166,7 @@ DisplayBars: function(widthMax)
 	// assume first bar is the biggest!
 	var width = parseFloat(aBars[0].getAttribute('bar_value'));
 	if (width * scaleMax > widthMax)
-		{
 		scaleMax = widthMax/width;
-		console.log("scale: ", scaleMax);
-		}
 	
 	var i = 1;
 	var tm = new Go2.Timer(function()
