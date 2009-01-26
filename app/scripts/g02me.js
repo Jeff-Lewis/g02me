@@ -1,5 +1,7 @@
 // g02me.js - Go2.me Link Shortening Service
 // Copyright (c) Mike Koss (mckoss@startpad.org)
+
+// Define stubs for FireBug objects if not present
 if (!window.console || !console.firebug)
 	(function ()
 		{
@@ -156,15 +158,18 @@ BanishId: function(sID, fBan)
 DisplayBars: function(widthMax)
 	{
 	scaleMax = 3.0;
-	aBars = $("div.bar")
+	aBars = document.getElementsByClassName('bar');
 	
 	if (aBars.length == 0)
 		return;
 	
 	// assume first bar is the biggest!
-	var width = parseFloat(aBars[0].attributes["bar_value"].nodeValue);
+	var width = parseFloat(aBars[0].getAttribute('bar_value'));
 	if (width * scaleMax > widthMax)
+		{
 		scaleMax = widthMax/width;
+		console.log("scale: ", scaleMax);
+		}
 	
 	var i = 1;
 	var tm = new Go2.Timer(function()
@@ -178,11 +183,11 @@ DisplayBars: function(widthMax)
 	
 ScaleBars: function(scale)
 	{
-	var aBars = $("div.bar")
+	var aBars = document.getElementsByClassName('bar');
 	for (var i = 0; i < aBars.length; i++)
 		{
 		var divBar = aBars[i];
-		width = parseFloat(divBar.attributes["bar_value"].nodeValue);
+		width = parseFloat(divBar.getAttribute('bar_value'));
 		divBar.style.width = (width*scale) + "px";
 		}	
 	},
@@ -417,6 +422,17 @@ RemoveChildren: function(node)
 	{
 	for (var child = node.firstChild; child; child = node.firstChild);
 		node.removeChild(child);
+	},
+
+// Set focus() on element, but NOT at the expense of scrolling the window position
+SetFocusIfVisible: function(elt)
+	{
+	var rcElt = Go2.DOM.RcClient(elt);
+	var rcWin = Go2.DOM.RcWindow();
+	
+	if (Go2.Vector.PtInRect(Go2.Vector.UL(rcElt), rcWin) ||
+		Go2.Vector.PtInRect(Go2.Vector.LR(rcElt), rcWin))
+		elt.focus();
 	}
 }; // Go2.DOM
 
@@ -811,7 +827,6 @@ Go2.optionsProfile = {
 		}
 	};
 
-
 //--------------------------------------------------------------------------
 // JSForm - Client side Form Functions (not used)
 // Usage:
@@ -1013,8 +1028,9 @@ KeyDown: function(evt)
 	}
 };
 
-
+//--------------------------------------------------------------------------
 // Some extensions to built-it JavaScript objects (sorry!)
+//--------------------------------------------------------------------------
 
 Function.prototype.FnMethod = function(obj)
 {

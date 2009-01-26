@@ -2,6 +2,31 @@
 {% load humanize %}
 {% load custom %}
 {% block subTitle %}{{tag}} links{% endblock %}
+
+{% block script %}
+Go2.SetCSRF("{{csrf}}");
+
+var txtUsername;
+
+function Loaded()
+{
+	txtUsername = document.getElementById('username');
+	if (txtUsername)
+		{
+		txtUsername.focus();
+		Go2.AddEventFn(txtUsername, "keydown", KeyDown);
+		}
+
+	Go2.DisplayBars(200);
+}
+
+function KeyDown(evt)
+{
+	if (evt.keyCode == 13)
+		Go2.SetUsername(txtUsername.value);
+}
+{% endblock %}
+
 {% block pagebody %}
 <div class="head">
 	<a target="_top" href="/" title="{{site_name}} Home | Popular Pages"><img class="logo" src="/images/logo.png"></a>
@@ -29,7 +54,7 @@
 			{% endif %}
 			{{page.model.dateCreated|Age}}
 		</td>
-		<td class="bar"><div class="bar" bar_value="{{page.ScoreNow|mult:24|floatformat:1}}"
+		<td class="bar-td"><div class="bar" bar_value="{{page.ScoreNow|mult:24|floatformat:1}}"
 			title="{{page.ScoreNow|mult:24|floatformat:1}} points per day">&nbsp;</div></td>
 	</tr>
 	{% endif %}

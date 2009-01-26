@@ -2,6 +2,31 @@
 {% load humanize %}
 {% load custom %}
 {% block subTitle %}{{usernamePage}}'s activity{% endblock %}
+
+{% block script %}
+Go2.SetCSRF("{{csrf}}");
+
+var txtUsername;
+
+function Loaded()
+{
+	txtUsername = document.getElementById('username');
+	if (txtUsername)
+		{
+		txtUsername.focus();
+		Go2.AddEventFn(txtUsername, "keydown", KeyDown);
+		}
+
+	Go2.DisplayBars(200);
+}
+
+function KeyDown(evt)
+{
+	if (evt.keyCode == 13)
+		Go2.SetUsername(txtUsername.value);
+}
+{% endblock %}
+
 {% block pagebody %}
 <div class="page">
 <div class="head">
@@ -38,7 +63,7 @@
 		<td style="width:18px;"><span style="display:none;" class="Snap_Shot_URL">{{comment.map.url|escape}}</span></td>
 		<td class="title"><div>
 			<a href="/{{comment.map.GetId}}" title="{{comment.map.url|escape}}">{{comment.map.title|escape}}</a>
-		{% if comment.comment or comment.tags %}<div class="comments"><p>
+		{% if comment.comment or comment.tags %}<div class="table-comments"><p>
 			{% ifequal comment.comment "__share" %}<i>Shared</i>{% else %}{{comment.comment|escape|urlize}}{% endifequal %}
 			{% if comment.tags %}
 	    		[{% for tag in comment.TagList %}<a target="_top" href="/tag/{{tag}}">{{tag|escape}}</a>{% if not forloop.last %}, {% endif %}{% endfor %}]
@@ -64,7 +89,7 @@
 			{{comment.map.dateCreated|Age}}
 		</td>
 		{% with comment.map.ScoresNamed.day as scoreDay %}
-		<td class="bar"><div class="bar" bar_value="{{scoreDay|mult:24|floatformat:1}}"
+		<td class="bar-td"><div class="bar" bar_value="{{scoreDay|mult:24|floatformat:1}}"
 			title="{{scoreDay|mult:24|floatformat:1}} points per day">&nbsp;</div></td>
 		{% endwith %}
 	</tr>

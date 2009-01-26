@@ -36,7 +36,7 @@ function Loaded()
 
 	if (txtUsername)
 		{
-		txtUsername.focus();
+		Go2.DOM.SetFocusIfVisible(txtUsername);
 		Go2.AddEventFn(txtUsername, "keydown", function(evt)
 			{
 			if (evt.keyCode == 13)
@@ -44,9 +44,9 @@ function Loaded()
 			});
 		}
 	else
-		txtLink.focus();
+		Go2.DOM.SetFocusIfVisible(txtLink);
 		
-	Go2.DisplayBars(200);
+	//Go2.DisplayBars(200);
 }
 
 function Shorten()
@@ -128,14 +128,18 @@ using this form:</p>
 
 <div style="clear:both;padding-top:10px;">
 
-	<div style="float:left;margin-left:10px;margin-right:10px;text-align:center;">
+	<div style="float:left;width:320px;text-align:center;">
 		<h2>Four Minute Video Tour</h2><br/>
-		<object width="320" height="265"><param name="movie" value="http://www.youtube.com/v/szsHrobNSUk&hl=en&fs=1&color1=0x5d1719&color2=0xcd311b"></param><param name="allowFullScreen" value="true"></param><param name="allowscriptaccess" value="always"></param><embed src="http://www.youtube.com/v/szsHrobNSUk&hl=en&fs=1&color1=0x5d1719&color2=0xcd311b" type="application/x-shockwave-flash" allowscriptaccess="always" allowfullscreen="true" width="320" height="265"></embed></object>
+		<object width="320" height="265">
+			<param name="movie" value="http://www.youtube.com/v/szsHrobNSUk&hl=en&fs=1&color1=0x5d1719&color2=0xcd311b"></param>
+			<param name="allowFullScreen" value="true"></param><param name="allowscriptaccess" value="always"></param>
+			<embed src="http://www.youtube.com/v/szsHrobNSUk&hl=en&fs=1&color1=0x5d1719&color2=0xcd311b" type="application/x-shockwave-flash" allowscriptaccess="always" allowfullscreen="true" width="320" height="265"></embed>
+		</object>
 	</div>
 	
-	<div style="margin-left:340px;width:700px;text-align:center;">
+	<div style="margin-left:320px;width:680px;">
 		<h2>Product Reviews and Press</h2><br/>
-		<div style="float:left;width:230px;">
+		<div style="float:left;width:220px;margin-left:10px;">
 			<a target="_blank" href="http://blog.go2web20.net/2009/01/more-than-just-link-shortening-service.html">
 				<img class="extlogo" src="http://www.go2web20.net/images/badges/badge_220x70_sqr_red.gif"/>
 			</a>
@@ -149,7 +153,7 @@ using this form:</p>
 				<img class="extlogo" src="/images/external/weblist.png">
 			</a>
 		</div>
-		<div style="float:left; width:230px;text-align:center;">
+		<div style="float:left;width:220px;margin-left:5px;">
 			<a target="_blank" href="http://fearlessblogger.com/2008/12/go2me-dotcom/">
 				<img class="extlogo" src="/images/external/fearless-blogger.png">
 			</a>
@@ -163,7 +167,7 @@ using this form:</p>
 				<img class="extlogo" src="/images/external/listio.png">
 			</a>
 		</div>
-		<div style="font-size:10px;float:left;width:230px;text-align:center;">
+		<div style="font-size:10px;float:left;width:220px;margin-left:5px;">
 			<a target="_blank" href="http://descary.com/go2me-un-super-service-de-raccourcis-url/">
 				<img class="extlogo" src="/images/external/descary.png">
 			</a><br/>
@@ -203,7 +207,7 @@ using this form:</p>
 			{% endif %}
 			{{page.model.dateCreated|Age}}
 		</td>
-		<td style="width:200px;" class="bar"><div class="bar" bar_value="{{page.ScoreNow|mult:24|floatformat:1}}"
+		<td class="bar-td"><div class="bar" bar_value="{{page.ScoreNow|mult:24|floatformat:1}}"
 			title="{{page.ScoreNow|mult:24|floatformat:1}} points Today">&nbsp;</div></td>
 	</tr>
 	{% endif %}

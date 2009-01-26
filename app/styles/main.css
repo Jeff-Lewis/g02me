@@ -1,3 +1,7 @@
+/* =================================================
+   Style Defaults
+   ================================================= */
+
 body {
 margin: 0;
 padding: 0;
@@ -26,6 +30,10 @@ font-weight: normal;
 
 p {
 margin: 10px 0;
+}
+
+table {
+border-collapse: collapse;
 }
 
 p.subhead {
@@ -72,14 +80,68 @@ img {
 border: 0;
 }
 
-/* ================================================= */
-/* Home Page */
-/* ================================================= */
+li {
+line-height: 18px;
+margin-left: -5px;
+margin-bottom: 3px;
+}
+
+/* =================================================
+   Page-layout styles (based on pages.html master
+   template)
+   ================================================= */
+
+div.page {
+width: 1000px;
+margin: auto;
+}
+
+div.heading {
+float: right;
+white-space: nowrap;
+}
+
+div.head {
+padding-bottom: 20px;
+}
+
+div.head img.profile-med {
+float: left;
+padding: 5px;
+}
+
+div.left {
+clear: left;
+width: 480px;
+float: left;
+}
+
+div.right {
+float: right;
+width: 480px;
+padding-left: 20px;
+border-left: 1px solid #45AFD1;
+}
+
+div.timer {
+clear: both;
+padding-top:15px;
+text-align:center;
+}
+
+div.bottom {
+clear:both;
+text-align:center;
+padding: 15px 0 5px 0;
+}
+
+/* =================================================
+   Home Page
+   ================================================= */
 
 .extlogo {
 border:1px solid #6b5251;
-margin:0 0 7px 20px;
-padding: 0;
+margin-bottom: 5px;
 width: 220px;
 display: block;
 }
@@ -105,9 +167,57 @@ margin-right: 10px;
 padding-top: 2px;
 }
 
-/* ================================================= */
-/* Profile and User Pages */
-/* ================================================= */
+/* =================================================
+   Ranked Scores Table (home, user, and tag pages)
+   ================================================= */
+
+table.scores {
+margin: auto;
+width: 900px;
+}
+
+table.scores th {
+text-align: left;
+border-bottom: 1px solid;
+padding-right: 10px;
+}
+
+table.scores td {
+vertical-align: top;
+padding-top: 5px;
+}
+
+table.scores td.title div {
+width: 400px;
+overflow: hidden;
+}
+
+table.scores td.num {
+text-align: center;
+}
+
+table.scores td.age {
+white-space: nowrap;
+}
+
+table.scores td.bar-td {
+vertical-align: middle;
+padding-left: 5px;
+width: 200px;
+}
+
+div.bar {
+background-color: #be0b0a;
+border: 1px solid #7c0908;
+width: 0;
+margin: 0;
+padding: 0;
+cursor: default;
+}
+
+/* =================================================
+   Profile and User Pages
+   ================================================= */
 
 img.profile-med {
 width: 75px;
@@ -122,15 +232,50 @@ img.inline {
 vertical-align:middle; 
 }
 
-li {
-line-height: 18px;
-margin-left: -5px;
-margin-bottom: 3px;
+table.form td
+{
+padding-bottom: 10px;
+width: 400px;
 }
 
-/* ================================================= */
-/* Mapped Page */
-/* ================================================= */
+table.form input[type=text] {
+width: 150px;
+}
+
+table.form td p.static {
+margin-top: 2px;
+}
+
+table.form input.full {
+width: 380px
+}
+
+table.form textarea {
+width: 380px;
+height: 50px;
+}
+
+table.form input[type=submit] {
+width: 70px;
+}
+
+table.form th {
+text-align: right;
+vertical-align: top;
+padding-top: 5px;
+padding-right: 5px;
+}
+
+div.about {
+width: 400px;
+padding: 10px;
+margin: 0 auto 25px auto;
+background-color: #d4bcbc;
+}
+
+/* =================================================
+   Mapped Page Layout
+   ================================================= */
 
 div.title {
 background: url(/images/title-background.png) repeat-x scroll top;
@@ -211,9 +356,9 @@ width: 100%;
 height: 100%;
 }
 
-/* ================================================= */
-/* Mapped Page Sidebar Panels */
-/* ================================================= */
+/* =================================================
+   Mapped Page Info Panels
+   ================================================= */
 
 div.panel {
 margin: 0;
@@ -232,11 +377,14 @@ text-align: center;
 padding: 2px;
 }
 
-div.expanded {
-background: url(/images/expanded.png) scroll top;
+div.expander {
 width: 13px;
 height: 12px;
 cursor: pointer;
+}
+
+div.expanded {
+background: url(/images/expanded.png) scroll top;
 }
 
 div.expanded:hover {
@@ -245,9 +393,6 @@ background: url(/images/collapsed.png) scroll top;
 
 div.collapsed {
 background: url(/images/collapsed.png) scroll top;
-width: 13px;
-height: 12px;
-cursor: pointer;
 }
 
 div.collapsed:hover {
@@ -345,139 +490,10 @@ margin: 0;
 padding-bottom: 4px;
 }
 
-/* ================================================= */
-/* Page-specific styles (based on pages.html master
-   template) */
-/* ================================================= */
-div.page {
-width: 910px;
-margin: auto;
-}
 
-div.heading {
-float: right;
-white-space: nowrap;
-}
 
-div.head {
-padding-bottom: 20px;
-}
 
-div.head img.profile-med {
-float: left;
-padding: 5px;
-}
 
-div.left {
-clear: left;
-width: 440px;
-float: left;
-}
 
-div.right {
-float: right;
-width: 440px;
-padding-left: 20px;
-border-left: 1px solid #45AFD1;
-}
 
-div.timer {
-clear: both;
-padding-top:15px;
-text-align:center;
-}
 
-div.bottom {
-clear:both;
-text-align:center;
-padding: 15px 0 5px 0;
-}
-
-table {
-border-collapse: collapse;
-}
-
-table.scores {
-margin: auto;
-width: 900px;
-}
-
-table.scores th {
-text-align: left;
-border-bottom: 1px solid;
-padding-right: 10px;
-}
-
-table.scores td {
-vertical-align: top;
-padding-top: 5px;
-}
-
-table.scores td.title div {
-width: 400px;
-overflow: hidden;
-}
-
-table.scores td.num {
-text-align: center;
-}
-
-table.scores td.age {
-white-space: nowrap;
-}
-
-th {
-text-align: right;
-vertical-align: top;
-padding-top: 5px;
-padding-right: 5px;
-}
-
-table.scores td.bar {
-vertical-align: middle;
-padding-left: 5px;
-width: 200px;
-}
-
-table.form td
-{
-padding-bottom: 10px;
-width: 400px;
-}
-
-table.form input[type=text] {
-width: 150px;
-}
-
-table.form td p.static {
-margin-top: 2px;
-}
-
-table.form input.full {
-width: 380px
-}
-
-table.form textarea {
-width: 380px;
-height: 50px;
-}
-
-table.form input[type=submit] {
-width: 70px;
-}
-
-div.bar {
-background-color: #be0b0a;
-border: 1px solid #7c0908;
-width: 0;
-margin: 0;
-padding: 0;
-cursor: default;
-}
-
-div.about {
-width: 400px;
-padding: 10px;
-margin: 0 auto 25px auto;
-background-color: #d4bcbc;
-}

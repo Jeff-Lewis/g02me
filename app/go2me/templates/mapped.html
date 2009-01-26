@@ -42,7 +42,6 @@ function Loaded()
 	txtUsername = document.getElementById("username")
 	if (txtUsername)
 		{
-		txtUsername.focus();
 		Go2.AddEventFn(txtUsername, "keydown", function(evt) {
 			if (evt.keyCode == 13)
 				Go2.SetUsername(txtUsername.value);
@@ -181,7 +180,7 @@ Go2.AddEventFn(window, "click", Click)
 
 	<!-- Statistics Panel -->
 	<div id="stats-panel" class="panel">
-		<div class="expanded"></div>
+		<div class="expander expanded"></div>
 		<div class="panel-body">
 			<div class="open-star" title="Make a Favorite"></div>
 			{% if map.Creator %}
@@ -239,7 +238,7 @@ Go2.AddEventFn(window, "click", Click)
 	<!-- Chat/Comments Panel -->
 	<div id="chat-panel" class="panel">
 		<div class="panel-header">
-			<div class="expanded"></div>
+			<div class="expander expanded"></div>
 			Chat
 		</div>
 		<div class="panel-body">
@@ -277,7 +276,7 @@ Go2.AddEventFn(window, "click", Click)
 	<!-- Sponsor Panel -->
 	<div id="sponsor-panel" class="panel">
 		<div class="panel-header">
-			<div class="expanded"></div>
+			<div class="expander expanded"></div>
 			Sponsored By
 		</div>
 		<div class="panel-body">
@@ -285,7 +284,7 @@ Go2.AddEventFn(window, "click", Click)
 				<script>GA_googleFillSlot("map-bottom");</script>
 			</div>
 			<div style="text-align:center;">
-				<a href="http://code.google.com/p/g02me/wiki/AboutUs">About Us</a> |
+				<a href="http://code.google.com/p/g02me/wiki/AboutUs">About {{site_name}}</a> |
 				<a href="http://blog.go2.me">Blog</a> |
 				<a href="http://getsatisfaction.com/g02me/products/g02me_g02me">Feedback</a>
 			</div>
