@@ -199,6 +199,24 @@ FacebookShare: function(u, t)
 	window.open('http://www.facebook.com/sharer.php?u='+encodeURIComponent(u)+'&t='+encodeURIComponent(t),'sharer','toolbar=0,status=0,width=626,height=436');
 	},
 	
+TogglePanel: function(sPanelID)
+	{
+	var divPanel = document.getElementById(sPanelID);
+	var divBody = divPanel.getElementsByClassName('panel-body')[0];
+	divBody.style.height = 0;
+	},
+	
+InitPanels: function()
+	{
+	var aPanels = document.getElementsByClassName('panels');
+	},
+	
+DisableSelection: function(elt)
+	{
+	elt.onselectstart = function() {return false;};
+	elt.onmousedown = function() {return false;};
+	},
+	
 // Extend(dest, src1, src2, ... )
 // Shallow copy properties in turn into dest object
 Extend: function(dest)

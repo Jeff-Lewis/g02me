@@ -276,7 +276,7 @@ Go2.AddEventFn(window, "click", Click)
 	<!-- Sponsor Panel -->
 	<div id="sponsor-panel" class="panel">
 		<div class="panel-header">
-			<div class="expander expanded"></div>
+			<div onclick="Go2.TogglePanel('sponsor-panel');return false;" class="expander expanded"></div>
 			Sponsored By
 		</div>
 		<div class="panel-body">
