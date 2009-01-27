@@ -375,7 +375,7 @@ class ReqUser(object):
     def FOnce(self, key):
         if memcache.get('user.once.%s.%s' % (self.UserId(), key)):
             return False
-        memcache.set('user.once.%s.%s' % (self.UserId(), key), True)
+        memcache.set('user.once.%s.%s' % (self.UserId(), key), True, time=15*60)
         return True
 
     def UserId(self):

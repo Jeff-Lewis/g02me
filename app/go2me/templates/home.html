@@ -188,7 +188,7 @@ using this form:</p>
 <div style="clear:both;padding-top:15px;">
 <h2>Recently popular links ({{total_pages|intcomma}} links shared to date)</h2>
 <table class="scores">
-<tr><th>Title</th><th>Shared</th><th>Viewed</th><th>Comments</th><th>Created</th><th>Score</th></tr>
+<tr><th>Title</th><th>Visitors</th><th>Commenters</th><th>Created</th><th>Score</th></tr>
 {% for page in pages %}
 	{% if page.ModelExists %}
 	<tr>
@@ -196,7 +196,6 @@ using this form:</p>
 			<img class="favicon" src="http://{{page.model.Domain}}/favicon.ico">
 			<a href="/{{page.model.GetId}}" title="{{page.model.url|escape}}">{{page.model.title|escape}}</a>
 		</div></td>
-		<td class="num">{{page.model.shareCount|intcomma}}</td>
 		<td class="num">{{page.model.viewCount|intcomma}}</td>
 		<td class="num">{{page.model.CommentCount|intcomma}}</td>
 		<td class="age">

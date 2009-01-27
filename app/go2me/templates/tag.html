@@ -35,7 +35,7 @@ function KeyDown(evt)
 </div>
 
 <table class="scores">
-<tr><th></th><th>Title</th><th>Shared</th><th>Viewed</th><th>Comments</th><th>Created</th><th>Score</th></tr>
+<tr><th>Title</th><th>Visitors</th><th>Commenters</th><th>Created</th><th>Score</th></tr>
 {% for page in pages %}
 	{% if page.ModelExists %}
 	<tr>
@@ -43,7 +43,6 @@ function KeyDown(evt)
 			<img class="favicon" src="http://{{page.model.Domain}}/favicon.ico">
 			<a href="/{{page.model.GetId}}" title="{{page.model.url|escape}}">{{page.model.title|escape}}</a>
 		</div></td>
-		<td class="num">{{page.model.shareCount|intcomma}}</td>
 		<td class="num">{{page.model.viewCount|intcomma}}</td>
 		<td class="num">{{page.model.CommentCount|intcomma}}</td>
 		<td class="age">
@@ -54,8 +53,10 @@ function KeyDown(evt)
 			{% endif %}
 			{{page.model.dateCreated|Age}}
 		</td>
-		<td class="bar-td"><div class="bar" bar_value="{{page.ScoreNow|mult:24|floatformat:1}}"
-			title="{{page.ScoreNow|mult:24|floatformat:1}} points per day">&nbsp;</div></td>
+		<td class="bar-td"><div class="bar-holder">
+			<div class="bar" bar_value="{{page.ScoreNow|mult:24|floatformat:1}}"
+				 title="{{page.ScoreNow|mult:24|floatformat:1}} points per day">&nbsp;</div>
+		</div></td>
 	</tr>
 	{% endif %}
 {% endfor %}

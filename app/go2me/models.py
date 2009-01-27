@@ -14,8 +14,9 @@ class Map(db.Model):
     ss = ScoreSet.GetSet("map")
     
     # Relative scores for user interactions
-    scoreComment = 2
     scoreView = 1
+    scoreComment = 2
+    scoreFavorite = 2
     scoreShare = 3
     
     # TODO: Add a database model for blacklisted domains
@@ -169,7 +170,8 @@ class Map(db.Model):
             self.commentCount += 1
         self.AddTags(tags.split(','))
         self.put()
-        if local.requser.FAllow('score') and not self.Banished():
+        if local.requser.FAllow('score') and not self.Banished() and \
+            local.requser.FOnce('comment.%s' % self.GetId()):
             self.ss.Update(self, self.scoreComment, dt=local.dtNow, tags=self.TopTags())
         
     def CommentCount(self):
@@ -196,7 +198,7 @@ class Map(db.Model):
         if not self.is_saved():
             self.put()
         if local.requser.FAllow('share') and \
-            (local.requser.FOnce('map.%s' % self.GetId()) or self.shareCount == 0):
+            (local.requser.FOnce('share.%s' % self.GetId()) or self.shareCount == 0):
             self.shareCount += 1
             self.put()
             
@@ -209,7 +211,7 @@ class Map(db.Model):
                 self.AddComment(username=local.requser.username, comment="__share")
         
     def Viewed(self):
-        if not local.requser.FOnce('map.%s' % self.GetId()):
+        if not local.requser.FOnce('view.%s' % self.GetId()):
             return
         self.viewCount += 1
         self.put()
