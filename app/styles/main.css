@@ -493,6 +493,11 @@ margin: 0;
 padding-bottom: 4px;
 }
 
+img.inline-link {
+position: relative;
+top: 4px;
+}
+
 
 
 

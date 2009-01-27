@@ -221,6 +221,11 @@ class Map(db.Model):
     
     def Href(self):
         return Href(self.url)
+    
+    def Domain(self):
+        rg = urlsplit(self.url)
+        sHost = rg[1].lower()
+        return sHost
         
     def JSON(self):
         obj = {'url':self.url, 'id':self.GetId(), 'title':self.title,

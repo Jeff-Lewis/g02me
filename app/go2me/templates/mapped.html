@@ -247,7 +247,7 @@ Go2.AddEventFn(window, "click", Click)
 				{% for comment in map.Comments %}
 				<p>
 			    {% if comment.username %}<a target="_top" href="/user/{{comment.username}}" title="{{comment.username}}'s activity">{{comment.username}}</a>:{% endif %}
-			    {{comment.comment|escape|urlizetop}}
+			    {{comment.comment|escape|urlizecomment}}
 			    {% if comment.tags %}
 			    	[{% for tag in comment.TagList %}<a target="_top" href="/tag/{{tag}}" title="{{tag}} pages">{{tag}}</a>{% if not forloop.last %}, {% endif %}{% endfor %}]
 			    {% endif %}
@@ -296,7 +296,7 @@ Go2.AddEventFn(window, "click", Click)
 <div id="border-v" style="position:absolute;top:32;left:300px;height:3000px;" class="border-v"></div>
 
 <div id="content">
-	<iframe id="content-iframe" name="dummy" src="{{map.Href}}"/>
+	<iframe id="content-iframe" name="content-frame" src="{{map.Href}}"/>
 		Your browser does not support frames.  You can visit the page, "" by clicking this link
 		<a href="{{map.Href}}" alt="{{map.title|escape}}" title="{{map.title|escape}}">{{map.title|escape}}</a>.
 	</iframe>

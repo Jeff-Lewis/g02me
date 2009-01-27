@@ -193,6 +193,7 @@ using this form:</p>
 	{% if page.ModelExists %}
 	<tr>
 		<td class="title"><div>
+			<img src="http://{{page.model.Domain}}/favicon.ico">
 			<a href="/{{page.model.GetId}}" title="{{page.model.url|escape}}">{{page.model.title|escape}}</a>
 		</div></td>
 		<td class="num">{{page.model.shareCount|intcomma}}</td>
