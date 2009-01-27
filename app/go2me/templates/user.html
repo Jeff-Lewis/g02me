@@ -61,6 +61,7 @@ function KeyDown(evt)
 {% for comment in comments %}
 	<tr>
 		<td class="title"><div>
+			<img class="favicon" src="http://{{comment.map.Domain}}/favicon.ico">
 			<a href="/{{comment.map.GetId}}" title="{{comment.map.url|escape}}">{{comment.map.title|escape}}</a>
 		{% if comment.comment or comment.tags %}<div class="table-comments"><p>
 			{% ifequal comment.comment "__share" %}<i>Shared</i>{% else %}{{comment.comment|escape|urlize}}{% endifequal %}
