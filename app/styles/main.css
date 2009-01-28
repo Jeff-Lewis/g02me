@@ -380,6 +380,10 @@ text-align: center;
 padding: 2px;
 }
 
+div.panel-body {
+overflow: hidden;
+}
+
 div.expander {
 width: 13px;
 height: 12px;
@@ -390,19 +394,11 @@ div.expanded {
 background: url(/images/expanded.png) scroll top;
 }
 
-div.expanded:hover {
-background: url(/images/collapsed.png) scroll top;
-}
-
 div.collapsed {
 background: url(/images/collapsed.png) scroll top;
 }
 
-div.collapsed:hover {
-background: url(/images/expanded.png) scroll top;
-}
-
-#stats-panel div.expanded {
+#stats-panel div.expander {
 position: absolute;
 top: -22px;
 right: 5px;
@@ -412,7 +408,7 @@ right: 5px;
 margin-left: 80px;
 }
 
-div.panel-header div.expanded {
+div.panel-header div.expander {
 position: absolute;
 right: 10px;
 top: 5px;

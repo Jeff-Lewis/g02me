@@ -199,22 +199,47 @@ FacebookShare: function(u, t)
 	window.open('http://www.facebook.com/sharer.php?u='+encodeURIComponent(u)+'&t='+encodeURIComponent(t),'sharer','toolbar=0,status=0,width=626,height=436');
 	},
 	
-TogglePanel: function(sPanelID)
-	{
-	var divPanel = document.getElementById(sPanelID);
-	var divBody = divPanel.getElementsByClassName('panel-body')[0];
-	divBody.style.height = 0;
-	},
-	
 InitPanels: function()
 	{
-	var aPanels = document.getElementsByClassName('panels');
+	var aPanels = document.getElementsByClassName('panel');
+	for (var i = 0; i < aPanels.length; i++)
+		{
+		var divPanel = aPanels[i];
+		var divExpander = divPanel.getElementsByClassName('expander')[0];
+		var divHeader = divPanel.getElementsByClassName('panel-header')[0];
+		var divBody = divPanel.getElementsByClassName('panel-body')[0];
+		
+		// Don't allow text selection in panel header
+		if (divHeader)
+			{
+			Go2.AddEventFn(divHeader, 'mousedown', function(evt) {
+				evt.preventDefault();
+				evt.stopPropagation();
+				});
+			}
+		
+		// Use capture to take precedence over other panel-header clicks!
+		Go2.AddEventFn(divExpander, 'mousedown', Go2.TogglePanel.FnArgs(divBody), true);
+		}
 	},
 	
-DisableSelection: function(elt)
+TogglePanel: function(evt, divBody)
 	{
-	elt.onselectstart = function() {return false;};
-	elt.onmousedown = function() {return false;};
+	var divExpander = evt.target;
+	if (divBody.style.height == '0px')
+		{
+		divExpander.className = 'expander expanded';
+		divBody.style.height = 'auto';
+		}
+	else
+		{
+		divExpander.className = 'expander collapsed';
+		divBody.style.height = "0px";
+		}
+	
+	OnResize();
+	evt.preventDefault();
+	evt.stopPropagation();
 	},
 	
 // Extend(dest, src1, src2, ... )
@@ -1047,12 +1072,14 @@ KeyDown: function(evt)
 // Some extensions to built-it JavaScript objects (sorry!)
 //--------------------------------------------------------------------------
 
+// Wrap a method call in a function
 Function.prototype.FnMethod = function(obj)
 {
 	var _fn = this;
 	return function () { return _fn.apply(obj, arguments); };
 };
 
+// Append additional arguments to a function
 Function.prototype.FnArgs = function()
 {
 	var _fn = this;
