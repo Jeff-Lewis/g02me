@@ -96,7 +96,7 @@ class Score(db.Model):
             
         #logging.info("Score: %f " % self.S)
             
-        # Todo: handle positive and negative values
+        # Note: all scores are positive (non-zero)
         self.LogS = math.log(self.S)/math.log(2) + self.hrsLast/self.hrsHalf
         
         if tags is not None:

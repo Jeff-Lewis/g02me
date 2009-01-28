@@ -181,13 +181,20 @@ class Map(db.Model):
         self.EnsureCommentCount()
         comm = Comment.Create(map=self, username=username, comment=comment, tags=tags)
         comm.put()
-        if not comment.startswith('__'):
-            self.commentCount += 1
+
+        # No scoring/counting/tag accumulation for banished URL's or meta-comments
+        if self.Banished() or comment.startswith('__'):
+            return
+
         self.AddTags(tags.split(','))
+
+        score = 0
+        if local.requser.FAllow('score') and local.requser.FOnce('comment.%s' % self.GetId()):
+            self.commentCount += 1
+            score = self.scoreComment
+
         self.put()
-        if local.requser.FAllow('score') and not self.Banished() and \
-            local.requser.FOnce('comment.%s' % self.GetId()):
-            self.ss.Update(self, self.scoreComment, dt=local.dtNow, tags=self.TopTags())
+        self.ss.Update(self, score, dt=local.dtNow, tags=self.TopTags())
         
     def CommentCount(self):
         # Cache the comment count in the model
@@ -222,7 +229,7 @@ class Map(db.Model):
 
             # Overload the comment to record when a (registered user) shares a URL
             # BUG: Don't record __share if user has already shared it
-            if local.requser.username != '' and local.requser.FAllow('comment'):
+            if local.requser.username != '':
                 self.AddComment(username=local.requser.username, comment="__share")
         
     def Viewed(self):
@@ -380,6 +387,7 @@ class Comment(db.Model):
     
     @staticmethod
     def Create(map, username='', comment='', tags=''):
+        local.requser.Require('write', 'comment')
         username = TrimString(username)
         userAuth = local.requser.UserId()
         comment = TrimString(comment)

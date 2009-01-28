@@ -199,6 +199,7 @@ Go2.AddEventFn(window, "click", Click)
 				<p>Viewers: {{map.viewCount|intcomma}}</p>
 				<p>Commenters: {{map.CommentCount|intcomma}}</p>
 				<p>Faved: {{map.FavoriteCount|intcomma}}</p>
+				<p>Score: {{map.ScoresNamed.day|mult:24|floatformat:1}}</p>
 				<p>Alexa Rank: 45,436</p>
 				<p>Tags: 
 				{% for tag in TopTags %}
