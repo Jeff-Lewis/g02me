@@ -401,7 +401,7 @@ background: url(/images/collapsed.png) scroll top;
 #stats-panel div.expander {
 position: absolute;
 top: -22px;
-right: 5px;
+right: 10px;
 }
 
 #stats-panel div.content {

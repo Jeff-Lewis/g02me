@@ -181,20 +181,18 @@ Go2.AddEventFn(window, "click", Click)
 	<!-- Statistics Panel -->
 	<div id="stats-panel" class="panel">
 		<div class="expander expanded"></div>
-		<div class="panel-body">
+		<div style="position:relative;" class="panel-body">
 			<div class="open-star" title="Make a Favorite"></div>
+			<div class="creator">
 			{% if map.Creator %}
-				<div class="creator">
 				<a href="/user/{{map.Creator}}">
 					<img class="profile-med" src="/user/{{map.Creator}}/picture_med">
 				</a><br/>
 				<a href="/user/{{map.Creator}}">{{map.Creator}}</a>
-				</div>
 			{% else %}
-				<div class="creator">
-					<img class="profile-med" src="/images/picture_med.png">
-				</div>				
+				<img class="profile-med" src="/images/picture_med.png">
 			{% endif %}
+			</div>
 			<div class="content">
 				<p>Created: {{map.dateCreated|Age}}</p>
 				<p>Shared: {{map.shareCount|intcomma}}</p>
