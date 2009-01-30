@@ -15,6 +15,8 @@ import logging
 import simplejson
 from hashlib import sha1
 import re
+import sys
+import traceback
 
 # Some letters and numbers have been removed to ensure that humans can read the identifies
 # without ambiguity.
@@ -206,11 +208,15 @@ class ReqFilter(object):
     def process_exception(self, req, e):
         if isinstance(e, DirectResponse):
             return e.resp
+        sBacktrace = ''.join(traceback.format_list(traceback.extract_tb(sys.exc_info()[2])))
+        
         if isinstance(e, Error):
             logging.info("Exception: %r" % e)
+            logging.info(sBacktrace)
             return HttpError(req, e.obj['message'], obj=e.obj)
-        # TODO - write exception backtrace into log file
+        
         logging.error("Unknown exception: %r" % e)
+        logging.error(sBacktrace)
         if not settings.DEBUG:
             return HttpError(req, "Application Error", {'status': 'Fail'})
         

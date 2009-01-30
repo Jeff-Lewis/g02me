@@ -9,6 +9,7 @@ import logging
 from urlparse import urlsplit
 import re
 import pickle
+import urllib
 
 class Map(db.Model):
     ss = ScoreSet.GetSet("map")
@@ -168,6 +169,7 @@ class Map(db.Model):
     def TweetText(self):
         sSuffix = " - http://%s/%s" % (settings.sSiteHost, self.GetId())
         sText = self.title[:(140-len(sSuffix))]
+        sText = urllib.quote(sText.encode('utf-8'))
         return sText + sSuffix
     
     def GetDict(self):
