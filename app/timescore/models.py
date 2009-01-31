@@ -83,6 +83,8 @@ class Score(db.Model):
     def Update(self, value, dt=None, tags=None):
         if dt is None:
             dt = util.local.dtNow
+        if self.hrsLast == 0.0:
+            self.hrsLast = Score.Hours(util.local.dtNow)
         value = float(value)
         k = 0.5 ** (1.0/self.hrsHalf)
         
@@ -97,7 +99,10 @@ class Score(db.Model):
         #logging.info("Score: %f " % self.S)
             
         # Note: all scores are positive (non-zero)
-        self.LogS = math.log(self.S)/math.log(2) + self.hrsLast/self.hrsHalf
+        try:
+            self.LogS = math.log(self.S)/math.log(2) + self.hrsLast/self.hrsHalf
+        except Exception, e:
+            logging.error("Math error: %r", e)
         
         if tags is not None:
             self.tag = tags;
