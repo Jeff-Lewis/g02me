@@ -158,7 +158,7 @@ BanishId: function(sID, fBan)
 DisplayBars: function(widthMax)
 	{
 	scaleMax = 3.0;
-	aBars = document.getElementsByClassName('bar');
+	aBars = $('.bar');
 	
 	if (aBars.length == 0)
 		return;
@@ -180,7 +180,7 @@ DisplayBars: function(widthMax)
 	
 ScaleBars: function(scale)
 	{
-	var aBars = document.getElementsByClassName('bar');
+	var aBars = $('.bar');
 	for (var i = 0; i < aBars.length; i++)
 		{
 		var divBar = aBars[i];
@@ -201,13 +201,13 @@ FacebookShare: function(u, t)
 	
 InitPanels: function()
 	{
-	var aPanels = document.getElementsByClassName('panel');
+	var aPanels = $('.panel');
 	for (var i = 0; i < aPanels.length; i++)
 		{
 		var divPanel = aPanels[i];
-		var divExpander = divPanel.getElementsByClassName('expander')[0];
-		var divHeader = divPanel.getElementsByClassName('panel-header')[0];
-		var divBody = divPanel.getElementsByClassName('panel-body')[0];
+		var divExpander = $(divPanel).find('.expander')[0];
+		var divHeader = $(divPanel).find('.panel-header')[0];
+		var divBody = $(divPanel).find('.panel-body')[0];
 		
 		// Don't allow text selection in panel header
 		if (divHeader)

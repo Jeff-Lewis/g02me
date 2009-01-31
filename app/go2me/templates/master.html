@@ -10,9 +10,11 @@
 {% block script_includes %}{% endblock %}
 
 <script src="/scripts/g02me.js"></script>
+<script src="http://www.google.com/jsapi"></script>
 
 <script src="http://partner.googleadservices.com/gampad/google_service.js"></script>
 <script type="text/javascript">
+google.load("jquery", "1.2.6");
 GS_googleAddAdSenseService("{{ad_publisher_id}}");
 GS_googleEnableAllServices();
 </script>
