@@ -169,7 +169,7 @@ ts.AddTest("Info", function(ut)
 	ut.AsyncSequence([
 		function(ut)
 			{
-			new Go2.ScriptData("/map/").Call({url:"http://google.com"}, function(obj) {
+			new Go2.ScriptData("/map/").Call({url:"http://google.com", apikey:sAPIKey}, function(obj) {
 				ut.AssertContains(obj, {status:"OK", url:"http://google.com/"});
 				objInit = obj;
 				ut.NextFn();
@@ -209,7 +209,7 @@ ts.AddTest("Comment", function(ut)
 	ut.AsyncSequence([
 		function(ut)
 			{
-			new Go2.ScriptData("/map/").Call({url:"http://google.com"}, function(obj) {
+			new Go2.ScriptData("/map/").Call({url:"http://google.com", apikey:sAPIKey}, function(obj) {
 				ut.AssertContains(obj, {status:"OK", url:"http://google.com/"});
 				objInit = obj;
 				ut.NextFn();
@@ -319,6 +319,42 @@ ts.AddTest("Comment", function(ut)
 				ut.AssertEq(obj.comments.length, cComment);
 				ut.NextFn();
 				});
+			}
+		]);
+}).Async(true);
+
+ts.AddTest("Unicode", function(ut)
+{
+	var objInit;
+	var cComment;
+	var chUnicode = String.fromCharCode(0xe9);
+
+	ut.AsyncSequence([
+		function(ut)
+			{
+			new Go2.ScriptData("/map/").Call({url:"http://google.com/uc", apikey:sAPIKey}, function(obj) {
+				ut.AssertContains(obj, {status:"OK", url:"http://google.com/uc"});
+				objInit = obj;
+				ut.NextFn();
+				});
+			},
+		function(ut)
+			{
+			new Go2.ScriptData("/comment/").Call({id:objInit.id, comment:"Unicode " + chUnicode, apikey:sAPIKey}, ut.FnWrap(function (obj) {
+				ut.AssertContains(obj, {status:"OK"});
+				ut.AssertContains(obj.comments[0], {comment:"Unicode " + chUnicode});
+				ut.NextFn();
+				}));
+			},
+		function(ut)
+			{
+			new Go2.ScriptData("/comment/").Call({id:objInit.id, comment:"Unicode Tag [tag-" + chUnicode + "]", apikey:sAPIKey}, ut.FnWrap(function (obj) {
+				ut.AssertContains(obj, {status:"OK"});
+				// No Unicode allowed in tags - will be stripped
+				ut.AssertContains(obj.comments[0], {comment:"Unicode Tag", tags:"tag"});
+				ut.AssertEq(obj.tags[0], "tag");
+				ut.NextFn();
+				}));
 			}
 		]);
 }).Async(true);
@@ -499,6 +535,37 @@ ts.AddTest("Ban", function(ut)
 		]);
 }).Async(true);
 
+ts.AddTest("Client API Key", function(ut)
+{
+	var sClientKey;
+	
+	ut.AsyncSequence([
+		function(ut)
+  			{
+  			new Go2.ScriptData("/init/").Call({}, function(obj) {
+  				ut.AssertContains(obj, {status:"OK"});
+  				ut.AssertType(obj.apikey, "string");
+  				sClientKey = obj.apikey;
+  				ut.NextFn();
+  				});
+  			},
+  		function(ut)
+			{
+			new Go2.ScriptData("/map/").Call({url:"http://unique.com", apikey:sClientKey}, function(obj) {
+				ut.AssertContains(obj, {status:"OK", url:"http://unique.com/"});
+				ut.NextFn();
+				});
+			},     			
+		function(ut)
+			{
+			new Go2.ScriptData("/map/").Call({url:"http://unique.com", apikey:sClientKey+"x"}, function(obj) {
+				ut.AssertContains(obj, {status:"Fail/Auth/api"});
+				ut.NextFn();
+				});
+			}              	
+    	]);
+}).Async(true);
+
 ts.AddTest("Throttle Writes", function(ut)
 {
 	var objInit;
@@ -506,7 +573,7 @@ ts.AddTest("Throttle Writes", function(ut)
 	ut.AsyncSequence([
   		function(ut)
   			{
-  			new Go2.ScriptData("/map/").Call({url:"http://google.com"}, function(obj) {
+  			new Go2.ScriptData("/map/").Call({url:"http://google.com", apikey:sAPIKey}, function(obj) {
   				ut.AssertContains(obj, {status:"OK", url:"http://google.com/"});
   				objInit = obj;
   				ut.NextFn();

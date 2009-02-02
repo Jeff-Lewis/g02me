@@ -32,7 +32,6 @@ idMapBase = 57
 cPagesExtra = 159
 sMapName = "map.2"
 sSecretName = "secret.1"
-sAPIKeyName = "api.1"
 
 # Google Analytics Tracking Code
 sAnalyticsCode = "UA-5439059-1"

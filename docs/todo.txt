@@ -414,8 +414,8 @@ X Can share domains beginning with numbers! - http://www.3rivers.net/~cmac/index
 - Have to hit signout twice to sign out of account (first times out)
 - Losing username saved in cookie?
 - When logged in - can't over-ride switch to non-logged in account (e.g., "anon: foo") - unit test failure!
-- UnicodeDecodeError
+X UnicodeDecodeError
   - 92.105.194.137 - lyonel.kaufmann [14/Jan/2009:12:21:03 -0800] "GET /comment/?id=QF&csrf=92.105.194.137~01%2F13%2F2009%2008%3A56~6856&username=&comment=Patrick%20McGoohan%2C%20acteur%20de%20la%20s%C3%A9rie%20TV%20Le%20Prisonnier%2C%20est%20mort%20%C3%A0%20l'%C3%A2ge%20de%2080%20ans&urlLogin=%2FQF%3Fcomment%3DPatrick%2520McGoohan%252C%2520acteur%2520de%2520la%2520s%25C3%25A9rie%2520TV%2520Le%2520Prisonnier%252C%2520est%2520mort%2520%25C3%25A0%2520l'%25C3%25A2ge%2520de%252080%2520ans&callback=Go2.ScriptData.ActiveCalls%5B1%5D.Callback HTTP/1.1" 200 497 "http://go2.me/info/QF?" -
     Unknown exception: UnicodeDecodeError('ascii', "Patrick McGoohan, acteur de la s\xc3\xa9rie TV Le Prisonnier, est mort \xc3\xa0 l'\xc3\xa2ge de 80 ans", 32, 33, 'ordinal not in range(128)')
-
-  
+! Resetting iframe is navigating the parent frame???
+- Rename "views" to "viewers" and "comments" to "commenters" and "shared" to "sharers".

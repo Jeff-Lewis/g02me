@@ -254,9 +254,15 @@ class Map(db.Model):
         return sHost
         
     def JSON(self):
-        obj = {'url':self.url, 'id':self.GetId(), 'title':self.title,
-               'viewed':self.viewCount, 'shared':self.shareCount, 'created':self.dateCreated,
-               'scores':self.ss.ScoresNamed(self), 'tags':self.TopTags()
+        obj = {'url':self.url,
+               'urlShort': r"http://%s/%s" % (settings.sSiteHost, self.GetId()),
+               'id':self.GetId(),
+               'title':self.title,
+               'viewed':self.viewCount,
+               'shared':self.shareCount,
+               'created':self.dateCreated,
+               'scores':self.ss.ScoresNamed(self),
+               'tags':self.TopTags()
                }
         rgComments = []
         for comment in self.Comments():
@@ -398,7 +404,7 @@ class Comment(db.Model):
         
         if tags == '' and comment == '':
             raise Error("Empty comment")
-        
+
         com = Comment(map=map, username=username, userAuth=userAuth, comment=comment, tags=tags, dateCreated=dateCreated)
         return com
     
@@ -406,6 +412,7 @@ class Comment(db.Model):
         # Delete the Comment and update the tag list in the Map
         try:
             self.map.RemoveTags(self.tags.split(','))
+            self.map.EnsureCommentCount()
             if not self.comment.startswith('__'):
                 self.map.commentCount -= 1
             self.map.put()
@@ -417,7 +424,8 @@ class Comment(db.Model):
     def Parse(sUsername, sComment):
         if sUsername != '':
             sComment = "%s: %s" % (sUsername, sComment)
-            
+
+        sComment = unicode(sComment, 'utf8')            
         m = Comment.regComment.match(sComment)
     
         if m == None:
