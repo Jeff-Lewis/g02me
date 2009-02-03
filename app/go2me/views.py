@@ -11,14 +11,22 @@ import profile
 import logging
 
 def Home(req):
+    AddToResponse({
+       'total_pages': Globals.IdGet(settings.sMapName, settings.idMapBase) -
+            settings.idMapBase + 1 + settings.cPagesExtra
+       })
+    return render_to_response('home.html', FinalResponse())
+
+def Popular(req):
     if IsJSON():
         return HttpJSON(req, Map.TopJSON())
+    
     AddToResponse({
        'pages': Map.TopPages(),
        'total_pages': Globals.IdGet(settings.sMapName, settings.idMapBase) -
             settings.idMapBase + 1 + settings.cPagesExtra
-                   })
-    return render_to_response('home.html', FinalResponse())
+       })
+    return render_to_response('popular.html', FinalResponse())
 
 def CatchAll(req):
     raise Error("Page not found", "Fail/NotFound")
@@ -89,8 +97,12 @@ def DoComment(req, command=None):
     return HttpResponseRedirect("/info/%s" % map.GetId())
     
 
-def Head(req, id):
+def HeadRedirect(req, id):
     # http://go2.me/info/N
+    sExtra = ''
+    if req.META['QUERY_STRING']:
+        sExtra = '?' + req.META['QUERY_STRING']
+    return HttpResponsePermanentRedirect("/%s%s" % (id, sExtra))
     map = Map.Lookup(id)
     if map == None:
         RaiseNotFound(id)
@@ -125,7 +137,7 @@ def UserProfile(req):
         local.requser.Require('post')
         profileForm = local.mpParams.copy()
         if local.requser.profile.SetForm(profileForm):
-            return HttpResponseRedirect('/profile#saved')
+            return HttpResponseRedirect('/profile/#saved')
     else:
         profileForm = local.requser.profile.GetForm()
 

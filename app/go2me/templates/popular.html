@@ -1,0 +1,71 @@
+{% extends "pages.html" %}
+{% load humanize %}
+{% load custom %}
+{% load cache %}
+{% block subTitle %}{{usernamePage}}'s activity{% endblock %}
+
+{% block script %}
+Go2.SetCSRF("{{csrf}}");
+
+var txtUsername;
+
+function Loaded()
+{
+	txtUsername = document.getElementById('username');
+	if (txtUsername)
+		{
+		txtUsername.focus();
+		Go2.AddEventFn(txtUsername, "keydown", KeyDown);
+		}
+
+	Go2.DisplayBars(200);
+}
+
+function KeyDown(evt)
+{
+	if (evt.keyCode == 13)
+		Go2.SetUsername(txtUsername.value);
+}
+{% endblock %}
+
+{% block pagebody %}
+<div class="page">
+<div class="head">
+	<a target="_top" href="/" title="{{site_name}} Home | Popular Pages"><img class="logo" src="/images/logo.png"></a>
+	<a href="/user/{{usernamePage}}/picture_full"><img class="profile-med" src="/user/{{usernamePage}}/picture_med"></a>
+	<h1 style="padding-top: 40px;">Most Popular Links</h1>
+	<div style='clear:both;'></div>
+</div>
+
+{% cache 180 popular-11 %}
+<table class="scores">
+<tr><th>Title</th><th>Visitors</th><th>Commenters</th><th>Created</th><th>Score</th></tr>
+{% for page in pages %}
+	{% if page.ModelExists %}
+	<tr>
+		<td class="title"><div>
+			<img class="favicon" src="http://{{page.model.Domain}}/favicon.ico">
+			<a href="/{{page.model.GetId}}" title="{{page.model.url|escape}}">{{page.model.title|escape}}</a>
+		</div></td>
+		<td class="num">{{page.model.viewCount|intcomma}}</td>
+		<td class="num">{{page.model.CommentCount|intcomma}}</td>
+		<td class="age">
+			{% if page.model.Creator %}
+				<a href="/user/{{page.model.Creator}}">
+					<img class="inline" src="/user/{{page.model.Creator}}/picture_thumb"></a>
+				<a href="/user/{{page.model.Creator}}">{{page.model.Creator}}</a> -
+			{% endif %}
+			{{page.model.dateCreated|Age}}
+		</td>
+		<td class="bar-td"><div class="bar-holder">
+			<div class="bar" bar_value="{{page.ScoreNow|mult:24|floatformat:1}}"
+				 title="{{page.ScoreNow|mult:24|floatformat:1}} points Today">&nbsp;
+			 </div>
+		</div></td>
+	</tr>
+	{% endif %}
+{% endfor %}
+</table>
+{% endcache %}
+
+{% endblock %}

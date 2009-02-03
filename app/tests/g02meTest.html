@@ -364,7 +364,7 @@ ts.AddTest("Popular", function(ut)
 	ut.AsyncSequence([
 		function(ut)
 			{
-			new Go2.ScriptData("/").Call({}, ut.FnWrap(function(obj) {
+			new Go2.ScriptData("/popular/").Call({}, ut.FnWrap(function(obj) {
 				ut.AssertContains(obj, {status:"OK"});
 				ut.Assert(obj.pages.length > 0, "non-empty popular list");
 				var url = obj.pages[0];

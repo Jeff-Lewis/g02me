@@ -153,9 +153,9 @@ Go2.AddEventFn(window, "click", Click)
 		<div style="margin-top: 4px;">
 			<a href="/user/{{username}}" title="{{username}}'s activity">{{username}}</a>
 			{% if profile %}
-				(<a href="/profile" title="{{username}}'s profile">Profile</a>)
+				(<a href="/profile/" title="{{username}}'s profile">Profile</a>)
 			{% else %}
-				(<a href="/profile" title="Your nickname is temporary until you create a (free) account.">Create Account</a>)
+				(<a href="/profile/" title="Your nickname is temporary until you create a (free) account.">Create Account</a>)
 			{% endif %} |
 			<a href="#" onclick="Go2.SetUsername('');return false;">Sign out</a>
 		</div>

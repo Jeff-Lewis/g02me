@@ -36,12 +36,6 @@ table {
 border-collapse: collapse;
 }
 
-p.subhead {
-font-style: italic;
-font-weight: bold;
-margin: 3px 0;
-}
-
 p.help {
 font-size: 12px;
 font-style: italic;
@@ -92,35 +86,62 @@ margin-bottom: 3px;
    ================================================= */
 
 div.page {
-width: 1000px;
+width: 980px;
 margin: auto;
 }
 
-div.heading {
+div.head {
+position: relative;
+height: 100px;
+margin-bottom: 10px;
+background: url(/images/header-background.png) repeat-x scroll top;
+color: white;
+}
+
+div.head div.signin {
 float: right;
 white-space: nowrap;
+margin: 2px 15px 0 0;
 }
 
-div.head {
-padding-bottom: 20px;
+div.head img.logo {
+position: absolute;
+top: 15px;
+left: 15px;
+border: 0 none;
 }
 
-div.head img.profile-med {
-float: left;
-padding: 5px;
+div.head div.page-heading {
+position: absolute;
+top: 25px;
+left: 225px;
+}
+
+div.head h1 {
+color: #e7e7e7;
+}
+
+div.head p.subhead {
+font-style: italic;
+color: white;
+margin: 3px 0;
+}
+
+div.head a {
+color: white;
 }
 
 div.left {
 clear: left;
-width: 480px;
+width: 470px;
 float: left;
 }
 
 div.right {
 float: right;
-width: 480px;
+width: 470px;
 padding-left: 20px;
-border-left: 1px solid #45AFD1;
+border-left: 1px solid #a30a0a;
 }
 
 div.timer {
@@ -150,14 +171,6 @@ p.exttext {
 margin:-20px 0 5px 0;
 padding:0;
 text-align:right;
-}
-
-img.logo {
-width: 200px;
-height: 73px;
-float: left;
-margin-right: 10px;
-margin-bottom: 10px;
 }
 
 img.logo-small {
@@ -222,8 +235,10 @@ cursor: default;
    Profile and User Pages
    ================================================= */
 
-img.profile-med {
+div.head img.profile-med {
+float: left;
 width: 75px;
+padding: 5px;
 }
 
 .form img.profile-med {

@@ -1,8 +1,9 @@
-{% extends "master.html" %}
+{% extends "pages.html" %}
 {% block subTitle %}Error - {{ message|escape }}{% endblock %}
-{% block body %}
+{% block page-heading %}Oh-oh!{% endblock %}
+{% block page-subheading %}Huston, we have a problem.{% endblock %}
+{% block pagebody %}
 <div style="text-align:center;">
-	<a href="/"><img title="{{site_name}}" src="/images/logo.png"></a>
 	<p style="font-size: 24px;" class="error">
 		{{status_major}}: {{ message|escape }}.
 	</p>
