@@ -6,11 +6,15 @@
 
 {% block script %}
 // Google Ad Manager
-GA_googleAddSlot("{{ad_publisher_id}}", "map-bottom");
-GA_googleFetchAds();
-
 Go2.SetCSRF("{{csrf}}");
 msLoaded = new Date().getTime();
+
+try
+	{
+	GA_googleAddSlot("{{ad_publisher_id}}", "map-bottom");
+	GA_googleFetchAds();
+	}
+catch (e) {}
 
 function BeforeUnload(evt)
 {
@@ -75,7 +79,8 @@ function Loaded()
 function OnResize()
 {
 	var rcWindow = Go2.DOM.RcWindow();
-	var dyMax = rcWindow[3];
+	console.log("window", rcWindow);
+	var dyMax = rcWindow[3] - rcWindow[1];
 
 	var ptComments = Go2.DOM.PtClient(divComments);
 	var ptCommentForm = Go2.DOM.PtSize(divCommentForm);
@@ -280,7 +285,7 @@ Go2.AddEventFn(window, "click", Click)
 		</div>
 		<div class="panel-body">
 			<div style="height:250px">
-				<script>GA_googleFillSlot("map-bottom");</script>
+				<script>try {GA_googleFillSlot("map-bottom");} catch (e) {}</script>
 			</div>
 			<div style="text-align:center;">
 				<a href="http://code.google.com/p/g02me/wiki/AboutUs">About {{site_name}}</a> |

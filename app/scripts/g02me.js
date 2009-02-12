@@ -30,8 +30,8 @@ SetUsername: function(sUsername)
 	{
 	var sd = new Go2.ScriptData('/cmd/setusername');
 	var objCall = {username:sUsername, urlLogin:window.location.href};
-	Go2.TrackEvent('username');
 	sd.Call(objCall, SUCallback);
+	Go2.TrackEvent('username');
 		
 	function SUCallback(obj)
 		{
@@ -79,9 +79,9 @@ PostComment: function(sID, sUsername, sComment)
 		comment:sComment,
 		urlLogin: '/' + sID + '?comment=' + encodeURIComponent(sComment)
 		};
-	Go2.TrackEvent('comment');
 
 	sd.Call(objCall, PCCallback);
+	Go2.TrackEvent('comment');
 		
 	function PCCallback(obj)
 		{
@@ -118,7 +118,6 @@ DeleteComment: function(sDelKey)
 	
 	var sd = new Go2.ScriptData('/comment/delete');
 	var objCall = {delkey:sDelKey, csrf:Go2.sCSRF};
-	Go2.TrackEvent('comment/delete');
 
 	sd.Call(objCall, function(obj) {
 		switch (obj.status)
@@ -132,6 +131,8 @@ DeleteComment: function(sDelKey)
 			break;
 			}
 		});
+
+	Go2.TrackEvent('comment/delete');
 	},
 	
 BanishId: function(sID, fBan)
@@ -191,7 +192,11 @@ ScaleBars: function(scale)
 	
 TrackEvent: function(sEvent)
 	{
-	pageTracker._trackPageview('/meta/' + sEvent);
+	try
+		{
+		pageTracker._trackPageview('/meta/' + sEvent);
+		}
+	catch (e) {}
 	},
 	
 FacebookShare: function(u, t)

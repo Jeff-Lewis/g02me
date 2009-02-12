@@ -211,9 +211,12 @@ class Map(db.Model):
             return True
         return False
     
-    def Comments(self, limit=100):
+    def Comments(self, limit=100, dateSince=None):
         # Just return "true" comments (not sharing events)
-        comments = self.comment_set.order('-dateCreated').fetch(limit)
+        comments = self.comment_set
+        if dateSince is not None:
+            comments.filter('dateCreated >', dateSince)
+        comments.order('dateCreated').fetch(limit)
         return [comment for comment in comments if not comment.comment.startswith('__')]
     
     def Shared(self):
@@ -253,7 +256,7 @@ class Map(db.Model):
         sHost = rg[1].lower()
         return sHost
         
-    def JSON(self):
+    def JSON(self, dateSince=None):
         obj = {'url':self.url,
                'urlShort': r"http://%s/%s" % (settings.sSiteHost, self.GetId()),
                'id':self.GetId(),
@@ -262,10 +265,11 @@ class Map(db.Model):
                'shared':self.shareCount,
                'created':self.dateCreated,
                'scores':self.ss.ScoresNamed(self),
-               'tags':self.TopTags()
+               'tags':self.TopTags(),
+               'presence':self.Presence(), 
                }
         rgComments = []
-        for comment in self.Comments():
+        for comment in self.Comments(dateSince=dateSince):
             rgComments.append(comment.JSON())
         if len(rgComments) > 0: 
             obj['comments'] = rgComments
@@ -284,6 +288,17 @@ class Map(db.Model):
         f = self.fBan is not None and self.fBan
         return f
     
+    def Presence(self):
+        aPresence = memcache.get('map.pres.%s' % self.id)
+        dateLimit = local.dtNow - timedelta(0.25/24)
+        aPresence = [u for u in aPresence if u.dateLast > dateLimit]
+        return aPresence
+    
+    def Present(self):
+        aPresence = self.Presence()
+        ---here---
+        
+        
     # Admin functions - for use in /shell or /admin ------------------
     # BUG: FindBadTagCounts does NOT WORK in shell - complains about undefined comment.tags property and
     # can't catch with try: block???
