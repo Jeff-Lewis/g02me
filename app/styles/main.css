@@ -113,12 +113,14 @@ border: 0 none;
 
 div.head div.page-heading {
 position: absolute;
-top: 25px;
+top: 7px;
 left: 225px;
+width: 500px;
 }
 
 div.head h1 {
 color: #e7e7e7;
+margin-top: 18px;
 }
 
 div.head p.subhead {

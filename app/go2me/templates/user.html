@@ -1,7 +1,7 @@
 {% extends "pages.html" %}
 {% load humanize %}
 {% load custom %}
-{% block subTitle %}{{usernamePage}}'s activity{% endblock %}
+{% block subTitle %}{{usernamePage}}'s recently shared links{% endblock %}
 
 {% block script %}
 Go2.SetCSRF("{{csrf}}");
@@ -27,26 +27,22 @@ function KeyDown(evt)
 }
 {% endblock %}
 
-{% block pagebody %}
-<div class="page">
-<div class="head">
-	<a target="_top" href="/" title="{{site_name}} Home | Popular Pages"><img class="logo" src="/images/logo.png"></a>
+{% block page-heading-extra %}
 	<a href="/user/{{usernamePage}}/picture_full"><img class="profile-med" src="/user/{{usernamePage}}/picture_med"></a>
-	<h1 style="padding-top: 40px;">{{usernamePage}}'s activity</h1>
-	<div style='clear:both;'></div>
-</div>
+{% endblock %}
+{% block page-heading %}{{usernamePage}}'s recently shared links{% endblock %}
+{% block page-subheading %}
+	{{profilePage.sFullname|escape}}
+	{% if profilePage.sLocation %}({{profilePage.sLocation|escape}}){% endif %}
+{% endblock %}
+
+{% block pagebody %}
+
 
 {% if profilePage.sAbout or profilePage.urlHome %}
 	<div class="about">
-		About <b>
-		{% if profilePage.sFullname %}
-			{{profilePage.sFullname|escape}}
-		{% else %}
-			{{profilePage.username}}
-		{% endif %}
-		{% if profilePage.sLocation %}({{profilePage.sLocation|escape}}){% endif %}</b>:
 		{% if profilePage.urlHome %}
-			<a href="profilePage.urlHome|escape">{{ profilePage.urlHome|escape }}</a><br/>
+			Home page: <a href="{{profilePage.urlHome|escape}}">{{ profilePage.urlHome|escape }}</a><br/>
 		{% endif %}
 		{{profilePage.sAbout|escape|urlize}}
 	</div>

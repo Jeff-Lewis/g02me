@@ -48,12 +48,11 @@ function KeyDown(evt)
 	<a target="_top" href="/"><img title="{{site_name}}" class="logo" src="/images/logo.png"></a>
 
 	<div class="page-heading">
-
+		{% block page-heading-extra %}{% endblock %}
 		<h1>{% block page-heading %}{{site_title}}{% endblock %}</h1>
 		<p class="subhead">{% block page-subheading %}{{site_tagline}}{% endblock %}</p>
 	</div>
 </div>
-
 {% endblock %}
 
 {% block pagebody %}

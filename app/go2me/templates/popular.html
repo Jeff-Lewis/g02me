@@ -2,7 +2,7 @@
 {% load humanize %}
 {% load custom %}
 {% load cache %}
-{% block subTitle %}{{usernamePage}}'s activity{% endblock %}
+{% block subTitle %}Today's Popular Links{% endblock %}
 
 {% block script %}
 Go2.SetCSRF("{{csrf}}");
@@ -28,15 +28,10 @@ function KeyDown(evt)
 }
 {% endblock %}
 
-{% block pagebody %}
-<div class="page">
-<div class="head">
-	<a target="_top" href="/" title="{{site_name}} Home | Popular Pages"><img class="logo" src="/images/logo.png"></a>
-	<a href="/user/{{usernamePage}}/picture_full"><img class="profile-med" src="/user/{{usernamePage}}/picture_med"></a>
-	<h1 style="padding-top: 40px;">Most Popular Links</h1>
-	<div style='clear:both;'></div>
-</div>
+{% block page-heading %}Today's Popular Links{% endblock %}
+{% block page-subheading %}(most visitors and comments){% endblock %}
 
+{% block pagebody %}
 {% cache 180 popular-11 %}
 <table class="scores">
 <tr><th>Title</th><th>Visitors</th><th>Commenters</th><th>Created</th><th>Score</th></tr>

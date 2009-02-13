@@ -266,7 +266,7 @@ class Map(db.Model):
                'created':self.dateCreated,
                'scores':self.ss.ScoresNamed(self),
                'tags':self.TopTags(),
-               'presence':self.Presence(), 
+               # 'presence':self.Presence(), 
                }
         rgComments = []
         for comment in self.Comments(dateSince=dateSince):
@@ -289,14 +289,17 @@ class Map(db.Model):
         return f
     
     def Presence(self):
+        """
         aPresence = memcache.get('map.pres.%s' % self.id)
         dateLimit = local.dtNow - timedelta(0.25/24)
         aPresence = [u for u in aPresence if u.dateLast > dateLimit]
         return aPresence
+        """
     
     def Present(self):
+        """
         aPresence = self.Presence()
-        ---here---
+        """
         
         
     # Admin functions - for use in /shell or /admin ------------------

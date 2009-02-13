@@ -25,7 +25,7 @@ sSiteName = "Go2.me"
 sSiteHost = "Go2.me"
 sTwitterSource = "go2me"
 sSiteTitle = "A Link Shortening Service"
-sSiteTagline = "Don't just send a link - start a conversation."
+sSiteTagline = "Send a Link - Start a Conversation."
 # Link length calculation for first couple thousand links
 nLinkLength = len("http://%s/" % sSiteHost) + 2 
 mpSiteAlternates = set(['www.go2.me', 'g02.me', 'www.g02.me'])
