@@ -21,6 +21,11 @@ var Go2 = {
 sSiteName: "Go2.me",
 sCSRF: "",
 
+Browser: {
+	version: parseInt(navigator.appVersion),
+	fIE: navigator.appName.indexOf("Microsoft") != -1
+},
+
 SetCSRF: function(sCSRF)
 	{
 	Go2.sCSRF = sCSRF;
@@ -160,12 +165,27 @@ DisplayBars: function(widthMax)
 	{
 	scaleMax = 3.0;
 	aBars = $('.bar');
+	aBarHolders = $('.bar-holders');
 	
 	if (aBars.length == 0)
 		return;
 	
-	// assume first bar is the biggest!
-	var width = parseFloat(aBars[0].getAttribute('bar_value'));
+	for (var i = 0; i < aBarHolders.length; i++)
+		{
+		divHolder = aBarHolders[i];
+		divHolder.style.width = widthMax + "px";
+		}
+	
+	// Find the widest bar to set max scaling
+	width = 0;
+	for (var i = 0; i < aBars.length; i++)
+		{
+		var divBar = aBars[i];
+		var widthT = parseFloat(divBar.getAttribute('bar_value'));
+		if (widthT > width)
+			width = widthT;
+		}
+
 	if (width * scaleMax > widthMax)
 		scaleMax = widthMax/width;
 	

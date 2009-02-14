@@ -37,7 +37,7 @@ class Map(db.Model):
          'yweb.com', 'nsfw.in', 'bloat.me', 'hex.io', 'krunchd.com/krunch', 'thnlnk.com', 
          'notifyurl.com', 'QLNK.net', 'hurl.me', 'shrt.st', 'parv.us', 'makeitbrief.com', 'eweri.com', 
          'smarturl.eu', 'urlot.com', 'muhlink.org', 'hosturl.com', 'tinyuri.ca', 'voomr.com', 
-         'url9.com', 'plumurl.com', 'ix.lt',
+         'url9.com', 'plumurl.com', 'ix.lt', 'ru.ly',
          ])
     
     url = db.StringProperty(required=True)
@@ -155,8 +155,8 @@ class Map(db.Model):
         return map
     
     @classmethod
-    def TopPages(cls, tag=None):
-        return cls.ss.Best(tag=tag)
+    def TopPages(cls, tag=None, limit=50):
+        return cls.ss.Best(tag=tag, limit=limit)
     
     @classmethod
     def TopJSON(cls, tag=None):

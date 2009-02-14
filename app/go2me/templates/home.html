@@ -1,5 +1,7 @@
 {% extends "pages.html" %}
 {% load humanize %}
+{% load cache %}
+{% load custom %}
 
 {% block subTitle %}{{site_title}}{% endblock %}
 {% block script %}
@@ -11,10 +13,10 @@ var txtTitle;
 
 function Loaded()
 {
-	txtUsername = document.getElementById('username');
+	txtUsername = $("#username")[0];
 
-	txtLink = document.getElementById("link");
-	txtTitle = document.getElementById("title");
+	txtLink = $("#link")[0];
+	txtTitle = $("#title")[0];
 	
 	Go2.AddEventFn(txtLink, "keydown", function(evt)
 		{
@@ -45,7 +47,17 @@ function Loaded()
 	else
 		Go2.DOM.SetFocusIfVisible(txtLink);
 		
-	Go2.DisplayBars(200);
+	console.log("B", Go2.Browser.fIE);
+	if (Go2.Browser.fIE)
+		{
+		$("#bookmark_inst_ie").show();
+		}
+	else
+		{
+		$("#bookmark_inst_ff").show();
+		}
+		
+	Go2.DisplayBars(50);
 }
 
 function Shorten()
@@ -61,12 +73,12 @@ function Shorten()
 	<h2>What is {{site_name}}?</h2>
 	<p>
 	You can use {{site_name}} to take any long link (URL) and convert it to a shorter one that
-	you can send in Twitter, IM, or Email messages.  Your link will not only display the page
-	you want to share, but also add an information box where your readers can comment on your link.
+	you can send in Twitter, IM, or Email messages.  Your link will display the page
+	you want to share with a sidebar chat to exchange comments with your readers.
 	Try it:
 	</p>
 	<p style="text-align:center;"><a target="_blank" href="/G">http://{{site_host}}/G</a></p>
-	<h2>{{site_name}} Benefits:</h2>
+	<h2>{{site_name}} Benefits</h2>
 	<ul>
 		<li><b>Comments</b> - Exchange comments with your readers on every link page.</li>
 		<li><b>Feedback</b> - see how many people are reading your links.</li>
@@ -75,65 +87,104 @@ function Shorten()
 			your shared links.
 			{% if username %}</a>{% endif %}
 		</li>
-		<li><b>Find Popular Links</b> - Today's most popular links are continuously updated here:
-		<p style="text-align:center"><a href="/popular/">Today's Popular Links</a></p>
-		<p style="font-variant:italic">{{total_pages|intcomma}} links have been shared to date.</p>
-		</li>		
 		<li><b>Promote</b> - Promote your link by adding one or more "[tags]" to any comment -
 		the most popular links for each tag are listed in their own page, for example:
 		<p style="text-align:center"><a href="/tag/video">http://{{site_host}}/tag/video</a></p>
 		</li>
 		<li><b>Shorter than TinyURL</b> - {{site_name}} links are only {{link_length}} characters long - perfect for Twitter messages.</li>
-		<li><b>It's Free</b> - add the Bookmarklet to get started.</li>
 	</ul>
 	
-	<div style="margin:auto;width:320px;text-align:center;">
-		<object width="320" height="265">
-			<param name="movie" value="http://www.youtube.com/v/szsHrobNSUk&hl=en&fs=1&color1=0x5d1719&color2=0xcd311b"></param>
-			<param name="allowFullScreen" value="true"></param><param name="allowscriptaccess" value="always"></param>
-			<embed src="http://www.youtube.com/v/szsHrobNSUk&hl=en&fs=1&color1=0x5d1719&color2=0xcd311b" type="application/x-shockwave-flash" allowscriptaccess="always" allowfullscreen="true" width="320" height="265"></embed>
-		</object>
-		<h2>Watch our Video Tour of {{site_name}}</h2><br/>
-	</div>
+	<h2>Today's most popular links ({{total_pages|intcomma}} shared to date)</h2>		
+	<table class="scores">
+		<tr><th>Title</th><th class="num">Visitors</th><th>By</th><th>Score</th></tr>
+		{% for page in pages %}
+			{% if page.ModelExists %}
+			<tr>
+				<td class="title"><div>
+					<img class="favicon" src="http://{{page.model.Domain}}/favicon.ico">
+					<a href="/{{page.model.GetId}}" title="{{page.model.url|escape}}">{{page.model.title|escape}}</a>
+				</div></td>
+				<td class="num">{{page.model.viewCount|intcomma}}</td>
+				<td>
+					{% if page.model.Creator %}
+						<a href="/user/{{page.model.Creator}}" title="{{page.model.Creator}}">
+							<img class="inline" src="/user/{{page.model.Creator}}/picture_thumb">
+						</a>
+					{% endif %}
+				</td>
+				<td class="bar-td"><div class="bar-holder">
+					<div class="bar" bar_value="{{page.ScoreNow|mult:24|floatformat:1}}"
+						 title="{{page.ScoreNow|mult:24|floatformat:1}} points Today">&nbsp;
+					 </div>
+				</div></td>
+			</tr>
+			{% endif %}
+		{% endfor %}
+	</table>
+	
+	<p style="text-align:right;">
+		<a href="/popular/">more...</a>
+	</p>
+	
 </div> <!-- left -->
 
 <div class="right">
 
-	<h2>Install the Bookmarklet:</h2>
-	<p>To get started, just drag this bookmarklet to your bookmarks toolbar: *</p>
-	<div class="bookmarklet">
-	<a class="bookmarklet" title="Drag me to your bookmarks toolbar"
-	   onclick="alert('Instead of clicking this link, you need to drag it to your toolbar.');return false;"
-	   href="javascript:location.href='{{host}}map/?url='+encodeURIComponent(location)+'&title='+encodeURIComponent(document.title);">
-	   <img src="/images/bookmarklet.png" alt="{{site_name}}">
-	</a>
+	<div class="callout">
+		<h2>Install the Bookmarklet<br/>(Try it - its Free)</h2>
+		<div class="bookmark_inst" id="bookmark_inst_ff">
+			<div style="text-align:center;margin: 0 0 5px 0;">
+				<a id="bookmarklet" class="bookmarklet" title="Drag me to your bookmarks toolbar"
+				   onclick="alert('Instead of clicking this link, you need to drag it to your toolbar.');return false;"
+				   href="javascript:location.href='{{host}}map/?url='+encodeURIComponent(location)+'&title='+encodeURIComponent(document.title);">
+				   <img src="/images/bookmarklet.png" alt="{{site_name}}">
+				</a>
+			</div>
+			To get started, just drag this bookmarklet to your Bookmarks Toolbar.
+		</div>
+		<div class="bookmark_inst" id="bookmark_inst_ie">
+			<div style="text-align:center;margin: 0 0 5px 0;">
+				<a id="bookmarklet" class="bookmarklet" title="{{site_name}}"
+				   onclick="alert('Instead of clicking this link, you need to drag it to your toolbar.');return false;"
+				   href="javascript:location.href='{{host}}map/?url='+encodeURIComponent(location)+'&title='+encodeURIComponent(document.title);">
+				   <img src="/images/bookmarklet.png" alt="{{site_name}}">
+				</a>
+			</div>
+			<ul>
+				<li>Right click on the {{site_name}} link (above)</li>
+				<li>Select "Add to Favorites..."</li>
+				<li>Click "Yes" when you see the Security Alert.</li>
+				<li>Select "Links" in the "Create In" dropdown.</li>
+				<li>Click "Add"</li>
+			</ul>
+		</div>
+		<div>
+		Once installed, visit any web page you want to share, and click the {{site_name}} button in
+		your Bookmarks Toolbar.
+		</div>
 	</div>
 	
 	<h2>Shorten a link now:</h2>
 	<p>If you can't install the bookmarklet just now, you can shorten a single link
 	using this form:</p>
 	<table style="margin:15px 0;">
-	<tr><th><label for="link">Link (URL):</label></th><td><input id="link" style="width:350px;" value="http://"/></td></tr>
-	<tr><th><label for="title">Title (opt):</label></th><td><input id="title" style="width:350px;"/></td></tr>
+	<tr><th><label for="link">Link (URL):</label></th><td><input id="link" style="width:250px;" value="http://"/></td></tr>
+	<tr><th><label for="title">Title (opt):</label></th><td><input id="title" style="width:250px;"/></td></tr>
 	<tr><th></th><td style="text-align:right;"><input type="button" onclick="Shorten();" value="Shorten"/></td></tr>
 	</table>
 	
-	<i>
-	* Installation instructions for Internet Explorer:
-	<ul>
-		<li>Right click on the {{site_name}} link (above)</li>
-		<li>Select "Add to Favorites..."</li>
-		<li>Click "Yes" when you see the Security Alert.</li>
-		<li>Select "Links" in the "Create In" dropdown.</li>
-		<li>Click "Add"</li>
-	</ul>
-	</i>
-
-<div style="clear:both;padding-top:10px;">
+	<div style="margin:auto;width:320px;text-align:center;padding-bottom:10px;">
+		<h2>Video Tour of {{site_name}}</h2>
+		<object width="320" height="265">
+			<param name="movie" value="http://www.youtube.com/v/szsHrobNSUk&hl=en&fs=1&color1=0x5d1719&color2=0xcd311b"></param>
+			<param name="allowFullScreen" value="true"></param><param name="allowscriptaccess" value="always"></param>
+			<embed src="http://www.youtube.com/v/szsHrobNSUk&hl=en&fs=1&color1=0x5d1719&color2=0xcd311b" type="application/x-shockwave-flash" allowscriptaccess="always" allowfullscreen="true" width="320" height="265"></embed>
+		</object>
+	</div>
 
 	<div style="margin:auto;text-align:center;">
-		<h2>Read what others are saying about {{site_name}}</h2><br/>
-		<div style="float:left;width:220px;margin-left:10px;">
+		<h2>Read what others are saying about {{site_name}}</h2>
+		<div style="margin:auto;width:220px;">
 			<a target="_blank" href="http://blog.go2web20.net/2009/01/more-than-just-link-shortening-service.html">
 				<img class="extlogo" src="http://www.go2web20.net/images/badges/badge_220x70_sqr_red.gif"/>
 			</a>		
@@ -152,8 +203,7 @@ function Shorten()
 			<a target="_blank" href="http://www.webli.st/2009/01/13/go2me-url-shortener-tool/">
 				<img class="extlogo" src="/images/external/weblist.png">
 			</a>
-		</div>
-		<div style="float:left;width:220px;margin-left:5px;">
+
 			<a target="_blank" href="http://www.jaimeviniciusbarros.com/2009/01/go2mealinkshorteningservice/">
 				<img class="extlogo" src="/images/external/online-life.png">
 			</a>
@@ -174,7 +224,6 @@ function Shorten()
 			<p class="exttext">(Brazil/Spanish)</p>
 		</div>
 	</div>
-</div>
 
 </div> <!-- right -->
 

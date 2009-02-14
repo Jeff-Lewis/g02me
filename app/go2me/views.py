@@ -13,7 +13,8 @@ import logging
 def Home(req):
     AddToResponse({
        'total_pages': Globals.IdGet(settings.sMapName, settings.idMapBase) -
-            settings.idMapBase + 1 + settings.cPagesExtra
+            settings.idMapBase + 1 + settings.cPagesExtra,
+       'pages': Map.TopPages(limit=30)
        })
     return render_to_response('home.html', FinalResponse())
 

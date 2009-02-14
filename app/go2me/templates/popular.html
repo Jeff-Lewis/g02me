@@ -32,9 +32,10 @@ function KeyDown(evt)
 {% block page-subheading %}(most visitors and comments){% endblock %}
 
 {% block pagebody %}
-{% cache 180 popular-11 %}
+
+{% cache 180 popular-11A %}
 <table class="scores">
-<tr><th>Title</th><th>Visitors</th><th>Commenters</th><th>Created</th><th>Score</th></tr>
+<tr><th>Title</th><th class="num">Visitors</th><th class="num">Commenters</th><th>Created</th><th>Score</th></tr>
 {% for page in pages %}
 	{% if page.ModelExists %}
 	<tr>

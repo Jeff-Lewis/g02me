@@ -419,3 +419,4 @@ X UnicodeDecodeError
     Unknown exception: UnicodeDecodeError('ascii', "Patrick McGoohan, acteur de la s\xc3\xa9rie TV Le Prisonnier, est mort \xc3\xa0 l'\xc3\xa2ge de 80 ans", 32, 33, 'ordinal not in range(128)')
 ! Resetting iframe is navigating the parent frame???
 - Rename "views" to "viewers" and "comments" to "commenters" and "shared" to "sharers".
+- Allow static IP n.n.n.n shortening (e.g., Google Cache links).

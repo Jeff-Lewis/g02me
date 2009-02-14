@@ -36,7 +36,7 @@ function Loaded() {}
 
 </head>
 
-<body onload="Loaded();">
+<body>
 
 {% block body %}
 {% endblock %}
@@ -67,5 +67,6 @@ catch (e) {}
 {% block page_end %}
 {% endblock %}
 
+<script>Loaded();</script>
 </body>
 </html>
