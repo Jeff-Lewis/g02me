@@ -29,15 +29,16 @@ function Click()
 window.onclick = Click;
 {% endblock %}
 
-{% block pagebody %}
-<div class="page">
-<div class="head">
-	<a target="_top" href="/" title="{{site_name}} Home | Popular Pages"><img class="logo" src="/images/logo.png"></a>
+{% block page-heading-extra %}
 	<a href="/user/{{profileForm.username}}/picture_full"><img class="profile-med" src="/user/{{profileForm.username}}/picture_med"></a>
-	<h1 style="padding-top: 40px;">{{username}}'s profile</h1>
-	<div style='clear:both;'></div>
-</div>
+{% endblock %}
+{% block page-heading %}{{username}}'s profile{% endblock %}
+{% block page-subheading %}
+	{{profileForm.sFullname|escape}}
+	{% if profileForm.sLocation %}({{profileForm.sLocation|escape}}){% endif %}
+{% endblock %}
 
+{% block pagebody %}
 <script>
 	if (location.hash == "#saved")
 		document.write('<p class="message">Profile Saved. Return to <a href="/">Home</a></p>');

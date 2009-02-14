@@ -16,7 +16,7 @@ class Map(db.Model):
     
     # Relative scores for user interactions
     scoreView = 1
-    scoreComment = 2
+    scoreComment = 7
     scoreFavorite = 2
     scoreShare = 3
     

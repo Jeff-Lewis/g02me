@@ -80,18 +80,18 @@ function Shorten()
 	<p style="text-align:center;"><a target="_blank" href="/G">http://{{site_host}}/G</a></p>
 	<h2>{{site_name}} Benefits</h2>
 	<ul>
-		<li><b>Comments</b> - Exchange comments with your readers on every link page.</li>
-		<li><b>Feedback</b> - see how many people are reading your links.</li>
-		<li><b>Personalized</b> - Use a nickname, and get a summary of all
-			{% if username %}<a href="/user/{{username}}" title="{{username}}'s activity">{% endif %}
-			your shared links.
-			{% if username %}</a>{% endif %}
+		<li><b>Discuss</b> - Exchange comments with your readers on every link page.</li>
+		<li><b>Feedback</b> - See how many people are visiting and commenting on your links.</li>
+		<li><b>Personalized</b> - Pick a nickname to save a summary of all the
+			{% if username %}<a href="/user/{{username}}" title="{{username}}'s shared links">{% endif %}
+			links you've shared{% if username %}</a>{% endif %}.
 		</li>
 		<li><b>Promote</b> - Promote your link by adding one or more "[tags]" to any comment -
 		the most popular links for each tag are listed in their own page, for example:
 		<p style="text-align:center"><a href="/tag/video">http://{{site_host}}/tag/video</a></p>
 		</li>
-		<li><b>Shorter than TinyURL</b> - {{site_name}} links are only {{link_length}} characters long - perfect for Twitter messages.</li>
+		<li><b>Easy Sharing</b> - Single-click sharing of your links via Email, Facebook, or Twitter.</li>
+		<li><b>Shorter links</b> - {{site_name}} links are only {{link_length}} characters long - perfect for Twitter messages.</li>
 	</ul>
 	
 	<h2>Today's most popular links ({{total_pages|intcomma}} shared to date)</h2>		
@@ -132,35 +132,37 @@ function Shorten()
 
 	<div class="callout">
 		<h2>Install the Bookmarklet<br/>(Try it - its Free)</h2>
-		<div class="bookmark_inst" id="bookmark_inst_ff">
-			<div style="text-align:center;margin: 0 0 5px 0;">
-				<a id="bookmarklet" class="bookmarklet" title="Drag me to your bookmarks toolbar"
-				   onclick="alert('Instead of clicking this link, you need to drag it to your toolbar.');return false;"
-				   href="javascript:location.href='{{host}}map/?url='+encodeURIComponent(location)+'&title='+encodeURIComponent(document.title);">
-				   <img src="/images/bookmarklet.png" alt="{{site_name}}">
-				</a>
-			</div>
-			To get started, just drag this bookmarklet to your Bookmarks Toolbar.
-		</div>
-		<div class="bookmark_inst" id="bookmark_inst_ie">
-			<div style="text-align:center;margin: 0 0 5px 0;">
-				<a id="bookmarklet" class="bookmarklet" title="{{site_name}}"
-				   onclick="alert('Instead of clicking this link, you need to drag it to your toolbar.');return false;"
-				   href="javascript:location.href='{{host}}map/?url='+encodeURIComponent(location)+'&title='+encodeURIComponent(document.title);">
-				   <img src="/images/bookmarklet.png" alt="{{site_name}}">
-				</a>
-			</div>
-			<ul>
-				<li>Right click on the {{site_name}} link (above)</li>
-				<li>Select "Add to Favorites..."</li>
-				<li>Click "Yes" when you see the Security Alert.</li>
-				<li>Select "Links" in the "Create In" dropdown.</li>
-				<li>Click "Add"</li>
-			</ul>
-		</div>
 		<div>
-		Once installed, visit any web page you want to share, and click the {{site_name}} button in
-		your Bookmarks Toolbar.
+			<div class="bookmark_inst" id="bookmark_inst_ff">
+				<div style="text-align:center;margin: 0 0 5px 0;">
+					<a id="bookmarklet" class="bookmarklet" title="Drag me to your bookmarks toolbar"
+					   onclick="alert('Instead of clicking this link, you need to drag it to your toolbar.');return false;"
+					   href="javascript:location.href='{{host}}map/?url='+encodeURIComponent(location)+'&title='+encodeURIComponent(document.title);">
+					   <img src="/images/bookmarklet.png" alt="{{site_name}}">
+					</a>
+				</div>
+				To get started, just drag this bookmarklet to your Bookmarks Toolbar.
+			</div>
+			<div class="bookmark_inst" id="bookmark_inst_ie">
+				<div style="text-align:center;margin: 0 0 5px 0;">
+					<a id="bookmarklet" class="bookmarklet" title="{{site_name}}"
+					   onclick="alert('Instead of clicking this link, you need to drag it to your toolbar.');return false;"
+					   href="javascript:location.href='{{host}}map/?url='+encodeURIComponent(location)+'&title='+encodeURIComponent(document.title);">
+					   <img src="/images/bookmarklet.png" alt="{{site_name}}">
+					</a>
+				</div>
+				<ul>
+					<li>Right click on the {{site_name}} link (above)</li>
+					<li>Select "Add to Favorites..."</li>
+					<li>Click "Yes" when you see the Security Alert.</li>
+					<li>Select "Links" in the "Create In" dropdown.</li>
+					<li>Click "Add"</li>
+				</ul>
+			</div>
+			<p>
+			Once installed, visit any web page you want to share, and click the {{site_name}} button in
+			your Bookmarks Toolbar.
+			</p>
 		</div>
 	</div>
 	
@@ -168,8 +170,8 @@ function Shorten()
 	<p>If you can't install the bookmarklet just now, you can shorten a single link
 	using this form:</p>
 	<table style="margin:15px 0;">
-	<tr><th><label for="link">Link (URL):</label></th><td><input id="link" style="width:250px;" value="http://"/></td></tr>
-	<tr><th><label for="title">Title (opt):</label></th><td><input id="title" style="width:250px;"/></td></tr>
+	<tr><th><label for="link">Link:</label></th><td><input id="link" style="width:300px;" value="http://"/></td></tr>
+	<tr><th><label for="title">Title:</label></th><td><input id="title" style="width:300px;"/></td></tr>
 	<tr><th></th><td style="text-align:right;"><input type="button" onclick="Shorten();" value="Shorten"/></td></tr>
 	</table>
 	

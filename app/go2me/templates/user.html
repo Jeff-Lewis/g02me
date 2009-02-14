@@ -1,7 +1,7 @@
 {% extends "pages.html" %}
 {% load humanize %}
 {% load custom %}
-{% block subTitle %}{{usernamePage}}'s recently shared links{% endblock %}
+{% block subTitle %}{{usernamePage}}'s shared links{% endblock %}
 
 {% block script %}
 Go2.SetCSRF("{{csrf}}");
@@ -30,14 +30,13 @@ function KeyDown(evt)
 {% block page-heading-extra %}
 	<a href="/user/{{usernamePage}}/picture_full"><img class="profile-med" src="/user/{{usernamePage}}/picture_med"></a>
 {% endblock %}
-{% block page-heading %}{{usernamePage}}'s recently shared links{% endblock %}
+{% block page-heading %}{{usernamePage}}'s shared links{% endblock %}
 {% block page-subheading %}
 	{{profilePage.sFullname|escape}}
 	{% if profilePage.sLocation %}({{profilePage.sLocation|escape}}){% endif %}
 {% endblock %}
 
 {% block pagebody %}
-
 
 {% if profilePage.sAbout or profilePage.urlHome %}
 	<div class="about">

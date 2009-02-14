@@ -2,7 +2,7 @@
 {% load humanize %}
 {% load custom %}
 {% load cache %}
-{% block subTitle %}Today's Popular Links{% endblock %}
+{% block subTitle %}Popular Links{% endblock %}
 
 {% block script %}
 Go2.SetCSRF("{{csrf}}");
@@ -28,8 +28,8 @@ function KeyDown(evt)
 }
 {% endblock %}
 
-{% block page-heading %}Today's Popular Links{% endblock %}
-{% block page-subheading %}(most visitors and comments){% endblock %}
+{% block page-heading %}Popular Links{% endblock %}
+{% block page-subheading %}These links have been the most recently active on {{site_name}}.{% endblock %}
 
 {% block pagebody %}
 
