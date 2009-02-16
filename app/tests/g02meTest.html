@@ -233,7 +233,8 @@ ts.AddTest("Comment", function(ut)
 			{
 			new Go2.ScriptData("/comment/").Call({id:objInit.id, comment:"hello", apikey:sAPIKey}, ut.FnWrap(function (obj) {
 				ut.AssertContains(obj, {status:"OK", url:"http://google.com/"});
-				ut.AssertContains(obj.comments[0], {comment:"hello"});
+				var cT = obj.comments.length;
+				ut.AssertContains(obj.comments[cT-1], {comment:"hello"});
 				cComment = obj.comments.length;
 				ut.NextFn();
 				}));
@@ -242,7 +243,8 @@ ts.AddTest("Comment", function(ut)
 			{
 			new Go2.ScriptData("/info/" + objInit.id).Call({}, function (obj) {
 				ut.AssertContains(obj, {status:"OK", url:"http://google.com/"});
-				ut.AssertContains(obj.comments[0], {comment:"hello"});
+				var cT = obj.comments.length;
+				ut.AssertContains(obj.comments[cT-1], {comment:"hello"});
 				ut.AssertEq(obj.comments.length, cComment);
 				ut.NextFn();
 				});
@@ -251,7 +253,8 @@ ts.AddTest("Comment", function(ut)
 			{
 			new Go2.ScriptData("/comment/").Call({id:objInit.id, comment:"hello2", csrf:sCSRF}, ut.FnWrap(function (obj) {
 				ut.AssertContains(obj, {status:"OK", url:"http://google.com/"});
-				ut.AssertContains(obj.comments[0], {comment:"hello2"});
+				var cT = obj.comments.length;
+				ut.AssertContains(obj.comments[cT-1], {comment:"hello2"});
 				cComment = obj.comments.length;
 				ut.NextFn();
 				}));
@@ -260,8 +263,9 @@ ts.AddTest("Comment", function(ut)
 			{
 			new Go2.ScriptData("/comment/").Call({id:objInit.id, force: true, comment:"test :  This is a test  [  ,,tag1,  tag2]", apikey:sAPIKey}, function (obj) {
 				ut.AssertContains(obj, {status:"OK", url:"http://google.com/"});
-				ut.AssertContains(obj.comments[0], {comment:"This is a test", tags:"tag1,tag2", user:"test"});
-				ut.AssertType(obj.comments[0].created, Date);
+				var cT = obj.comments.length;
+				ut.AssertContains(obj.comments[cT-1], {comment:"This is a test", tags:"tag1,tag2", user:"test"});
+				ut.AssertType(obj.comments[cT-1].created, Date);
 				ut.AssertEq(obj.comments.length, cComment+1);
 				ut.AssertContains(obj.tags, ["tag1", "tag2"]);
 				ut.NextFn();
@@ -271,8 +275,9 @@ ts.AddTest("Comment", function(ut)
 			{
 			new Go2.ScriptData("/info/" + objInit.id).Call({}, function (obj) {
 				ut.AssertContains(obj, {status:"OK", url:"http://google.com/"});
-				ut.AssertEq(obj.comments.length, cComment+1);
-				com = obj.comments[0];
+				var cT = obj.comments.length;
+				ut.AssertEq(cT, cComment+1);
+				com = obj.comments[cT-1];
 				ut.AssertContains(com, {comment:"This is a test", user:"test", tags:"tag1,tag2"});
 				ut.NextFn();
 				});
@@ -282,8 +287,9 @@ ts.AddTest("Comment", function(ut)
 			tagUniq = "dm-" + Math.floor(Math.random()*1000);
 			new Go2.ScriptData("/comment/").Call({id:objInit.id, force: true, comment:"test :  [" + tagUniq + "]", apikey:sAPIKey}, ut.FnWrap(function (obj) {
 				ut.AssertContains(obj, {status:"OK", url:"http://google.com/"});
-				ut.AssertContains(obj.comments[0], {comment:"", user:"test", tags:tagUniq});
-				com2= obj.comments[0];
+				var cT = obj.comments.length;
+				ut.AssertContains(obj.comments[cT-1], {comment:"", user:"test", tags:tagUniq});
+				com2= obj.comments[cT-1];
 				ut.AssertEq(obj.comments.length, cComment+2);
 				ut.AssertContains(obj.tags, ["tag1", "tag2", tagUniq]);
 				ut.NextFn();
@@ -350,8 +356,9 @@ ts.AddTest("Unicode", function(ut)
 			{
 			new Go2.ScriptData("/comment/").Call({id:objInit.id, comment:"Unicode Tag [tag-" + chUnicode + "]", apikey:sAPIKey}, ut.FnWrap(function (obj) {
 				ut.AssertContains(obj, {status:"OK"});
+				var cT = obj.comments.length;
 				// No Unicode allowed in tags - will be stripped
-				ut.AssertContains(obj.comments[0], {comment:"Unicode Tag", tags:"tag"});
+				ut.AssertContains(obj.comments[cT-1], {comment:"Unicode Tag", tags:"tag"});
 				ut.AssertEq(obj.tags[0], "tag");
 				ut.NextFn();
 				}));

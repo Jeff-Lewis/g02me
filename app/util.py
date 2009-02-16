@@ -200,7 +200,7 @@ class ReqFilter(object):
         
         # Redirect from home to the profile page if the user profile is not complete
         if not local.fJSON and requser.profile and not requser.profile.IsValid() and req.path == '/':
-             return HttpResponseRedirect("/profile")  
+             return HttpResponseRedirect("/profile/")  
         
     def process_response(self, req, resp):
         # If the user has no valid userAuth token, given them one for the next request
