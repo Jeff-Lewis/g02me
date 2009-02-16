@@ -431,8 +431,6 @@ class Comment(db.Model):
         try:
             self.map.RemoveTags(self.tags.split(','))
             self.map.EnsureCommentCount()
-            if not self.comment.startswith('__'):
-                self.map.commentCount -= 1
             self.map.put()
         except:
             pass

@@ -418,8 +418,9 @@ ts.AddTest("Tag", function(ut)
 			{
 			new Go2.ScriptData("/comment/").Call({id:objInit.id, comment:"Testing tags [, ,search,, multi word]", apikey:sAPIKey}, function (obj) {
 				ut.AssertContains(obj, {status:"OK", url:"http://google.com/"});
-				ut.AssertGT(obj.comments.length, 0);
-				ut.AssertContains(obj.comments[0], {comment:"Testing tags", tags: "search,multi-word"});
+				var cT = obj.comments.length;
+				ut.AssertGT(cT, 0);
+				ut.AssertContains(obj.comments[cT-1], {comment:"Testing tags", tags: "search,multi-word"});
 				ut.AssertContains(obj.tags, ["multi-word", "search"]); 
 				ut.NextFn();
 				});
