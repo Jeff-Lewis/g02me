@@ -325,7 +325,14 @@ ts.AddTest("Comment", function(ut)
 				ut.AssertEq(obj.comments.length, cComment);
 				ut.NextFn();
 				});
-			}
+			},
+		function(ut)
+			{
+			new Go2.ScriptData("/comment/").Call({id:objInit.id, apikey:sAPIKey, comment:"__illegal"}, ut.FnWrap(function (obj) {
+				ut.AssertContains(obj, {status:"Fail"});
+				ut.NextFn();
+				}));
+			},
 		]);
 }).Async(true);
 
@@ -442,6 +449,29 @@ ts.AddTest("Tag", function(ut)
 				ut.AssertEq(obj.pages.length, 0);
 				ut.NextFn();
 				}));
+			}
+		]);
+}).Async(true, 5000);
+
+ts.AddTest("Favorite", function(ut)
+{
+	var objInit;
+
+	ut.AsyncSequence([
+		function(ut)
+			{
+			new Go2.ScriptData("/lookup/").Call({url:"http://google.com"}, function(obj) {
+				ut.AssertContains(obj, {status:"OK", url:"http://google.com/", favorite:false});
+				objInit = obj;
+				ut.NextFn();
+				});
+			},
+		function(ut)
+			{
+			new Go2.ScriptData("/favorite/").Call({id:objInit.id, favorite:true, apikey:sAPIKey}, function (obj) {
+				ut.AssertContains(obj, {status:"OK", url:"http://google.com/", favorite:true});
+				ut.NextFn();
+				});
 			}
 		]);
 }).Async(true, 5000);

@@ -50,7 +50,7 @@ def Lookup(req):
 
 def SetUsername(req):
     if not IsJSON():
-        raise Error("Can only use API to set nickname.");
+        raise Error("Can only use API to set nickname.")
     
     local.requser.SetOpenUsername(req.REQUEST.get('username', ''), fForce=req.GET.get('force', False))
 
@@ -64,6 +64,21 @@ def InitAPI(req):
     # Return an IP-specific API key to the client - 10 WPM
     sKey = '~'.join((local.ipAddress, '10'))
     return HttpJSON(req, obj={'apikey':SSign('apiIP', sKey)})
+
+def Favorite(req):
+    local.requser.Require('api', 'write', 'comment', 'user')
+    if not IsJSON():
+        raise Error("Can only use API to set as favorite.")
+
+    id = local.mpParams.get('id', "").strip()
+    
+    map = Map.Lookup(id)
+    if map == None:
+        RaiseNotFound(id)
+    
+    map.AddComment(username=local.requser.username, comment='__fave')
+    
+    return HttpJSON(req, obj=map.JSON())
 
 def DoComment(req, command=None):
     local.requser.Require('api', 'write', 'comment')

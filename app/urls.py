@@ -13,6 +13,7 @@ urlpatterns = patterns('',
 
     (r'^map/$', MakeAlias),
     (r'^comment/(?P<command>[a-z\-]+)?$', DoComment),
+    (r'^favorite/$', Favorite),
     (r'^init/$', InitAPI),
     (r'^lookup/$', Lookup),
     (r'^cmd/setusername$', SetUsername),

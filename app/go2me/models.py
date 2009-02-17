@@ -409,6 +409,7 @@ class Comment(db.Model):
     map = db.ReferenceProperty(Map)
     dateCreated = db.DateTimeProperty()
     
+    # Parts:                    1  2                              3         4  5 
     regComment = re.compile(r"^( *([a-zA-Z0-9_\.\-]{1,20}) *: *)?([^\[]*) *(\[(.*)\])? *$")
     
     @staticmethod
@@ -421,7 +422,7 @@ class Comment(db.Model):
         dateCreated = local.dtNow
         
         if tags == '' and comment == '':
-            raise Error("Empty comment")
+            raise Error("Comment and tags missing")
 
         com = Comment(map=map, username=username, userAuth=userAuth, comment=comment, tags=tags, dateCreated=dateCreated)
         return com
@@ -447,6 +448,7 @@ class Comment(db.Model):
         if m == None:
             raise Error("Improperly formatted comment")
         
+        # Parse tags
         if m.group(5):
             tags = re.sub(" *, *", ',', m.group(5)).strip()
             rTags = tags.split(',')
@@ -454,12 +456,16 @@ class Comment(db.Model):
             tags = ','.join(rTags)
         else:
             tags = ''
-            
+        
+        # Username    
         sUsername = m.group(2)
         if sUsername is None:
             sUsername = ''
             
+        # Comment proper
         sComment = m.group(3)
+        if sComment.startswith('__'):
+            raise Error("Comments cannot begin with '__' (underscores)")
 
         # Users can begin a comment with a URL - don't treat it as a username field
         if sUsername == "http":
