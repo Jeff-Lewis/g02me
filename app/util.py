@@ -589,6 +589,7 @@ def FinalResponse():
         'host': local.stHost,
 
         'analytics_code': settings.sAnalyticsCode,
+        'quantcast_acct': settings.sQuantcast,
         'ad_publisher_id': settings.sAdPublisherID,
         })
     return local.mpResponse

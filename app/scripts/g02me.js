@@ -267,6 +267,22 @@ TogglePanel: function(evt, divBody)
 	evt.stopPropagation();
 	},
 	
+fPrivate: false,
+	
+TogglePrivate: function()
+	{
+	var imgLock = $("#lock")[0];
+	if (Go2.fPrivate)
+		{
+		imgLock.src = "/images/lock_open";
+		}
+	else
+		{
+		}
+	if (imgLock.src = "/images/lock.png")
+		imgLock.src
+	},
+	
 // Extend(dest, src1, src2, ... )
 // Shallow copy properties in turn into dest object
 Extend: function(dest)

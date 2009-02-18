@@ -186,7 +186,7 @@ Go2.AddEventFn(window, "click", Click)
 	<div id="stats-panel" class="panel">
 		<div class="expander expanded"></div>
 		<div style="position:relative;" class="panel-body">
-			<div class="open-star" title="Make a Favorite"></div>
+			<div class="open-star" title="Make Link a Favorite"></div>
 			<div class="creator">
 			{% if map.Creator %}
 				<a href="/user/{{map.Creator}}">
@@ -211,13 +211,17 @@ Go2.AddEventFn(window, "click", Click)
 				</p>
 			</div>
 			<div style="margin: 5px 5px 2px 0;text-align:right;">
-				<a href="#">Make Private</a> |
 				<a href="#">Report Page</a>
 				{% if is_admin %}
 					| <a href="#" onclick="Go2.BanishId('{{map.GetId}}', '{{map.Banished}}'=='False'); return false;">{% if map.Banished%}Un-{% endif %}Ban</a>
 				{% endif %}
 			</div>
 			<div style="margin: 5px 5px 2px 0;text-align:right;">
+				<a href="#"
+				   onclick="Go2.TogglePrivate();return false;"
+				   title="Make Link Private">
+					<img src="/images/lock_open.png">
+				</a>
 				<a href="mailto:?subject=Go2.me at {{map.title|escape}}&body=I've shared a link with you at http://{{site_host}}/{{map.GetId}}"
 				   title="Send Link by Email">
 					<img src="/images/email.png">
