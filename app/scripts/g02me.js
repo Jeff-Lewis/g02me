@@ -267,20 +267,31 @@ TogglePanel: function(evt, divBody)
 	evt.stopPropagation();
 	},
 	
-fPrivate: false,
+sPrivateKey: "",
 	
 TogglePrivate: function()
 	{
-	var imgLock = $("#lock")[0];
-	if (Go2.fPrivate)
+console.log("tp");
+	var imgLock = $("#private-image")[0];
+	var aLock = $("#private-link")
+
+	if (Go2.sPrivateKey == "")
 		{
-		imgLock.src = "/images/lock_open";
+		var sKey = prompt("Enter a key to be used for your private link");
+		console.log("tp2", sKey);
+		if (sKey != null)
+			{
+			Go2.sPrivateKey = sKey;
+			location.hash = sKey;
+			imgLock.src = "/images/lock.png";
+			}
 		}
 	else
 		{
+		Go2.sPrivateKey = ""
+		//location.hash = "";
+		imgLock.src = "/images/lock_open.png";
 		}
-	if (imgLock.src = "/images/lock.png")
-		imgLock.src
 	},
 	
 // Extend(dest, src1, src2, ... )

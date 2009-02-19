@@ -471,11 +471,7 @@ div.closed-star:hover {
 background: url(/images/open-star.png) scroll top;
 }
 
-div.open-lock {
-background: url(/images/lock_open.png) scroll top;
-float: left;
-width: 20px;
-height: 22px;
+.clickable {
 cursor: pointer;
 }
 

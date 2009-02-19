@@ -217,11 +217,7 @@ Go2.AddEventFn(window, "click", Click)
 				{% endif %}
 			</div>
 			<div style="margin: 5px 5px 2px 0;text-align:right;">
-				<a href="#"
-				   onclick="Go2.TogglePrivate();return false;"
-				   title="Make Link Private">
-					<img src="/images/lock_open.png">
-				</a>
+				<img class="clickable" onclick="Go2.TogglePrivate();return false;" id="private-image" title="Make Link Private" src="/images/lock_open.png">
 				<a href="mailto:?subject=Go2.me at {{map.title|escape}}&body=I've shared a link with you at http://{{site_host}}/{{map.GetId}}"
 				   title="Send Link by Email">
 					<img src="/images/email.png">
