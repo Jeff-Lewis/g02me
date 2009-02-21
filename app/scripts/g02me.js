@@ -267,30 +267,43 @@ TogglePanel: function(evt, divBody)
 	evt.stopPropagation();
 	},
 	
+// Non-empty for private conversation
 sPrivateKey: "",
 	
-TogglePrivate: function()
+TogglePrivate: function(sID, sUser)
 	{
-console.log("tp");
-	var imgLock = $("#private-image")[0];
-	var aLock = $("#private-link")
+	Go2.sPrivateKey.sPrivateKey = Go2.sPrivateKey.Trim();
 
 	if (Go2.sPrivateKey == "")
 		{
-		var sKey = prompt("Enter a key to be used for your private link");
-		console.log("tp2", sKey);
-		if (sKey != null)
-			{
-			Go2.sPrivateKey = sKey;
-			location.hash = sKey;
-			imgLock.src = "/images/lock.png";
-			}
+		var sKey = prompt("Enter a key to be used for your private link", sUser);
+		if (sKey == null)
+			return;
+		location.hash = sKey;
 		}
 	else
 		{
-		Go2.sPrivateKey = ""
-		//location.hash = "";
+		// BUG: Browser is reloading the page here - not really desired.
+		location.hash = "";
+		}
+
+	Go2.UpdatePrivacy();
+	},
+	
+UpdatePrivacy: function()
+	{
+	var imgLock = $("#private-image")[0];
+	Go2.sPrivateKey.sPrivateKey = location.hash.Trim();
+console.log("PK", Go2.sPrivateKey);
+	if (Go2.sPrivateKey == "")
+		{
 		imgLock.src = "/images/lock_open.png";
+		imgLock.title = "Make Link Private";
+		}
+	else
+		{
+		imgLock.src = "/images/lock.png";
+		imgLock.title = "Make Link Public";
 		}
 	},
 	
