@@ -48,7 +48,8 @@ class Profile(db.Model):
     commentCount = db.IntegerProperty(default=0)
     userTwitter = db.StringProperty()
     passTwitterCipher = db.StringProperty()             # E(key, passPlain)
-    keyFriendFeed = db.StringProperty()                 # API Key for Friendfeed
+    userFF = db.StringProperty()
+    keyFF = db.StringProperty()                         # API Key for Friendfeed
     """
     
     @staticmethod
