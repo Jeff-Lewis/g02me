@@ -3,6 +3,7 @@
 
 // Define stubs for FireBug objects if not present
 if (!window.console || !console.firebug)
+	{
 	(function ()
 		{
     var names = ["log", "debug", "info", "warn", "error", "assert", "dir", "dirxml",
@@ -10,8 +11,11 @@ if (!window.console || !console.firebug)
 
     window.console = {};
     for (var i = 0; i < names.length; ++i)
-        window.console[names[i]] = function() {}
+    	{
+        window.console[names[i]] = function() {};
+        }
 		})();
+	}
 
 //--------------------------------------------------------------------------
 // Go2.me Application Functions
@@ -22,8 +26,8 @@ sSiteName: "Go2.me",
 sCSRF: "",
 
 Browser: {
-	version: parseInt(navigator.appVersion),
-	fIE: navigator.appName.indexOf("Microsoft") != -1
+	version: parseInt(window.navigator.appVersion),
+	fIE: window.navigator.appName.indexOf("Microsoft") != -1
 },
 
 SetCSRF: function(sCSRF)
@@ -50,28 +54,28 @@ SetUsername: function(sUsername)
 			window.location.href = obj.urlLogout;
 			break;
 		case 'Fail/Auth/Used':
-			if (confirm("The nickname, " + sUsername + ", is already in use.  Are you sure you want to use it?"))
+			if (window.confirm("The nickname, " + sUsername + ", is already in use.  Are you sure you want to use it?"))
 				{
 				objCall.force = true;
 				sd.Call(objCall, SUCallback);
 				}
 			break;
 		case 'Fail/Auth/user':
-			if (confirm("The nickname, " + sUsername + ", is already in use and requires a login.  Do you want to log in now?"))
+			if (window.confirm("The nickname, " + sUsername + ", is already in use and requires a login.  Do you want to log in now?"))
 				{
 				window.location.href = obj.urlLogin;
 				}
 			break;
 		default:
-			alert(Go2.sSiteName + ": " + obj.message);
+			window.alert(Go2.sSiteName + ": " + obj.message);
 			break;
 			}
-		};
+		}
 	},
 	
 Map: function(sURL, sTitle)
 	{
-		location.href = '/map/?url='+encodeURIComponent(sURL)+'&title='+encodeURIComponent(sTitle);
+		window.location.href = '/map/?url='+encodeURIComponent(sURL)+'&title='+encodeURIComponent(sTitle);
 	},
 	
 PostComment: function(sID, sUsername, sComment)
@@ -97,29 +101,31 @@ PostComment: function(sID, sUsername, sComment)
 			window.location.href = '/' + sID;
 			break;
 		case 'Fail/Auth/Used':
-			if (confirm(obj.message + ".  Are you sure you want to use it?"))
+			if (window.confirm(obj.message + ".  Are you sure you want to use it?"))
 				{
 				objCall.force = true;
 				sd.Call(objCall, PCCallback);
 				}
 			break;
 		case 'Fail/Auth/user':
-			if (confirm(obj.message + ".  Do you want to log in now?"))
+			if (window.confirm(obj.message + ".  Do you want to log in now?"))
 				{
 				window.parent.location.href = obj.urlLogin;
 				}
 			break;
 		default:
-			alert(Go2.sSiteName + ": " + obj.message);
+			window.alert(Go2.sSiteName + ": " + obj.message);
 			break;
 			}
-		};
+		}
 	},
 	
 DeleteComment: function(sDelKey)
 	{
-	if (!confirm("Are you sure you want to delete this comment?"))
+	if (!window.confirm("Are you sure you want to delete this comment?"))
+		{
 		return;
+		}
 	
 	var sd = new Go2.ScriptData('/comment/delete');
 	var objCall = {delkey:sDelKey, csrf:Go2.sCSRF};
@@ -132,7 +138,7 @@ DeleteComment: function(sDelKey)
 			window.location.href = window.location.href;
 			break;
 		default:
-			alert(Go2.sSiteName + ": " + obj.message);
+			window.alert(Go2.sSiteName + ": " + obj.message);
 			break;
 			}
 		});
@@ -142,8 +148,10 @@ DeleteComment: function(sDelKey)
 	
 BanishId: function(sID, fBan)
 	{
-	if (!confirm("Are you sure you want to " + (fBan ? "banish" : "un-banish") + " this id: " + sID))
+	if (!window.confirm("Are you sure you want to " + (fBan ? "banish" : "un-banish") + " this id: " + sID))
+		{
 		return;
+		}
 	
 	var sd = new Go2.ScriptData('/admin/ban-id');
 	
@@ -155,7 +163,7 @@ BanishId: function(sID, fBan)
 			window.location.href = window.location.href;
 			break;
 		default:
-			alert(Go2.sSiteName + ": " + obj.message);
+			window.alert(Go2.sSiteName + ": " + obj.message);
 			break;
 			}
 		});
@@ -163,38 +171,46 @@ BanishId: function(sID, fBan)
 
 DisplayBars: function(widthMax)
 	{
-	scaleMax = 3.0;
-	aBars = $('.bar');
-	aBarHolders = $('.bar-holders');
+	var scaleMax = 3.0;
+	var aBars = $('.bar');
+	var aBarHolders = $('.bar-holders');
 	
 	if (aBars.length == 0)
+		{
 		return;
+		}
 	
 	for (var i = 0; i < aBarHolders.length; i++)
 		{
-		divHolder = aBarHolders[i];
+		var divHolder = aBarHolders[i];
 		divHolder.style.width = widthMax + "px";
 		}
 	
 	// Find the widest bar to set max scaling
-	width = 0;
-	for (var i = 0; i < aBars.length; i++)
+	var width = 0;
+	for (i = 0; i < aBars.length; i++)
 		{
 		var divBar = aBars[i];
 		var widthT = parseFloat(divBar.getAttribute('bar_value'));
 		if (widthT > width)
+			{
 			width = widthT;
+			}
 		}
 
 	if (width * scaleMax > widthMax)
+		{
 		scaleMax = widthMax/width;
+		}
 	
-	var i = 1;
+	i = 1;
 	var tm = new Go2.Timer(function()
 		{
 		Go2.ScaleBars(scaleMax * i /10);
 		if (i == 10)
+			{
 			tm.Active(false);
+			}
 		i++;
 		}, 75).Repeat().Active();
 	},
@@ -205,7 +221,7 @@ ScaleBars: function(scale)
 	for (var i = 0; i < aBars.length; i++)
 		{
 		var divBar = aBars[i];
-		width = parseFloat(divBar.getAttribute('bar_value'));
+		var width = parseFloat(divBar.getAttribute('bar_value'));
 		divBar.style.width = (width*scale) + "px";
 		}	
 	},
@@ -276,15 +292,17 @@ TogglePrivate: function(sID, sUser)
 
 	if (Go2.sPrivateKey == "")
 		{
-		var sKey = prompt("Enter a key to be used for your private link", sUser);
+		var sKey = window.prompt("Enter a key to be used for your private link", sUser);
 		if (sKey == null)
+			{
 			return;
-		location.hash = sKey;
+			}
+		window.location.hash = sKey;
 		}
 	else
 		{
 		// BUG: Browser is reloading the page here - not really desired.
-		location.hash = "";
+		window.location.hash = "";
 		}
 
 	Go2.UpdatePrivacy();
@@ -293,8 +311,7 @@ TogglePrivate: function(sID, sUser)
 UpdatePrivacy: function()
 	{
 	var imgLock = $("#private-image")[0];
-	Go2.sPrivateKey.sPrivateKey = location.hash.Trim();
-console.log("PK", Go2.sPrivateKey);
+	Go2.sPrivateKey.sPrivateKey = window.location.hash.Trim();
 	if (Go2.sPrivateKey == "")
 		{
 		imgLock.src = "/images/lock_open.png";
@@ -317,7 +334,9 @@ Extend: function(dest)
 		for (var prop in src)
 			{
 			if (src.hasOwnProperty(prop))
+				{
 				dest[prop] = src[prop];
+				}
 			}
 		}
 	},
@@ -327,34 +346,47 @@ Extend: function(dest)
 StParams: function(obj)
 	{
 	if (obj == undefined || obj == null)
+		{
 		return "";
+		}
 		
 	var stDelim = "?";
 	var stParams = "";
 	for (var prop in obj)
 		{
 		if (!obj.hasOwnProperty(prop) || prop == "_anchor")
+			{
 			continue;
+			}
 		stParams += stDelim;
 		stParams += encodeURIComponent(prop);
 		if (obj[prop] != null)
+			{
 			stParams += "=" + encodeURIComponent(obj[prop]);
+			}
 		stDelim = "&";
 		}
 	if (obj._anchor)
+		{
 		stParams += "#" + encodeURIComponent(obj._anchor);
+		}
 	return stParams;
 	},
 	
 ParseParams: function(stURL)
 	{
 	var rgQuery = stURL.match(/([^?#]*)(#.*)?$/);
-	if (!rgQuery) return {};
+	if (!rgQuery)
+		{
+		return {};
+		}
 	
 	var objParse = {};
 	
 	if (rgQuery[2])
+		{
 		objParse._anchor = decodeURIComponent(rgQuery[2].substring(1));
+		}
 		
 	var rgParams = rgQuery[1].split("&");
 	for (var i = 0; i < rgParams.length; i++)
@@ -389,13 +421,22 @@ fnHandlers: [],
 AddEventFn: function(elem, stEvt, fnCallback, fCapture)
 	{
 	if (!fCapture)
+		{
 		fCapture = false;
+		}
+
 	if (elem.addEventListener)
+		{
 		elem.addEventListener(stEvt, fnCallback, fCapture);
+		}
 	else if (elem.attachEvent)
+		{
 		elem.attachEvent('on' + stEvt, fnCallback);
+		}
 	else
+		{
 		elem['on' + stEvt] = fnCallback;
+		}
 
 	Go2.fnHandlers.push({elem:elem, evt:stEvt, fn:fnCallback, fCapture:fCapture});
 	return Go2.fnHandlers.length-1;
@@ -405,16 +446,24 @@ RemoveEventFn: function(ifn)
 	{
 	var fnHand = Go2.fnHandlers[ifn];
 	if (!fnHand)
+		{
 		return;
+		}
 	Go2.fnHandlers[ifn] = undefined;
 
 	var elem = fnHand.elem;
 	if (elem.removeEventListener)
+		{
 		elem.removeEventListener(fnHand.evt, fnHand.fn, fnHand.fCapture);
+		}
 	else if (elem.attachEvent)
+		{
 		elem.detachEvent('on' + fnHand.evt, fnHand.fn);
+		}
 	else
+		{
 		elem['on' + fnHand.evt] = undefined;
+		}
 	},
 
 // Cookies can be quoted with "..." if they have spaces or other special characters.
@@ -424,9 +473,15 @@ SetCookie: function(name, value, days, fSecure)
 	{
 	var st = encodeURIComponent(name) + "=" + encodeURIComponent(value);
 	if (days != undefined)
+		{
 		st += ";max-age=" + days*60*60*24;
+		}
+
 	if (fSecure)
+		{
 		st += ";secure";
+		}
+
 	st += ";path=/";
 	document.cookie = st;
 	},
@@ -446,7 +501,9 @@ GetCookies: function()
 		// Remove quotes around value string if any (and also replaces \" with ")
 		var rg = val.match('^"(.*)"$');
 		if (rg)
+			{
 			val = rg[1].replace('\\"', '"');
+			}
 		obj[decodeURIComponent(rgC[0])] = val;
 		}
 	return obj;
@@ -525,8 +582,10 @@ SetRc: function(elt, rc)
 	
 RemoveChildren: function(node)
 	{
-	for (var child = node.firstChild; child; child = node.firstChild);
+	for (var child = node.firstChild; child; child = node.firstChild)
+		{
 		node.removeChild(child);
+		}
 	},
 
 // Set focus() on element, but NOT at the expense of scrolling the window position
@@ -537,7 +596,9 @@ SetFocusIfVisible: function(elt)
 	
 	if (Go2.Vector.PtInRect(Go2.Vector.UL(rcElt), rcWin) ||
 		Go2.Vector.PtInRect(Go2.Vector.LR(rcElt), rcWin))
+		{
 		elt.focus();
+		}
 	}
 }; // Go2.DOM
 
@@ -549,7 +610,9 @@ Go2.Vector = {
 SubFrom: function(v1, v2)
 	{
 	for (var i = 0; i < v1.length; i++)
+		{
 		v1[i] = v1[i] - v2[i];
+		}
 	return v1;
 	},
 
@@ -567,7 +630,9 @@ AddTo: function(vSum)
 		{
 		var v = arguments[iarg];
 		for (var i = 0; i < v.length; i++)
+			{
 			vSum[i] += v[i];
+			}
 		}
 	return vSum;
 	},	
@@ -593,7 +658,9 @@ Max: function()
 		for (var i = 0; i < vMax.length; i++)
 			{
 			if (v[i] > vMax[i])
+				{
 				vMax[i] = v[i];
+				}
 			}
 		}
 	return vMax;
@@ -604,6 +671,7 @@ Max: function()
 Mult: function()
 	{
 	var vProd = 1;
+	var i;
 
 	for (var iarg = 0; iarg < arguments.length; iarg++)
 		{
@@ -612,12 +680,16 @@ Mult: function()
 			{
 			// Mult(scalar, scalar)
 			if (typeof vProd == "number")
+				{
 				vProd *= v;
+				}
 			// Mult(vector, scalar)
 			else
 				{
-				for (var i = 0; i < vProd.length; i++)
+				for (i = 0; i < vProd.length; i++)
+					{
 					vProd[i] *= v;
+					}
 				}				
 			}
 		else
@@ -627,16 +699,22 @@ Mult: function()
 				{
 				var vT = vProd;
 				vProd = Go2.Vector.Copy(v);
-				for (var i = 0; i < vProd.length; i++)
+				for (i = 0; i < vProd.length; i++)
+					{
 					vProd[i] *= vT;
+					}
 				}
 			// Mult(vector, vector)
 			else
 				{
 				if (v.length != vProd.length)
+					{
 					throw new Error("Mismatched Vector Size");
-				for (var i = 0; i < vProd.length; i++)
+					}
+				for (i = 0; i < vProd.length; i++)
+					{
 					vProd[i] *= v[i];
+					}
 				}
 			}
 		}
@@ -647,7 +725,9 @@ Floor: function(v)
 	{
 	var vFloor = [];
 	for (var i = 0; i < v.length; i++)
+		{
 		vFloor[i] = Math.floor(v[i]);
+		}
 	return vFloor;
 	},
 	
@@ -656,7 +736,9 @@ DotProduct: function()
 	var v = Go2.Vector.Mult.apply(undefined, arguments);
 	var s = 0;
 	for (var i = 0; i < v.length; i++)
+		{
 		s += v[i];
+		}
 	return s;
 	},
 
@@ -668,7 +750,9 @@ Append: function()
 		{
 		var v = arguments[iarg];
 		for (var i = 0; i < v.length; i++)
+			{
 			vAppend.push(v[i]);
+			}
 		}
 	return vAppend;
 	},
@@ -677,8 +761,12 @@ Append: function()
 Equal: function(v1, v2)
 	{
 	for (var i = 0; i < v1.length; i++)
+		{
 		if (v1[i] != v2[i])
+			{
 			return false;
+			}
+		}
 	return true;
 	},
 	
@@ -714,9 +802,13 @@ PtInRect: function(pt, rc)
 PtCenter: function(rc, scale)
 	{
 	if (scale == undefined)
+		{
 		scale = 0.5;
+		}
 	if (typeof scale == "number")
+		{
 		scale = [scale, scale];
+		}
 	var pt = Go2.Vector.Mult(scale, Go2.Vector.LR(rc));
 	scale = Go2.Vector.Sub([1,1], scale);
 	Go2.Vector.AddTo(pt, Go2.Vector.Mult(scale, Go2.Vector.UL(rc)));
@@ -728,7 +820,9 @@ BoundingBox: function()
 	{
 	var vPoints = Go2.Vector.Append.apply(undefined, arguments);
 	if (vPoints.length % 2 != 0)
+		{
 		throw Error("Invalid arguments to BoundingBox");
+		}
 	
 	var ptMin = vPoints.slice(0,2),
 		ptMax = vPoints.slice(0,2);
@@ -737,13 +831,21 @@ BoundingBox: function()
 		{
 		var pt = vPoints.slice(ipt, ipt+2);
 		if (pt[0] < ptMin[0])
+			{
 			ptMin[0] = pt[0];
+			}
 		if (pt[1] < ptMin[1])
+			{
 			ptMin[1] = pt[1];
+			}
 		if (pt[0] > ptMax[0])
+			{
 			ptMax[0] = pt[0];
+			}
 		if (pt[1] > ptMax[1])
+			{
 			ptMax[1] = pt[1];
+			}
 		}
 
 	return [ptMin[0], ptMin[1], ptMax[0], ptMax[1]];
@@ -774,7 +876,9 @@ Go2.Timer.prototype = {
 Repeat: function(f)
 {
 	if (f == undefined)
+		{
 		f = true;
+		}
 	this.fRepeat = f;
 	return this;
 },
@@ -783,7 +887,9 @@ Ping: function()
 {
 	// In case of race condition - don't call function if deactivated
 	if (!this.fActive)
+		{
 		return;
+		}
 
 	// Eliminate re-entrancy - is this possible?
 	if (this.fInCallback)
@@ -797,25 +903,31 @@ Ping: function()
 	this.fInCallback = false;
 
 	if (this.fActive && (this.fRepeat || this.fReschedule))
+		{
 		this.Active(true);
+		}
 },
 
 // Calling Active resets the timer so that next call to Ping will be in this.ms milliseconds from NOW
 Active: function(fActive)
 {
 	if (fActive == undefined)
+		{
 		fActive = true;
+		}
 	this.fActive = fActive;
 	this.fReschedule = false;
 
 	if (this.iTimer)
 		{
-		clearTimeout(this.iTimer);
+		window.clearTimeout(this.iTimer);
 		this.iTimer = undefined;
 		}
 
 	if (fActive)
-		this.iTimer = setTimeout(this.Ping.FnMethod(this), this.ms);
+		{
+		this.iTimer = window.setTimeout(this.Ping.FnMethod(this), this.ms);
+		}
 
 	return this;
 }
@@ -847,7 +959,9 @@ Go2.ScriptData.prototype = {
 Call: function(objParams, fnCallback)
 	{
     if (this.rid != 0)
+    	{
         throw(new Error(Go2.ScriptData.stMsg.errBusy));
+        }
 
 	this.fResponse = false;
 	this.objResponse = undefined;
@@ -856,10 +970,14 @@ Call: function(objParams, fnCallback)
     Go2.ScriptData.ActiveCalls[this.rid] = this;
 
 	if (fnCallback)
+		{
 		this.fnCallback = fnCallback;
+		}
             
     if (objParams === undefined)
-            objParams = {};
+    	{
+    	objParams = {};
+    	}
     objParams.callback = "Go2.ScriptData.ActiveCalls[" + this.rid + "].Callback";
     this.script = document.createElement("script");
     this.script.src = this.stURL + Go2.StParams(objParams);
@@ -897,7 +1015,9 @@ Cancel: function()
 Go2.ScriptData.Cancel = function(rid)
 {
 	if (rid == 0)
+		{
 		return;
+		}
 	var sd = Go2.ScriptData.ActiveCalls[rid];
 	Go2.ScriptData.ActiveCalls[rid] = undefined;
 	// Guard against multiple calls to Cancel (after sd may be reused)
@@ -967,7 +1087,9 @@ Go2.JSForm.prototype = {
 Init: function (options)
 	{
 	if (this.fShow)
+		{
 		throw Error("Cannot re-initialize dialog box while modal dialog dispayed.");
+		}
 
 	this.options = {};
 	Go2.ExtendCopy(this.options, this.optionsDefault, options);
@@ -1014,7 +1136,9 @@ InitFields: function(fields)
 		
 		// Hide any "hidden" fields
 		if (fld.hidden)
+			{
 			fld.elt.style.display = "none";
+			}
 		}
 	},
 	
@@ -1043,7 +1167,9 @@ ExtractValues: function(fields)
 		{
 		var fld = this.GetField(prop);
 		if (!fld.elt)
+			{
 			continue;
+			}
 
 		switch (fld.elt.tagName.toLowerCase())
 			{
@@ -1052,13 +1178,17 @@ ExtractValues: function(fields)
 				{
 				fld.value = fld.elt.checked;
 				if (fld.required && !fld.value)
+					{
 					this.FieldError(fld, (fld.labelShort || fld.label) + this.tokens.required);
+					}
 				}
 			else
 				{
 				fld.value = fld.elt.value.Trim();
 				if (fld.required && fld.value.length == 0)
+					{
 					this.FieldError(fld, (fld.labelShort || fld.label) + this.tokens.required);
+					}
 				}
 			break;
 		case "textarea":
@@ -1083,7 +1213,9 @@ ButtonClick: function(stButton)
 			fld.elt.style.display = "block";
 			}
 		else
-			alert(this.errors[0].error);
+			{
+			window.alert(this.errors[0].error);
+			}
 		this.errors[0].fld.elt.focus();
 		this.errors[0].fld.elt.select();
 		this.ResizeBox();
@@ -1103,9 +1235,13 @@ GetField: function(stName)
 	{
 	var fld = this.options.fields[stName];
 	if (!fld)
+		{
 		fld = this.options.fieldsBottom[stName];
+		}
 	if (fld)
+		{
 		fld.elt = document.getElementById(this.tokens.idPre + fld.n);
+		}
 	return fld;
 	},
 
@@ -1150,7 +1286,9 @@ Function.prototype.FnArgs = function()
 	var _fn = this;
 	var _args = [];
 	for (var i = 0; i < arguments.length; i++)
+		{
 		_args.push(arguments[i]);
+		}
 
 	return function () {
 		var args = [];
@@ -1158,9 +1296,13 @@ Function.prototype.FnArgs = function()
 		var self = this;
 
 		for (var i = 0; i < arguments.length; i++)
+			{
 			args.push(arguments[i]);
+			}
 		for (i = 0; i < _args.length; i++)
+			{
 			args.push(_args[i]);
+			}
 
 		return _fn.apply(self, args);
 	};	
