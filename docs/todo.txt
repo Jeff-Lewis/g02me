@@ -178,9 +178,16 @@ X Add thousands sep for counts in analytics (info, home, tags, user)
   ! fix inline graph bar height
   ! signout for registered uses on mapped page not working
   - only set focus on home page if control is visible in the window! (avoid scroll)
-  
-	  
-  
+- Capture referred domains - report in analytics block (unique viewers by referrer)
+- Home page table sizing - esp IE, and with run-on title text
+- Report icon, and __report comment - collect reason (e.g. adult, spam, phishing, malware)
+- Record __ban comments
+- Admin reports on __report'ed links
+- Clip long user names under image
+- Replace default user image
+- clip long URL's in map title bar
+! Clean up comment form
+! AJAX comments
   
 ------------------------------------------------------------
         PLATFORMS, SYNDICATION, IMPORT/EXPORT
@@ -420,3 +427,4 @@ X UnicodeDecodeError
 ! Resetting iframe is navigating the parent frame???
 - Rename "views" to "viewers" and "comments" to "commenters" and "shared" to "sharers".
 - Allow static IP n.n.n.n shortening (e.g., Google Cache links).
+- Normalize/merge upper/lowercase differences in user names (eg. Calbucci)

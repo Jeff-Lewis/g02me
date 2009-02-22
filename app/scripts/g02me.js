@@ -288,19 +288,26 @@ sPrivateKey: "",
 	
 TogglePrivate: function(sID, sUser)
 	{
+	var divComments = $('#comments')[0];
 	Go2.sPrivateKey.sPrivateKey = Go2.sPrivateKey.Trim();
 
 	if (Go2.sPrivateKey === "")
 		{
-		var sKey = window.prompt("Enter a key to be used for your private link", sUser);
-		if (sKey === null)
+		var sKey = window.prompt("Enter a security word to be used to access a private conversation:", sUser);
+		sKey = Go2.Slugify(sKey)
+		if (!sKey)
 			{
 			return;
 			}
 		window.location.hash = sKey;
+		Go2.DOM.RemoveChildren(divComments);
 		}
 	else
 		{
+		if (!window.confirm("Are you sure you want to return to the public conversation for this link?"))
+			{
+			return;
+			}
 		// BUG: Browser is reloading the page here - not really desired.
 		window.location.hash = "";
 		}
@@ -310,17 +317,25 @@ TogglePrivate: function(sID, sUser)
 	
 UpdatePrivacy: function()
 	{
-	var imgLock = $("#private-image")[0];
-	Go2.sPrivateKey.sPrivateKey = window.location.hash.Trim();
+	var imgLock = $('#private-image')[0];
+	var divComments = $('#comments')[0];
+	
+	var spanChatTitle = $('#chat-title')[0];
+	
+	Go2.sPrivateKey = window.location.hash.Trim();
 	if (Go2.sPrivateKey === "")
 		{
 		imgLock.src = "/images/lock_open.png";
-		imgLock.title = "Make Link Private";
+		imgLock.title = "Create Private Link";
+		divComments.style.backgroundColor = 'white';
+		spanChatTitle.innerHTML = "Chat";
 		}
 	else
 		{
 		imgLock.src = "/images/lock.png";
-		imgLock.title = "Make Link Public";
+		imgLock.title = "Go2 Public Link";
+		divComments.style.backgroundColor = '#D6C8C8';
+		spanChatTitle.innerHTML = "Chat (Private)"
 		}
 	},
 	
@@ -507,6 +522,16 @@ GetCookies: function()
 		obj[decodeURIComponent(rgC[0])] = val;
 		}
 	return obj;
+	},
+	
+// Converts to lowercase, removes non-alpha chars and converts spaces to hyphens"
+Slugify: function(s)
+	{
+	s = s.Trim().toLowerCase();
+    s = s.replace(/[^\w\s-]/g, '-')
+    	.replace(/[-\s]+/g, '-')
+    	.replace(/(^-+)|(-+$)/g, '');
+    return s;
 	}
 };  // Go2
 
@@ -999,7 +1024,7 @@ Callback: function()
 	
 Timeout: function()
 	{
-	rid = this.rid;
+	var rid = this.rid;
 	this.Cancel();
     console.log("(" + rid + ") -> TIMEOUT");
     this.fnCallback({status:"Fail/Timeout", message:"The " + Go2.sSiteName + " server failed to respond."});
