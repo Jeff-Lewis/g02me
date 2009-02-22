@@ -550,7 +550,7 @@ class DirectResponse(Exception):
         self.resp = resp
         
 def RaiseNotFound(id):
-    raise Error("The %s page, %s/%s, does not exist" % (settings.sSiteName, local.stHost, id), obj={'id':id, 'status':'Fail/NotFound'})
+    raise Error("The %s page, %s%s, does not exist" % (settings.sSiteName, local.stHost, id), obj={'id':id, 'status':'Fail/NotFound'})
 
 def HttpJSON(req, obj=None):
     if not IsJSON():

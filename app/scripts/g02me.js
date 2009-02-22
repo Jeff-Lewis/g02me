@@ -27,7 +27,7 @@ sCSRF: "",
 
 Browser: {
 	version: parseInt(window.navigator.appVersion),
-	fIE: window.navigator.appName.indexOf("Microsoft") != -1
+	fIE: window.navigator.appName.indexOf("Microsoft") !== -1
 },
 
 SetCSRF: function(sCSRF)
@@ -175,7 +175,7 @@ DisplayBars: function(widthMax)
 	var aBars = $('.bar');
 	var aBarHolders = $('.bar-holders');
 	
-	if (aBars.length == 0)
+	if (aBars.length === 0)
 		{
 		return;
 		}
@@ -207,7 +207,7 @@ DisplayBars: function(widthMax)
 	var tm = new Go2.Timer(function()
 		{
 		Go2.ScaleBars(scaleMax * i /10);
-		if (i == 10)
+		if (i === 10)
 			{
 			tm.Active(false);
 			}
@@ -267,7 +267,7 @@ InitPanels: function()
 TogglePanel: function(evt, divBody)
 	{
 	var divExpander = evt.target;
-	if (divBody.style.height == '0px')
+	if (divBody.style.height === '0px')
 		{
 		divExpander.className = 'expander expanded';
 		divBody.style.height = 'auto';
@@ -290,10 +290,10 @@ TogglePrivate: function(sID, sUser)
 	{
 	Go2.sPrivateKey.sPrivateKey = Go2.sPrivateKey.Trim();
 
-	if (Go2.sPrivateKey == "")
+	if (Go2.sPrivateKey === "")
 		{
 		var sKey = window.prompt("Enter a key to be used for your private link", sUser);
-		if (sKey == null)
+		if (sKey === null)
 			{
 			return;
 			}
@@ -312,7 +312,7 @@ UpdatePrivacy: function()
 	{
 	var imgLock = $("#private-image")[0];
 	Go2.sPrivateKey.sPrivateKey = window.location.hash.Trim();
-	if (Go2.sPrivateKey == "")
+	if (Go2.sPrivateKey === "")
 		{
 		imgLock.src = "/images/lock_open.png";
 		imgLock.title = "Make Link Private";
@@ -345,7 +345,7 @@ Extend: function(dest)
 // {a:1, b:"hello, world"} -> "?a=1&b=hello%2C%20world"
 StParams: function(obj)
 	{
-	if (obj == undefined || obj == null)
+	if (obj === undefined || obj === null)
 		{
 		return "";
 		}
@@ -354,13 +354,13 @@ StParams: function(obj)
 	var stParams = "";
 	for (var prop in obj)
 		{
-		if (!obj.hasOwnProperty(prop) || prop == "_anchor")
+		if (!obj.hasOwnProperty(prop) || prop === "_anchor")
 			{
 			continue;
 			}
 		stParams += stDelim;
 		stParams += encodeURIComponent(prop);
-		if (obj[prop] != null)
+		if (obj[prop] !== null)
 			{
 			stParams += "=" + encodeURIComponent(obj[prop]);
 			}
@@ -394,7 +394,7 @@ ParseParams: function(stURL)
 		var ich = rgParams[i].indexOf("=");
 		var stName;
 		var stValue;
-		if (ich == -1)
+		if (ich === -1)
 			{
 			stName = rgParams[i];
 			stValue = "";
@@ -472,7 +472,7 @@ RemoveEventFn: function(ifn)
 SetCookie: function(name, value, days, fSecure)
 	{
 	var st = encodeURIComponent(name) + "=" + encodeURIComponent(value);
-	if (days != undefined)
+	if (days !== undefined)
 		{
 		st += ";max-age=" + days*60*60*24;
 		}
@@ -522,7 +522,7 @@ PtClient: function(elt)
 	{
 	var pt = [0,0];
 
-	while (elt.offsetParent != null)
+	while (elt.offsetParent !== null)
 		{
 		pt[0] += elt.offsetLeft;
 		pt[1] += elt.offsetTop;
@@ -676,10 +676,10 @@ Mult: function()
 	for (var iarg = 0; iarg < arguments.length; iarg++)
 		{
 		var v = arguments[iarg];
-		if (typeof v == "number")
+		if (typeof v === "number")
 			{
 			// Mult(scalar, scalar)
-			if (typeof vProd == "number")
+			if (typeof vProd === "number")
 				{
 				vProd *= v;
 				}
@@ -695,7 +695,7 @@ Mult: function()
 		else
 			{
 			// Mult(scalar, vector)
-			if (typeof vProd == "number")
+			if (typeof vProd === "number")
 				{
 				var vT = vProd;
 				vProd = Go2.Vector.Copy(v);
@@ -707,7 +707,7 @@ Mult: function()
 			// Mult(vector, vector)
 			else
 				{
-				if (v.length != vProd.length)
+				if (v.length !== vProd.length)
 					{
 					throw new Error("Mismatched Vector Size");
 					}
@@ -762,7 +762,7 @@ Equal: function(v1, v2)
 	{
 	for (var i = 0; i < v1.length; i++)
 		{
-		if (v1[i] != v2[i])
+		if (v1[i] !== v2[i])
 			{
 			return false;
 			}
@@ -801,11 +801,11 @@ PtInRect: function(pt, rc)
 //Return pt (1-scale) * UL + scale * LR
 PtCenter: function(rc, scale)
 	{
-	if (scale == undefined)
+	if (scale === undefined)
 		{
 		scale = 0.5;
 		}
-	if (typeof scale == "number")
+	if (typeof scale === "number")
 		{
 		scale = [scale, scale];
 		}
@@ -819,7 +819,7 @@ PtCenter: function(rc, scale)
 BoundingBox: function()
 	{
 	var vPoints = Go2.Vector.Append.apply(undefined, arguments);
-	if (vPoints.length % 2 != 0)
+	if (vPoints.length % 2 !== 0)
 		{
 		throw Error("Invalid arguments to BoundingBox");
 		}
@@ -875,7 +875,7 @@ Go2.Timer.prototype = {
 
 Repeat: function(f)
 {
-	if (f == undefined)
+	if (f === undefined)
 		{
 		f = true;
 		}
@@ -911,7 +911,7 @@ Ping: function()
 // Calling Active resets the timer so that next call to Ping will be in this.ms milliseconds from NOW
 Active: function(fActive)
 {
-	if (fActive == undefined)
+	if (fActive === undefined)
 		{
 		fActive = true;
 		}
@@ -958,7 +958,7 @@ Go2.ScriptData.prototype = {
 
 Call: function(objParams, fnCallback)
 	{
-    if (this.rid != 0)
+    if (this.rid !== 0)
     	{
         throw(new Error(Go2.ScriptData.stMsg.errBusy));
         }
@@ -1014,14 +1014,14 @@ Cancel: function()
 
 Go2.ScriptData.Cancel = function(rid)
 {
-	if (rid == 0)
+	if (rid === 0)
 		{
 		return;
 		}
 	var sd = Go2.ScriptData.ActiveCalls[rid];
 	Go2.ScriptData.ActiveCalls[rid] = undefined;
 	// Guard against multiple calls to Cancel (after sd may be reused)
-	if (sd && sd.rid == rid)
+	if (sd && sd.rid === rid)
 		{
 		sd.rid = 0;
 		sd.tm.Active(false);
@@ -1174,7 +1174,7 @@ ExtractValues: function(fields)
 		switch (fld.elt.tagName.toLowerCase())
 			{
 		case "input":
-			if (fld.elt.type == "checkbox")
+			if (fld.elt.type === "checkbox")
 				{
 				fld.value = fld.elt.checked;
 				if (fld.required && !fld.value)
@@ -1185,7 +1185,7 @@ ExtractValues: function(fields)
 			else
 				{
 				fld.value = fld.elt.value.Trim();
-				if (fld.required && fld.value.length == 0)
+				if (fld.required && fld.value.length === 0)
 					{
 					this.FieldError(fld, (fld.labelShort || fld.label) + this.tokens.required);
 					}
@@ -1252,15 +1252,15 @@ Focus: function(evt)
 	
 KeyDown: function(evt)
 	{
-	if (evt.keyCode == 27)
+	if (evt.keyCode === 27)
 		{
 		this.Show(false);
 		evt.preventDefault();
 		}
 	
 	// Hit the OK button on Enter - unless we have a textarea selected	
-	if (evt.keyCode == 13 && this.options.enter &&
-		this.hasFocus && this.hasFocus.tagName.toLowerCase() != "textarea")
+	if (evt.keyCode === 13 && this.options.enter &&
+		this.hasFocus && this.hasFocus.tagName.toLowerCase() !== "textarea")
 		{
 		this.ButtonClick(this.options.enter);
 		evt.preventDefault();
