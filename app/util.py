@@ -32,10 +32,12 @@ def IntToSID(i):
         i = i/nIDChars
     return s
 
-# All all the country domains (2 letter), and the currently defined gTLD's
+# Allow all the country domains (2 letter), and the currently defined gTLD's
+# Also allow raw IP addresses, e.g., 192.168.1.1
 # BUG - handle Unicode domains
-regDomain = re.compile(r"^([a-z0-9][a-z0-9-]*\.)+([a-z]{2}|" + \
-    r"aero|asia|biz|cat|com|coop|edu|gov|info|int|jobs|mil|mobi|museum|net|org|pro|tel|travel)$", re.I)
+regDomain = re.compile(r"^(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})|" + \
+    r"(([a-z0-9][a-z0-9-]*\.)+([a-z]{2}|" + \
+    r"aero|asia|biz|cat|com|coop|edu|gov|info|int|jobs|mil|mobi|museum|net|org|pro|tel|travel))$", re.I)
 
 def NormalizeUrl(url):
     url = url.strip()

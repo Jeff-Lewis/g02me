@@ -465,7 +465,8 @@ AppendComment: function(comment)
 	Go2.DOM.ScrollToBottom(Go2.parts["comments"]);
 	},
 
-reDomain: /(.*)\b([a-z0-9][a-z0-9-]*\.)+([a-z]{2}|aero|asia|biz|cat|com|coop|edu|gov|info|int|jobs|mil|mobi|museum|net|org|pro|tel|travel)\b(.*)$/i,	
+//         1     23                                    45                      6                                                                                                     7 
+reDomain: /(.*)\b((\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})|(([a-z0-9][a-z0-9-]*\.)+([a-z]{2}|aero|asia|biz|cat|com|coop|edu|gov|info|int|jobs|mil|mobi|museum|net|org|pro|tel|travel)))\b(.*)$/i,	
 reURL: /(.*)\b(https?:\/\/\S+)\b(.*)$/i,
 reEmail: /(.*)\b(\S+@)([a-z0-9][a-z0-9-]*\.)+([a-z]{2}|aero|asia|biz|cat|com|coop|edu|gov|info|int|jobs|mil|mobi|museum|net|org|pro|tel|travel)\b(.*)$/i,
 sURLPattern: '<a href="{href}">{trim}</a>&nbsp;' +
@@ -496,8 +497,8 @@ Urlize: function(s)
 		if (aMatch = word.match(Go2.reDomain))
 			{
 			aWords[i] = aMatch[1] +
-				Go2.ReplaceKeys(Go2.sURLPattern, {href:'http://' + aMatch[2]+aMatch[3], trim:aMatch[2]+aMatch[3], site:Go2.sSiteName}) +
-				aMatch[4];
+				Go2.ReplaceKeys(Go2.sURLPattern, {href:'http://' + aMatch[2], trim:aMatch[2], site:Go2.sSiteName}) +
+				aMatch[7];
 			continue;
 			}
 		}

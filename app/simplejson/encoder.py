@@ -8,8 +8,8 @@ try:
 except ImportError:
     pass
 
-ESCAPE = re.compile(r'[\x00-\x1f\\"\b\f\n\r\t]')
-ESCAPE_ASCII = re.compile(r'([\\"]|[^\ -~])')
+ESCAPE = re.compile(r'[\x00-\x1f\\"\b\f\n\r\t<]')
+ESCAPE_ASCII = re.compile(r'([\\"<]|[^\ -~])')
 HAS_UTF8 = re.compile(r'[\x80-\xff]')
 ESCAPE_DCT = {
     '\\': '\\\\',
@@ -19,6 +19,8 @@ ESCAPE_DCT = {
     '\n': '\\n',
     '\r': '\\r',
     '\t': '\\t',
+    # In case a string contains </script> - we encode all '<' characters using an ascii escape \x3c
+    '<': '\\x3c',
 }
 for i in range(0x20):
     ESCAPE_DCT.setdefault(chr(i), '\\u%04x' % (i,))
@@ -45,7 +47,6 @@ def floatstr(o, allow_nan=True):
             % (o,))
 
     return text
-
 
 def encode_basestring(s):
     """
