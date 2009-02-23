@@ -174,28 +174,31 @@ SPlural: function(n)
 	return n != 1 ? 's' : '';
 	},
 	
-DeleteComment: function(sDelKey)
+DeleteComment: function(id, sDelKey)
 	{
 	if (!window.confirm("Are you sure you want to delete this comment?"))
-		{
 		return;
-		}
 	
 	var sd = new Go2.ScriptData('/comment/delete');
 	var objCall = {delkey:sDelKey, csrf:Go2.sCSRF};
+
+	if (Go2.dateLatest)
+		objCall.since = Go2.ISO.FromDate(Go2.dateLatest);
 
 	sd.Call(objCall, function(obj) {
 		switch (obj.status)
 			{
 		case 'OK':
-			// Refresh the page to reset the display for the new header
-			window.location.href = window.location.href;
+			Go2.map = obj;
+			Go2.UpdateComments();
 			break;
 		default:
 			window.alert(Go2.sSiteName + ": " + obj.message);
 			break;
 			}
 		});
+	
+	$('#cmt_' + id).remove();
 
 	Go2.TrackEvent('comment/delete');
 	},

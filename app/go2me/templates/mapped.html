@@ -239,7 +239,7 @@ Go2.AddEventFn(window, "click", Click, true)
 			    {% endif %}
 			    - {{ comment.dateCreated|Age }}
 			    {% if comment.AllowDelete %}
-			    <img class="x" onclick="Go2.DeleteComment('{{comment.DelKey}}');" src="/images/x.png"/>
+			    <img class="x" onclick="Go2.DeleteComment({{comment.ID}}, '{{comment.DelKey}}');" src="/images/x.png"/>
 			    {% endif %}
 			    </p>
 				{% endfor %}
