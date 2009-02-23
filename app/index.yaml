@@ -10,13 +10,13 @@ indexes:
 # automatically uploaded to the admin console when you next deploy
 # your application using appcfg.py.
 
-# Used 500 times in query history.
+# Used 890 times in query history.
 - kind: Comment
   properties:
   - name: map
   - name: dateCreated
 
-# Used 3 times in query history.
+# Used 4 times in query history.
 - kind: Comment
   properties:
   - name: username

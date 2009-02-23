@@ -6,8 +6,9 @@
 
 {% block script %}
 // Google Ad Manager
-Go2.SetCSRF("{{csrf}}");
 msLoaded = new Date().getTime();
+Go2.SetCSRF("{{csrf}}");
+Go2.map = {{map.JSON|JSON}};
 
 try
 	{
@@ -30,53 +31,31 @@ function BeforeUnload(evt)
 
 window.onbeforeunload = BeforeUnload;
 
-var txtUsername;
-var txtComment;
-var frmContent;
-var divContent;
-var divInfo;
-var divCommentForm;
-var divComments;
-var divBorderV;
-var divSponsor;
-var spanLinkLabel;
-
 function Loaded()
 {
-	txtUsername = document.getElementById("username")
-	if (txtUsername)
+	Go2.BindDOM();
+
+	if (Go2.parts["username"])
 		{
-		Go2.AddEventFn(txtUsername, "keydown", function(evt) {
+		Go2.AddEventFn(Go2.parts["username"], "keydown", function(evt) {
 			if (evt.keyCode == 13)
-				Go2.SetUsername(txtUsername.value);
+				Go2.SetUsername(Go2.parts["username"].value);
 			});
 		}
 
-	txtComment = document.getElementById("comment");
-	var objParams = Go2.ParseParams(window.location.href);
-	if (objParams.comment)
-		txtComment.value = objParams.comment;
-	txtComment.focus();
+	Go2.parts["comment"].focus();
 
-	Go2.AddEventFn(txtComment, "keydown", KeyDownComment);
+	Go2.AddEventFn(Go2.parts["comment"], "keydown", KeyDownComment);
 	
-	divContent = document.getElementById("content");
-	frmContent = document.getElementById("content-iframe");
-	divInfo = document.getElementById("info");
-	divComments = document.getElementById("comments");
-	divBorderV = document.getElementById("border-v");
-	divCommentForm = document.getElementById("comment-form");
-	divSponsor = document.getElementById("sponsor-panel");
-	spanLinkLabel = document.getElementById("linkLabel");
-	
-	Go2.AddEventFn(frmContent, "load", OnNavigate);
+	Go2.AddEventFn(Go2.parts["content-iframe"], "load", OnNavigate);
 	
 	OnResize();
 	Go2.InitPanels();
 	Go2.AddEventFn(window, "resize", OnResize);
 	
 	Go2.UpdatePrivacy();
-	Go2.DOM.ScrollToBottom(divComments);
+	Go2.DOM.ScrollToBottom(Go2.parts["comments"]);
+	Go2.CalcLatest();
 }
 
 function OnResize()
@@ -84,9 +63,9 @@ function OnResize()
 	var rcWindow = Go2.DOM.RcWindow();
 	var dyMax = rcWindow[3] - rcWindow[1];
 
-	var ptComments = Go2.DOM.PtClient(divComments);
-	var ptCommentForm = Go2.DOM.PtSize(divCommentForm);
-	var ptSponsor = Go2.DOM.PtSize(divSponsor);
+	var ptComments = Go2.DOM.PtClient(Go2.parts["comments"]);
+	var ptCommentForm = Go2.DOM.PtSize(Go2.parts["comment-form"]);
+	var ptSponsor = Go2.DOM.PtSize(Go2.parts["sponsor-panel"]);
 	var dyComments = dyMax - ptCommentForm[1] - ptSponsor[1] - ptComments[1];
 	
 	// Info bar needs to be taller than the window - force a scroll bar
@@ -96,11 +75,11 @@ function OnResize()
 		dyComments = 120;
 		}
 
-	var ptContent = Go2.DOM.PtClient(divContent);
-	divContent.style.height = (dyMax - ptContent[1]) + "px";
-	divInfo.style.height = (dyMax-32) + "px";
-	divBorderV.style.height = (dyMax-32) + "px";
-	divComments.style.height = dyComments + "px";
+	var ptContent = Go2.DOM.PtClient(Go2.parts["content"]);
+	Go2.parts["content"].style.height = (dyMax - ptContent[1]) + "px";
+	Go2.parts["info"].style.height = (dyMax-32) + "px";
+	Go2.parts["border-v"].style.height = (dyMax-32) + "px";
+	Go2.parts["comments"].style.height = dyComments + "px";
 }
 
 // Ignore the first load of the frame - that's likely our initial link (or just reset to initial link)
@@ -115,16 +94,16 @@ function OnNavigate()
 		return;
 		}
 	
-	spanLinkLabel.innerHTML = "Original Link";
+	Go2.parts["linkLabel"].innerHTML = "Original Link";
 }
 
 function ResetFrame()
 {
 	msLoaded = new Date().getTime();
-	frmContent.src = "{{map.Href}}";
+	Go2.parts["content-iframe"].src = "{{map.Href}}";
 	fResetFrame = true;
 
-	spanLinkLabel.innerHTML = "Link";
+	Go2.parts["linkLabel"].innerHTML = "Link";
 }
 
 function Click()
@@ -134,7 +113,8 @@ function Click()
 
 function PostComment()
 {
-	Go2.PostComment("{{map.GetId}}", txtUsername ? txtUsername.value : '', txtComment.value);
+	Go2.PostComment("{{map.GetId}}", Go2.parts["username"] ? Go2.parts["username"].value : '', Go2.parts["comment"].value);
+	Go2.parts["comment"].value = "";
 }
 
 function KeyDownComment(evt)
@@ -251,7 +231,7 @@ Go2.AddEventFn(window, "click", Click, true)
 			<!-- Public comments (only) are dumped in page for search engines -->
 			<div id="comments" class="comments">
 				{% for comment in map.Comments %}
-				<p>
+				<p id="cmt_{{comment.ID}}">
 			    {% if comment.username %}<a target="_top" href="/user/{{comment.username}}" title="{{comment.username}}'s activity">{{comment.username}}</a>:{% endif %}
 			    {{comment.comment|escape|urlizecomment}}
 			    {% if comment.tags %}
@@ -267,8 +247,8 @@ Go2.AddEventFn(window, "click", Click, true)
 			
 			<div id="comment-form" class="comment-form">
 				<div class="divider-h"></div>
-					<textarea id="comment" name="comment" tabindex="2"></textarea>
-					<input style="float: right;" onclick="PostComment();" type="button" value="Post" tabindex="3"/>
+					<textarea id="comment" class="comment" tabindex="2"></textarea>
+					<input onclick="PostComment();" type="button" value="Post" tabindex="3"/>
 				<p style="clear:left;" class="help">Comment format: "nickname: text of your comment [tag1, tag2, ...]"</p>
 			</div>
 		</div>

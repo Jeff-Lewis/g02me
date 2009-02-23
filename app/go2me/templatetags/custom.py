@@ -3,6 +3,7 @@ from django.template.defaultfilters import stringfilter
 
 import util
 import settings
+import simplejson
 
 import re
 
@@ -38,10 +39,6 @@ def MultFilter(value, arg):
 LEADING_PUNCTUATION  = ['(', '<', '&lt;']
 TRAILING_PUNCTUATION = ['.', ',', ')', '>', '\n', '&gt;']
 
-# list of possible strings used for bullets in bulleted lists
-DOTS = ['&middot;', '*', '\xe2\x80\xa2', '&#149;', '&bull;', '&#8226;']
-
-unencoded_ampersands_re = re.compile(r'&(?!(\w+|#\d+);)')
 word_split_re = re.compile(r'(\s+)')
 punctuation_re = re.compile('^(?P<lead>(?:%s)*)(?P<middle>.*?)(?P<trail>(?:%s)*)$' % \
     ('|'.join([re.escape(x) for x in LEADING_PUNCTUATION]),
@@ -133,6 +130,13 @@ def SAgeDdt(ddt):
 
 def SPlural(n, sPlural="s", sSingle=''):
     return [sSingle, sPlural][n!=1]
+
+# --------------------------------------------------------------------
+# Convert object to JSON format for inclusing in web page
+# --------------------------------------------------------------------
+@register.filter(name='JSON')
+def SJSON(obj):
+    return simplejson.dumps(obj, cls=util.JavaScriptEncoder, indent=4)
 
 # --------------------------------------------------------------------
 # setvar tag from Django issue: http://code.djangoproject.com/ticket/1322

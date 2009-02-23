@@ -35,7 +35,7 @@ def IntToSID(i):
 # All all the country domains (2 letter), and the currently defined gTLD's
 # BUG - handle Unicode domains
 regDomain = re.compile(r"^([a-z0-9][a-z0-9-]*\.)+([a-z]{2}|" + \
-    r"aero|asia|biz|cat|com|coop|edu|gov|info|int|jobs|mil|mobi|museum|net|org|pro|tel|travel)$")
+    r"aero|asia|biz|cat|com|coop|edu|gov|info|int|jobs|mil|mobi|museum|net|org|pro|tel|travel)$", re.I)
 
 def NormalizeUrl(url):
     url = url.strip()

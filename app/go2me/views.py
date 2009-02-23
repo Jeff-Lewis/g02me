@@ -119,17 +119,9 @@ def HeadRedirect(req, id):
     if req.META['QUERY_STRING']:
         sExtra = '?' + req.META['QUERY_STRING']
     return HttpResponsePermanentRedirect("/%s%s" % (id, sExtra))
-    map = Map.Lookup(id)
-    if map == None:
-        RaiseNotFound(id)
-    map.Viewed()
-    if IsJSON():
-        return HttpJSON(req, obj=map.JSON())
-    AddToResponse({'map': map, 'TopTags':map.TopTags()})
-    return render_to_response('head.html', FinalResponse())
 
-def FrameSet(req, id):
-    # http://go.2me/N
+def LinkPage(req, id):
+    # http://go.2me/G
     map = Map.Lookup(id)
     if map == None:
         RaiseNotFound(id)

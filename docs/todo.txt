@@ -189,7 +189,19 @@ X Add thousands sep for counts in analytics (info, home, tags, user)
 ! Clean up comment form
 ! AJAX comments
 - Focus should be in comment on mapped page
-- don't allow digit to begin a username (e.g. "4:46 comment")
+- don't allow digit to begin a username (e.g. "4:46 comment")\
+- update times in chat window in real time
+- Presence information displayed
+	- push Geo information from Google API to display with presence
+- Favorite link
+- User subscriptions
+  - Add users to active subscribers on comment or favorite
+  - Change activity page to show subscriptions instead of maps
+  	- Group my anchor link
+  - Allow un-subscribe (by user) from his own activity page
+- Trim Titles before storage
+- Unit test Age
+- allow numeric domains xxx.xxx.xxx.xxx
   
 ------------------------------------------------------------
         PLATFORMS, SYNDICATION, IMPORT/EXPORT

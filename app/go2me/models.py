@@ -40,16 +40,28 @@ class Map(db.Model):
          'url9.com', 'plumurl.com', 'ix.lt', 'ru.ly',
          ])
     
+    # Schema version for conversion of old models
+    version = db.IntegerProperty(default=2)
+    dateCreated = db.DateTimeProperty()
+
     url = db.StringProperty(required=True)
     title = db.StringProperty()
     userAuthFirst = db.StringProperty()
     usernameCreator = db.StringProperty()
-    dateCreated = db.DateTimeProperty()
+    
+    # Number of unique viewers, sharers, and commenters
     viewCount = db.IntegerProperty(default=0)
     shareCount = db.IntegerProperty(default=0)
-    commentCount = db.IntegerProperty()
+    commentCount = db.IntegerProperty(default=0)
+
+    # (Pickled) dictionary of tag counts applied to this model
     sTags = db.TextProperty()
+    
+    # Banned models are not deleted, but they do not get scored
     fBan = db.BooleanProperty(default=False)
+    
+    # (Pickled) list of usernames subscribing to this link
+    sSubscribers = db.TextProperty()
     
     @classmethod
     def KeyFromId(cls, id):
@@ -211,7 +223,7 @@ class Map(db.Model):
             return True
         return False
     
-    def Comments(self, limit=100, dateSince=None):
+    def Comments(self, limit=250, dateSince=None):
         # Just return "true" comments (not sharing events)
         comments = self.comment_set
         if dateSince is not None:
@@ -257,6 +269,7 @@ class Map(db.Model):
         return sHost
         
     def JSON(self, dateSince=None):
+        # JSON (object) format of Map data - filtered to new since dateSince
         obj = {'url':self.url,
                'urlShort': r"http://%s/%s" % (settings.sSiteHost, self.GetId()),
                'id':self.GetId(),
@@ -402,12 +415,21 @@ class Globals(db.Model):
         return glob        
 
 class Comment(db.Model):
+    version = db.IntegerProperty(default=2)
+    dateCreated = db.DateTimeProperty()
+    
+    # Parent item - anchor link for this comment
+    map = db.ReferenceProperty(Map)
+    
     username = db.StringProperty()
     userAuth = db.StringProperty()
     comment = db.StringProperty()
+    
+    # Comma separated list
     tags = db.StringProperty()
-    map = db.ReferenceProperty(Map)
-    dateCreated = db.DateTimeProperty()
+    
+    # List of usernames subscribing to this comment
+    subscribers = db.StringListProperty()
     
     # Parts:                    1  2                              3         4  5 
     regComment = re.compile(r"^( *([a-zA-Z0-9_\.\-]{1,20}) *: *)?([^\[]*) *(\[(.*)\])? *$")
@@ -535,13 +557,17 @@ class Comment(db.Model):
         s = SSign('dk', self.key().id())
         return s
     
+    def ID(self):
+        return self.key().id()
+    
     def JSON(self):
         c = {'comment': self.comment}
         if self.username:
             c['user'] = self.username
         if self.tags:
-            c['tags'] = self.tags
+            c['tags'] = self.tags.split(',')
         c['created'] = self.dateCreated
+        c['id'] = self.key().id()
         if self.AllowDelete():
             c['delkey'] = self.DelKey()
         return c

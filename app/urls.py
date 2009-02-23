@@ -19,7 +19,7 @@ urlpatterns = patterns('',
     (r'^cmd/setusername$', SetUsername),
     (r'^admin/(?P<command>[a-z\-]+)?$', Admin),
     
-    (r'^([0-9A-Za-z-_]+)$', FrameSet),
+    (r'^([0-9A-Za-z-_]+)$', LinkPage),
     
     # Archaic
     (r'^info/([0-9A-Za-z-_]+)$', HeadRedirect),

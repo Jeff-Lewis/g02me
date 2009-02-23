@@ -24,6 +24,7 @@ if (!window.console || !console.firebug)
 var Go2 = {
 sSiteName: "Go2.me",
 sCSRF: "",
+dateLatest: new Date(),
 
 Browser: {
 	version: parseInt(window.navigator.appVersion),
@@ -33,6 +34,20 @@ Browser: {
 SetCSRF: function(sCSRF)
 	{
 	Go2.sCSRF = sCSRF;
+	},
+
+// Bind DOM elements by identifier 	
+partIDs: ["username", "content", "content-iframe", "info", "comment", "comments", "border-v", "comment-form", "sponsor-panel", "linkLabel"],
+parts: [],
+BindDOM: function()
+	{
+	for (var i = 0; i < Go2.partIDs.length; i++)
+		{
+		var sID = Go2.partIDs[i];
+		Go2.parts[sID] = document.getElementById(sID);
+		if (!Go2.parts[sID])
+			console.log("DOM part, " + sID + " not found.");
+		}
 	},
 
 SetUsername: function(sUsername)
@@ -89,12 +104,16 @@ PostComment: function(sID, sUsername, sComment)
 		urlLogin: '/' + sID + '?comment=' + encodeURIComponent(sComment)
 		};
 	
+	if (Go2.dateLatest)
+		objCall.since = Go2.ISO.FromDate(Go2.dateLatest);
+	
 	var PCCallback = function (obj)
 		{
 		switch (obj.status)
 			{
 		case 'OK':
-			console.log("Comment added", obj);
+			Go2.map = obj;
+			Go2.UpdateComments();
 			break;
 		case 'Fail/Auth/Used':
 			if (window.confirm(obj.message + ".  Are you sure you want to use it?"))
@@ -117,6 +136,42 @@ PostComment: function(sID, sUsername, sComment)
 	
 	sd.Call(objCall, PCCallback);
 	Go2.TrackEvent('comment');
+	},
+	
+// Format a date as an age (how long ago)
+Age: function(d, dNow)
+	{
+	if (!dNow)
+		dNow = new Date();
+	var ms = dNow.getTime() - d.getTime();
+	
+    if (ms < 0)
+        return "in the future?";
+        
+    var days = Math.floor(ms/1000/60/60/24);
+    var months = Math.floor(days*12/365);
+    var years = Math.floor(days/365);
+    
+    if (years >= 1)
+        return years + " year" + Go2.SPlural(years) + " ago";
+    if (months >= 3)
+        return months + " months ago"; 
+    if (days == 1)
+        return "yesterday";
+    if (days > 1)
+        return days + " days ago"
+    hrs = Math.floor(ms/1000/60/60);
+    if (hrs >= 1)
+        return hrs + " hour" + Go2.SPlural(hrs) + " ago"
+    minutes = Math.round(ms/1000/60);
+    if (minutes < 1)
+        return "seconds ago"
+    return minutes + " minute" + Go2.SPlural(minutes) + " ago";
+	},
+	
+SPlural: function(n)
+	{
+	return n != 1 ? 's' : '';
 	},
 	
 DeleteComment: function(sDelKey)
@@ -347,6 +402,92 @@ UpdatePrivacy: function()
 		spanChatTitle.innerHTML = "Chat (Private)"
 		Go2.DOM.RemoveChildren(divComments);
 		}
+	},
+	
+CalcLatest: function()
+	{
+	if (Go2.map.comments.length >= 1)
+		{
+		Go2.dateLatest = Go2.map.comments[Go2.map.comments.length-1].created;
+		}
+	},
+	
+UpdateComments: function()
+	{
+	var comment;
+	
+	for (var i = 0; i < Go2.map.comments.length; i++)
+		{
+		comment = Go2.map.comments[i];
+		if (!Go2.dateLatest || comment.created > Go2.dateLatest)
+			Go2.AppendComment(comment);
+		}
+	if (comment)
+		{
+		Go2.dateLatest = comment.created;
+		}
+	},
+	
+AppendComment: function(comment)
+	{
+	var st = new Go2.StBuf();
+	
+	var pComment = document.createElement('p');
+	pComment.id = "cmt_" + comment.id;
+	
+	if (comment.user)
+		st.Append('<a target="_top" href="/user/' + comment.user + '" title="' + comment.user + '\'s activity">' + comment.user + '</a>:');
+	st.Append(' ' + Go2.Urlize(Go2.EscapeHTML(comment.comment)));
+	if (comment.tags)
+		{
+		st.Append(' [');
+		var sSep = '';
+		for (var tag in tags)
+			{
+			st.Append(sSep + '<a target="_top" href="/tag/' + tag + '" title="' + tag + ' pages">' + tag + '</a>')
+			sSep = ', ';
+			}
+		st.Append(']');
+		}
+	st.Append(' - ' + Go2.Age(comment.created));
+	if (comment.delkey)
+		{
+		st.Append(' <img class="x" onclick="Go2.DeleteComment(\'' + comment.delkey + '\');" src="/images/x.png"/>');
+		}
+	
+	pComment.innerHTML = st.toString();
+	Go2.parts["comments"].appendChild(pComment);
+	Go2.DOM.ScrollToBottom(Go2.parts["comments"]);
+	},
+
+reDomain: /(.*)\b([a-z0-9][a-z0-9-]*\.)+([a-z]{2}|aero|asia|biz|cat|com|coop|edu|gov|info|int|jobs|mil|mobi|museum|net|org|pro|tel|travel)\b(.*)$/i,	
+reURL: /(.*)\b(https?:\/\/\S+)\b(.*)$/i,
+sURLPattern: '<a href="{href}">{trim}</a>&nbsp;' +
+			 '<a title="New {site} Page" target="_blank" href="/map/?url={href}"><img class="inline-link" src="/images/go2me-link.png"></a>',
+	
+Urlize: function(s)
+	{
+	var st = new Go2.StBuf();
+	var aMatch;
+	
+	while (s)
+		{
+		if (aMatch = s.match(Go2.reDomain))
+			{
+			st.Append(aMatch[1] + Go2.ReplaceKeys(Go2.sURLPattern, {href:'http://' + aMatch[2]+aMatch[3], trim:aMatch[2]+aMatch[3], site:Go2.sSiteName}));
+			s = aMatch[4];
+			continue;
+			}
+		if (aMatch = s.match(Go2.reURL))
+			{
+			st.Append(aMatch[1] + Go2.ReplaceKeys(Go2.sURLPattern, {href:aMatch[2], trim:aMatch[2], site:Go2.sSiteName}));
+			s = aMatch[3];
+			continue;
+			}
+		st.Append(s);
+		s = '';
+		}
+	return st.toString();
 	},
 	
 // Extend(dest, src1, src2, ... )
@@ -584,8 +725,59 @@ SDigits: function(val, c, fSign)
 		s = (fNeg ? "-" : "+") + s;
 
 	return s;
+	},
+	
+EscapeHTML: function(s)
+	{
+	s = s.toString();
+	s = s.replace(/&/g, '&amp;');
+	s = s.replace(/</g, '&lt;');
+	s = s.replace(/>/g, '&gt;');
+	s = s.replace(/\"/g, '&quot;');
+	s = s.replace(/'/g, '&#39;');
+	return s;
+	},
+	
+// Replace keys in dictionary of for {key} in the text string.
+ReplaceKeys: function(st, keys)
+	{
+	for (var key in keys)
+		st = st.StReplace("{" + key + "}", keys[key]);
+	st = st.replace(/\{[^\{\}]*\}/g, "");
+	return st;
 	}
 };  // Go2
+
+//--------------------------------------------------------------------------
+// Fast string concatenation buffer
+//--------------------------------------------------------------------------
+Go2.StBuf = function()
+{
+	this.rgst = [];
+	this.Append.apply(this, arguments);
+};
+
+Go2.StBuf.prototype = {
+constructor: Go2.StBuf,
+
+Append: function()
+	{
+	for (var ist = 0; ist < arguments.length; ist++)
+		this.rgst.push(arguments[ist].toString());
+	return this;
+	},
+	
+Clear: function ()
+	{
+	this.rgst = [];
+	},
+
+toString: function()
+	{
+	return this.rgst.join("");
+	}
+}; // Go2.StBuf
+
 
 //--------------------------------------------------------------------------
 // DOM Functions
@@ -1247,4 +1439,23 @@ Function.prototype.FnArgs = function()
 String.prototype.Trim = function()
 {
 	return (this || "").replace( /^\s+|\s+$/g, "");
+};
+
+String.prototype.StReplace = function(stPat, stRep)
+{
+
+	var st = "";
+
+	var ich = 0;
+	var ichFind = this.indexOf(stPat, 0);
+
+	while (ichFind >= 0)
+		{
+		st += this.substring(ich, ichFind) + stRep;
+		ich = ichFind + stPat.length;
+		ichFind = this.indexOf(stPat, ich);
+		}
+	st += this.substring(ich);
+
+	return st;
 };

@@ -542,8 +542,15 @@ margin: 0;
 padding-bottom: 4px;
 }
 
-#comment {
-width: 292px;
+.comment-form .comment {
+width: 288px;
+margin: 3px;
+}
+
+.comment-form input[type=button] {
+float: right;
+width: 70px;
+margin: 1px 3px 0 5px;
 }
 
 img.inline-link {
