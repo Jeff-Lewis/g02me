@@ -114,7 +114,6 @@ function Click()
 function PostComment()
 {
 	Go2.PostComment("{{map.GetId}}", Go2.parts["username"] ? Go2.parts["username"].value : '', Go2.parts["comment"].value);
-	Go2.parts["comment"].value = "";
 }
 
 function KeyDownComment(evt)
@@ -183,11 +182,7 @@ Go2.AddEventFn(window, "click", Click, true)
 			</div>
 			<div class="content">
 				<p>Created: {{map.dateCreated|Age}}</p>
-				<p>Shared: {{map.shareCount|intcomma}}</p>
-				<p>Viewers: {{map.viewCount|intcomma}}</p>
-				<p>Commenters: {{map.CommentCount|intcomma}}</p>
-				<p>Faved: {{map.FavoriteCount|intcomma}}</p>
-				<p>Score: {{map.ScoresNamed.day|mult:24|floatformat:1}}</p>
+				<p>Viewers: {{map.Uniques|intcomma}}</p>
 				<p>Tags: 
 				{% for tag in TopTags %}
 					<a target="_top" href="/tag/{{tag}}" title="Recently popular | {{tag}}">{{tag|escape}}</a>{% if not forloop.last %}, {% endif %}

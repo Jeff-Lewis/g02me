@@ -210,6 +210,9 @@ class Map(db.Model):
         self.put()
         self.ss.Update(self, score, dt=local.dtNow, tags=self.TopTags())
         
+    def Uniques(self):
+        return self.viewCount + self.shareCount + self.CommentCount()
+    
     def CommentCount(self):
         # Cache the comment count in the model
         if self.EnsureCommentCount():

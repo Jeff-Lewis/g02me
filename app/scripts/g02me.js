@@ -113,6 +113,7 @@ PostComment: function(sID, sUsername, sComment)
 			{
 		case 'OK':
 			Go2.map = obj;
+			Go2.parts["comment"].value = "";
 			Go2.UpdateComments();
 			break;
 		case 'Fail/Auth/Used':
@@ -445,8 +446,9 @@ AppendComment: function(comment)
 		{
 		st.Append(' [');
 		var sSep = '';
-		for (var tag in tags)
+		for (var i = 0; i < comment.tags.length; i++)
 			{
+			tag = comment.tags[i];
 			st.Append(sSep + '<a target="_top" href="/tag/' + tag + '" title="' + tag + ' pages">' + tag + '</a>')
 			sSep = ', ';
 			}
@@ -465,32 +467,41 @@ AppendComment: function(comment)
 
 reDomain: /(.*)\b([a-z0-9][a-z0-9-]*\.)+([a-z]{2}|aero|asia|biz|cat|com|coop|edu|gov|info|int|jobs|mil|mobi|museum|net|org|pro|tel|travel)\b(.*)$/i,	
 reURL: /(.*)\b(https?:\/\/\S+)\b(.*)$/i,
+reEmail: /(.*)\b(\S+@)([a-z0-9][a-z0-9-]*\.)+([a-z]{2}|aero|asia|biz|cat|com|coop|edu|gov|info|int|jobs|mil|mobi|museum|net|org|pro|tel|travel)\b(.*)$/i,
 sURLPattern: '<a href="{href}">{trim}</a>&nbsp;' +
 			 '<a title="New {site} Page" target="_blank" href="/map/?url={href}"><img class="inline-link" src="/images/go2me-link.png"></a>',
+sEmailPattern: '<a href="mailto:{email}">{email}</a>',
 	
 Urlize: function(s)
 	{
-	var st = new Go2.StBuf();
 	var aMatch;
 	
-	while (s)
+	var aWords = s.split(/\s/);
+	
+	for (var i = 0; i < aWords.length; i++)
 		{
-		if (aMatch = s.match(Go2.reDomain))
+		var word = aWords[i];
+		if (aMatch = word.match(Go2.reURL))
 			{
-			st.Append(aMatch[1] + Go2.ReplaceKeys(Go2.sURLPattern, {href:'http://' + aMatch[2]+aMatch[3], trim:aMatch[2]+aMatch[3], site:Go2.sSiteName}));
-			s = aMatch[4];
+			aWords[i] = aMatch[1] + Go2.ReplaceKeys(Go2.sURLPattern, {href:aMatch[2], trim:aMatch[2], site:Go2.sSiteName}) +
+				aMatch[3];
 			continue;
 			}
-		if (aMatch = s.match(Go2.reURL))
+		if (aMatch = word.match(Go2.reEmail))
 			{
-			st.Append(aMatch[1] + Go2.ReplaceKeys(Go2.sURLPattern, {href:aMatch[2], trim:aMatch[2], site:Go2.sSiteName}));
-			s = aMatch[3];
+			aWords[i] = aMatch[1] + Go2.ReplaceKeys(Go2.sEmailPattern, {email:aMatch[2]+aMatch[3]+aMatch[4]}) +
+				aMatch[5];
 			continue;
 			}
-		st.Append(s);
-		s = '';
+		if (aMatch = word.match(Go2.reDomain))
+			{
+			aWords[i] = aMatch[1] +
+				Go2.ReplaceKeys(Go2.sURLPattern, {href:'http://' + aMatch[2]+aMatch[3], trim:aMatch[2]+aMatch[3], site:Go2.sSiteName}) +
+				aMatch[4];
+			continue;
+			}
 		}
-	return st.toString();
+	return aWords.join(' ');
 	},
 	
 // Extend(dest, src1, src2, ... )
