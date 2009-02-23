@@ -86,16 +86,15 @@ from datetime import datetime, timedelta
 class JavaScriptEncoder(JSONEncoder):
     def default(self, obj):
         if isinstance(obj, datetime):
-            return JSDate(obj)
+            return ISODate(obj)
         return JSONEncoder.default(self, obj)
     
-class JSDate(Atomic):
+class ISODate(Atomic):
     def __init__(self, dt):
         self.dt = dt
         
     def __str__(self):
-        # new Date("10/4/2008 19:54 GMT")
-        return 'new Date("%s")' % self.dt.strftime("%m/%d/%Y %H:%M GMT") 
+        return "%s.ISO.ToDate(\"%sZ\")" % (settings.sJSNamespace, self.dt.isoformat())
     
 class JavaScript(Atomic):
     def __init__(self, st):

@@ -76,6 +76,7 @@ function Loaded()
 	Go2.AddEventFn(window, "resize", OnResize);
 	
 	Go2.UpdatePrivacy();
+	Go2.DOM.ScrollToBottom(divComments);
 }
 
 function OnResize()
@@ -102,7 +103,8 @@ function OnResize()
 	divComments.style.height = dyComments + "px";
 }
 
-var fResetFrame = false; 
+// Ignore the first load of the frame - that's likely our initial link (or just reset to initial link)
+var fResetFrame = true; 
 
 function OnNavigate()
 {
@@ -144,7 +146,7 @@ function KeyDownComment(evt)
 		}
 }
 
-Go2.AddEventFn(window, "click", Click)
+Go2.AddEventFn(window, "click", Click, true)
 {% endblock %}
 
 {% block body %}
@@ -246,7 +248,7 @@ Go2.AddEventFn(window, "click", Click)
 			<span id="chat-title">Chat</span>
 		</div>
 		<div class="panel-body">
-			<!-- Variable height -->
+			<!-- Public comments (only) are dumped in page for search engines -->
 			<div id="comments" class="comments">
 				{% for comment in map.Comments %}
 				<p>
@@ -265,13 +267,8 @@ Go2.AddEventFn(window, "click", Click)
 			
 			<div id="comment-form" class="comment-form">
 				<div class="divider-h"></div>
-				<p>
-					<label for="comment">Comment:<br/></label>
+					<textarea id="comment" name="comment" tabindex="2"></textarea>
 					<input style="float: right;" onclick="PostComment();" type="button" value="Post" tabindex="3"/>
-				
-					<input style="width:300px;height:40px;" type="text" id="comment" name="comment" tabindex="2"/>
-				</p>
-			
 				<p style="clear:left;" class="help">Comment format: "nickname: text of your comment [tag1, tag2, ...]"</p>
 			</div>
 		</div>

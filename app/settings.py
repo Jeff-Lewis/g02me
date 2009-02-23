@@ -23,6 +23,7 @@ ADMINS = (
 # Version 5 (base 57) starts at '32' (since there is no 0 or 1 in the alphabet)
 sSiteName = "Go2.me"
 sSiteHost = "Go2.me"
+sJSNamespace = "Go2"
 sTwitterSource = "go2me"
 sSiteTitle = "Link Shortening and Discussion Service"
 sSiteTagline = "Send a Link - Start a Conversation"

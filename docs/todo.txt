@@ -188,6 +188,8 @@ X Add thousands sep for counts in analytics (info, home, tags, user)
 - clip long URL's in map title bar
 ! Clean up comment form
 ! AJAX comments
+- Focus should be in comment on mapped page
+- don't allow digit to begin a username (e.g. "4:46 comment")
   
 ------------------------------------------------------------
         PLATFORMS, SYNDICATION, IMPORT/EXPORT

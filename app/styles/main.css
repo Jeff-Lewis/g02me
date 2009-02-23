@@ -518,14 +518,32 @@ padding: 1px 2px;
 margin: 1px;
 }
 
+textarea {
+font-family: verdana, arial, sans-serif;
+font-size: 14px;
+color: #6b5251;
+background-color: #EEE;
+border: 1px solid #AAA;
+padding: 1px 2px;
+margin: 1px;
+}
+
 div.comments {
 height: 300px;
 overflow: auto;
 }
 
+.private {
+background-color: #D6C8C8;
+}
+
 div.comments p {
 margin: 0;
 padding-bottom: 4px;
+}
+
+#comment {
+width: 292px;
 }
 
 img.inline-link {

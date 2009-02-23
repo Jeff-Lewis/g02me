@@ -88,17 +88,13 @@ PostComment: function(sID, sUsername, sComment)
 		comment:sComment,
 		urlLogin: '/' + sID + '?comment=' + encodeURIComponent(sComment)
 		};
-
-	sd.Call(objCall, PCCallback);
-	Go2.TrackEvent('comment');
-		
-	function PCCallback(obj)
+	
+	var PCCallback = function (obj)
 		{
 		switch (obj.status)
 			{
 		case 'OK':
-			// Refresh the page to reset the display for the new header
-			window.location.href = '/' + sID;
+			console.log("Comment added", obj);
 			break;
 		case 'Fail/Auth/Used':
 			if (window.confirm(obj.message + ".  Are you sure you want to use it?"))
@@ -117,7 +113,10 @@ PostComment: function(sID, sUsername, sComment)
 			window.alert(Go2.sSiteName + ": " + obj.message);
 			break;
 			}
-		}
+		};
+	
+	sd.Call(objCall, PCCallback);
+	Go2.TrackEvent('comment');
 	},
 	
 DeleteComment: function(sDelKey)
@@ -300,7 +299,6 @@ TogglePrivate: function(sID, sUser)
 			return;
 			}
 		window.location.hash = sKey;
-		Go2.DOM.RemoveChildren(divComments);
 		}
 	else
 		{
@@ -322,20 +320,32 @@ UpdatePrivacy: function()
 	
 	var spanChatTitle = $('#chat-title')[0];
 	
-	Go2.sPrivateKey = window.location.hash.Trim();
-	if (Go2.sPrivateKey === "")
+	var sNewKey = Go2.Slugify(window.location.hash);
+	if (Go2.sPrivateKey === sNewKey)
+		{
+		return;
+		}
+	
+	Go2.sPrivateKey = sNewKey;
+	if (sNewKey)
+		{
+		window.location.hash = sNewKey;
+		}
+
+	if (Go2.sPrivateKey === '')
 		{
 		imgLock.src = "/images/lock_open.png";
 		imgLock.title = "Create Private Link";
-		divComments.style.backgroundColor = 'white';
+		$(divComments).removeClass('private');
 		spanChatTitle.innerHTML = "Chat";
 		}
 	else
 		{
 		imgLock.src = "/images/lock.png";
 		imgLock.title = "Go2 Public Link";
-		divComments.style.backgroundColor = '#D6C8C8';
+		$(divComments).addClass('private');
 		spanChatTitle.innerHTML = "Chat (Private)"
+		Go2.DOM.RemoveChildren(divComments);
 		}
 	},
 	
@@ -532,6 +542,48 @@ Slugify: function(s)
     	.replace(/[-\s]+/g, '-')
     	.replace(/(^-+)|(-+$)/g, '');
     return s;
+	},
+
+// Javascript Enumeration
+// Build an object whose properties are mapped to successive integers
+// Also allow setting specific values by passing integers instead of strings.
+// e.g. new Go2.Enum("a", "b", "c", 5, "d") -> {a:0, b:1, c:2, d:5}
+Enum: function(aEnum)
+	{
+	if (!aEnum)
+		return;
+
+	var j = 0;
+	for (var i = 0; i < aEnum.length; i++)
+		{
+		if (typeof aEnum[i] == "string")
+			this[aEnum[i]] = j++;
+		else
+			j = aEnum[i];
+		}
+	},
+
+// Return an integer as a string using a fixed number of digits, c. (require a sign with fSign).
+SDigits: function(val, c, fSign)
+	{
+	var s = "";
+	var fNeg = (val < 0);
+
+	if (fNeg)
+		val = -val;
+	
+	val = Math.floor(val);
+	
+	for (; c > 0; c--)
+		{
+		s = (val%10) + s;
+		val = Math.floor(val/10);
+		}
+		
+	if (fSign || fNeg)
+		s = (fNeg ? "-" : "+") + s;
+
+	return s;
 	}
 };  // Go2
 
@@ -624,6 +676,11 @@ SetFocusIfVisible: function(elt)
 		{
 		elt.focus();
 		}
+	},
+	
+ScrollToBottom: function(elt)
+	{
+	elt.scrollTop = elt.scrollHeight;
 	}
 }; // Go2.DOM
 
@@ -1053,246 +1110,100 @@ Go2.ScriptData.Cancel = function(rid)
 		}
 };
 
-
 //--------------------------------------------------------------------------
-// Go2.me Client side profile form (not used!)
+// ISO 8601 Date Formatting
+// YYYY-MM-DDTHH:MM:SS.sssZ (where Z could be +HH or -HH for non UTC)
+// Note that dates are inherently stored at UTC dates internally.  But we infer that they
+// denote local times by default.  If the dt.__tz exists, it is assumed to be an integer number
+// of hours offset to the timezone for which the time is to be indicated (e.g., PST = -08).
+// Callers should set dt.__tz = 0 to fix the date at UTC.  All other times are adjusted to
+// designate the local timezone.
 //--------------------------------------------------------------------------
+Go2.ISO = {
+	tz: -(new Date().getTimezoneOffset())/60,  // Default timezone = local timezone
+	enumMatch: new Go2.Enum([1, "YYYY", "MM", "DD", 5, "hh", "mm", 8, "ss", 10, "sss", "tz"]),
 
-Go2.optionsProfile = {
-	focus: "user",
-	enter: "save",
-	message: "message",
-	fields: {
-		message:{hidden: true, value:"", type: 'message'},
-		username:{label: "Nickname", type: 'text', required:true},
-		comments:{label: "Page Comments", type: 'note'}
-		},
-	fieldsBottom: {
-		captcha:{type: "captcha", required:true, labelShort:"Proof of Humanity"},
-		tos:{label: 'I agree to the <a tabindex="-1" href="/terms-of-service">Terms of Service</a>',
-			type: "checkbox", required:true, labelShort:"Terms of Service"}
-		},
-	buttons: {
-		save:{label: "Save", type: 'button'}
-		}
-	};
-
-//--------------------------------------------------------------------------
-// JSForm - Client side Form Functions (not used)
-// Usage:
-// var db = new Go2.JSForm(divForm);
-// db.Init({title:,fields:,fieldsBottom:,buttons:}, fnCallback);
-// -> fnCallback(options) (fields have .value properties added)
-//--------------------------------------------------------------------------
-	
-Go2.JSForm = function(divForm)
-{
-	this.divForm = divForm;
-};
-
-Go2.JSForm.prototype = {
-	constructor: Go2.JSForm,
-	tokens: {
-		required: " is required.",
-		idPre: "_JF"
-		},
-	errors: [],
-
-	htmlPatterns: {
-		title: '<h1>{title}</h1>',
-		text: '<label for="_JF{n}">{label}:</label><input id="_JF{n}" type="text" value="{value}"/>',
-		password: '<label>{label}:</label><input id="_JF{n}" type="password"/>',
-		checkbox: '<label class="checkbox" for="_JF{n}"><input id="_JF{n}" type="checkbox"/>{label}</label>',
-		note: '<label>{label}:</label><textarea id="_JF{n}" rows="5">{value}</textarea>',
-		captcha: '<label>What does {q} =<input id="_JF{n}" type="text"/></label>',
-		message: '<span id="_JF{n}">{value}</span>',
-		button: '<input type="button" value="{label}" onclick="Go2.JSForm.ButtonClick(\'{name}\');"/>'
-		},
-
-Init: function (options)
+FromDate: function(dt, fTime)
 	{
-	if (this.fShow)
-		{
-		throw Error("Cannot re-initialize dialog box while modal dialog dispayed.");
-		}
+	var dtT = new Date();
+	dtT.setTime(dt.getTime());
+	var tz = dt.__tz;
+	if (tz == undefined)
+		tz = Go2.ISO.tz;
 
-	this.options = {};
-	Go2.ExtendCopy(this.options, this.optionsDefault, options);
-	this.ifld = 0;
-
-	this.InitDiv(this.divTop, [{type: 'title', title:this.options.title}]); 
-	this.InitDiv(this.divMiddle, this.options.fields);
-	this.InitDiv(this.divBottom, this.options.fieldsBottom);
-	this.InitDiv(this.divButtons, this.options.buttons);
-	console.log(this.divClip.innerHTML);
+	// Adjust the internal (UTC) time to be the local timezone (add tz hours)
+	// Note that setTime() and getTime() are always in (internal) UTC time.
+	if (tz)
+		dtT.setTime(dtT.getTime() + 60*60*1000 * tz);
 	
-	this.InitFields(this.options.fields);
-	this.InitFields(this.options.fieldsBottom);
-	
-	this.ResizeBox(true);
-	},
-	
-//Size the Middle section to fit the elements within it
-ResizeBox: function(fHidden)
-	{
-	if (fHidden)
+	var s = dtT.getUTCFullYear() + "-" + Go2.SDigits(dtT.getUTCMonth()+1,2) + "-" + Go2.SDigits(dtT.getUTCDate(),2);
+	var ms = dtT % (24*60*60*1000);
+	if (ms || fTime || tz != 0)
 		{
-		this.divClip.style.visibility = "hidden";
-		this.divClip.style.display = "block";
-		}
-	var elt = this.divMiddle.lastChild;
-	var ptMid = Go2.DOM.PtClient(this.divMiddle);
-	var ptElt = Go2.DOM.PtClient(elt);
-	this.dyMiddle = ptElt[1] - ptMid[1] + elt.offsetHeight + 4;
-	this.divMiddle.style.height = this.dyMiddle + "px";
-	if (fHidden)
-		{
-		this.divClip.style.display = "none";
-		this.divClip.style.visibility = "visible";
-		}
-	},
-
-//Additional field initialization after building HTML for the form	
-InitFields: function(fields)
-	{
-	for (var prop in fields)
-		{
-		var fld = this.GetField(prop);
-		
-		// Hide any "hidden" fields
-		if (fld.hidden)
-			{
-			fld.elt.style.display = "none";
-			}
-		}
-	},
-	
-InitDiv: function(div, fields, fResize)
-	{
-	var stb = new Go2.StBuf();
-	for (var prop in fields)
-		{
-		var fld = fields[prop];
-		fld.n = this.ifld++;
-		var keys = {q:"2+2", name:prop};
-		Go2.Extend(keys, fld);
-		stb.Append(Go2.ReplaceKeys(this.htmlPatterns[fld.type], keys));
-		}
-	div.innerHTML = stb.toString();
-	},
-	
-FieldError: function(fld, stError)
-	{
-	this.errors.push({fld:fld, error:stError});
-	},
-	
-ExtractValues: function(fields)
-	{
-	for (var prop in fields)
-		{
-		var fld = this.GetField(prop);
-		if (!fld.elt)
-			{
-			continue;
-			}
-
-		switch (fld.elt.tagName.toLowerCase())
-			{
-		case "input":
-			if (fld.elt.type === "checkbox")
-				{
-				fld.value = fld.elt.checked;
-				if (fld.required && !fld.value)
-					{
-					this.FieldError(fld, (fld.labelShort || fld.label) + this.tokens.required);
-					}
-				}
-			else
-				{
-				fld.value = fld.elt.value.Trim();
-				if (fld.required && fld.value.length === 0)
-					{
-					this.FieldError(fld, (fld.labelShort || fld.label) + this.tokens.required);
-					}
-				}
-			break;
-		case "textarea":
-			fld.value = fld.elt.value.Trim();
-			break;
-			}
-		}
-	},
-	
-ButtonClick: function(stButton)
-	{
-	this.errors = [];
-	this.ExtractValues(this.options.fields);
-	this.ExtractValues(this.options.fieldsBottom);
-
-	if (this.errors.length > 0)
-		{
-		if (this.options.message)
-			{
-			var fld = this.GetField(this.options.message);
-			fld.elt.firstChild.nodeValue = this.errors[0].error;
-			fld.elt.style.display = "block";
-			}
+		s += "T" + Go2.SDigits(dtT.getUTCHours(),2) + ":" + Go2.SDigits(dtT.getUTCMinutes(),2);
+		ms = ms % (60*1000);
+		if (ms)
+			s += ":" + Go2.SDigits(dtT.getUTCSeconds(),2);
+		if (ms % 1000)
+			s += "." + Go2.SDigits(dtT.getUTCMilliseconds(), 3);
+		if (tz == 0)
+			s += "Z";
 		else
-			{
-			window.alert(this.errors[0].error);
-			}
-		this.errors[0].fld.elt.focus();
-		this.errors[0].fld.elt.select();
-		this.ResizeBox();
-		return;
+			s += Go2.SDigits(tz, 2, true);
 		}
-		
-	if (this.fnCallback)
-		{
-		var fields = {button:stButton};
-		Go2.Extend(fields, this.options.fields, this.options.fieldsBottom);
-		this.fnCallback(fields);
-		}
-	this.Show(false);
-	},
-	
-GetField: function(stName)
-	{
-	var fld = this.options.fields[stName];
-	if (!fld)
-		{
-		fld = this.options.fieldsBottom[stName];
-		}
-	if (fld)
-		{
-		fld.elt = document.getElementById(this.tokens.idPre + fld.n);
-		}
-	return fld;
+	return s;
 	},
 
-Focus: function(evt)
+//--------------------------------------------------------------------------
+// Parser is more lenient than formatter.  Punctuation between date and time parts is optional.
+// We require at the minimum, YYYY-MM-DD.  If a time is given, we require at least HH:MM.
+// YYYY-MM-DDTHH:MM:SS.sssZ as well as YYYYMMDDTHHMMSS.sssZ are both acceptable.
+// Note that YYYY-MM-DD is ambiguous.  Without a timezone indicator we don't know if this is a
+// UTC midnight or Local midnight.  We default to UTC midnight (the FromDate function always
+// write out non-UTC times so we can append the time zone).
+// Fractional seconds can be from 0 to 6 digits (microseconds maximum)
+//--------------------------------------------------------------------------
+ToDate: function(sISO, objExtra)
 	{
-	this.hasFocus = evt.target;
-	},
+	var e = Go2.ISO.enumMatch;
+	var aParts = sISO.match(/^(\d{4})-?(\d\d)-?(\d\d)(T(\d\d):?(\d\d):?((\d\d)(\.(\d{0,6}))?)?(Z|[\+-]\d\d))?$/);
+	if (!aParts)
+		return undefined;
+
+	aParts[e.mm] = aParts[e.mm] || 0;
+	aParts[e.ss] = aParts[e.ss] || 0;
+	aParts[e.sss] = aParts[e.sss] || 0;
+	// Convert fractional seconds to milliseconds
+	aParts[e.sss] = Math.round(+('0.'+aParts[e.sss])*1000);
+	if (!aParts[e.tz] || aParts[e.tz] === "Z")
+		aParts[e.tz] = 0;
+	else
+		aParts[e.tz] = parseInt(aParts[e.tz]);
 	
-KeyDown: function(evt)
-	{
-	if (evt.keyCode === 27)
-		{
-		this.Show(false);
-		evt.preventDefault();
-		}
+	// Out of bounds checking - we don't check days of the month is correct!	
+	if (aParts[e.MM] > 59 || aParts[e.DD] > 31 || aParts[e.hh] > 23 || aParts[e.mm] > 59 || aParts[e.ss] > 59 ||
+		aParts[e.tz] < -23 || aParts[e.tz] > 23)
+		return undefined;
 	
-	// Hit the OK button on Enter - unless we have a textarea selected	
-	if (evt.keyCode === 13 && this.options.enter &&
-		this.hasFocus && this.hasFocus.tagName.toLowerCase() !== "textarea")
+	var dt = new Date();
+	dt.setUTCFullYear(aParts[e.YYYY], aParts[e.MM]-1, aParts[e.DD]);
+	if (aParts[e.hh])
 		{
-		this.ButtonClick(this.options.enter);
-		evt.preventDefault();
+		dt.setUTCHours(aParts[e.hh], aParts[e.mm], aParts[e.ss], aParts[e.sss]);
 		}
-		
+	else
+		dt.setUTCHours(0,0,0,0);
+
+	// BUG: For best compatibility - could set tz to undefined if it is our local tz
+	// Correct time to UTC standard (utc = t - tz)
+	dt.__tz = aParts[e.tz];
+	if (aParts[e.tz])
+		dt.setTime(dt.getTime() - dt.__tz * (60*60*1000));
+	if (objExtra)
+		Go2.Extend(dt, objExtra);
+	return dt;
 	}
-};
+};  // Go2.ISO
 
 //--------------------------------------------------------------------------
 // Some extensions to built-it JavaScript objects (sorry!)
