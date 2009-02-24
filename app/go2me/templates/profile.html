@@ -4,7 +4,7 @@
 {% block subTitle %}{{username}}'s profile{% endblock %}
 
 {% block script %}
-Go2.SetCSRF("{{csrf}}");
+Go2.Init("{{username}}", "{{csrf}}");
 
 var formProfile;
 

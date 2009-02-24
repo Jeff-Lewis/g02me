@@ -4,7 +4,7 @@
 {% block subTitle %}Popular {{tag}} links{% endblock %}
 
 {% block script %}
-Go2.SetCSRF("{{csrf}}");
+Go2.Init("{{username}}", "{{csrf}}");
 
 var txtUsername;
 

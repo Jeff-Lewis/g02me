@@ -31,8 +31,9 @@ Browser: {
 	fIE: window.navigator.appName.indexOf("Microsoft") !== -1
 },
 
-SetCSRF: function(sCSRF)
+Init: function(sUsername, sCSRF)
 	{
+	Go2.sUsername = sUsername;
 	Go2.sCSRF = sCSRF;
 	},
 
@@ -49,6 +50,64 @@ BindDOM: function()
 			console.log("DOM part, " + sID + " not found.");
 		}
 	},
+	
+MapLoaded: function()
+	{
+	Go2.BindDOM();
+
+	if (Go2.parts["username"])
+		{
+		Go2.AddEventFn(Go2.parts["username"], "keydown", function(evt) {
+			if (evt.keyCode == 13)
+				Go2.SetUsername(Go2.parts["username"].value);
+			});
+		}
+
+	Go2.parts["comment"].focus();
+	Go2.AddEventFn(Go2.parts["comment"], "keydown", Go2.KeyDownComment);
+	Go2.AddEventFn(Go2.parts["content-iframe"], "load", Go2.OnNavigate);
+	
+	Go2.OnResize();
+	Go2.InitPanels();
+	Go2.AddEventFn(window, "resize", Go2.OnResize);
+	
+	Go2.UpdatePrivacy();
+	Go2.DOM.ScrollToBottom(Go2.parts["comments"]);
+	Go2.CalcLatest();
+	},
+	
+OnResize: function()
+	{
+	var rcWindow = Go2.DOM.RcWindow();
+	var dyMax = rcWindow[3] - rcWindow[1];
+
+	var ptComments = Go2.DOM.PtClient(Go2.parts["comments"]);
+	var ptCommentForm = Go2.DOM.PtSize(Go2.parts["comment-form"]);
+	var ptSponsor = Go2.DOM.PtSize(Go2.parts["sponsor-panel"]);
+	var dyComments = dyMax - ptCommentForm[1] - ptSponsor[1] - ptComments[1];
+	
+	// Info bar needs to be taller than the window - force a scroll bar
+	if (dyComments < 120)
+		{
+		dyMax += 120 - dyComments;
+		dyComments = 120;
+		}
+
+	var ptContent = Go2.DOM.PtClient(Go2.parts["content"]);
+	Go2.parts["content"].style.height = (dyMax - ptContent[1]) + "px";
+	Go2.parts["info"].style.height = (dyMax-32) + "px";
+	Go2.parts["border-v"].style.height = (dyMax-32) + "px";
+	Go2.parts["comments"].style.height = dyComments + "px";
+	},
+	
+KeyDownComment: function(evt)
+	{
+		if (evt.keyCode == 13)
+			{
+			Go2.PostComment();
+			evt.preventDefault();
+			}
+	},
 
 SetUsername: function(sUsername)
 	{
@@ -59,11 +118,12 @@ SetUsername: function(sUsername)
 		
 	function SUCallback(obj)
 		{
+		console.log("SU", obj)
 		switch (obj.status)
 			{
 		case 'OK':
 			// Refresh the page to reset the display for the new server-set cookie
-			window.location.href = window.location.href;
+			window.location.reload();
 			break;
 		case 'Fail/Auth/Logout':
 			window.location.href = obj.urlLogout;
@@ -93,15 +153,21 @@ Map: function(sURL, sTitle)
 		window.location.href = '/map/?url='+encodeURIComponent(sURL)+'&title='+encodeURIComponent(sTitle);
 	},
 	
-PostComment: function(sID, sUsername, sComment)
+PostComment: function()
 	{
 	var sd = new Go2.ScriptData('/comment/');
+	
+	if (Go2.parts["username"])
+		Go2.sUsername = Go2.parts["username"].value;
+	
+	sComment = Go2.parts["comment"].value;
+
 	var objCall = {
-		id:sID,
+		id:Go2.map.id,
 		csrf:Go2.sCSRF,
-		username:sUsername,
+		username:Go2.sUsername,
 		comment:sComment,
-		urlLogin: '/' + sID + '?comment=' + encodeURIComponent(sComment)
+		urlLogin: '/' + Go2.map.id + '?comment=' + encodeURIComponent(sComment)
 		};
 	
 	if (Go2.dateLatest)
@@ -336,7 +402,7 @@ TogglePanel: function(evt, divBody)
 		divBody.style.height = "0px";
 		}
 	
-	OnResize();
+	Go2.OnResize();
 	evt.preventDefault();
 	evt.stopPropagation();
 	},

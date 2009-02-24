@@ -7,7 +7,7 @@
 {% block script %}
 // Google Ad Manager
 msLoaded = new Date().getTime();
-Go2.SetCSRF("{{csrf}}");
+Go2.Init("{{username}}", "{{csrf}}");
 Go2.map = {{map.JSON|JSON}};
 
 try
@@ -33,53 +33,7 @@ window.onbeforeunload = BeforeUnload;
 
 function Loaded()
 {
-	Go2.BindDOM();
-
-	if (Go2.parts["username"])
-		{
-		Go2.AddEventFn(Go2.parts["username"], "keydown", function(evt) {
-			if (evt.keyCode == 13)
-				Go2.SetUsername(Go2.parts["username"].value);
-			});
-		}
-
-	Go2.parts["comment"].focus();
-
-	Go2.AddEventFn(Go2.parts["comment"], "keydown", KeyDownComment);
-	
-	Go2.AddEventFn(Go2.parts["content-iframe"], "load", OnNavigate);
-	
-	OnResize();
-	Go2.InitPanels();
-	Go2.AddEventFn(window, "resize", OnResize);
-	
-	Go2.UpdatePrivacy();
-	Go2.DOM.ScrollToBottom(Go2.parts["comments"]);
-	Go2.CalcLatest();
-}
-
-function OnResize()
-{
-	var rcWindow = Go2.DOM.RcWindow();
-	var dyMax = rcWindow[3] - rcWindow[1];
-
-	var ptComments = Go2.DOM.PtClient(Go2.parts["comments"]);
-	var ptCommentForm = Go2.DOM.PtSize(Go2.parts["comment-form"]);
-	var ptSponsor = Go2.DOM.PtSize(Go2.parts["sponsor-panel"]);
-	var dyComments = dyMax - ptCommentForm[1] - ptSponsor[1] - ptComments[1];
-	
-	// Info bar needs to be taller than the window - force a scroll bar
-	if (dyComments < 120)
-		{
-		dyMax += 120 - dyComments;
-		dyComments = 120;
-		}
-
-	var ptContent = Go2.DOM.PtClient(Go2.parts["content"]);
-	Go2.parts["content"].style.height = (dyMax - ptContent[1]) + "px";
-	Go2.parts["info"].style.height = (dyMax-32) + "px";
-	Go2.parts["border-v"].style.height = (dyMax-32) + "px";
-	Go2.parts["comments"].style.height = dyComments + "px";
+	Go2.MapLoaded();
 }
 
 // Ignore the first load of the frame - that's likely our initial link (or just reset to initial link)
@@ -111,20 +65,6 @@ function Click()
 	msLoaded = 0;
 }
 
-function PostComment()
-{
-	Go2.PostComment("{{map.GetId}}", Go2.parts["username"] ? Go2.parts["username"].value : '', Go2.parts["comment"].value);
-}
-
-function KeyDownComment(evt)
-{
-	if (evt.keyCode == 13)
-		{
-		PostComment();
-		evt.preventDefault();
-		}
-}
-
 Go2.AddEventFn(window, "click", Click, true)
 {% endblock %}
 
@@ -150,7 +90,7 @@ Go2.AddEventFn(window, "click", Click, true)
 		<div id="sign-in">
 		    <label for="username">Nickname: </label>
 		    <input maxlength="20" style="width:70px;" type="text" id="username" name="username"/>
-			<input onclick="Go2.SetUsername(txtUsername.value);" style="width:70px;" type="button" value="Set It"/>
+			<input onclick="Go2.SetUsername(Go2.parts['username'].value);return false;" style="width:70px;" type="button" value="Set It"/>
 		</div>
 	{% endif %}
 	</div>
@@ -243,7 +183,7 @@ Go2.AddEventFn(window, "click", Click, true)
 			<div id="comment-form" class="comment-form">
 				<div class="divider-h"></div>
 					<textarea id="comment" class="comment" tabindex="2"></textarea>
-					<input onclick="PostComment();" type="button" value="Post" tabindex="3"/>
+					<input onclick="Go2.PostComment();return false;" type="button" value="Post" tabindex="3"/>
 				<p style="clear:left;" class="help">Comment format: "nickname: text of your comment [tag1, tag2, ...]"</p>
 			</div>
 		</div>

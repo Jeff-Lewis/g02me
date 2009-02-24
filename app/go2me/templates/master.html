@@ -29,7 +29,7 @@ catch (e)
 <script src="/scripts/jquery.js"></script>
 <script>
 {% block script %}
-Go2.SetCSRF("{{csrf}}");
+Go2.Init("{{username}}", "{{csrf}}");
 function Loaded() {}
 {% endblock %}
 </script>
