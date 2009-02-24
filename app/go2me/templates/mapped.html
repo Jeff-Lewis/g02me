@@ -6,7 +6,6 @@
 
 {% block script %}
 // Google Ad Manager
-msLoaded = new Date().getTime();
 Go2.Init("{{username}}", "{{csrf}}");
 Go2.map = {{map.JSON|JSON}};
 
@@ -17,55 +16,11 @@ try
 	}
 catch (e) {}
 
-function BeforeUnload(evt)
-{
-	msUnloading = new Date().getTime();
-	
-	if (msUnloading - msLoaded < 5000)
-		{
-		evt = evt || window.event || {};
-		evt.returnValue = "Click CANCEL to keep the {{site_name}} header at the top of the page.";
-		return evt.returnValue;
-		}
-}
-
-window.onbeforeunload = BeforeUnload;
-
 function Loaded()
 {
 	Go2.MapLoaded();
 }
 
-// Ignore the first load of the frame - that's likely our initial link (or just reset to initial link)
-var fResetFrame = true; 
-
-function OnNavigate()
-{
-	// Can't get URL of user-navigated frame due to browser security.
-	if (fResetFrame)
-		{
-		fResetFrame = false;
-		return;
-		}
-	
-	Go2.parts["linkLabel"].innerHTML = "Original Link";
-}
-
-function ResetFrame()
-{
-	msLoaded = new Date().getTime();
-	Go2.parts["content-iframe"].src = "{{map.Href}}";
-	fResetFrame = true;
-
-	Go2.parts["linkLabel"].innerHTML = "Link";
-}
-
-function Click()
-{
-	msLoaded = 0;
-}
-
-Go2.AddEventFn(window, "click", Click, true)
 {% endblock %}
 
 {% block body %}

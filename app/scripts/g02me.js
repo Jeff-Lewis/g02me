@@ -22,9 +22,11 @@ if (!window.console || !console.firebug)
 //--------------------------------------------------------------------------
 
 var Go2 = {
-sSiteName: "Go2.me",
-sCSRF: "",
-dateLatest: new Date(),
+	sSiteName: "Go2.me",
+	sCSRF: "",
+	//Ignore the first load of the frame - that's likely our initial link (or just reset to initial link)
+	fResetFrame: true,
+	msLoaded: new Date().getTime(),
 
 Browser: {
 	version: parseInt(window.navigator.appVersion),
@@ -36,6 +38,23 @@ Init: function(sUsername, sCSRF)
 	Go2.sUsername = sUsername;
 	Go2.sCSRF = sCSRF;
 	},
+	
+BeforeUnload: function(evt)
+	{
+	var msUnloading = new Date().getTime();
+	
+	if (msUnloading - Go2.msLoaded < 5000)
+		{
+		evt = evt || window.event || {};
+		evt.returnValue = "Click CANCEL to keep the " + Go2.sSiteName + " window open.";
+		return evt.returnValue;
+		}
+	},
+
+Click: function()
+	{
+	Go2.msLoaded = 0;
+	},
 
 // Bind DOM elements by identifier 	
 partIDs: ["username", "content", "content-iframe", "info", "comment", "comments", "border-v", "comment-form", "sponsor-panel", "linkLabel"],
@@ -46,13 +65,14 @@ BindDOM: function()
 		{
 		var sID = Go2.partIDs[i];
 		Go2.parts[sID] = document.getElementById(sID);
-		if (!Go2.parts[sID])
-			console.log("DOM part, " + sID + " not found.");
 		}
 	},
 	
 MapLoaded: function()
 	{
+	window.onbeforeunload = Go2.BeforeUnload;
+	Go2.AddEventFn(window, "click", Go2.Click, true);
+	
 	Go2.BindDOM();
 
 	if (Go2.parts["username"])
@@ -63,10 +83,16 @@ MapLoaded: function()
 			});
 		}
 
+	var objParams = Go2.ParseParams(window.location.href);
+    if (objParams.comment)
+    	{
+    	Go2.parts["comment"].value = objParams.comment;
+    	}
+
 	Go2.parts["comment"].focus();
 	Go2.AddEventFn(Go2.parts["comment"], "keydown", Go2.KeyDownComment);
 	Go2.AddEventFn(Go2.parts["content-iframe"], "load", Go2.OnNavigate);
-	
+
 	Go2.OnResize();
 	Go2.InitPanels();
 	Go2.AddEventFn(window, "resize", Go2.OnResize);
@@ -98,15 +124,38 @@ OnResize: function()
 	Go2.parts["info"].style.height = (dyMax-32) + "px";
 	Go2.parts["border-v"].style.height = (dyMax-32) + "px";
 	Go2.parts["comments"].style.height = dyComments + "px";
+	
+	Go2.DOM.ScrollToBottom(Go2.parts["comments"]);
 	},
 	
 KeyDownComment: function(evt)
 	{
-		if (evt.keyCode == 13)
-			{
-			Go2.PostComment();
-			evt.preventDefault();
-			}
+	if (evt.keyCode == 13)
+		{
+		Go2.PostComment();
+		evt.preventDefault();
+		}
+	},
+	
+OnNavigate: function()
+	{
+	// Can't get URL of user-navigated frame due to browser security.
+	if (Go2.fResetFrame)
+		{
+		Go2.fResetFrame = false;
+		return;
+		}
+	
+	Go2.parts["linkLabel"].innerHTML = "Original Link";
+	},
+	
+ResetFrame: function()
+	{
+	Go2.msLoaded = new Date().getTime();
+	Go2.parts["content-iframe"].src = "{{map.Href}}";
+	Go2.fResetFrame = true;
+
+	Go2.parts["linkLabel"].innerHTML = "Link";
 	},
 
 SetUsername: function(sUsername)
@@ -157,15 +206,17 @@ PostComment: function()
 	{
 	var sd = new Go2.ScriptData('/comment/');
 	
+	var sUsername = Go2.sUsername;
+	
 	if (Go2.parts["username"])
-		Go2.sUsername = Go2.parts["username"].value;
+		sUsername = Go2.parts["username"].value;
 	
 	sComment = Go2.parts["comment"].value;
 
 	var objCall = {
 		id:Go2.map.id,
 		csrf:Go2.sCSRF,
-		username:Go2.sUsername,
+		username:sUsername,
 		comment:sComment,
 		urlLogin: '/' + Go2.map.id + '?comment=' + encodeURIComponent(sComment)
 		};
@@ -178,6 +229,7 @@ PostComment: function()
 		switch (obj.status)
 			{
 		case 'OK':
+			Go2.CheckReload();
 			Go2.map = obj;
 			Go2.parts["comment"].value = "";
 			Go2.UpdateComments();
@@ -203,6 +255,21 @@ PostComment: function()
 	
 	sd.Call(objCall, PCCallback);
 	Go2.TrackEvent('comment');
+	},
+
+// Need to reload to set the username form or get rid of an old query string	
+CheckReload: function()
+	{
+	if (window.location.search)
+		{
+		window.location.href = window.location.pathname + window.location.hash;
+		return;
+		}
+	var mCookies = Go2.GetCookies();
+	if (!mCookies['username'])
+		mCookies['username'] = '';
+	if (Go2.sUsername != mCookies['username'])
+		window.location.reload(); 
 	},
 	
 // Format a date as an age (how long ago)
