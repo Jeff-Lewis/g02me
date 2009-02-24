@@ -279,9 +279,11 @@ class Map(db.Model):
                'title':self.title,
                'viewed':self.viewCount,
                'shared':self.shareCount,
+               'commenters':self.CommentCount(),
                'created':self.dateCreated,
                'scores':self.ss.ScoresNamed(self),
                'tags':self.TopTags(),
+               'dateRequest': local.dtNow,
                # 'presence':self.Presence(), 
                }
         rgComments = []

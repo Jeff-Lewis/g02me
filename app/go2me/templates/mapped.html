@@ -77,7 +77,8 @@ function Loaded()
 			</div>
 			<div class="content">
 				<p>Created: {{map.dateCreated|Age}}</p>
-				<p>Viewers: {{map.Uniques|intcomma}}</p>
+				<p>Vistors: {{map.Uniques|intcomma}}</p>
+				<p>S:{{map.shareCount}}, V:{{map.viewCount}}, C:{{map.commentCount}}</p> 
 				<p>Tags: 
 				{% for tag in TopTags %}
 					<a target="_top" href="/tag/{{tag}}" title="Recently popular | {{tag}}">{{tag|escape}}</a>{% if not forloop.last %}, {% endif %}

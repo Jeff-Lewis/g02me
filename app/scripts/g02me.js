@@ -27,6 +27,9 @@ var Go2 = {
 	//Ignore the first load of the frame - that's likely our initial link (or just reset to initial link)
 	fResetFrame: true,
 	msLoaded: new Date().getTime(),
+	msNextIdle: new Date().getTime(),
+	// Non-empty for private conversation
+	sPrivateKey: "",
 
 Browser: {
 	version: parseInt(window.navigator.appVersion),
@@ -99,7 +102,37 @@ MapLoaded: function()
 	
 	Go2.UpdatePrivacy();
 	Go2.DOM.ScrollToBottom(Go2.parts["comments"]);
-	Go2.CalcLatest();
+	
+	Go2.tmIdle = new Go2.Timer(5000, Go2.OnIdle).Repeat().Active();
+	},
+	
+OnIdle: function()
+	{
+	var ms = new Date().getTime();
+	
+	if (ms < Go2.msNextIdle)
+		return;
+	Go2.msNextIdle = ms + 5000;
+	
+console.log("idle processing");
+
+	// Check if the user has changed the hash key at the end of the URL
+	Go2.UpdatePrivacy();
+
+	var sd = new Go2.ScriptData('/' + Go2.map.id);
+	var objCall = {
+		id: Go2.map.id,
+		since: Go2.ISO.FromDate(Go2.map.dateRequest),
+		csrf: Go2.sCSRF,
+		username: Go2.sUsername,
+		scope: Go2.sPrivateKey
+		};
+
+	sd.Call(objCall, function(obj)
+		{
+		console.log(obj);
+		Go2.UpdateComments(obj);
+		});
 	},
 	
 OnResize: function()
@@ -199,7 +232,7 @@ SetUsername: function(sUsername)
 	
 Map: function(sURL, sTitle)
 	{
-		window.location.href = '/map/?url='+encodeURIComponent(sURL)+'&title='+encodeURIComponent(sTitle);
+	window.location.href = '/map/?url='+encodeURIComponent(sURL)+'&title='+encodeURIComponent(sTitle);
 	},
 	
 PostComment: function()
@@ -218,11 +251,9 @@ PostComment: function()
 		csrf:Go2.sCSRF,
 		username:sUsername,
 		comment:sComment,
-		urlLogin: '/' + Go2.map.id + '?comment=' + encodeURIComponent(sComment)
+		urlLogin: '/' + Go2.map.id + '?comment=' + encodeURIComponent(sComment),
+		since: Go2.ISO.FromDate(Go2.map.dateRequest)
 		};
-	
-	if (Go2.dateLatest)
-		objCall.since = Go2.ISO.FromDate(Go2.dateLatest);
 	
 	var PCCallback = function (obj)
 		{
@@ -230,9 +261,8 @@ PostComment: function()
 			{
 		case 'OK':
 			Go2.CheckReload();
-			Go2.map = obj;
 			Go2.parts["comment"].value = "";
-			Go2.UpdateComments();
+			Go2.UpdateComments(obj);
 			break;
 		case 'Fail/Auth/Used':
 			if (window.confirm(obj.message + ".  Are you sure you want to use it?"))
@@ -314,17 +344,17 @@ DeleteComment: function(id, sDelKey)
 		return;
 	
 	var sd = new Go2.ScriptData('/comment/delete');
-	var objCall = {delkey:sDelKey, csrf:Go2.sCSRF};
-
-	if (Go2.dateLatest)
-		objCall.since = Go2.ISO.FromDate(Go2.dateLatest);
+	var objCall = {
+		delkey: sDelKey,
+		csrf: Go2.sCSRF,
+		since:Go2.ISO.FromDate(Go2.dateRequest) 
+		};
 
 	sd.Call(objCall, function(obj) {
 		switch (obj.status)
 			{
 		case 'OK':
-			Go2.map = obj;
-			Go2.UpdateComments();
+			Go2.UpdateComments(obj);
 			break;
 		default:
 			window.alert(Go2.sSiteName + ": " + obj.message);
@@ -395,7 +425,7 @@ DisplayBars: function(widthMax)
 		}
 	
 	i = 1;
-	var tm = new Go2.Timer(function()
+	var tm = new Go2.Timer(75, function()
 		{
 		Go2.ScaleBars(scaleMax * i /10);
 		if (i === 10)
@@ -403,7 +433,7 @@ DisplayBars: function(widthMax)
 			tm.Active(false);
 			}
 		i++;
-		}, 75).Repeat().Active();
+		}).Repeat().Active();
 	},
 	
 ScaleBars: function(scale)
@@ -474,9 +504,6 @@ TogglePanel: function(evt, divBody)
 	evt.stopPropagation();
 	},
 	
-// Non-empty for private conversation
-sPrivateKey: "",
-	
 TogglePrivate: function(sID, sUser)
 	{
 	var divComments = $('#comments')[0];
@@ -541,28 +568,18 @@ UpdatePrivacy: function()
 		}
 	},
 	
-CalcLatest: function()
-	{
-	if (Go2.map.comments.length >= 1)
-		{
-		Go2.dateLatest = Go2.map.comments[Go2.map.comments.length-1].created;
-		}
-	},
-	
-UpdateComments: function()
+UpdateComments: function(map)
 	{
 	var comment;
 	
-	for (var i = 0; i < Go2.map.comments.length; i++)
+	for (var i = 0; i < map.comments.length; i++)
 		{
-		comment = Go2.map.comments[i];
-		if (!Go2.dateLatest || comment.created > Go2.dateLatest)
+		comment = map.comments[i];
+		if (comment.created > Go2.map.dateRequest)
 			Go2.AppendComment(comment);
 		}
-	if (comment)
-		{
-		Go2.dateLatest = comment.created;
-		}
+
+	Go2.map = map;
 	},
 	
 AppendComment: function(comment)
@@ -1281,7 +1298,7 @@ Go2.Vector.Copy = Go2.Vector.Append;
 // Timer Functions
 //--------------------------------------------------------------------------
 
-Go2.Timer = function(fnCallback, ms)
+Go2.Timer = function(ms, fnCallback)
 {
 	this.ms = ms;
 	this.fnCallback = fnCallback;
@@ -1321,7 +1338,14 @@ Ping: function()
 		}
 
 	this.fInCallback = true;
-	this.fnCallback();
+	try
+		{
+		this.fnCallback();
+		}
+	catch (e)
+		{
+		console.log("Error in timer callback: " + e.message + "(" + e.name + ")");
+		}
 	this.fInCallback = false;
 
 	if (this.fActive && (this.fRepeat || this.fReschedule))
@@ -1403,7 +1427,7 @@ Call: function(objParams, fnCallback)
     objParams.callback = "Go2.ScriptData.ActiveCalls[" + this.rid + "].Callback";
     this.script = document.createElement("script");
     this.script.src = this.stURL + Go2.StParams(objParams);
-    this.tm = new Go2.Timer(this.Timeout.FnMethod(this), this.msTimeout).Active(true);
+    this.tm = new Go2.Timer(this.msTimeout, this.Timeout.FnMethod(this)).Active(true);
     document.body.appendChild(this.script);
     console.log("script[" + this.rid + "]: " + this.script.src);
     return this;

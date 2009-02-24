@@ -214,6 +214,9 @@ X <script> bug in JSON in page!
 9 Fix problems with user case different (links, login, etc.)
 10 Signin/signout bugs - esp with protected pages
 - Isn't csrf supposed to be a signed value (non-forgable)?
+- Fix bugs in share/view/comment counts
+- Replace meta analytics with eventtracking (new) calls
+- Document the Lookup API
 
   
 ------------------------------------------------------------

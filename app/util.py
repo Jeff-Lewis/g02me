@@ -561,6 +561,7 @@ def HttpJSON(req, obj=None):
     if not 'status' in obj:
         obj['status'] = 'OK'
     obj['secsResponse'] = str(ResponseTime())
+    obj['dateRequest'] = local.dtNow
     resp = HttpResponse("%s(%s);" % (req.GET["callback"], simplejson.dumps(obj, cls=JavaScriptEncoder, indent=4)), mimetype="application/x-javascript")
     return resp
 
