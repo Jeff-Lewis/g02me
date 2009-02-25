@@ -204,7 +204,7 @@ X AJAX comments
 - Unit test JScript Urlize()
 X allow numeric domains xxx.xxx.xxx.xxx
 X <script> bug in JSON in page!
-1 ping
+1 ping - backoff activity
 0 time sync bugs (future dates)
 2 pressence
 6 favicon
@@ -217,7 +217,7 @@ X <script> bug in JSON in page!
 - Fix bugs in share/view/comment counts
 - Replace meta analytics with eventtracking (new) calls
 - Document the Lookup API
-
+- Delete comments broken - need to remove comment from local as well as server
   
 ------------------------------------------------------------
         PLATFORMS, SYNDICATION, IMPORT/EXPORT

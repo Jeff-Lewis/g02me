@@ -4,6 +4,7 @@ from django.template.defaultfilters import stringfilter
 import util
 import settings
 import simplejson
+from datetime import datetime, timedelta
 
 import re
 
@@ -130,6 +131,15 @@ def SAgeDdt(ddt):
 
 def SPlural(n, sPlural="s", sSingle=''):
     return [sSingle, sPlural][n!=1]
+
+dtJSBase = datetime(1970, 1, 1)
+
+@register.filter(name='MSJavascript')
+def SAgeReq(dt):
+    # Convert date to number of ms since 1/1/1970
+    tdelta = dt - dtJSBase
+    ms = int(tdelta.days*24*60*60*1000 + tdelta.seconds*1000 + tdelta.microseconds/1000)
+    return ms
 
 # --------------------------------------------------------------------
 # Convert object to JSON format for inclusing in web page

@@ -28,6 +28,7 @@ var Go2 = {
 	fResetFrame: true,
 	msLoaded: new Date().getTime(),
 	msNextIdle: new Date().getTime(),
+	msServerOffset: 0,
 	// Non-empty for private conversation
 	sPrivateKey: "",
 
@@ -128,11 +129,26 @@ console.log("idle processing");
 		scope: Go2.sPrivateKey
 		};
 
+	var dCall = new Date();
 	sd.Call(objCall, function(obj)
 		{
-		console.log(obj);
+		// Assume server received request at same time as our local call
+		Go2.SetServerTime(obj.dateRequest, dCall);
 		Go2.UpdateComments(obj);
 		});
+	},
+	
+SetServerTime: function(dServer, dLocal)
+	{
+	Go2.msServerOffset = dServer.getTime() - dLocal.getTime();
+	console.log("Server offset: " + Go2.msServerOffset);
+	},
+	
+LocalToServerTime: function(dLocal)
+	{
+	var d = new Date(dLocal.getTime() + Go2.msServerOffset);
+	console.log(d);
+	return d;
 	},
 	
 OnResize: function()
@@ -571,18 +587,30 @@ UpdatePrivacy: function()
 UpdateComments: function(map)
 	{
 	var comment;
+	var dateBase = map.dateRequest;
 	
 	for (var i = 0; i < map.comments.length; i++)
 		{
 		comment = map.comments[i];
 		if (comment.created > Go2.map.dateRequest)
-			Go2.AppendComment(comment);
+			Go2.AppendComment(comment, dateBase);
+		}
+	
+	// Update all the displayed comment dates
+	spanTimes = $(".server-time");
+	var d = new Date();
+	
+	for (i = 0; i < spanTimes.length; i++)
+		{
+		var span = spanTimes[i];
+		d.setTime(parseInt(span.getAttribute('go2_ms')))
+		span.innerHTML = Go2.Age(d, dateBase);
 		}
 
 	Go2.map = map;
 	},
 	
-AppendComment: function(comment)
+AppendComment: function(comment, dateBase)
 	{
 	var st = new Go2.StBuf();
 	
@@ -604,7 +632,7 @@ AppendComment: function(comment)
 			}
 		st.Append(']');
 		}
-	st.Append(' - ' + Go2.Age(comment.created));
+	st.Append(' - <span class="server-time" go2_ms="' + comment.created.getTime() + '">?</span>');
 	if (comment.delkey)
 		{
 		st.Append(' <img class="x" onclick="Go2.DeleteComment(\'' + comment.delkey + '\');" src="/images/x.png"/>');
@@ -1416,14 +1444,11 @@ Call: function(objParams, fnCallback)
     Go2.ScriptData.ActiveCalls[this.rid] = this;
 
 	if (fnCallback)
-		{
 		this.fnCallback = fnCallback;
-		}
-            
+
     if (objParams === undefined)
-    	{
     	objParams = {};
-    	}
+
     objParams.callback = "Go2.ScriptData.ActiveCalls[" + this.rid + "].Callback";
     this.script = document.createElement("script");
     this.script.src = this.stURL + Go2.StParams(objParams);
