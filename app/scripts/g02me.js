@@ -105,7 +105,7 @@ MapLoaded: function()
 	Go2.UpdatePrivacy();
 	Go2.DOM.ScrollToBottom(Go2.parts["comments"]);
 	
-	Go2.tmIdle = new Go2.Timer(5000, Go2.OnIdle).Repeat().Active();
+	Go2.tmIdle = new Go2.Timer(500, Go2.OnIdle).Repeat().Active();
 	},
 	
 OnIdle: function()

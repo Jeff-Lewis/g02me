@@ -109,7 +109,10 @@ def DoComment(req, command=None):
         map.AddComment(username=local.requser.username, comment=parts['comment'], tags=parts['tags'])
 
     if IsJSON():
-        return HttpJSON(req, obj=map.JSON())
+        dateSince = local.mpParams.get('since', None)
+        if dateSince:
+            dateSince = DateFromISO(dateSince)
+        return HttpJSON(req, obj=map.JSON(dateSince=dateSince))
     return HttpResponseRedirect("/info/%s" % map.GetId())
     
 def HeadRedirect(req, id):

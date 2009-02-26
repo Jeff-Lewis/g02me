@@ -286,6 +286,8 @@ class Map(db.Model):
                'dateRequest': local.dtNow,
                # 'presence':self.Presence(), 
                }
+        if dateSince:
+            obj['since'] = dateSince
         rgComments = []
         for comment in self.Comments(dateSince=dateSince):
             rgComments.append(comment.JSON())

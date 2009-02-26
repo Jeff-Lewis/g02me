@@ -110,14 +110,13 @@ class JavaScript(Atomic):
 regISO = re.compile(r"^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2}):(\d{2})(\.\d{0,6})?Z$")
     
 def DateFromISO(s):
+    # TODO: Allow just date w/o full fractional time - or partial times
     m = regISO.match(s)
     if m is None:
         return None
-    for i in range(1,7):
-        logging.info("%d: %r" % (i, m.group(i)))
     dt = datetime(year=int(m.group(1)), month=int(m.group(2)), day=int(m.group(3)),
                   hour=int(m.group(4)), minute=int(m.group(5)), second=int(m.group(6)),
-                  microsecond=float('0'+m.group(7))*1000000)
+                  microsecond=int(float('0'+m.group(7))*1000000))
     return dt
     
 # --------------------------------------------------------------------
