@@ -284,7 +284,7 @@ class Map(db.Model):
                'scores':self.ss.ScoresNamed(self),
                'tags':self.TopTags(),
                'dateRequest': local.dtNow,
-               # 'presence':self.Presence(), 
+               'presence':self.Presence(), 
                }
         if dateSince:
             obj['since'] = dateSince
@@ -308,20 +308,39 @@ class Map(db.Model):
         f = self.fBan is not None and self.fBan
         return f
     
-    def Presence(self):
-        """
-        aPresence = memcache.get('map.pres.%s' % self.id)
-        dateLimit = local.dtNow - timedelta(0.25/24)
-        aPresence = [u for u in aPresence if u.dateLast > dateLimit]
+    @RunInTransaction
+    def Presence(self, dateComment=None, sState="Active"):
+        if not local.requser.FAllow('presence'):
+            return []
+        # This should be in a transaction!
+        idT = 'map.pres.%s' % self.GetId()
+        aPresence = memcache.get(idT)
+        if aPresence is None:
+            aPresence = {}
+        dateLimit = local.dtNow - timedelta(minutes=1)
+        aPresence = [u for u in aPresence if u['dateLast'] > dateLimit and u['uid'] != local.requser.uid]
+        if local.requser.profile and local.requser.profile.img_thumb:
+            urlThumb = '/user/%s/picture_thumb' % local.requser.username
+        else:
+            urlThumb = '/images/picture_thumb.png'
+
+        uSelf = {'uid': local.requser.uid,
+                 'username':local.requser.username,
+                 'dateLast': local.dtNow,
+                 'state': sState,
+                 'thumb': urlThumb,
+                 }
+        if dateComment:
+            uSelf['dateComment'] = dateComment
+        aPresence.insert(0, uSelf)
+        memcache.set(idT, aPresence, 90)
         return aPresence
-        """
     
     def Present(self):
         """
         aPresence = self.Presence()
         """
-        
-        
+
     # Admin functions - for use in /shell or /admin ------------------
     # BUG: FindBadTagCounts does NOT WORK in shell - complains about undefined comment.tags property and
     # can't catch with try: block???

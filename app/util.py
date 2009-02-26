@@ -115,8 +115,9 @@ def DateFromISO(s):
     if m is None:
         return None
     dt = datetime(year=int(m.group(1)), month=int(m.group(2)), day=int(m.group(3)),
-                  hour=int(m.group(4)), minute=int(m.group(5)), second=int(m.group(6)),
-                  microsecond=int(float('0'+m.group(7))*1000000))
+                  hour=int(m.group(4)), minute=int(m.group(5)), second=int(m.group(6)))
+    if m.group(7):
+        dt += timedelta(microseconds=int(float('0'+m.group(7))*1000000))
     return dt
     
 # --------------------------------------------------------------------
@@ -170,7 +171,7 @@ class ReqFilter(object):
         if requser.fAnon:
             requser.Allow('share')
         else:
-            requser.Allow('share', 'score', 'view-count', 'comment')
+            requser.Allow('share', 'score', 'view-count', 'comment', 'presence')
             requser.SetMaxRate('write', requser.uid, 10)
             
         if req.method == 'GET':
@@ -229,8 +230,8 @@ class ReqFilter(object):
             else:
                 resp.delete_cookie(name)
         # TODO: Should allow client caching of home and /tag pages - 60 seconds
-        resp['Cache-Control'] = 'no-cache'
-        resp['Expires'] = '0'
+        # resp['Cache-Control'] = 'no-cache'
+        # resp['Expires'] = '0'
         return resp
         
     def process_exception(self, req, e):
@@ -267,7 +268,7 @@ class ReqUser(object):
     Manage permissions for the user who is making this request.
     Looks for (and sets) cookies: userAuth and username
     
-    Built in permissions: 'read', 'admin', 'user'
+    Built in permissions: 'read', 'admin', 'user', presence
     """
 
     def __init__(self, req):

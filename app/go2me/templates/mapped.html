@@ -119,6 +119,9 @@ function Loaded()
 			<span id="chat-title">Chat</span>
 		</div>
 		<div class="panel-body">
+			<div class="presence" id="presence">
+			</div>
+			<div class="divider-h"></div>
 			<!-- Public comments (only) are dumped in page for search engines -->
 			<div id="comments" class="comments">
 				{% for comment in map.Comments %}
@@ -138,8 +141,8 @@ function Loaded()
 			
 			<div id="comment-form" class="comment-form">
 				<div class="divider-h"></div>
-					<textarea id="comment" class="comment" tabindex="2"></textarea>
-					<input onclick="Go2.PostComment();return false;" type="button" value="Post" tabindex="3"/>
+				<textarea id="comment" class="comment" tabindex="2"></textarea>
+				<input onclick="Go2.PostComment();return false;" type="button" value="Post" tabindex="3"/>
 				<p style="clear:left;" class="help">Comment format: "nickname: text of your comment [tag1, tag2, ...]"</p>
 			</div>
 		</div>

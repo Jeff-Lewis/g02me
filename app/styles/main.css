@@ -569,7 +569,13 @@ span.server-time {
 font-size: 9px;
 }
 
+div.presence {
+padding: 0 0 5px 0;
+}
 
+div.presence img {
+margin: 5px 0 0 5px;
+}
 
 
 

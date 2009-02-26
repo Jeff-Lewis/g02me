@@ -2,6 +2,7 @@ application: g02me
 version: 11
 runtime: python
 api_version: 1
+default_expiration: 1h
 
 handlers:
 - url: /scripts
@@ -24,7 +25,6 @@ handlers:
 
 - url: /static
   static_dir: static
-  expiration: 1d
 
 # For Google Webmaster Tools domain validation  
 - url: /google9eab28331a1ab405.html

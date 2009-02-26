@@ -105,6 +105,8 @@ MapLoaded: function()
 	Go2.UpdatePrivacy();
 	Go2.DOM.ScrollToBottom(Go2.parts["comments"]);
 	
+	Go2.UpdatePresence();
+	
 	Go2.tmIdle = new Go2.Timer(500, Go2.OnIdle).Repeat().Active();
 	},
 	
@@ -163,7 +165,6 @@ Notify: function(s)
 SetServerTime: function(dServer, dLocal)
 	{
 	Go2.msServerOffset = dServer.getTime() - dLocal.getTime();
-	console.log("Server offset: " + Go2.msServerOffset);
 	},
 	
 LocalToServerTime: function(dLocal)
@@ -620,6 +621,8 @@ UpdateComments: function(map)
 	
 	Go2.UpdateCommentTimes();
 	Go2.map = map;
+	
+	Go2.UpdatePresence();
 	},
 	
 UpdateCommentTimes: function()
@@ -637,6 +640,32 @@ UpdateCommentTimes: function()
 		}
 	},
 	
+	
+UpdatePresence: function()
+	{
+	var divPres = $('#presence')[0];
+	if (!Go2.map.presence)
+		{
+		divPres.innerHTML = "Nobody home?";
+		return;
+		}
+	
+	var st = new Go2.StBuf();
+
+	if (Go2.map.presence)
+		{
+		for (i = 0; i < Go2.map.presence.length; i++)
+			{
+			var user = Go2.map.presence[i];
+			st.Append('<img id="pres_' + user.id + '" src="' + user.thumb + '"');
+			if (user.username)
+				st.Append(' title="' + user.username + '"');
+			st.Append('>');
+			}
+		divPres.innerHTML = st.toString();
+		}
+	},
+
 AppendComment: function(comment)
 	{
 	var st = new Go2.StBuf();

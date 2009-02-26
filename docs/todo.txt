@@ -204,12 +204,12 @@ X AJAX comments
 - Unit test JScript Urlize()
 X allow numeric domains xxx.xxx.xxx.xxx
 X <script> bug in JSON in page!
-1 ping - backoff activity
-  - honor since parameter
-0 time sync bugs (future dates)
+X ping - backoff activity
+  X honor since parameter
+X time sync bugs (future dates)
 2 pressence
 6 favicon
-3 Private scope for comments
+3 Private scope for comments - filter
 7 Table formatting
 8 Support @user replies in comments -> auto-subscribe AND hyperlink
 9 Fix problems with user case different (links, login, etc.)
@@ -219,6 +219,8 @@ X <script> bug in JSON in page!
 - Replace meta analytics with eventtracking (new) calls
 - Document the Lookup API
 - Delete comments broken - need to remove comment from local as well as server
+- Allow intranet domains
+- quota should not be affected by failed requests (10 rpm)
   
 ------------------------------------------------------------
         PLATFORMS, SYNDICATION, IMPORT/EXPORT
