@@ -31,6 +31,7 @@ var Go2 = {
 	msServerOffset: 0,
 	// Non-empty for private conversation
 	sPrivateKey: "",
+	fInIdle: false,
 
 Browser: {
 	version: parseInt(window.navigator.appVersion),
@@ -111,12 +112,11 @@ OnIdle: function()
 	{
 	var ms = new Date().getTime();
 	
-	if (ms < Go2.msNextIdle)
+	if (ms < Go2.msNextIdle || Go2.fInIdle)
 		return;
-	Go2.msNextIdle = ms + 5000;
 	
-console.log("idle processing");
-
+	Go2.fInIdle = true;
+	
 	// Check if the user has changed the hash key at the end of the URL
 	Go2.UpdatePrivacy();
 
@@ -129,13 +129,35 @@ console.log("idle processing");
 		scope: Go2.sPrivateKey
 		};
 
-	var dCall = new Date();
 	sd.Call(objCall, function(obj)
 		{
-		// Assume server received request at same time as our local call
-		Go2.SetServerTime(obj.dateRequest, dCall);
-		Go2.UpdateComments(obj);
+		switch (obj.status)
+			{
+		case 'OK':
+			// Assume server received request at same time as our local call
+			Go2.SetServerTime(obj.dateRequest, sd.dCall);
+			Go2.UpdateComments(obj);
+			Go2.msNextIdle = (new Date().getTime()) + 5000;
+			break;
+		default:
+			// Tell the user there's a problem - an back off for 1 minute.
+			Go2.Notify(Go2.sSiteName + ": " + obj.message);
+			Go2.msNextIdle = (new Date().getTime()) + 60*1000;
+			break;
+			}
+
+		Go2.fInIdle = false;
 		});
+	},
+	
+Notify: function(s)
+	{
+	var pNote = document.createElement('p');
+	var dNow = Go2.LocalToServerTime(new Date());
+	pNote.innerHTML = s + ' - <span class="server-time" go2_ms="' + dNow.getTime() + '">?</span>'
+	Go2.parts["comments"].appendChild(pNote);
+	Go2.UpdateCommentTimes();
+	Go2.DOM.ScrollToBottom(Go2.parts["comments"]);
 	},
 	
 SetServerTime: function(dServer, dLocal)
@@ -147,7 +169,6 @@ SetServerTime: function(dServer, dLocal)
 LocalToServerTime: function(dLocal)
 	{
 	var d = new Date(dLocal.getTime() + Go2.msServerOffset);
-	console.log(d);
 	return d;
 	},
 	
@@ -216,7 +237,6 @@ SetUsername: function(sUsername)
 		
 	function SUCallback(obj)
 		{
-		console.log("SU", obj)
 		switch (obj.status)
 			{
 		case 'OK':
@@ -271,13 +291,14 @@ PostComment: function()
 		since: Go2.ISO.FromDate(Go2.map.dateRequest)
 		};
 	
-	var PCCallback = function (obj)
+	sd.Call(objCall, function (obj)
 		{
 		switch (obj.status)
 			{
 		case 'OK':
 			Go2.CheckReload();
 			Go2.parts["comment"].value = "";
+			Go2.SetServerTime(obj.dateRequest, sd.dCall);
 			Go2.UpdateComments(obj);
 			break;
 		case 'Fail/Auth/Used':
@@ -297,9 +318,8 @@ PostComment: function()
 			window.alert(Go2.sSiteName + ": " + obj.message);
 			break;
 			}
-		};
+		});
 	
-	sd.Call(objCall, PCCallback);
 	Go2.TrackEvent('comment');
 	},
 
@@ -363,22 +383,22 @@ DeleteComment: function(id, sDelKey)
 	var objCall = {
 		delkey: sDelKey,
 		csrf: Go2.sCSRF,
-		since:Go2.ISO.FromDate(Go2.dateRequest) 
+		since:Go2.ISO.FromDate(Go2.map.dateRequest) 
 		};
 
 	sd.Call(objCall, function(obj) {
 		switch (obj.status)
 			{
 		case 'OK':
+			Go2.SetServerTime(obj.dateRequest, sd.dCall);
 			Go2.UpdateComments(obj);
+			$('#cmt_' + id).remove();
 			break;
 		default:
-			window.alert(Go2.sSiteName + ": " + obj.message);
+			Go2.Notify(Go2.sSiteName + ": " + obj.message);
 			break;
 			}
 		});
-	
-	$('#cmt_' + id).remove();
 
 	Go2.TrackEvent('comment/delete');
 	},
@@ -587,30 +607,37 @@ UpdatePrivacy: function()
 UpdateComments: function(map)
 	{
 	var comment;
-	var dateBase = map.dateRequest;
 	
-	for (var i = 0; i < map.comments.length; i++)
+	if (map.comments)
 		{
-		comment = map.comments[i];
-		if (comment.created > Go2.map.dateRequest)
-			Go2.AppendComment(comment, dateBase);
+		for (var i = 0; i < map.comments.length; i++)
+			{
+			comment = map.comments[i];
+			if (comment.created > Go2.map.dateRequest)
+				Go2.AppendComment(comment);
+			}
 		}
 	
+	Go2.UpdateCommentTimes();
+	Go2.map = map;
+	},
+	
+UpdateCommentTimes: function()
+	{
 	// Update all the displayed comment dates
 	spanTimes = $(".server-time");
+	var dBase = Go2.LocalToServerTime(new Date());
 	var d = new Date();
 	
 	for (i = 0; i < spanTimes.length; i++)
 		{
 		var span = spanTimes[i];
 		d.setTime(parseInt(span.getAttribute('go2_ms')))
-		span.innerHTML = Go2.Age(d, dateBase);
+		span.innerHTML = Go2.Age(d, dBase);
 		}
-
-	Go2.map = map;
 	},
 	
-AppendComment: function(comment, dateBase)
+AppendComment: function(comment)
 	{
 	var st = new Go2.StBuf();
 	
@@ -635,7 +662,7 @@ AppendComment: function(comment, dateBase)
 	st.Append(' - <span class="server-time" go2_ms="' + comment.created.getTime() + '">?</span>');
 	if (comment.delkey)
 		{
-		st.Append(' <img class="x" onclick="Go2.DeleteComment(\'' + comment.delkey + '\');" src="/images/x.png"/>');
+		st.Append(' <img class="x" onclick="Go2.DeleteComment(' + comment.id + ', \'' + comment.delkey + '\');" src="/images/x.png"/>');
 		}
 	
 	pComment.innerHTML = st.toString();
@@ -1453,6 +1480,7 @@ Call: function(objParams, fnCallback)
     this.script = document.createElement("script");
     this.script.src = this.stURL + Go2.StParams(objParams);
     this.tm = new Go2.Timer(this.msTimeout, this.Timeout.FnMethod(this)).Active(true);
+    this.dCall = new Date();
     document.body.appendChild(this.script);
     console.log("script[" + this.rid + "]: " + this.script.src);
     return this;
