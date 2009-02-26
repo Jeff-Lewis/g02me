@@ -205,6 +205,7 @@ X AJAX comments
 X allow numeric domains xxx.xxx.xxx.xxx
 X <script> bug in JSON in page!
 1 ping - backoff activity
+  - honor since parameter
 0 time sync bugs (future dates)
 2 pressence
 6 favicon

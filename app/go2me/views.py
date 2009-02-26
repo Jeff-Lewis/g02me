@@ -112,7 +112,6 @@ def DoComment(req, command=None):
         return HttpJSON(req, obj=map.JSON())
     return HttpResponseRedirect("/info/%s" % map.GetId())
     
-
 def HeadRedirect(req, id):
     # http://go2.me/info/N
     sExtra = ''
@@ -126,8 +125,13 @@ def LinkPage(req, id):
     if map == None:
         RaiseNotFound(id)
     if IsJSON():
-        map.Viewed()
+        dateSince = local.mpParams.get('since', None)
+        if dateSince:
+            dateSince = datetime.strptime(dateSince,'%Y-%m-%dT%H:%M:%S.%f%Z')
+        
         return HttpJSON(req, obj=map.JSON())
+    else:
+        map.Viewed()
     AddToResponse({'map':map, 'TopTags':map.TopTags()})
     return render_to_response('mapped.html', FinalResponse())
 

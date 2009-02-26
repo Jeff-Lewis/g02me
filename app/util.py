@@ -104,6 +104,17 @@ class JavaScript(Atomic):
         
     def __str__(self):
         return self.st;
+
+# Parse ISO-8601: YYYY-MM-DDTHH:MM:SS.ssssssZ
+#                          1      2      3      4      5      6 
+regISO = re.compile(r"^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2}):(\d{2}(?:\.\d{0,6})?)Z$")
+    
+def DateFromISO(s):
+    m = regISO.match(s)
+    if m is None:
+        return None
+    dt = datetime(m.group(1), m.group(2), m.group(3), microsecond=m.group(6)*1000000)
+    return dt
     
 # --------------------------------------------------------------------
 # Django request filter middleware
