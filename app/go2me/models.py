@@ -10,6 +10,7 @@ from urlparse import urlsplit
 import re
 import pickle
 import urllib
+import hashlib
 
 class Map(db.Model):
     ss = ScoreSet.GetSet("map")
@@ -271,7 +272,7 @@ class Map(db.Model):
         sHost = rg[1].lower()
         return sHost
         
-    def JSON(self, dateSince=None):
+    def JSON(self, dateSince=None, sState="Active", sLocation=None):
         # JSON (object) format of Map data - filtered to new since dateSince
         obj = {'url':self.url,
                'urlShort': r"http://%s/%s" % (settings.sSiteHost, self.GetId()),
@@ -284,7 +285,7 @@ class Map(db.Model):
                'scores':self.ss.ScoresNamed(self),
                'tags':self.TopTags(),
                'dateRequest': local.dtNow,
-               'presence':self.Presence(), 
+               'presence':self.Presence(sState=sState, sLocation=sLocation),
                }
         if dateSince:
             obj['since'] = dateSince
@@ -309,7 +310,7 @@ class Map(db.Model):
         return f
     
     @RunInTransaction
-    def Presence(self, dateComment=None, sState="Active"):
+    def Presence(self, dateComment=None, sState=None, sLocation=None):
         if not local.requser.FAllow('presence'):
             return []
         # This should be in a transaction!
@@ -318,29 +319,30 @@ class Map(db.Model):
         if aPresence is None:
             aPresence = {}
         dateLimit = local.dtNow - timedelta(minutes=1)
-        aPresence = [u for u in aPresence if u['dateLast'] > dateLimit and u['uid'] != local.requser.uid]
+        uidSelf = hashlib.sha1(local.requser.uid).hexdigest().upper()
+        aPresence = [u for u in aPresence if u['dateLast'] > dateLimit and u['id'] != uidSelf]
+
         if local.requser.profile and local.requser.profile.img_thumb:
             urlThumb = '/user/%s/picture_thumb' % local.requser.username
         else:
             urlThumb = '/images/picture_thumb.png'
 
-        uSelf = {'uid': local.requser.uid,
+        uSelf = {'id': uidSelf,
                  'username':local.requser.username,
                  'dateLast': local.dtNow,
-                 'state': sState,
                  'thumb': urlThumb,
                  }
+
+        if sState:
+            uSelf['state'] = sState
         if dateComment:
             uSelf['dateComment'] = dateComment
+        if sLocation:
+            uSelf['location'] = sLocation
         aPresence.insert(0, uSelf)
         memcache.set(idT, aPresence, 90)
         return aPresence
     
-    def Present(self):
-        """
-        aPresence = self.Presence()
-        """
-
     # Admin functions - for use in /shell or /admin ------------------
     # BUG: FindBadTagCounts does NOT WORK in shell - complains about undefined comment.tags property and
     # can't catch with try: block???

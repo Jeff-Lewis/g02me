@@ -78,6 +78,10 @@ MapLoaded: function()
 	window.onbeforeunload = Go2.BeforeUnload;
 	Go2.AddEventFn(window, "click", Go2.Click, true);
 	
+	try {
+		Go2.location = google.loader.ClientLocation;
+	} catch (e) {}
+	
 	Go2.BindDOM();
 
 	if (Go2.parts["username"])
@@ -109,6 +113,24 @@ MapLoaded: function()
 	
 	Go2.tmIdle = new Go2.Timer(500, Go2.OnIdle).Repeat().Active();
 	},
+
+ObjCallDefault: function()
+	{
+	var objCall = {
+		id: Go2.map.id,
+		since: Go2.ISO.FromDate(Go2.map.dateRequest),
+		csrf: Go2.sCSRF,
+		username: Go2.sUsername,
+		scope: Go2.sPrivateKey
+		};
+
+	if (Go2.location)
+		{
+		objCall.location = Go2.location.address.city + ", " +
+			Go2.location.address.region + ", " + Go2.location.address.country;
+		}
+	return objCall;
+	},
 	
 OnIdle: function()
 	{
@@ -123,13 +145,7 @@ OnIdle: function()
 	Go2.UpdatePrivacy();
 
 	var sd = new Go2.ScriptData('/' + Go2.map.id);
-	var objCall = {
-		id: Go2.map.id,
-		since: Go2.ISO.FromDate(Go2.map.dateRequest),
-		csrf: Go2.sCSRF,
-		username: Go2.sUsername,
-		scope: Go2.sPrivateKey
-		};
+	var objCall = Go2.ObjCallDefault();
 
 	sd.Call(objCall, function(obj)
 		{
@@ -283,14 +299,11 @@ PostComment: function()
 	
 	sComment = Go2.parts["comment"].value;
 
-	var objCall = {
-		id:Go2.map.id,
-		csrf:Go2.sCSRF,
-		username:sUsername,
+	var objCall = Go2.ObjCallDefault();
+	Go2.Extend(objCall, {
 		comment:sComment,
-		urlLogin: '/' + Go2.map.id + '?comment=' + encodeURIComponent(sComment),
-		since: Go2.ISO.FromDate(Go2.map.dateRequest)
-		};
+		urlLogin: '/' + Go2.map.id + '?comment=' + encodeURIComponent(sComment)
+		});
 	
 	sd.Call(objCall, function (obj)
 		{
@@ -381,11 +394,10 @@ DeleteComment: function(id, sDelKey)
 		return;
 	
 	var sd = new Go2.ScriptData('/comment/delete');
-	var objCall = {
-		delkey: sDelKey,
-		csrf: Go2.sCSRF,
-		since:Go2.ISO.FromDate(Go2.map.dateRequest) 
-		};
+	var objCall = Go2.ObjCallDefault();
+	Go2.Extend(objCall, {
+		delkey: sDelKey
+		});
 
 	sd.Call(objCall, function(obj) {
 		switch (obj.status)
@@ -640,7 +652,6 @@ UpdateCommentTimes: function()
 		}
 	},
 	
-	
 UpdatePresence: function()
 	{
 	var divPres = $('#presence')[0];
@@ -658,8 +669,20 @@ UpdatePresence: function()
 			{
 			var user = Go2.map.presence[i];
 			st.Append('<img id="pres_' + user.id + '" src="' + user.thumb + '"');
+			var sHover = "";
+			var sSep = "";
 			if (user.username)
-				st.Append(' title="' + user.username + '"');
+				{
+				sHover += user.username;
+				sSep = " ";
+				}
+			if (user.location)
+				sHover += sSep + "(" + user.location + ")";
+			if (sHover != "")
+				{
+				sHover = Go2.EscapeHTML(sHover);
+				st.Append(' title="' + sHover + '" alt="' + sHover + '"');
+				}
 			st.Append('>');
 			}
 		divPres.innerHTML = st.toString();

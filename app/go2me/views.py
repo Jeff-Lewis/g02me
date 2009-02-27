@@ -131,8 +131,10 @@ def LinkPage(req, id):
         dateSince = local.mpParams.get('since', None)
         if dateSince:
             dateSince = DateFromISO(dateSince)
+        sLocation = local.mpParams.get('location', None)
+        sState = local.mpParams.get('state', None)
         
-        return HttpJSON(req, obj=map.JSON(dateSince=dateSince))
+        return HttpJSON(req, obj=map.JSON(dateSince=dateSince, sState=sState, sLocation=sLocation))
     else:
         map.Viewed()
     AddToResponse({'map':map, 'TopTags':map.TopTags()})
