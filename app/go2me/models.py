@@ -319,7 +319,7 @@ class Map(db.Model):
         if aPresence is None:
             aPresence = {}
         dateLimit = local.dtNow - timedelta(minutes=1)
-        uidSelf = hashlib.sha1(local.requser.uid).hexdigest().upper()
+        uidSelf = Slugify(local.requser.uid)
         aPresence = [u for u in aPresence if u['dateLast'] > dateLimit and u['id'] != uidSelf]
 
         if local.requser.profile and local.requser.profile.img_thumb:

@@ -86,9 +86,8 @@ function Loaded()
 				</p>
 			</div>
 			<div style="margin: 5px 5px 2px 0;text-align:right;">
-				<a href="#">Report Page</a>
 				{% if is_admin %}
-					| <a href="#" onclick="Go2.BanishId('{{map.GetId}}', '{{map.Banished}}'=='False'); return false;">{% if map.Banished%}Un-{% endif %}Ban</a>
+					<a href="#" onclick="Go2.BanishId('{{map.GetId}}', '{{map.Banished}}'=='False'); return false;">{% if map.Banished%}Un-{% endif %}Ban</a>
 				{% endif %}
 			</div>
 			<div style="margin: 5px 5px 2px 0;text-align:right;">

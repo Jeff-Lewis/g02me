@@ -121,7 +121,8 @@ ObjCallDefault: function()
 		since: Go2.ISO.FromDate(Go2.map.dateRequest),
 		csrf: Go2.sCSRF,
 		username: Go2.sUsername,
-		scope: Go2.sPrivateKey
+		scope: Go2.sPrivateKey,
+		state: "active"
 		};
 
 	if (Go2.location)
@@ -655,37 +656,67 @@ UpdateCommentTimes: function()
 UpdatePresence: function()
 	{
 	var divPres = $('#presence')[0];
+
 	if (!Go2.map.presence)
 		{
 		divPres.innerHTML = "Nobody home?";
 		return;
 		}
 	
-	var st = new Go2.StBuf();
-
-	if (Go2.map.presence)
+	var mfUsers = {};
+	
+	for (var i = 0; i < Go2.map.presence.length; i++)
 		{
-		for (i = 0; i < Go2.map.presence.length; i++)
+		var user = Go2.map.presence[i];
+		mfUsers['pres-'+user.id] = true;
+		}
+	
+	var imgOld = $("#presence img");
+	
+	// Remove old users
+	for (i = 0; i < imgOld.length; i++)
+		{
+		var img = imgOld[i];
+		var id = img.getAttribute('id');
+		if (!mfUsers[id])
 			{
-			var user = Go2.map.presence[i];
-			st.Append('<img id="pres_' + user.id + '" src="' + user.thumb + '"');
-			var sHover = "";
-			var sSep = "";
-			if (user.username)
-				{
-				sHover += user.username;
-				sSep = " ";
-				}
-			if (user.location)
-				sHover += sSep + "(" + user.location + ")";
-			if (sHover != "")
-				{
-				sHover = Go2.EscapeHTML(sHover);
-				st.Append(' title="' + sHover + '" alt="' + sHover + '"');
-				}
-			st.Append('>');
+			console.log("removing old pres:" + id);
+			$(img).remove();
 			}
-		divPres.innerHTML = st.toString();
+		}
+	
+	for (i = 0; i < Go2.map.presence.length; i++)
+		{
+		var user = Go2.map.presence[i];
+
+		var img = $('#pres-'+user.id);
+		
+		if (img.length == 0)
+			{
+			console.log("adding new pres:" + user.id);
+			var img = document.createElement('img');
+			img.id = 'pres-'+user.id;
+			divPres.appendChild(img);
+			}
+		else
+			img = img[0];
+
+		// Attributes of the user can change in real time
+		img.src = user.thumb;
+		var sHover = "";
+		var sSep = "";
+		if (user.username)
+			{
+			sHover += user.username;
+			sSep = " ";
+			}
+		if (user.location)
+			sHover += sSep + "(" + user.location + ")";
+		if (sHover != "")
+			{
+			sHover = Go2.EscapeHTML(sHover);
+			img.title = img.alt = sHover;
+			}
 		}
 	},
 
@@ -1529,7 +1560,7 @@ Call: function(objParams, fnCallback)
     	objParams = {};
 
     objParams.callback = "Go2.ScriptData.ActiveCalls[" + this.rid + "].Callback";
-    this.script = document.createElement("script");
+    this.script = document.createElement('script');
     this.script.src = this.stURL + Go2.StParams(objParams);
     this.tm = new Go2.Timer(this.msTimeout, this.Timeout.FnMethod(this)).Active(true);
     this.dCall = new Date();
@@ -1545,7 +1576,8 @@ Callback: function()
 	var rid = this.rid;
     this.Cancel();
     console.log("(" + rid + ") -> ", arguments);
-    this.fnCallback.apply(undefined, arguments);
+    if (this.fnCallback)
+    	this.fnCallback.apply(undefined, arguments);
 	},
 	
 Timeout: function()
@@ -1553,7 +1585,8 @@ Timeout: function()
 	var rid = this.rid;
 	this.Cancel();
     console.log("(" + rid + ") -> TIMEOUT");
-    this.fnCallback({status:"Fail/Timeout", message:"The " + Go2.sSiteName + " server failed to respond."});
+    if (this.fnCallback)
+    	this.fnCallback({status:"Fail/Timeout", message:"The " + Go2.sSiteName + " server failed to respond."});
 	},
 	
 // ScriptData can be re-used once complete

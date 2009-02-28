@@ -13,20 +13,11 @@
 <script src="http://www.google.com/jsapi"></script>
 <script src="http://partner.googleadservices.com/gampad/google_service.js"></script>
 <script type="text/javascript">
-try
-	{
-	google.load("jquery", "1.2.6");
-	GS_googleAddAdSenseService("{{ad_publisher_id}}");
-	GS_googleEnableAllServices();
-	}
-catch (e)
-	{
-	// Handle offline case OR google AJAX service down
-	document.write('<' + 'script src="/scripts/jquery.js"></' + 'script>');
-	}
+google.load("jquery", "1.2.6");
+GS_googleAddAdSenseService("{{ad_publisher_id}}");
+GS_googleEnableAllServices();
 </script>
 
-<script src="/scripts/jquery.js"></script>
 <script>
 {% block script %}
 Go2.Init("{{username}}", "{{csrf}}");

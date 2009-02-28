@@ -70,11 +70,15 @@ def TrimString(st):
         st = ''
     return re.sub('[\000-\037]', '', str(st)).strip()
 
+# Convert runs of all non-alphanumeric characters to single dashes 
+regNonchar = re.compile(r"[^\w]")
+regDashes = re.compile(r"[\-]+")
+regPrePostDash = re.compile(r"(^-+)|(-+$)")
+
 def Slugify(s):
-    "Converts to lowercase, removes non-alpha chars and converts spaces to hyphens"
-    s = re.sub('[^\w\s-]', '', s).strip().lower()
-    s = re.sub('[-\s]+', '-', s)
-    s = re.sub('(^-+)|(-+$)', '', s)
+    s = regNonchar.sub('-', s).lower()
+    s = regDashes.sub('-', s)
+    s = regPrePostDash.sub('', s)
     return s
 
 from simplejson import JSONEncoder
