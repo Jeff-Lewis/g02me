@@ -1804,3 +1804,4 @@ String.prototype.StReplace = function(stPat, stRep)
 
 	return st;
 };
+

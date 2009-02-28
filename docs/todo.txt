@@ -207,9 +207,9 @@ X <script> bug in JSON in page!
 X ping - backoff activity
   X honor since parameter
 X time sync bugs (future dates)
-! presence
+X presence
   X merge updates
-  - User state (active/idle/typing)
+  X User state (active/idle/typing)
 ! favicon
 ! Private scope for comments - filter
 ! Table formatting
