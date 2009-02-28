@@ -93,6 +93,8 @@ function Shorten()
 		<li><b>Shorter links</b> - {{site_name}} links are only {{link_length}} characters long - perfect for Twitter messages.</li>
 	</ul>
 	
+	{% cache 180 home-11 %}
+	
 	<h2>Today's most popular links ({{total_pages|intcomma}} shared to date)</h2>		
 	<table class="scores">
 		<tr><th>Title</th><th class="num">Visitors</th><th>By</th><th>Score</th></tr>
@@ -120,6 +122,8 @@ function Shorten()
 			{% endif %}
 		{% endfor %}
 	</table>
+	
+	{% endcache %}
 	
 	<p style="text-align:right;">
 		<a href="/popular/">more...</a>
