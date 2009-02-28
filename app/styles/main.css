@@ -413,6 +413,7 @@ background: url(/images/title-background.png) repeat-x scroll;
 height: 20px;
 text-align: center;
 padding: 2px;
+cursor: default;
 }
 
 div.panel-body {
@@ -575,9 +576,14 @@ padding: 0 0 5px 0;
 
 div.presence img {
 margin: 5px 0 0 5px;
+border: 2px solid white;
 }
 
+div.presence img.typing {
+border: 2px solid #d70e0d;
+}
 
-
-
+div.presence img.idle {
+border: 2px solid gray;
+}
 

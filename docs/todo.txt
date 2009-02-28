@@ -208,7 +208,7 @@ X ping - backoff activity
   X honor since parameter
 X time sync bugs (future dates)
 ! presence
-  - merge updates
+  X merge updates
   - User state (active/idle/typing)
 ! favicon
 ! Private scope for comments - filter

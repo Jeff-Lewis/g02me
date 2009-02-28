@@ -28,6 +28,8 @@ var Go2 = {
 	fResetFrame: true,
 	msLoaded: new Date().getTime(),
 	msNextIdle: new Date().getTime(),
+	msUserPresent: 0,
+	msTyping : 0,
 	msServerOffset: 0,
 	// Non-empty for private conversation
 	sPrivateKey: "",
@@ -60,6 +62,11 @@ Click: function()
 	{
 	Go2.msLoaded = 0;
 	},
+	
+UserPresent: function()
+	{
+	Go2.msUserPresent = new Date().getTime();
+	},
 
 // Bind DOM elements by identifier 	
 partIDs: ["username", "content", "content-iframe", "info", "comment", "comments", "border-v", "comment-form", "sponsor-panel", "linkLabel"],
@@ -77,6 +84,9 @@ MapLoaded: function()
 	{
 	window.onbeforeunload = Go2.BeforeUnload;
 	Go2.AddEventFn(window, "click", Go2.Click, true);
+	Go2.AddEventFn(window, "mousemove", Go2.UserPresent);
+	Go2.AddEventFn(window, "scroll", Go2.UserPresent);
+	Go2.UserPresent();
 	
 	try {
 		Go2.location = google.loader.ClientLocation;
@@ -122,9 +132,11 @@ ObjCallDefault: function()
 		csrf: Go2.sCSRF,
 		username: Go2.sUsername,
 		scope: Go2.sPrivateKey,
-		state: "active"
+		state: "idle"
 		};
 
+	objCall.state = Go2.StateFromMs(new Date().getTime());
+		
 	if (Go2.location)
 		{
 		objCall.location = Go2.location.address.city + ", " +
@@ -133,9 +145,25 @@ ObjCallDefault: function()
 	return objCall;
 	},
 	
+StateFromMs: function(msNow)
+	{
+	if (msNow - Go2.msTyping < 15*1000)
+		return "typing";
+	else if (msNow - Go2.msUserPresent < 60*1000)
+		return "active";
+	return "idle";
+	},
+	
 OnIdle: function()
 	{
 	var ms = new Date().getTime();
+	
+	// Update user's own state changes rapidly
+	var imgSelf = $('#pres-'+Go2.map.idClient);
+	if (imgSelf.length > 0)
+		{
+		imgSelf[0].className = Go2.StateFromMs(ms);
+		}
 	
 	if (ms < Go2.msNextIdle || Go2.fInIdle)
 		return;
@@ -192,6 +220,8 @@ LocalToServerTime: function(dLocal)
 	
 OnResize: function()
 	{
+	Go2.UserPresent();
+	
 	var rcWindow = Go2.DOM.RcWindow();
 	var dyMax = rcWindow[3] - rcWindow[1];
 
@@ -218,6 +248,9 @@ OnResize: function()
 	
 KeyDownComment: function(evt)
 	{
+	Go2.UserPresent();
+	Go2.msTyping = Go2.msUserPresent;
+
 	if (evt.keyCode == 13)
 		{
 		Go2.PostComment();
@@ -227,6 +260,8 @@ KeyDownComment: function(evt)
 	
 OnNavigate: function()
 	{
+	Go2.UserPresent();
+	
 	// Can't get URL of user-navigated frame due to browser security.
 	if (Go2.fResetFrame)
 		{
@@ -313,6 +348,7 @@ PostComment: function()
 		case 'OK':
 			Go2.CheckReload();
 			Go2.parts["comment"].value = "";
+			Go2.msTyping = 0;
 			Go2.SetServerTime(obj.dateRequest, sd.dCall);
 			Go2.UpdateComments(obj);
 			break;
@@ -680,7 +716,6 @@ UpdatePresence: function()
 		var id = img.getAttribute('id');
 		if (!mfUsers[id])
 			{
-			console.log("removing old pres:" + id);
 			$(img).remove();
 			}
 		}
@@ -693,7 +728,6 @@ UpdatePresence: function()
 		
 		if (img.length == 0)
 			{
-			console.log("adding new pres:" + user.id);
 			var img = document.createElement('img');
 			img.id = 'pres-'+user.id;
 			divPres.appendChild(img);
@@ -703,6 +737,7 @@ UpdatePresence: function()
 
 		// Attributes of the user can change in real time
 		img.src = user.thumb;
+		img.className = user.state;
 		var sHover = "";
 		var sSep = "";
 		if (user.username)
@@ -715,7 +750,7 @@ UpdatePresence: function()
 		if (sHover != "")
 			{
 			sHover = Go2.EscapeHTML(sHover);
-			img.title = img.alt = sHover;
+			img.title = sHover;
 			}
 		}
 	},

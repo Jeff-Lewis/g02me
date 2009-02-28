@@ -581,6 +581,8 @@ def HttpJSON(req, obj=None):
         obj['status'] = 'OK'
     obj['secsResponse'] = str(ResponseTime())
     obj['dateRequest'] = local.dtNow
+    obj['idClient'] = Slugify(local.requser.uid)
+    logging.info("client: %s" % obj['idClient'])
     resp = HttpResponse("%s(%s);" % (req.GET["callback"], simplejson.dumps(obj, cls=JavaScriptEncoder, indent=4)), mimetype="application/x-javascript")
     return resp
 
