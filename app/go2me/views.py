@@ -65,8 +65,8 @@ def InitAPI(req):
     sKey = '~'.join((local.ipAddress, '10'))
     return HttpJSON(req, obj={'apikey':SSign('apiIP', sKey)})
 
-def Favorite(req):
-    local.requser.Require('api', 'write', 'comment', 'user')
+def ToggleFavorite(req):
+    local.requser.Require('api', 'write', 'comment')
     if not IsJSON():
         raise Error("Can only use API to set as favorite.")
 
@@ -75,10 +75,19 @@ def Favorite(req):
     map = Map.Lookup(id)
     if map == None:
         RaiseNotFound(id)
+    if local.requser.username == '':
+        raise Error("You must sign in to favorite a link.");
     
-    map.AddComment(username=local.requser.username, comment='__fave')
+    comment = map.GetFavorite(local.requser.username)
+    if comment is None:
+        map.AddComment(username=local.requser.username, comment='__fave')
+    else:
+        comment.Delete()
     
-    return HttpJSON(req, obj=map.JSON())
+    dateSince = local.mpParams.get('since', None)
+    if dateSince:
+        dateSince = DateFromISO(dateSince)
+    return HttpJSON(req, obj=map.JSON(dateSince=dateSince))
 
 def DoComment(req, command=None):
     local.requser.Require('api', 'write', 'comment')

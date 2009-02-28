@@ -211,8 +211,15 @@ class Map(db.Model):
         self.put()
         self.ss.Update(self, score, dt=local.dtNow, tags=self.TopTags())
         
+    def GetFavorite(self, username):
+        if username == '':
+            return None
+        comments = self.comment_set
+        comments.filter('comment =', '__fave').filter('username =', username)
+        return comments.get()
+    
     def Uniques(self):
-        return self.viewCount + self.shareCount + self.CommentCount()
+        return self.viewCount + self.shareCount
     
     def CommentCount(self):
         # Cache the comment count in the model
@@ -280,6 +287,7 @@ class Map(db.Model):
                'title':self.title,
                'viewed':self.viewCount,
                'shared':self.shareCount,
+               'favorite': self.GetFavorite(local.requser.username) is not None,
                'commenters':self.CommentCount(),
                'created':self.dateCreated,
                'scores':self.ss.ScoresNamed(self),

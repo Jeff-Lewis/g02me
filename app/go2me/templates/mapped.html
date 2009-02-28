@@ -64,7 +64,7 @@ function Loaded()
 	<div id="stats-panel" class="panel">
 		<div class="expander expanded"></div>
 		<div style="position:relative;" class="panel-body">
-			<div class="open-star" title="Make Link a Favorite"></div>
+			<div href="#" onclick="Go2.ToggleFavorite();return false;" id="favorite" class="open-star" title="Make Link a Favorite"></div>
 			<div class="creator">
 			{% if map.Creator %}
 				<a href="/user/{{map.Creator}}">

@@ -202,6 +202,7 @@ X AJAX comments
 - Trim Titles before storage
 - Unit test Age
 - Unit test JScript Urlize()
+- Unit test toggle favorite
 X allow numeric domains xxx.xxx.xxx.xxx
 X <script> bug in JSON in page!
 X ping - backoff activity
@@ -223,7 +224,7 @@ X presence
 - Delete comments broken - need to remove comment from local as well as server
 ! Allow intranet domains (no periods)
 - quota should not be affected by failed requests (10 rpm)
-! Favorite (star)
+X Favorite (star)
 ! Test in IE and Chrome
 ! update stats of page via AJAX (visitors count)
 ! notify server when leaving page

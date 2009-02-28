@@ -69,7 +69,8 @@ UserPresent: function()
 	},
 
 // Bind DOM elements by identifier 	
-partIDs: ["username", "content", "content-iframe", "info", "comment", "comments", "border-v", "comment-form", "sponsor-panel", "linkLabel"],
+partIDs: ["username", "content", "content-iframe", "info", "comment", "comments", "border-v", "comment-form", "sponsor-panel", "linkLabel",
+          "favorite"],
 parts: [],
 BindDOM: function()
 	{
@@ -120,6 +121,7 @@ MapLoaded: function()
 	Go2.DOM.ScrollToBottom(Go2.parts["comments"]);
 	
 	Go2.UpdatePresence();
+	Go2.UpdateFavorite();
 	
 	Go2.tmIdle = new Go2.Timer(500, Go2.OnIdle).Repeat().Active();
 	},
@@ -372,6 +374,31 @@ PostComment: function()
 		});
 	
 	Go2.TrackEvent('comment');
+	},
+
+ToggleFavorite: function()
+	{
+	var sd = new Go2.ScriptData('/toggle-favorite/');
+	
+	var sUsername = Go2.sUsername;
+	
+	var objCall = Go2.ObjCallDefault();
+	
+	sd.Call(objCall, function (obj)
+		{
+		switch (obj.status)
+			{
+		case 'OK':
+			Go2.SetServerTime(obj.dateRequest, sd.dCall);
+			Go2.UpdateComments(obj);
+			break;
+		default:
+			window.alert(Go2.sSiteName + ": " + obj.message);
+			break;
+			}
+		});
+	
+	Go2.TrackEvent('favorite');
 	},
 
 // Need to reload to set the username form or get rid of an old query string	
@@ -672,6 +699,13 @@ UpdateComments: function(map)
 	Go2.map = map;
 	
 	Go2.UpdatePresence();
+	Go2.UpdateFavorite();
+	},
+	
+UpdateFavorite: function()
+	{
+	console.log("UF");
+	Go2.parts["favorite"].className = Go2.map.favorite ? "closed-star" : "open-star";
 	},
 	
 UpdateCommentTimes: function()

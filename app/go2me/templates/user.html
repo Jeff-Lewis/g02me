@@ -59,7 +59,13 @@ function KeyDown(evt)
 			<img class="favicon" src="http://{{comment.map.Domain}}/favicon.ico">
 			<a href="/{{comment.map.GetId}}" title="{{comment.map.url|escape}}">{{comment.map.title|escape}}</a>
 		{% if comment.comment or comment.tags %}<div class="table-comments"><p>
-			{% ifequal comment.comment "__share" %}<i>Shared</i>{% else %}{{comment.comment|escape|urlize}}{% endifequal %}
+			{% ifequal comment.comment "__share" %}
+				<i>Shared</i>
+			{% else %}{% ifequal comment.comment "__fave" %}
+				<i>Favorited</i>
+			{% else %}
+				{{comment.comment|escape|urlize}}
+			{% endifequal %}{% endifequal %}
 			{% if comment.tags %}
 	    		[{% for tag in comment.TagList %}<a target="_top" href="/tag/{{tag}}">{{tag|escape}}</a>{% if not forloop.last %}, {% endif %}{% endfor %}]
 	    	{% endif %}

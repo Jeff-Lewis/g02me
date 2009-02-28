@@ -457,19 +457,11 @@ height: 30px;
 cursor: pointer;
 }
 
-div.open-star:hover {
-background: url(/images/closed-star.png) scroll top;
-}
-
 div.closed-star {
 background: url(/images/closed-star.png) scroll top;
 width: 32px;
 height: 30px;
 cursor: pointer;
-}
-
-div.closed-star:hover {
-background: url(/images/open-star.png) scroll top;
 }
 
 .clickable {
