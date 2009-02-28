@@ -214,6 +214,13 @@ def Admin(req, command=None):
             for comment in comments:
                 comment.Delete()
                 
+        if command == 'scope-comments':
+            comments = Comment.Unscoped()
+            logging.info("Scoping %d comments." % len(comments))
+            for comment in comments:
+                comment.scope = '__public'
+                comment.put()
+                
         if command == 'fix-tag-counts':
             maps = Map.FindBadTagCounts()
             logging.info("Fixing %d bad tag counts" % len(maps))
@@ -257,6 +264,7 @@ def Admin(req, command=None):
            #'BrokenComments':Comment.Broken(),
            #'BadCounts':Map.FindBadTagCounts(),
            #'MissingCreator':Comment.MissingCreator(),
+           'cUnscopedComments':len(Comment.Unscoped()),
            'MemCache': mpMem
            })
     return render_to_response('admin.html', FinalResponse())

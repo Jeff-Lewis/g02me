@@ -12,6 +12,10 @@ import pickle
 import urllib
 import hashlib
 
+""" ------------------------------------------------------------------
+Map model (a URL link).
+-------------------------------------------------------------------"""
+
 class Map(db.Model):
     ss = ScoreSet.GetSet("map")
     
@@ -42,7 +46,7 @@ class Map(db.Model):
          ])
     
     # Schema version for conversion of old models
-    version = db.IntegerProperty(default=2)
+    schema = db.IntegerProperty(default=2)
     dateCreated = db.DateTimeProperty()
 
     url = db.StringProperty(required=True)
@@ -408,6 +412,9 @@ class Map(db.Model):
             map.tags = map.RecalcTags()
             map.put()
     
+""" ------------------------------------------------------------------
+Global application variables (stored in the database)
+-------------------------------------------------------------------"""
 
 # TODO: Use a sharded counter   
 class Globals(db.Model):
@@ -450,8 +457,12 @@ class Globals(db.Model):
             glob.idNext = idMin-1
         return glob        
 
+""" ------------------------------------------------------------------
+Comment model.
+-------------------------------------------------------------------"""
+
 class Comment(db.Model):
-    version = db.IntegerProperty(default=2)
+    schema = db.IntegerProperty(default=2)
     dateCreated = db.DateTimeProperty()
     
     # Parent item - anchor link for this comment
@@ -460,6 +471,7 @@ class Comment(db.Model):
     username = db.StringProperty()
     userAuth = db.StringProperty()
     comment = db.StringProperty()
+    scope = db.StringProperty(default=None)
     
     # Comma separated list
     tags = db.StringProperty()
@@ -471,7 +483,7 @@ class Comment(db.Model):
     regComment = re.compile(r"^( *([a-zA-Z0-9_\.\-]{1,20}) *: *)?([^\[]*) *(\[(.*)\])? *$")
     
     @staticmethod
-    def Create(map, username='', comment='', tags=''):
+    def Create(map, username='', comment='', tags='', scope='__public'):
         local.requser.Require('write', 'comment')
         username = TrimString(username)
         userAuth = local.requser.UserId()
@@ -482,7 +494,7 @@ class Comment(db.Model):
         if tags == '' and comment == '':
             raise Error("Comment and tags missing")
 
-        com = Comment(map=map, username=username, userAuth=userAuth, comment=comment, tags=tags, dateCreated=dateCreated)
+        com = Comment(map=map, username=username, userAuth=userAuth, comment=comment, tags=tags, dateCreated=dateCreated, scope=scope)
         return com
     
     def Delete(self):
@@ -640,10 +652,13 @@ class Comment(db.Model):
             if comment.map.usernameCreator is None and comment.username != '':
                 comment.map.usernameCreator = comment.username
                 comment.map.put()
-    
-    
-    
-    
-    
-    
-    
+                
+    @staticmethod
+    def Unscoped(limit=100):
+        comments = Comment.all();
+        aUnscoped = []
+        for comment in comments.fetch(limit):
+            logging.info("scope: %s" % comment.scope)
+            if comment.scope is None or comment.scope == '':
+                aUnscoped.append(comment)
+        return aUnscoped

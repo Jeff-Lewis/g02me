@@ -18,6 +18,8 @@
 {% endfor %}
 </ol>
 
+<a href="/admin/scope-comments?csrf={{csrf}}">Scope Comments:</a> {{cUnscopedComments}}
+
 <h2>API Key Generator</h2>
 <form action="create-api-key" method="get">
 	<input type="hidden" name="csrf" value="{{csrf}}"/>
@@ -90,12 +92,10 @@
 	<li>(<a href="/info/{{map.GetId}}">info</a>): {{map.STagDiff|escape}}</li>
 {% endfor %}
 </ol>
-<p>
 {% endif %}
 
 {% if MissingCreator %}
 <p>
-<a href="/admin/fix-missing-creators?csrf={{csrf}}">Fix Missing Creators</a> ({{MissingCreator|length}})
 <table class="scores">
 <tr><th>comment</th><th>Cmt Date</th><th>Link Date</th><th>Shared By</th><th>Creator</th></tr>
 {% for comment in MissingCreator %}

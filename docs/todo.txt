@@ -211,7 +211,7 @@ X time sync bugs (future dates)
 X presence
   X merge updates
   X User state (active/idle/typing)
-! favicon
+- favicon
 ! Private scope for comments - filter
 ! Table formatting
 - Support @user replies in comments -> auto-subscribe AND hyperlink
@@ -228,6 +228,7 @@ X Favorite (star)
 ! Test in IE and Chrome
 ! update stats of page via AJAX (visitors count)
 ! notify server when leaving page
+- score favorites (but how to back it out?)
   
 ------------------------------------------------------------
         PLATFORMS, SYNDICATION, IMPORT/EXPORT
