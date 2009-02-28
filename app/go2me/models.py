@@ -99,6 +99,7 @@ class Map(db.Model):
         id = Map.__IdNext()
         map = Map(key_name=Map.KeyFromId(id), url=url, title=title, userAuthFirst=userAuthFirst,
                   dateCreated=dateCreated, usernameCreator=local.requser.username)
+        logging.info("VC: %d" % map.viewCount)
         return map
     
     @staticmethod
@@ -223,7 +224,8 @@ class Map(db.Model):
         return comments.get()
     
     def Uniques(self):
-        return self.viewCount + self.shareCount
+        logging.info("U: %d" % self.viewCount)
+        return self.viewCount
     
     def CommentCount(self):
         # Cache the comment count in the model
@@ -265,10 +267,12 @@ class Map(db.Model):
                 self.AddComment(username=local.requser.username, comment="__share")
         
     def Viewed(self):
+        logging.info("V1: %d" % self.viewCount)
         if not local.requser.FOnce('view.%s' % self.GetId()):
             return
         self.viewCount += 1
         self.put()
+        logging.info("V2: %d" % self.viewCount)
         if local.requser.FAllow('score') and not self.Banished():
             self.ss.Update(self, self.scoreView, dt=local.dtNow, tags=self.TopTags())
         
@@ -655,7 +659,7 @@ class Comment(db.Model):
                 
     @staticmethod
     def Unscoped(limit=100):
-        comments = Comment.all();
+        comments = Comment.gql("WHERE scope != '__public'");
         aUnscoped = []
         for comment in comments.fetch(limit):
             logging.info("scope: %s" % comment.scope)

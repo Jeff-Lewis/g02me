@@ -1,7 +1,7 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
-<title>G02ME Unit Test</title>
+<title>Go2.me Unit Tests</title>
 <script src="unit.js"></script>
 <script src="/scripts/g02me.js"></script>
 <script src="firebug/firebugx.js"></script>
@@ -264,7 +264,7 @@ ts.AddTest("Comment", function(ut)
 			new Go2.ScriptData("/comment/").Call({id:objInit.id, force: true, comment:"test :  This is a test  [  ,,tag1,  tag2]", apikey:sAPIKey}, function (obj) {
 				ut.AssertContains(obj, {status:"OK", url:"http://google.com/"});
 				var cT = obj.comments.length;
-				ut.AssertContains(obj.comments[cT-1], {comment:"This is a test", tags:"tag1,tag2", user:"test"});
+				ut.AssertContains(obj.comments[cT-1], {comment:"This is a test", tags:["tag1","tag2"], user:"test"});
 				ut.AssertType(obj.comments[cT-1].created, Date);
 				ut.AssertEq(obj.comments.length, cComment+1);
 				ut.AssertContains(obj.tags, ["tag1", "tag2"]);
@@ -278,7 +278,7 @@ ts.AddTest("Comment", function(ut)
 				var cT = obj.comments.length;
 				ut.AssertEq(cT, cComment+1);
 				com = obj.comments[cT-1];
-				ut.AssertContains(com, {comment:"This is a test", user:"test", tags:"tag1,tag2"});
+				ut.AssertContains(com, {comment:"This is a test", user:"test", tags:["tag1","tag2"]});
 				ut.NextFn();
 				});
 			},
@@ -288,7 +288,7 @@ ts.AddTest("Comment", function(ut)
 			new Go2.ScriptData("/comment/").Call({id:objInit.id, force: true, comment:"test :  [" + tagUniq + "]", apikey:sAPIKey}, ut.FnWrap(function (obj) {
 				ut.AssertContains(obj, {status:"OK", url:"http://google.com/"});
 				var cT = obj.comments.length;
-				ut.AssertContains(obj.comments[cT-1], {comment:"", user:"test", tags:tagUniq});
+				ut.AssertContains(obj.comments[cT-1], {comment:"", user:"test", tags:[tagUniq]});
 				com2= obj.comments[cT-1];
 				ut.AssertEq(obj.comments.length, cComment+2);
 				ut.AssertContains(obj.tags, ["tag1", "tag2", tagUniq]);
@@ -365,7 +365,7 @@ ts.AddTest("Unicode", function(ut)
 				ut.AssertContains(obj, {status:"OK"});
 				var cT = obj.comments.length;
 				// No Unicode allowed in tags - will be stripped
-				ut.AssertContains(obj.comments[cT-1], {comment:"Unicode Tag", tags:"tag"});
+				ut.AssertContains(obj.comments[cT-1], {comment:"Unicode Tag", tags:["tag"]});
 				ut.AssertEq(obj.tags[0], "tag");
 				ut.NextFn();
 				}));
@@ -427,7 +427,7 @@ ts.AddTest("Tag", function(ut)
 				ut.AssertContains(obj, {status:"OK", url:"http://google.com/"});
 				var cT = obj.comments.length;
 				ut.AssertGT(cT, 0);
-				ut.AssertContains(obj.comments[cT-1], {comment:"Testing tags", tags: "search,multi-word"});
+				ut.AssertContains(obj.comments[cT-1], {comment:"Testing tags", tags: ["search","multi-word"]});
 				ut.AssertContains(obj.tags, ["multi-word", "search"]); 
 				ut.NextFn();
 				});
@@ -468,7 +468,7 @@ ts.AddTest("Favorite", function(ut)
 			},
 		function(ut)
 			{
-			new Go2.ScriptData("/favorite/").Call({id:objInit.id, favorite:true, apikey:sAPIKey}, function (obj) {
+			new Go2.ScriptData("/toggle-favorite/").Call({id:objInit.id, favorite:true, apikey:sAPIKey}, function (obj) {
 				ut.AssertContains(obj, {status:"OK", url:"http://google.com/", favorite:true});
 				ut.NextFn();
 				});
@@ -666,7 +666,7 @@ ts.AddTest("Call", function(ut)
     		});
     		}
 		]);
-}).Async(true, 11000);
+}).Async(true, 16000);
 
 </script>
 </body>

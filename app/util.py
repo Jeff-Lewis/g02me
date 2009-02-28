@@ -412,8 +412,10 @@ class ReqUser(object):
             return False
             
     def FOnce(self, key):
+        logging.info("Once get: %s.%s" % (self.UserId(), key))
         if memcache.get('user.once.%s.%s' % (self.UserId(), key)):
             return False
+        logging.info("Once set: %s.%s" % (self.UserId(), key))
         memcache.set('user.once.%s.%s' % (self.UserId(), key), True, time=15*60)
         return True
 
@@ -582,7 +584,6 @@ def HttpJSON(req, obj=None):
     obj['secsResponse'] = str(ResponseTime())
     obj['dateRequest'] = local.dtNow
     obj['idClient'] = Slugify(local.requser.uid)
-    logging.info("client: %s" % obj['idClient'])
     resp = HttpResponse("%s(%s);" % (req.GET["callback"], simplejson.dumps(obj, cls=JavaScriptEncoder, indent=4)), mimetype="application/x-javascript")
     return resp
 
