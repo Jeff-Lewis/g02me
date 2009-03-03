@@ -229,6 +229,8 @@ X Favorite (star)
 ! update stats of page via AJAX (visitors count)
 ! notify server when leaving page
 - score favorites (but how to back it out?)
+- update visitor count in real time
+- visitor counts are incorrect (too high!)
   
 ------------------------------------------------------------
         PLATFORMS, SYNDICATION, IMPORT/EXPORT
