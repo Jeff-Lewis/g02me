@@ -141,8 +141,9 @@ ObjCallDefault: function()
 		
 	if (Go2.location)
 		{
-		objCall.location = Go2.location.address.city + ", " +
-			Go2.location.address.region + ", " + Go2.location.address.country;
+		var sLoc = new Go2.StBuf();
+		sLoc.AppendList(Go2.location.address.city, Go2.location.address.region, Go2.location.address.country);
+		objCall.location = sLoc.toString();
 		}
 	return objCall;
 	},
@@ -704,7 +705,6 @@ UpdateComments: function(map)
 	
 UpdateFavorite: function()
 	{
-	console.log("UF");
 	Go2.parts["favorite"].className = Go2.map.favorite ? "closed-star" : "open-star";
 	},
 	
@@ -1127,10 +1127,11 @@ Go2.StBuf = function()
 {
 	this.rgst = [];
 	this.Append.apply(this, arguments);
+	this.sListSep = ", ";
 };
 
 Go2.StBuf.prototype = {
-constructor: Go2.StBuf,
+		constructor: Go2.StBuf,
 
 Append: function()
 	{
@@ -1147,7 +1148,23 @@ Clear: function ()
 toString: function()
 	{
 	return this.rgst.join("");
-	}
+	},
+
+// Build a comma separated list - ignoring undefined, null, empty strings
+AppendList: function()
+	{
+	var sSep = "";
+	for (var ist = 0; ist < arguments.length; ist++)
+		{
+		var sT = arguments[ist];
+		if (sT)
+			{
+			this.Append(sSep + sT);
+			sSep = this.sListSep;
+			}
+		}
+	return this;
+	},
 }; // Go2.StBuf
 
 
