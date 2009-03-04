@@ -255,6 +255,8 @@ cursor: default;
    ================================================= */
 
 div.head img.profile-med {
+position: relative;
+top: -20px;
 float: left;
 width: 75px;
 padding: 5px;

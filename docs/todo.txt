@@ -231,6 +231,8 @@ X Favorite (star)
 - score favorites (but how to back it out?)
 - update visitor count in real time
 - visitor counts are incorrect (too high!)
+- open user page (in new window) on chat thumb
+- Fix link target for in-chat links
   
 ------------------------------------------------------------
         PLATFORMS, SYNDICATION, IMPORT/EXPORT
