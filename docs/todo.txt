@@ -233,6 +233,9 @@ X Favorite (star)
 - visitor counts are incorrect (too high!)
 - open user page (in new window) on chat thumb
 - Fix link target for in-chat links
+- don't offer to great Go2.me pages to illegal domains (e.g., go2.me pages!)
+- Links in comments are not framing w/i Go2.me?
+- Links to Go2.me page IS framing w/i Go2.me (backwards!)
   
 ------------------------------------------------------------
         PLATFORMS, SYNDICATION, IMPORT/EXPORT
