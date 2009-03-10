@@ -69,7 +69,6 @@ class Map(db.Model):
         id = Map.__IdNext()
         map = Map(key_name=Map.KeyFromId(id), url=url, title=title, userAuthFirst=userAuthFirst,
                   dateCreated=dateCreated, usernameCreator=local.requser.username)
-        logging.info("VC: %d" % map.viewCount)
         return map
     
     @staticmethod
@@ -194,7 +193,6 @@ class Map(db.Model):
         return comments.get()
     
     def Uniques(self):
-        logging.info("U: %d" % self.viewCount)
         return self.viewCount
     
     def CommentCount(self):
@@ -237,12 +235,11 @@ class Map(db.Model):
                 self.AddComment(username=local.requser.username, comment="__share")
         
     def Viewed(self):
-        logging.info("V1: %d" % self.viewCount)
         if not local.requser.FOnce('view.%s' % self.GetId()):
             return
         self.viewCount += 1
         self.put()
-        logging.info("V2: %d" % self.viewCount)
+        logging.info("Increased view count to: %d" % self.viewCount)
         if local.requser.FAllow('score') and not self.Banished():
             self.ss.Update(self, self.scoreView, dt=local.dtNow, tags=self.TopTags())
         

@@ -231,13 +231,23 @@ X Favorite (star)
 ! notify server when leaving page
 - score favorites (but how to back it out?)
 - update visitor count in real time
-- visitor counts are incorrect (too high!)
+! visitor counts are incorrect (too high!)
 - open user page (in new window) on chat thumb
 - Fix link target for in-chat links
 - don't offer to create Go2.me pages to illegal domains (e.g., go2.me pages!)
 ! Links in comments are not framing w/i Go2.me?
 ! Links to Go2.me page IS framing w/i Go2.me (backwards!)
 - Multi-level domains not handled?  search.twitter.com, e.g.
+- Created time should update in real time
+- Entertonement player
+- Mobile support and testing:
+  - iPhone
+  - Android
+  - Blackberry
+  - Sidekick
+  	"I may be one of the rare sidekick users, but the go2.me portion of the
+  	destinantion page doesn't render properly for me.  	Probably because SK is ass at rendering frames." - CY
+- Optimize timer to not constantly create new times - but use a repeating timer 
   
 ------------------------------------------------------------
         PLATFORMS, SYNDICATION, IMPORT/EXPORT
@@ -311,6 +321,7 @@ X User account
 - Spam - faked title - /3f
 X Google User Accounts
   X Persistent cookie (30 days) in lieu of Google Auth
+- Make CSRF a Signed value
 
 ------------------------------------------------------------
                         PERFORMANCE

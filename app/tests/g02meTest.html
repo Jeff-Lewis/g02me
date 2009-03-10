@@ -25,7 +25,7 @@ ts.AddTest("Map", function(ut)
 	ut.AsyncSequence([
 	    function(ut)
 		    {
-		    new Go2.ScriptData("/cmd/setusername").Call({username:"test"}, function(obj) {
+		    new Go2.ScriptData("/cmd/setusername").Call({username:"test", apikey:sAPIKey}, function(obj) {
 			    ut.AssertContains(obj, {status:"OK", username:"test"});
 			    ut.NextFn();
 		    	});
@@ -107,7 +107,7 @@ ts.AddTest("Map", function(ut)
 				});
 			}
 		]);
-}).Async(true);
+}).Async(true, 15000);
 
 ts.AddTest("Errors", function(ut)
 {
@@ -179,14 +179,14 @@ ts.AddTest("Info", function(ut)
 			},
 		function (ut)
 			{
-			new Go2.ScriptData("/info/" + objInit.id).Call({}, function (obj) {
+			new Go2.ScriptData("/" + objInit.id).Call({apikey:sAPIKey}, function (obj) {
 				ut.AssertContains(obj, {status:"OK", url:"http://google.com/"});
 				ut.NextFn();
 				});
 			},
 		function (ut)
 			{
-			new Go2.ScriptData("/info/9999").Call({}, function (obj) {
+			new Go2.ScriptData("/9999").Call({apikey:sAPIKey}, function (obj) {
 				ut.AssertContains(obj, {status:"Fail/NotFound"});
 				ut.NextFn();
 				});
@@ -243,7 +243,7 @@ ts.AddTest("Comment", function(ut)
 			},
 		function(ut)
 			{
-			new Go2.ScriptData("/info/" + objInit.id).Call({}, function (obj) {
+			new Go2.ScriptData("/" + objInit.id).Call({apikey:sAPIKey}, function (obj) {
 				ut.AssertContains(obj, {status:"OK", url:"http://google.com/"});
 				var cT = obj.comments.length;
 				ut.AssertContains(obj.comments[cT-1], {comment:"hello"});
@@ -275,7 +275,7 @@ ts.AddTest("Comment", function(ut)
 			},
 		function(ut)
 			{
-			new Go2.ScriptData("/info/" + objInit.id).Call({}, function (obj) {
+			new Go2.ScriptData("/" + objInit.id).Call({csrf:sCSRF}, function (obj) {
 				ut.AssertContains(obj, {status:"OK", url:"http://google.com/"});
 				var cT = obj.comments.length;
 				ut.AssertEq(cT, cComment+1);
@@ -322,7 +322,7 @@ ts.AddTest("Comment", function(ut)
 			},
 		function(ut)
 			{
-			new Go2.ScriptData("/info/" + objInit.id).Call({}, function (obj) {
+			new Go2.ScriptData("/" + objInit.id).Call({apikey:sAPIKey}, function (obj) {
 				ut.AssertContains(obj, {status:"OK", url:"http://google.com/"});
 				ut.AssertEq(obj.comments.length, cComment);
 				ut.NextFn();
@@ -336,7 +336,7 @@ ts.AddTest("Comment", function(ut)
 				}));
 			},
 		]);
-}).Async(true);
+}).Async(true, 15000);
 
 ts.AddTest("Unicode", function(ut)
 {
@@ -463,15 +463,15 @@ ts.AddTest("Favorite", function(ut)
 		function(ut)
 			{
 			new Go2.ScriptData("/lookup/").Call({url:"http://google.com"}, function(obj) {
-				ut.AssertContains(obj, {status:"OK", url:"http://google.com/", favorite:false});
+				ut.AssertContains(obj, {status:"OK", url:"http://google.com/"});
 				objInit = obj;
 				ut.NextFn();
 				});
 			},
 		function(ut)
 			{
-			new Go2.ScriptData("/toggle-favorite/").Call({id:objInit.id, favorite:true, apikey:sAPIKey}, function (obj) {
-				ut.AssertContains(obj, {status:"OK", url:"http://google.com/", favorite:true});
+			new Go2.ScriptData("/toggle-favorite/").Call({id:objInit.id, apikey:sAPIKey}, function (obj) {
+				ut.AssertContains(obj, {status:"OK", url:"http://google.com/", favorite:!objInit.favorite});
 				ut.NextFn();
 				});
 			}
@@ -534,7 +534,7 @@ ts.AddTest("Ban", function(ut)
 			},
 		function (ut)
 			{
-			new Go2.ScriptData("/info/" + objInit.id).Call({}, function (obj) {
+			new Go2.ScriptData("/" + objInit.id).Call({apikey:sAPIKey}, function (obj) {
 				ut.AssertContains(obj, {status:"OK"});
 				for (var prop in {day:0,week:0,month:0,year:0})
 					ut.AssertEq(obj.scores[prop], undefined, prop);
@@ -565,7 +565,7 @@ ts.AddTest("Ban", function(ut)
 			},
 		function (ut)
 			{
-			new Go2.ScriptData("/info/" + objInit.id).Call({}, function (obj) {
+			new Go2.ScriptData("/" + objInit.id).Call({apikey:sAPIKey}, function (obj) {
 				ut.AssertContains(obj, {status:"OK"});
 				for (var prop in {day:0,week:0,month:0,year:0})
 					ut.AssertGT(obj.scores[prop], 0, prop);
@@ -573,7 +573,7 @@ ts.AddTest("Ban", function(ut)
 				});
 			}
 		]);
-}).Async(true);
+}).Async(true, 15000);
 
 ts.AddTest("Client API Key", function(ut)
 {

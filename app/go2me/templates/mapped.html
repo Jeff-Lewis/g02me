@@ -77,7 +77,7 @@ function Loaded()
 			</div>
 			<div class="content">
 				<p>Created: {{map.dateCreated|Age}}</p>
-				<p>Vistors: {{map.Uniques|intcomma}}</p>
+				<p>Visitors: <span id="visitors">{{map.Uniques|intcomma}}</span></p>
 				<!--  <p>S:{{map.shareCount}}, V:{{map.viewCount}}, C:{{map.commentCount}}</p> --> 
 				<p>Tags: 
 				{% for tag in TopTags %}

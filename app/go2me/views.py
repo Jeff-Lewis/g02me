@@ -52,6 +52,7 @@ def SetUsername(req):
     if not IsJSON():
         raise Error("Can only use API to set nickname.")
     
+    local.requser.Require('api')
     local.requser.SetOpenUsername(req.REQUEST.get('username', ''), fForce=req.GET.get('force', False))
 
     if local.requser.profile is not None and local.requser.username != local.requser.profile.username:
@@ -66,9 +67,9 @@ def InitAPI(req):
     return HttpJSON(req, obj={'apikey':SSign('apiIP', sKey)})
 
 def ToggleFavorite(req):
-    local.requser.Require('api', 'write', 'comment')
     if not IsJSON():
         raise Error("Can only use API to set as favorite.")
+    local.requser.Require('api', 'write', 'comment')
 
     id = local.mpParams.get('id', "").strip()
     
@@ -90,6 +91,8 @@ def ToggleFavorite(req):
     return HttpJSON(req, obj=map.JSON(dateSince=dateSince))
 
 def DoComment(req, command=None):
+    if not IsJSON():
+        raise Error("Can only use API to edit comments.")
     local.requser.Require('api', 'write', 'comment')
     
     if command == 'delete':
@@ -117,12 +120,10 @@ def DoComment(req, command=None):
         
         map.AddComment(username=local.requser.username, comment=parts['comment'], tags=parts['tags'])
 
-    if IsJSON():
-        dateSince = local.mpParams.get('since', None)
-        if dateSince:
-            dateSince = DateFromISO(dateSince)
-        return HttpJSON(req, obj=map.JSON(dateSince=dateSince))
-    return HttpResponseRedirect("/info/%s" % map.GetId())
+    dateSince = local.mpParams.get('since', None)
+    if dateSince:
+        dateSince = DateFromISO(dateSince)
+    return HttpJSON(req, obj=map.JSON(dateSince=dateSince))
     
 def HeadRedirect(req, id):
     # http://go2.me/info/N
@@ -137,6 +138,8 @@ def LinkPage(req, id):
     if map == None:
         RaiseNotFound(id)
     if IsJSON():
+        local.requser.Require('api')
+        map.Viewed()
         dateSince = local.mpParams.get('since', None)
         if dateSince:
             dateSince = DateFromISO(dateSince)
@@ -144,8 +147,7 @@ def LinkPage(req, id):
         sState = local.mpParams.get('state', None)
         
         return HttpJSON(req, obj=map.JSON(dateSince=dateSince, sState=sState, sLocation=sLocation))
-    else:
-        map.Viewed()
+
     AddToResponse({'map':map, 'TopTags':map.TopTags()})
     return render_to_response('mapped.html', FinalResponse())
 

@@ -70,7 +70,7 @@ UserPresent: function()
 
 // Bind DOM elements by identifier 	
 partIDs: ["username", "content", "content-iframe", "info", "comment", "comments", "border-v", "comment-form", "sponsor-panel", "linkLabel",
-          "favorite"],
+          "favorite", "visitors"],
 parts: [],
 BindDOM: function()
 	{
@@ -120,8 +120,7 @@ MapLoaded: function()
 	Go2.UpdatePrivacy();
 	Go2.DOM.ScrollToBottom(Go2.parts["comments"]);
 	
-	Go2.UpdatePresence();
-	Go2.UpdateFavorite();
+	Go2.UpdateStatus();
 	
 	Go2.tmIdle = new Go2.Timer(500, Go2.OnIdle).Repeat().Active();
 	},
@@ -188,6 +187,10 @@ OnIdle: function()
 			Go2.SetServerTime(obj.dateRequest, sd.dCall);
 			Go2.UpdateComments(obj);
 			Go2.msNextIdle = (new Date().getTime()) + 5000;
+			break;
+		case 'Fail/Auth/api':
+			alert("It looks like you cleared your cookies.  Reloading the page to restore access.");
+			window.location.reload();
 			break;
 		default:
 			// Tell the user there's a problem - an back off for 1 minute.
@@ -369,7 +372,7 @@ PostComment: function()
 				}
 			break;
 		default:
-			window.alert(Go2.sSiteName + ": " + obj.message);
+			Go2.Notify(Go2.sSiteName + ": " + obj.message);
 			break;
 			}
 		});
@@ -494,11 +497,10 @@ BanishId: function(sID, fBan)
 		switch (obj.status)
 			{
 		case 'OK':
-			// Refresh the page to reset the display for the new header
-			window.location.href = window.location.href;
+			window.location.reload();
 			break;
 		default:
-			window.alert(Go2.sSiteName + ": " + obj.message);
+			Go2.Notify(Go2.sSiteName + ": " + obj.message);
 			break;
 			}
 		});
@@ -696,16 +698,20 @@ UpdateComments: function(map)
 			}
 		}
 	
-	Go2.UpdateCommentTimes();
 	Go2.map = map;
 	
-	Go2.UpdatePresence();
-	Go2.UpdateFavorite();
+	Go2.UpdateStatus();
 	},
 	
-UpdateFavorite: function()
+// Update on-page status, comment times, favorites display, and chat presence
+UpdateStatus: function()
 	{
+	
+	Go2.parts['visitors'].innerHTML = Go2.Thousands(Go2.map.viewed);
 	Go2.parts["favorite"].className = Go2.map.favorite ? "closed-star" : "open-star";
+	
+	Go2.UpdateCommentTimes();
+	Go2.UpdatePresence();
 	},
 	
 UpdateCommentTimes: function()
@@ -826,7 +832,7 @@ AppendComment: function(comment)
 reDomain: /(.*)\b((\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})|(([a-z0-9][a-z0-9-]*\.)+([a-z]{2}|aero|asia|biz|cat|com|coop|edu|gov|info|int|jobs|mil|mobi|museum|net|org|pro|tel|travel)))\b(.*)$/i,	
 reURL: /(.*)\b(https?:\/\/\S+)\b(.*)$/i,
 reEmail: /(.*)\b(\S+@)([a-z0-9][a-z0-9-]*\.)+([a-z]{2}|aero|asia|biz|cat|com|coop|edu|gov|info|int|jobs|mil|mobi|museum|net|org|pro|tel|travel)\b(.*)$/i,
-sURLPattern: '<a href="{href}">{trim}</a>&nbsp;' +
+sURLPattern: '<a target="content-frame" href="{href}">{trim}</a>&nbsp;' +
 			 '<a title="New {site} Page" target="_blank" href="/map/?url={href}"><img class="inline-link" src="/images/go2me-link.png"></a>',
 sEmailPattern: '<a href="mailto:{email}">{email}</a>',
 	
@@ -860,6 +866,19 @@ Urlize: function(s)
 			}
 		}
 	return aWords.join(' ');
+	},
+
+// Convert and digits in d to thousand-separated digits	
+Thousands: function(d)
+	{
+	var s = d.toString();
+	var sLast = "";
+	while (s != sLast)
+		{
+		sLast = s;
+		s = s.replace(/(\d+)(\d{3})/, "$1,$2");
+		}
+	return s;
 	},
 	
 // Extend(dest, src1, src2, ... )
