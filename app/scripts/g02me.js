@@ -278,7 +278,7 @@ OnNavigate: function()
 ResetFrame: function()
 	{
 	Go2.msLoaded = new Date().getTime();
-	Go2.parts["content-iframe"].src = "{{map.Href}}";
+	Go2.parts["content-iframe"].src = Go2.map.url;
 	Go2.fResetFrame = true;
 
 	Go2.parts["linkLabel"].innerHTML = "Link";

@@ -59,6 +59,45 @@ def NormalizeUrl(url):
         rgURL[2] = '/';
     return urlunsplit(rgURL)
 
+# TODO: Add a database model for blacklisted domains
+# Avoid self-referential and URL ping-pong with known URL redirection sites
+blackList = set([
+     'tinyurl.com', 'bit.ly', 'is.gd', 'snurl.com',
+     'short.to', 'cli.gs', 'snipurl.com', 'ff.im', 'tr.im',
+     'metamark.net', 'notlong.com', 'snurl.com', 'snipr.com',
+     'tiny.cc', 'budurl.com', 'doiop.com', 'zi.ma', 'moourl.com', 'tweetburner.com', 
+     'shrink2one.com', 'poprl.com', 'adjix.com', 'url.ie', 'urlhawk.com', 'sqrl.it', 'fon.gs', 
+     'dwarfurl.com', 'fexr.com', 'linkbun.ch', 'ilix.in', 'shorl.com', 'icanhaz.com', 'w3t.org', 
+     'lin.cr', 'urlBorg.com', 'zipmyurl.com', 'spedr.com', 'kissa.be', 'twurl.cc', 'idek.net', 
+     'idek.net', 'decentURL.com', 'shrinkster.com', 'makeashorterlink.com', 'go2cut.com', 
+     'qicute.com', 'sharetabs.com', 'mavrev.com', 'shrinkify.com', 'urlzen.com', 
+     'shrunkin.com', 'xaddr.com', 'short.to', 'dfl8.me', 'hurl.ws', 'urlcover.com', 
+     'memurl.com', 'ln-s.net', 'twirl.at', '4url.cc', 'shorterlink.co.uk', 'fire.to', 'weturl.com', 
+     'yweb.com', 'nsfw.in', 'bloat.me', 'hex.io', 'krunchd.com', 'thnlnk.com', 
+     'notifyurl.com', 'QLNK.net', 'hurl.me', 'shrt.st', 'parv.us', 'makeitbrief.com', 'eweri.com', 
+     'smarturl.eu', 'urlot.com', 'muhlink.org', 'hosturl.com', 'tinyuri.ca', 'voomr.com', 
+     'url9.com', 'plumurl.com', 'ix.lt', 'ru.ly',
+     ])
+
+regDomainPart = re.compile(r"^[^\.]*\.", re.I)
+
+def CheckBlacklist(sHost):
+    # Raise an exception if the domain contains a banned suffix
+    sError = """The %(siteName)s bookmarklet cannot be used to create links to %(host)s.
+        To create a shortened link, visit a page NOT on %(host)s, then click the bookmarklet"""
+
+    sHost = sHost.lower()
+    while '.' in sHost: 
+        if sHost == settings.sSiteHost.lower() or sHost in settings.mpSiteAlternates or sHost.startswith('localhost'):
+            raise Error(sError %
+                {'siteName': settings.sSiteName, 'host':settings.sSiteHost}, 'Warning/Domain')
+
+        if  sHost in blackList:
+            raise Error(sError %
+                {'siteName': settings.sSiteName, 'host':sHost}, 'Fail/Domain')
+
+        sHost = re.sub(regDomainPart, '', sHost)
+
 def Href(url):
     # Quote url text so it can be embedded in an HTML href
     ich = url.find('//')

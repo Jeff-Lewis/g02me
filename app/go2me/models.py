@@ -25,26 +25,6 @@ class Map(db.Model):
     scoreFavorite = 2
     scoreShare = 3
     
-    # TODO: Add a database model for blacklisted domains
-    # Avoid self-referential and URL ping-pong with known URL redirection sites
-    blackList = set([
-         'tinyurl.com', 'www.tinyurl.com', 'bit.ly', 'is.gd', 'snurl.com',
-         'short.to', 'cli.gs', 'snipurl.com', 'ff.im', 'tr.im',
-         'metamark.net', 'notlong.com', 'snurl.com', 'snipr.com',
-         'tiny.cc', 'budurl.com', 'doiop.com', 'zi.ma', 'moourl.com', 'tweetburner.com', 
-         'shrink2one.com', 'poprl.com', 'adjix.com', 'url.ie', 'urlhawk.com', 'sqrl.it', 'fon.gs', 
-         'dwarfurl.com', 'fexr.com', 'linkbun.ch', 'ilix.in', 'shorl.com', 'icanhaz.com', 'w3t.org', 
-         'lin.cr', 'urlBorg.com', 'zipmyurl.com', 'spedr.com', 'kissa.be', 'twurl.cc', 'idek.net', 
-         'idek.net', 'decentURL.com', 'shrinkster.com', 'makeashorterlink.com', 'go2cut.com', 
-         'qicute.com', 'sharetabs.com', 'u.mavrev.com', 'shrinkify.com', 'urlzen.com', 
-         'shrunkin.com', 'xaddr.com', 'short.to', 'dfl8.me', 'hurl.ws', 'urlcover.com', 
-         'memurl.com', 'ln-s.net', 'twirl.at', '4url.cc', 'shorterlink.co.uk', 'fire.to', 'weturl.com', 
-         'yweb.com', 'nsfw.in', 'bloat.me', 'hex.io', 'krunchd.com/krunch', 'thnlnk.com', 
-         'notifyurl.com', 'QLNK.net', 'hurl.me', 'shrt.st', 'parv.us', 'makeitbrief.com', 'eweri.com', 
-         'smarturl.eu', 'urlot.com', 'muhlink.org', 'hosturl.com', 'tinyuri.ca', 'voomr.com', 
-         'url9.com', 'plumurl.com', 'ix.lt', 'ru.ly',
-         ])
-    
     # Schema version for conversion of old models
     schema = db.IntegerProperty(default=2)
     dateCreated = db.DateTimeProperty()
@@ -82,17 +62,7 @@ class Map(db.Model):
             title = url
         rg = urlsplit(url)
         
-        sError = """The %(siteName)s bookmarklet cannot be used to create links to %(host)s.
-                To create a shortened link, visit a page NOT on %(host)s, then click the bookmarklet"""
-
-        sHost = rg[1].lower()
-        if sHost == settings.sSiteHost.lower() or sHost in settings.mpSiteAlternates or sHost.startswith('localhost'):
-            raise Error(sError %
-                {'siteName': settings.sSiteName, 'host':settings.sSiteHost}, 'Warning/Domain')
-            
-        if  sHost in Map.blackList:
-            raise Error(sError %
-                {'siteName': settings.sSiteName, 'host':sHost}, 'Fail/Domain')          
+        CheckBlacklist(rg[1])       
 
         title = unicode(title, 'utf8')
         dateCreated = local.dtNow

@@ -52,7 +52,7 @@ function Loaded()
 
 	<p class="link">
 		<span id="linkLabel">Link</span>:
-		<a onclick="ResetFrame();return false;" href="{{map.Href}}" alt="{{map.title|escape}}" title="{{map.title|escape}}">
+		<a onclick="Go2.ResetFrame();return false;" href="{{map.Href}}" alt="{{map.title|escape}}" title="{{map.title|escape}}">
 			{{map.url|escape}}
 		</a>
 	</p>
@@ -127,10 +127,10 @@ function Loaded()
 			<div id="comments" class="comments">
 				{% for comment in map.Comments %}
 				<p id="cmt_{{comment.ID}}">
-			    {% if comment.username %}<a target="_top" href="/user/{{comment.username}}" title="{{comment.username}}'s activity">{{comment.username}}</a>:{% endif %}
+			    {% if comment.username %}<a target="_blank" href="/user/{{comment.username}}" title="{{comment.username}}'s activity">{{comment.username}}</a>:{% endif %}
 			    {{comment.comment|escape|urlizecomment}}
 			    {% if comment.tags %}
-			    	[{% for tag in comment.TagList %}<a target="_top" href="/tag/{{tag}}" title="{{tag}} pages">{{tag}}</a>{% if not forloop.last %}, {% endif %}{% endfor %}]
+			    	[{% for tag in comment.TagList %}<a target="_blank" href="/tag/{{tag}}" title="{{tag}} pages">{{tag}}</a>{% if not forloop.last %}, {% endif %}{% endfor %}]
 			    {% endif %}
 			    - <span class="server-time" go2_ms="{{comment.dateCreated|MSJavascript}}">{{ comment.dateCreated|Age }}</span>
 			    {% if comment.AllowDelete %}

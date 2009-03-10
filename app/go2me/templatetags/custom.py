@@ -95,7 +95,7 @@ def urlizecomment(value, sAttr=None):
     # Converts URLs in plain text into clickable links
     return urlize(value, nofollow=True, target="content-frame",
                   extra=r'&nbsp;<a title="New ' + settings.sSiteName +
-                        r' Page" target="_blank" href="/map/?url=%(href)s"><img class="inline-link" src="/images/go2me-link.png"></a>')
+                        r' Page" target="content-iframe" href="/map/?url=%(href)s"><img class="inline-link" src="/images/go2me-link.png"></a>')
 
     
 # --------------------------------------------------------------------

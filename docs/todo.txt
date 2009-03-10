@@ -217,7 +217,8 @@ X presence
 - Support @user replies in comments -> auto-subscribe AND hyperlink
 9 Fix problems with user case different (links, login, etc.)
 10 Signin/signout bugs - esp with protected pages
-- Isn't csrf supposed to be a signed value (non-forgable)?
+X Isn't csrf supposed to be a signed value (non-forgable)?
+  - Required signed cookie to match the csrf...
 ! Fix bugs in share/view/comment counts
 - Replace meta analytics with eventtracking (new) calls
 - Document the Lookup API
@@ -233,9 +234,10 @@ X Favorite (star)
 - visitor counts are incorrect (too high!)
 - open user page (in new window) on chat thumb
 - Fix link target for in-chat links
-- don't offer to great Go2.me pages to illegal domains (e.g., go2.me pages!)
-- Links in comments are not framing w/i Go2.me?
-- Links to Go2.me page IS framing w/i Go2.me (backwards!)
+- don't offer to create Go2.me pages to illegal domains (e.g., go2.me pages!)
+! Links in comments are not framing w/i Go2.me?
+! Links to Go2.me page IS framing w/i Go2.me (backwards!)
+- Multi-level domains not handled?  search.twitter.com, e.g.
   
 ------------------------------------------------------------
         PLATFORMS, SYNDICATION, IMPORT/EXPORT
