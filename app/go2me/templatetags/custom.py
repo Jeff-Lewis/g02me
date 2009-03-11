@@ -67,7 +67,7 @@ def urlize(text, trim_url_limit=None, nofollow=False, target=None, extra=None, F
     if target is not None:
         sTarget = ' target="%s"' % target
         
-    sPattern = '<a onclick="LoadFrame(\'%(href)s\');return false;" href="%(href)s"%(nofollow)s%(target)s>%(trim)s</a>'
+    sPattern = '<a onclick="return Go2.LoadFrame(\'%(href)s\');" href="%(href)s"%(nofollow)s%(target)s>%(trim)s</a>'
     if extra:
         sPatternExtra = sPattern + extra
         
@@ -83,7 +83,7 @@ def urlize(text, trim_url_limit=None, nofollow=False, target=None, extra=None, F
                     middle = 'http://' + middle
                 if middle.startswith('http://') or middle.startswith('https://'):
                     sPatT = sPattern
-                    if extra and FUseExtra and FUseExtra(middle):
+                    if extra and (not FUseExtra or FUseExtra(middle)):
                         sPatT = extra and (sPattern + extra)
                     middle = sPatT % {'target':sTarget, 'href':util.Href(middle),
                                       'nofollow':nofollow_attr, 'trim':sTrim}

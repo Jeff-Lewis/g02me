@@ -78,7 +78,7 @@ blackList = set([
      'yweb.com', 'nsfw.in', 'bloat.me', 'hex.io', 'krunchd.com', 'thnlnk.com', 
      'notifyurl.com', 'QLNK.net', 'hurl.me', 'shrt.st', 'parv.us', 'makeitbrief.com', 'eweri.com', 
      'smarturl.eu', 'urlot.com', 'muhlink.org', 'hosturl.com', 'tinyuri.ca', 'voomr.com', 
-     'url9.com', 'plumurl.com', 'ix.lt', 'ru.ly',
+     'url9.com', 'plumurl.com', 'ix.lt', 'ru.ly', '1link.in',
      ])
 
 regDomainPart = re.compile(r"^[^\.]*\.", re.I)
@@ -108,6 +108,15 @@ def TrimString(st):
     if st == None:
         st = ''
     return re.sub('[\000-\037]', '', str(st)).strip()
+
+def EscapeHTML(s):
+    # Escape test so it does not have embedded HTML sequences
+    return s.replace('&', '&amp;').\
+        replace('<', '&lt;').\
+        replace('>', '&gt;').\
+        replace('"', '&quot;').\
+        replace("'", '&#39;')
+    
 
 # Convert runs of all non-alphanumeric characters to single dashes 
 regNonchar = re.compile(r"[^\w]")

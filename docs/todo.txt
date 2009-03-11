@@ -248,6 +248,9 @@ X Favorite (star)
   	"I may be one of the rare sidekick users, but the go2.me portion of the
   	destinantion page doesn't render properly for me.  	Probably because SK is ass at rendering frames." - CY
 - Optimize timer to not constantly create new times - but use a repeating timer 
+! Home page show comments
+- Show links with users currently present
+  - home, tag, and user pages
   
 ------------------------------------------------------------
         PLATFORMS, SYNDICATION, IMPORT/EXPORT

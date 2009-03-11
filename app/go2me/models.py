@@ -4,6 +4,7 @@ from google.appengine.api import memcache
 from util import *
 from timescore.models import ScoreSet, hrsMonth
 import settings
+import templatetags.custom
 
 import logging
 from urlparse import urlsplit
@@ -588,7 +589,8 @@ class Comment(db.Model):
         return self.key().id()
     
     def JSON(self):
-        c = {'comment': self.comment}
+        c = {'comment': self.comment,
+             'commentHTML': templatetags.custom.urlizecomment(EscapeHTML(self.comment))}
         if self.username:
             c['user'] = self.username
         if self.tags:

@@ -289,8 +289,22 @@ ResetFrame: function()
 	
 LoadFrame: function(sURL)
 	{
-	Go2.msLoaded = new Date().getTime();
-	Go2.parts["content-iframe"].src = sURL;
+	try
+		{
+		if (sURL.toLowerCase().indexOf("http://" + Go2.sSiteName.toLowerCase()) != -1)
+			{
+			window.open(sURL, "_blank");
+			}
+		else
+			{
+			Go2.msLoaded = new Date().getTime();
+			Go2.parts["content-iframe"].src = sURL;
+			}
+		}
+	catch (e) {console.log("LF error");}
+	
+	// Cancel onclick default handling
+	return false;
 	},
 
 SetUsername: function(sUsername)
@@ -810,7 +824,7 @@ AppendComment: function(comment)
 	
 	if (comment.user)
 		st.Append('<a target="_top" href="/user/' + comment.user + '" title="' + comment.user + '\'s activity">' + comment.user + '</a>:');
-	st.Append(' ' + Go2.Urlize(Go2.EscapeHTML(comment.comment)));
+	st.Append(' ' + comment.commentHTML);
 	if (comment.tags)
 		{
 		st.Append(' [');
@@ -832,46 +846,6 @@ AppendComment: function(comment)
 	pComment.innerHTML = st.toString();
 	Go2.parts["comments"].appendChild(pComment);
 	Go2.DOM.ScrollToBottom(Go2.parts["comments"]);
-	},
-
-//         1     23                                    45                      6                                                                                                     7 
-reDomain: /(.*)\b((\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})|(([a-z0-9][a-z0-9-]*\.)+([a-z]{2}|aero|asia|biz|cat|com|coop|edu|gov|info|int|jobs|mil|mobi|museum|net|org|pro|tel|travel)))\b(.*)$/i,	
-reURL: /(.*)\b(https?:\/\/\S+)\b(.*)$/i,
-reEmail: /(.*)\b(\S+@)([a-z0-9][a-z0-9-]*\.)+([a-z]{2}|aero|asia|biz|cat|com|coop|edu|gov|info|int|jobs|mil|mobi|museum|net|org|pro|tel|travel)\b(.*)$/i,
-sURLPattern: '<a target="content-frame" href="{href}">{trim}</a>&nbsp;' +
-			 '<a title="New {site} Page" target="_blank" href="/map/?url={href}"><img class="inline-link" src="/images/go2me-link.png"></a>',
-sEmailPattern: '<a href="mailto:{email}">{email}</a>',
-	
-Urlize: function(s)
-	{
-	var aMatch;
-	
-	var aWords = s.split(/\s/);
-	
-	for (var i = 0; i < aWords.length; i++)
-		{
-		var word = aWords[i];
-		if (aMatch = word.match(Go2.reURL))
-			{
-			aWords[i] = aMatch[1] + Go2.ReplaceKeys(Go2.sURLPattern, {href:aMatch[2], trim:aMatch[2], site:Go2.sSiteName}) +
-				aMatch[3];
-			continue;
-			}
-		if (aMatch = word.match(Go2.reEmail))
-			{
-			aWords[i] = aMatch[1] + Go2.ReplaceKeys(Go2.sEmailPattern, {email:aMatch[2]+aMatch[3]+aMatch[4]}) +
-				aMatch[5];
-			continue;
-			}
-		if (aMatch = word.match(Go2.reDomain))
-			{
-			aWords[i] = aMatch[1] +
-				Go2.ReplaceKeys(Go2.sURLPattern, {href:'http://' + aMatch[2], trim:aMatch[2], site:Go2.sSiteName}) +
-				aMatch[7];
-			continue;
-			}
-		}
-	return aWords.join(' ');
 	},
 
 // Convert and digits in d to thousand-separated digits	
