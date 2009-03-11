@@ -130,7 +130,7 @@ function Loaded()
 			    {% if comment.username %}<a target="_blank" href="/user/{{comment.username}}" title="{{comment.username}}'s activity">{{comment.username}}</a>:{% endif %}
 			    {{comment.comment|escape|urlizecomment}}
 			    {% if comment.tags %}
-			    	[{% for tag in comment.TagList %}<a target="_blank" href="/tag/{{tag}}" title="{{tag}} pages">{{tag}}</a>{% if not forloop.last %}, {% endif %}{% endfor %}]
+			    	[{% for tag in comment.TagList %}<a onclick="return Go2.LoadFrame('/tag/{{tag}}');" href="/tag/{{tag}}" title="{{tag}} pages">{{tag}}</a>{% if not forloop.last %}, {% endif %}{% endfor %}]
 			    {% endif %}
 			    - <span class="server-time" go2_ms="{{comment.dateCreated|MSJavascript}}">{{ comment.dateCreated|Age }}</span>
 			    {% if comment.AllowDelete %}
