@@ -299,6 +299,7 @@ X Favorite (star)
     - key = H(sServerKey, username, password) - not stored on server- saved in cookie
     - passStored = E(key, twitter-password)
     - twitter-password = D(key, passStored)
+- Detect IE6 -> just do simple redirect to base URL
 
 ------------------------------------------------------------
                     SECURITY AND PRIVACY
