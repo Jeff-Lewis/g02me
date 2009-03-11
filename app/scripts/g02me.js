@@ -129,7 +129,7 @@ ObjCallDefault: function()
 	{
 	var objCall = {
 		id: Go2.map.id,
-		since: Go2.ISO.FromDate(Go2.map.dateRequest),
+		since: Go2.map.dateRequest,
 		csrf: Go2.sCSRF,
 		username: Go2.sUsername,
 		scope: Go2.sPrivateKey,
@@ -880,6 +880,7 @@ Extend: function(dest)
 
 // Convert all top-level object properties into a URL query string.
 // {a:1, b:"hello, world"} -> "?a=1&b=hello%2C%20world"
+// Date's are convered to ISO-8601 formatted date strings
 StParams: function(obj)
 	{
 	if (obj === undefined || obj === null)
@@ -899,7 +900,10 @@ StParams: function(obj)
 		stParams += encodeURIComponent(prop);
 		if (obj[prop] !== null)
 			{
-			stParams += "=" + encodeURIComponent(obj[prop]);
+			if (typeof obj[prop] == "object" && obj[prop].constructor === Date)
+				stParams += "="+encodeURIComponent(Go2.ISO.FromDate(obj[prop]));
+			else
+				stParams += "=" + encodeURIComponent(obj[prop]);
 			}
 		stDelim = "&";
 		}

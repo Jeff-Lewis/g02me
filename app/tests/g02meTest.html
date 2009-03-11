@@ -258,6 +258,7 @@ ts.AddTest("Comment", function(ut)
 				var cT = obj.comments.length;
 				ut.AssertContains(obj.comments[cT-1], {comment:"hello2"});
 				cComment = obj.comments.length;
+				dateHello = obj.comments[cComment-1].created;
 				ut.NextFn();
 				}));
 			},
@@ -284,7 +285,16 @@ ts.AddTest("Comment", function(ut)
 				ut.NextFn();
 				});
 			},
-		function(ut) // 9
+		function(ut) // 9 (since)
+			{
+			new Go2.ScriptData("/" + objInit.id).Call({since:dateHello, csrf:sCSRF}, function (obj) {
+				ut.AssertContains(obj, {status:"OK", url:"http://google.com/"});
+				ut.AssertEq(obj.comments.length, 1);
+				ut.AssertContains(obj.comments[0], {comment:"This is a test", user:"test", tags:["tag1","tag2"]});
+				ut.NextFn();
+				});
+			},
+		function(ut) // 10
 			{
 			tagUniq = "dm-" + Math.floor(Math.random()*1000);
 			new Go2.ScriptData("/comment/").Call({id:objInit.id, force: true, comment:"test :  [" + tagUniq + "]", apikey:sAPIKey}, ut.FnWrap(function (obj) {
@@ -297,14 +307,14 @@ ts.AddTest("Comment", function(ut)
 				ut.NextFn();
 				}));
 			},
-		function(ut) // 10
+		function(ut) // 11
 			{
 			new Go2.ScriptData("/comment/delete").Call({cid:com2.cid}, ut.FnWrap(function(obj) {
 				ut.AssertContains(obj, {status: "Fail/Auth/api"});
 				ut.NextFn();
 				}));
 			},
-		function(ut) // 11
+		function(ut) // 12
 			{
 			new Go2.ScriptData("/comment/delete").Call({delkey:com2.delkey, apikey:sAPIKey}, ut.FnWrap(function(obj) {
 				ut.AssertEq(obj.comments.length, cComment+1);
@@ -313,14 +323,14 @@ ts.AddTest("Comment", function(ut)
 				ut.NextFn();
 				}));
 			},
-		function(ut) // 12
+		function(ut) // 13
 			{
 			new Go2.ScriptData("/comment/delete").Call({delkey:com.delkey, apikey:sAPIKey}, function(obj) {
 				ut.AssertEq(obj.comments.length, cComment);
 				ut.NextFn();
 				});
 			},
-		function(ut) // 13
+		function(ut) // 14
 			{
 			new Go2.ScriptData("/" + objInit.id).Call({apikey:sAPIKey}, function (obj) {
 				ut.AssertContains(obj, {status:"OK", url:"http://google.com/"});
@@ -328,14 +338,14 @@ ts.AddTest("Comment", function(ut)
 				ut.NextFn();
 				});
 			},
-		function(ut) // 14
+		function(ut) // 15
 			{
 			new Go2.ScriptData("/comment/").Call({id:objInit.id, apikey:sAPIKey, comment:"__illegal"}, ut.FnWrap(function (obj) {
 				ut.AssertContains(obj, {status:"Fail"});
 				ut.NextFn();
 				}));
 			},
-		function(ut) // 15
+		function(ut) // 16
 			{
 			var sHTMLChallenge = "&\"'<" + "script>alert(1);<" + "/script>";
 			var sHTMLQuoted = Go2.EscapeHTML(sHTMLChallenge);
