@@ -53,7 +53,9 @@ def NormalizeUrl(url):
         rgURL[1] = rgURL[1].lower()
     if not rgURL[1] or not regDomain.search(rgURL[1]) or len(rgURL[1]) > 255:
         raise Error("Invalid URL: %s" % urlunsplit(rgURL))
-    
+
+    CheckBlacklist(rgURL[1])
+
     # Always end naked domains with a trailing slash as canonical
     if rgURL[2] == '':
         rgURL[2] = '/';
@@ -80,20 +82,18 @@ blackList = set([
      ])
 
 regDomainPart = re.compile(r"^[^\.]*\.", re.I)
+sDomainError = "%(siteName)s cannot be used to create links to %(host)s."
 
 def CheckBlacklist(sHost):
-    # Raise an exception if the domain contains a banned suffix
-    sError = """The %(siteName)s bookmarklet cannot be used to create links to %(host)s.
-        To create a shortened link, visit a page NOT on %(host)s, then click the bookmarklet"""
-
+    # Raise an exception if the host name contains a banned suffix
     sHost = sHost.lower()
     while '.' in sHost: 
         if sHost == settings.sSiteHost.lower() or sHost in settings.mpSiteAlternates or sHost.startswith('localhost'):
-            raise Error(sError %
+            raise Error(sDomainError %
                 {'siteName': settings.sSiteName, 'host':settings.sSiteHost}, 'Warning/Domain')
 
         if  sHost in blackList:
-            raise Error(sError %
+            raise Error(sDomainError %
                 {'siteName': settings.sSiteName, 'host':sHost}, 'Fail/Domain')
 
         sHost = re.sub(regDomainPart, '', sHost)

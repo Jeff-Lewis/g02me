@@ -46,7 +46,7 @@ punctuation_re = re.compile('^(?P<lead>(?:%s)*)(?P<middle>.*?)(?P<trail>(?:%s)*)
     '|'.join([re.escape(x) for x in TRAILING_PUNCTUATION])))
 simple_email_re = re.compile(r'^\S+@[a-zA-Z0-9._-]+\.[a-zA-Z0-9._-]+$')
 
-def urlize(text, trim_url_limit=None, nofollow=False, target=None, extra=None):
+def urlize(text, trim_url_limit=None, nofollow=False, target=None, extra=None, FUseExtra=None):
     """
     Converts any URLs in text into clickable links. Works on http://, https:// and
     www. links. Links can have trailing punctuation (periods, commas, close-parens)
@@ -67,9 +67,9 @@ def urlize(text, trim_url_limit=None, nofollow=False, target=None, extra=None):
     if target is not None:
         sTarget = ' target="%s"' % target
         
-    sPattern = r'<a href="%(href)s"%(nofollow)s%(target)s>%(trim)s</a>'
-    if extra is not None:
-        sPattern += extra
+    sPattern = '<a onclick="LoadFrame(\'%(href)s\');return false;" href="%(href)s"%(nofollow)s%(target)s>%(trim)s</a>'
+    if extra:
+        sPatternExtra = sPattern + extra
         
     for i, word in enumerate(words):
         match = punctuation_re.match(word)
@@ -82,8 +82,11 @@ def urlize(text, trim_url_limit=None, nofollow=False, target=None, extra=None):
                 if util.regDomain.match(middle):
                     middle = 'http://' + middle
                 if middle.startswith('http://') or middle.startswith('https://'):
-                    middle = sPattern % {'target':sTarget, 'href':util.Href(middle),
-                                         'nofollow':nofollow_attr, 'trim':sTrim}
+                    sPatT = sPattern
+                    if extra and FUseExtra and FUseExtra(middle):
+                        sPatT = extra and (sPattern + extra)
+                    middle = sPatT % {'target':sTarget, 'href':util.Href(middle),
+                                      'nofollow':nofollow_attr, 'trim':sTrim}
 
             if lead + middle + trail != word:
                 words[i] = lead + middle + trail
@@ -93,10 +96,17 @@ def urlize(text, trim_url_limit=None, nofollow=False, target=None, extra=None):
 @stringfilter
 def urlizecomment(value, sAttr=None):
     # Converts URLs in plain text into clickable links
-    return urlize(value, nofollow=True, target="content-frame",
+    return urlize(value, nofollow=True,
                   extra=r'&nbsp;<a title="New ' + settings.sSiteName +
-                        r' Page" target="_blank" href="/map/?url=%(href)s"><img class="inline-link" src="/images/go2me-link.png"></a>')
+                        r' Page" target="_blank" href="/map/?url=%(href)s"><img class="inline-link" src="/images/go2me-link.png"></a>',
+                  FUseExtra=NotBlacklisted)
 
+def NotBlacklisted(url):
+    try:
+        url = util.NormalizeUrl(url)
+        return True
+    except:
+        return False
     
 # --------------------------------------------------------------------
 # String utilities - format date as an "age"

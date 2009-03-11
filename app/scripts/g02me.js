@@ -280,11 +280,17 @@ OnNavigate: function()
 	
 ResetFrame: function()
 	{
-	Go2.msLoaded = new Date().getTime();
-	Go2.parts["content-iframe"].src = Go2.map.url;
+	Go2.LoadFrame(Go2.map.url);
+	
+	// One-shot use "Link" label and don't reset on OnNavigate
 	Go2.fResetFrame = true;
-
 	Go2.parts["linkLabel"].innerHTML = "Link";
+	},
+	
+LoadFrame: function(sURL)
+	{
+	Go2.msLoaded = new Date().getTime();
+	Go2.parts["content-iframe"].src = sURL;
 	},
 
 SetUsername: function(sUsername)

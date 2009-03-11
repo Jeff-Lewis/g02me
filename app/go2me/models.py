@@ -430,10 +430,15 @@ class Globals(db.Model):
 
 """ ------------------------------------------------------------------
 Comment model.
+schema    changes
+  2       subscribers added (not used)
+  3       follow boolean 
 -------------------------------------------------------------------"""
 
 class Comment(db.Model):
-    schema = db.IntegerProperty(default=2)
+    schemaCurrent = 3
+    
+    schema = db.IntegerProperty(default=schemaCurrent)
     dateCreated = db.DateTimeProperty()
     
     # Parent item - anchor link for this comment
@@ -443,6 +448,7 @@ class Comment(db.Model):
     userAuth = db.StringProperty()
     comment = db.StringProperty()
     scope = db.StringProperty(default=None)
+    fFollow = db.BooleanProperty(default=False)
     
     # Comma separated list
     tags = db.StringProperty()
@@ -461,11 +467,13 @@ class Comment(db.Model):
         comment = TrimString(comment)
         tags = TrimString(tags)
         dateCreated = local.dtNow
+        fFollow = local.requser.FAllow('follow')
         
         if tags == '' and comment == '':
             raise Error("Comment and tags missing")
 
-        com = Comment(map=map, username=username, userAuth=userAuth, comment=comment, tags=tags, dateCreated=dateCreated, scope=scope)
+        com = Comment(map=map, username=username, userAuth=userAuth, comment=comment, tags=tags,
+                      dateCreated=dateCreated, scope=scope, fFollow=fFollow)
         return com
     
     def Delete(self):
