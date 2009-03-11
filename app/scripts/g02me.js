@@ -832,7 +832,7 @@ AppendComment: function(comment)
 		for (var i = 0; i < comment.tags.length; i++)
 			{
 			tag = comment.tags[i];
-			st.Append(sSep + '<a target="_top" href="/tag/' + tag + '" title="' + tag + ' pages">' + tag + '</a>')
+			st.Append(sSep + '<a onclick="OpenFrame(\'/tag/' + tag + '\');" href="/tag/' + tag + '" title="' + tag + ' pages">' + tag + '</a>')
 			sSep = ', ';
 			}
 		st.Append(']');

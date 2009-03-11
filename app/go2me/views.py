@@ -52,7 +52,6 @@ def SetUsername(req):
     if not IsJSON():
         raise Error("Can only use API to set nickname.")
     
-    local.requser.Require('api')
     local.requser.SetOpenUsername(req.REQUEST.get('username', ''), fForce=req.GET.get('force', False))
 
     if local.requser.profile is not None and local.requser.username != local.requser.profile.username:

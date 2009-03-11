@@ -440,6 +440,7 @@ X Change .Age to Age filter on a date value
 - Do screencast explaining what you can do with G02.ME
 - Link shortening competitive review [chris]
   - blog post
+- Switch to UserVoice from GetSatisfaction
 
 ------------------------------------------------------------
            CODE REFACTORING AND ARCHITECTURE
