@@ -81,16 +81,21 @@ blackList = set([
      'url9.com', 'plumurl.com', 'ix.lt', 'ru.ly', '1link.in',
      ])
 
+whiteList = set(['blog.go2.me'])
+
 regDomainPart = re.compile(r"^[^\.]*\.", re.I)
 sDomainError = "%(siteName)s cannot be used to create links to %(host)s."
 
 def CheckBlacklist(sHost):
     # Raise an exception if the host name contains a banned suffix
     sHost = sHost.lower()
-    while '.' in sHost: 
+    while '.' in sHost:
         if sHost == settings.sSiteHost.lower() or sHost in settings.mpSiteAlternates or sHost.startswith('localhost'):
             raise Error(sDomainError %
                 {'siteName': settings.sSiteName, 'host':settings.sSiteHost}, 'Warning/Domain')
+        
+        if sHost in whiteList:
+            return
 
         if  sHost in blackList:
             raise Error(sDomainError %
