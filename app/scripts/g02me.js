@@ -752,6 +752,7 @@ UpdateCommentTimes: function()
 UpdatePresence: function()
 	{
 	var divPres = $('#presence')[0];
+	var fChanged = false;
 
 	if (!Go2.map.presence)
 		{
@@ -777,6 +778,7 @@ UpdatePresence: function()
 		if (!mfUsers[id])
 			{
 			$(img).remove();
+			fChanged = true;
 			}
 		}
 	
@@ -791,6 +793,7 @@ UpdatePresence: function()
 			var img = document.createElement('img');
 			img.id = 'pres-'+user.id;
 			divPres.appendChild(img);
+			fChanged = true;
 			}
 		else
 			img = img[0];
@@ -813,6 +816,9 @@ UpdatePresence: function()
 			img.title = sHover;
 			}
 		}
+	
+	if (fChanged)
+		Go2.OnResize();
 	},
 
 AppendComment: function(comment)
