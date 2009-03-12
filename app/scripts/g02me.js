@@ -24,6 +24,7 @@ if (!window.console || !console.firebug)
 var Go2 = {
 	sSiteName: "Go2.me",
 	sCSRF: "",
+	apikey: undefined,
 	//Ignore the first load of the frame - that's likely our initial link (or just reset to initial link)
 	fResetFrame: true,
 	msLoaded: new Date().getTime(),
@@ -131,6 +132,8 @@ ObjCallDefault: function()
 		id: Go2.map.id,
 		since: Go2.map.dateRequest,
 		csrf: Go2.sCSRF,
+		// Include an apikey (if present) in the case we lost our CSRF validation
+		apikey: Go2.apikey,
 		username: Go2.sUsername,
 		scope: Go2.sPrivateKey,
 		state: "idle"
@@ -189,12 +192,23 @@ OnIdle: function()
 			Go2.msNextIdle = (new Date().getTime()) + 5000;
 			break;
 		case 'Fail/Auth/api':
-			alert("It looks like you cleared your cookies.  Reloading the page to restore access.");
-			window.location.reload();
+			// We lost our cross-site request - try to get an api key instead.
+			if (!Go2.apikey)
+				{
+				Go2.Notify("Lost authorization for chat...retrying");
+				sd = new Go2.ScriptData('/init/');
+				sd.Call({}, function (obj)
+					{
+					if (obj.status == "OK")
+						Go2.apikey = obj.apikey
+					});
+				}
+			else
+				Go2.msNextIdle = (new Date().getTime()) + 60*1000;
 			break;
 		default:
 			// Tell the user there's a problem - an back off for 1 minute.
-			Go2.Notify(Go2.sSiteName + ": " + obj.message);
+			Go2.Notify(obj.message);
 			Go2.msNextIdle = (new Date().getTime()) + 60*1000;
 			break;
 			}
@@ -205,6 +219,7 @@ OnIdle: function()
 	
 Notify: function(s)
 	{
+	s = Go2.sSiteName + ": " + s;
 	var pNote = document.createElement('p');
 	var dNow = Go2.LocalToServerTime(new Date());
 	pNote.innerHTML = s + ' - <span class="server-time" go2_ms="' + dNow.getTime() + '">?</span>'
@@ -367,7 +382,7 @@ PostComment: function()
 		urlLogin: '/' + Go2.map.id + '?comment=' + encodeURIComponent(sComment)
 		});
 	
-	sd.Call(objCall, function (obj)
+	var PCCallback = function(obj)
 		{
 		switch (obj.status)
 			{
@@ -392,10 +407,12 @@ PostComment: function()
 				}
 			break;
 		default:
-			Go2.Notify(Go2.sSiteName + ": " + obj.message);
+			Go2.Notify(obj.message);
 			break;
 			}
-		});
+		};
+	
+	sd.Call(objCall, PCCallback);
 	
 	Go2.TrackEvent('comment');
 	},
@@ -496,7 +513,7 @@ DeleteComment: function(id, sDelKey)
 			$('#cmt_' + id).remove();
 			break;
 		default:
-			Go2.Notify(Go2.sSiteName + ": " + obj.message);
+			Go2.Notify(obj.message);
 			break;
 			}
 		});
@@ -520,7 +537,7 @@ BanishId: function(sID, fBan)
 			window.location.reload();
 			break;
 		default:
-			Go2.Notify(Go2.sSiteName + ": " + obj.message);
+			Go2.Notify(obj.message);
 			break;
 			}
 		});
@@ -898,7 +915,7 @@ StParams: function(obj)
 	var stParams = "";
 	for (var prop in obj)
 		{
-		if (!obj.hasOwnProperty(prop) || prop === "_anchor")
+		if (!obj.hasOwnProperty(prop) || prop === "_anchor" || obj[prop] === undefined)
 			{
 			continue;
 			}
@@ -907,7 +924,7 @@ StParams: function(obj)
 		if (obj[prop] !== null)
 			{
 			if (typeof obj[prop] == "object" && obj[prop].constructor === Date)
-				stParams += "="+encodeURIComponent(Go2.ISO.FromDate(obj[prop]));
+				stParams += "=" + encodeURIComponent(Go2.ISO.FromDate(obj[prop]));
 			else
 				stParams += "=" + encodeURIComponent(obj[prop]);
 			}

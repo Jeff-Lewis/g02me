@@ -295,8 +295,6 @@ class Map(db.Model):
     
     @RunInTransaction
     def Presence(self, dateComment=None, sState=None, sLocation=None):
-        if not local.requser.FAllow('presence'):
-            return []
         # This should be in a transaction!
         idT = 'map.pres.%s' % self.GetId()
         aPresence = memcache.get(idT)
@@ -306,6 +304,10 @@ class Map(db.Model):
         uidSelf = Slugify(local.requser.uid)
         aPresence = [u for u in aPresence if u['dateLast'] > dateLimit and u['id'] != uidSelf]
 
+        # Users that are not allowed update presence, can still retrieve it
+        if not local.requser.FAllow('presence'):
+            return aPresence
+        
         if local.requser.profile and local.requser.profile.img_thumb:
             urlThumb = '/user/%s/picture_thumb' % local.requser.username
         else:
