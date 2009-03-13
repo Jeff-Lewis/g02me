@@ -78,7 +78,7 @@ blackList = set([
      'yweb.com', 'nsfw.in', 'bloat.me', 'hex.io', 'krunchd.com', 'thnlnk.com', 
      'notifyurl.com', 'QLNK.net', 'hurl.me', 'shrt.st', 'parv.us', 'makeitbrief.com', 'eweri.com', 
      'smarturl.eu', 'urlot.com', 'muhlink.org', 'hosturl.com', 'tinyuri.ca', 'voomr.com', 
-     'url9.com', 'plumurl.com', 'ix.lt', 'ru.ly', '1link.in',
+     'url9.com', 'plumurl.com', 'ix.lt', 'ru.ly', '1link.in', 'url360.me',
      ])
 
 whiteList = set(['blog.go2.me'])
