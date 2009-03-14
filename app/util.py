@@ -465,10 +465,8 @@ class ReqUser(object):
             return False
             
     def FOnce(self, key):
-        logging.info("Once get: %s.%s" % (self.UserId(), key))
         if memcache.get('user.once.%s.%s' % (self.UserId(), key)):
             return False
-        logging.info("Once set: %s.%s" % (self.UserId(), key))
         memcache.set('user.once.%s.%s' % (self.UserId(), key), True, time=15*60)
         return True
 

@@ -74,8 +74,8 @@ class Score(db.Model):
 
     name = db.StringProperty(required=True)
     hrsHalf = db.IntegerProperty(required=True)
-    S = db.FloatProperty(default=1.0)
-    LogS = db.FloatProperty(default=0.0)
+    S = db.FloatProperty(default=0.0)
+    LogS = db.FloatProperty(default=-64.0)
     hrsLast = db.FloatProperty(default=0.0)
     model = db.ReferenceProperty(required=True)
     tag = db.StringListProperty()
@@ -86,11 +86,16 @@ class Score(db.Model):
         if self.hrsLast == 0.0:
             self.hrsLast = Score.Hours(util.local.dtNow)
         value = float(value)
+        
+        # 
+        if value < 0.01:
+            return
         k = 0.5 ** (1.0/self.hrsHalf)
         
         hrs = Score.Hours(dt)
         
         if hrs > self.hrsLast:
+            logging.info("Adding %f to score (%f raw)." % ((1-k) * value, value))
             self.S = (1-k) * value + (k ** (hrs - self.hrsLast)) * self.S
             self.hrsLast = hrs
         else:
@@ -102,7 +107,9 @@ class Score(db.Model):
         try:
             self.LogS = math.log(self.S)/math.log(2) + self.hrsLast/self.hrsHalf
         except Exception, e:
-            logging.error("Math error: %r", e)
+            logging.error("Math error: %r (S:%f)", (e, self.S))
+            # Probably an underflow error
+            self.LogS = -64
         
         if tags is not None:
             self.tag = tags;

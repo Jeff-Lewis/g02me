@@ -178,13 +178,16 @@ class Map(db.Model):
 
         self.AddTags(tags.split(','))
 
-        score = 0
-        if local.requser.FAllow('score') and local.requser.FOnce('comment.%s' % self.GetId()):
-            self.commentCount += 1
-            score = self.scoreComment
+        # Visible comment count is number of uniq users who have left a comment - may be double
+        # counted across multiple user sessions.
+        fCount = local.requser.FOnce('comment.%s' % self.GetId())
 
+        if fCount:
+            self.commentCount += 1
         self.put()
-        self.ss.Update(self, score, dt=local.dtNow, tags=self.TopTags())
+        
+        if fCount and local.requser.FAllow('score'):
+            self.ss.Update(self, self.scoreComment, dt=local.dtNow, tags=self.TopTags())
         
     def GetFavorite(self, username):
         if username == '':
