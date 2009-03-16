@@ -5,6 +5,8 @@ from datetime import datetime, timedelta
 import logging
 import math
 
+import calc
+
 import util
 
 class ScoreSet(db.Model):
@@ -31,7 +33,7 @@ class ScoreSet(db.Model):
         if len(scores) == 0:
             scores = []
             for hrs in self.halfLives:
-                s = Score(name=self.name, hrsHalf=hrs, model=model, tags=tags)
+                s = Score.Create(name=self.name, hrsHalf=hrs, model=model, tags=tags)
                 scores.append(s)
         
         for s in scores:
@@ -67,61 +69,55 @@ class ScoreSet(db.Model):
     @classmethod
     def HalfName(cls, hrs):
         return {hrsDay:'day', hrsWeek:'week', hrsMonth:'month', hrsYear:'year'}.get(hrs, str(hrs))
-        
+
 class Score(db.Model):
-    # All date values must occur after this baseline date 1/1/2000
+    """
+    Each Score accumulates time-based event values and associates them with an external Model
+    
+    Each score can be queried by name, and optionally a string tag that can be associated with each
+    score.
+    """
     dtBase = datetime(2000,1,1)
 
     name = db.StringProperty(required=True)
     hrsHalf = db.IntegerProperty(required=True)
-    S = db.FloatProperty(default=0.0)
-    LogS = db.FloatProperty(default=-64.0)
-    hrsLast = db.FloatProperty(default=0.0)
+    S = db.FloatProperty(required=True)
+    LogS = db.FloatProperty(required=True)
+    hrsLast = db.FloatProperty(required=True)
     model = db.ReferenceProperty(required=True)
     tag = db.StringListProperty()
     
+    @classmethod
+    def Create(cls, name=None, hrsHalf=None, model=None, tags=None):
+        logging.info("Hrs: %r" % hrsHalf)
+        sc = calc.ScoreCalc(hrsHalf)
+        score = Score(name=name, hrsHalf=hrsHalf, S=sc.S, LogS=sc.LogS, model=model, tags=tags)
+        return score
+    
     def Update(self, value, dt=None, tags=None):
+        sc = calc.ScoreCalc(tHalf=self.hrsHalf, S=self.S, LogS=self.LogS, tLast=self.hrsLast)
         if dt is None:
             dt = util.local.dtNow
-        if self.hrsLast == 0.0:
-            self.hrsLast = Score.Hours(util.local.dtNow)
-        value = float(value)
-        
-        # 
-        if value < 0.01:
-            return
-        k = 0.5 ** (1.0/self.hrsHalf)
-        
-        hrs = Score.Hours(dt)
-        
-        if hrs > self.hrsLast:
-            logging.info("Adding %f to score (%f raw)." % ((1-k) * value, value))
-            self.S = (1-k) * value + (k ** (hrs - self.hrsLast)) * self.S
-            self.hrsLast = hrs
-        else:
-            self.S += (1-k) * (k ** (self.hrsLast - hrs)) * value
             
-        #logging.info("Score: %f " % self.S)
-            
-        # Note: all scores are positive (non-zero)
-        try:
-            self.LogS = math.log(self.S)/math.log(2) + self.hrsLast/self.hrsHalf
-        except Exception, e:
-            logging.error("Math error: %r (S:%f)", (e, self.S))
-            # Probably an underflow error
-            self.LogS = -64
+        sc.Increment(value, Score.Hours(dt))
+
+        self.S = sc.S
+        self.LogS = sc.LogS
+        self.hrsLast = sc.tLast
         
+        # Replace tags if given
         if tags is not None:
             self.tag = tags;
         
         self.put()
+        logging.info("Update complete: %r" % self)
         
     def ScoreNow(self, dt=None):
+        sc = calc.ScoreCalc(tHalf=self.hrsHalf, S=self.S, LogS=self.LogS, tLast=self.hrsLast)
         if dt is None:
             dt = util.local.dtNow
-        hrs = Score.Hours(dt)
-        k = 0.5 ** (1.0/self.hrsHalf)
-        return (k ** (hrs - self.hrsLast)) * self.S
+        sc.Increment(0, Score.Hours(dt))
+        return sc.S
     
     @staticmethod    
     def Hours(dt1):
@@ -188,3 +184,4 @@ class Rate(object):
         dt = t1 - Rate.dtBase
         secs = dt.days*24*60*60 + dt.seconds
         return secs
+

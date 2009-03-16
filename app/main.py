@@ -1,4 +1,4 @@
-import logging, os
+import logging, os, sys
 
 # Google App Engine imports.
 from google.appengine.ext.webapp import util
@@ -54,3 +54,5 @@ main = real_main
     
 if __name__ == '__main__':
   main()
+
+logging.info(sys.path)
