@@ -494,3 +494,4 @@ X UnicodeDecodeError
 - Rename "views" to "viewers" and "comments" to "commenters" and "shared" to "sharers".
 - Allow static IP n.n.n.n shortening (e.g., Google Cache links).
 - Normalize/merge upper/lowercase differences in user names (eg. Calbucci)
+- Unicode comment failing, e.g. "’" 0x8217
