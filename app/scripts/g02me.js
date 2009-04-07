@@ -545,7 +545,7 @@ BanishId: function(sID, fBan)
 
 DisplayBars: function(widthMax)
 	{
-	var scaleMax = 3.0;
+	var scaleMax = 10.0;
 	var aBars = $('.bar');
 	var aBarHolders = $('.bar-holders');
 	

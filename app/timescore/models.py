@@ -91,11 +91,11 @@ class Score(db.Model):
     def Create(cls, name=None, hrsHalf=None, model=None, tags=None):
         logging.info("Hrs: %r" % hrsHalf)
         sc = calc.ScoreCalc(hrsHalf)
-        score = Score(name=name, hrsHalf=hrsHalf, S=sc.S, LogS=sc.LogS, model=model, tags=tags)
+        score = Score(name=name, hrsHalf=hrsHalf, S=sc.S, LogS=sc.LogS, hrsLast=sc.tLast, model=model, tag=tags)
         return score
     
     def Update(self, value, dt=None, tags=None):
-        sc = calc.ScoreCalc(tHalf=self.hrsHalf, S=self.S, LogS=self.LogS, tLast=self.hrsLast)
+        sc = calc.ScoreCalc(tHalf=self.hrsHalf, value=self.S, tLast=self.hrsLast)
         if dt is None:
             dt = util.local.dtNow
             
@@ -113,7 +113,7 @@ class Score(db.Model):
         logging.info("Update complete: %r" % self)
         
     def ScoreNow(self, dt=None):
-        sc = calc.ScoreCalc(tHalf=self.hrsHalf, S=self.S, LogS=self.LogS, tLast=self.hrsLast)
+        sc = calc.ScoreCalc(tHalf=self.hrsHalf, value=self.S, tLast=self.hrsLast)
         if dt is None:
             dt = util.local.dtNow
         sc.Increment(0, Score.Hours(dt))

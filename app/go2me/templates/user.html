@@ -90,8 +90,8 @@ function KeyDown(evt)
 		</td>
 		{% with comment.map.ScoresNamed.day as scoreDay %}
 		<td class="bar-td"><div class="bar-holder">
-			<div class="bar" bar_value="{{scoreDay|mult:24|floatformat:1}}"
-				 title="{{scoreDay|mult:24|floatformat:1}} points per day">&nbsp;</div>
+			<div class="bar" bar_value="{{scoreDay|floatformat:1}}"
+				 title="{{scoreDay|floatformat:1}} points per day">&nbsp;</div>
 		 </div></td>
 		{% endwith %}
 	</tr>

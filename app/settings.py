@@ -27,8 +27,8 @@ sJSNamespace = "Go2"
 sTwitterSource = "go2me"
 sSiteTitle = "Link Shortening and Discussion Service"
 sSiteTagline = "Send a Link - Start a Conversation"
-# Link length calculation for first couple thousand links
-nLinkLength = len("http://%s/" % sSiteHost) + 2 
+# Link length calculation for first 100's thousands links
+nLinkLength = len("http://%s/" % sSiteHost) + 3 
 mpSiteAlternates = set(['www.go2.me', 'g02.me', 'www.g02.me'])
 idMapBase = 57
 cPagesExtra = 159

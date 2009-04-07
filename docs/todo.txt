@@ -495,3 +495,5 @@ X UnicodeDecodeError
 - Allow static IP n.n.n.n shortening (e.g., Google Cache links).
 - Normalize/merge upper/lowercase differences in user names (eg. Calbucci)
 - Unicode comment failing, e.g. "’" 0x8217
+- Username for logged in user - not using chosing nickname
+- Username case sensitivity - should not be for login (just display)

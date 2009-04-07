@@ -12,7 +12,7 @@ class ScoreCalc():
     based at time t = 0.
     """
     
-    def __init__(self, tHalf=1.0, value=1.0, t=0.0):
+    def __init__(self, tHalf=1.0, value=0.0, tLast=0.0):
         """
         The score cannot be 0 - since we use Log(S) as a ordering key.  Instead, all scores
         are based at value = 1 at time = 0.  Negative log scores would occur for score values less
@@ -20,9 +20,9 @@ class ScoreCalc():
         """
         self.tHalf = float(tHalf)
         self.k = 0.5 ** (1.0/self.tHalf)
-        self.S = 0.0
-        self.tLast = t
-        self.Increment(value, t)
+        self.S = 1.0
+        self.tLast = 0.0
+        self.Increment(value, tLast)
         
     def Increment(self, value=0.0, t=0.0):
         value = float(value)
@@ -73,6 +73,14 @@ class TestTimeScore(unittest.TestCase):
         for t in range(1,20):
             sc.Increment(1, t*24)
         self.assertAlmostEqual(sc.S, 2.0, 5)
+        
+    def test_Zero(self):
+        sc = ScoreCalc(value=0)
+        sLog = sc.LogS
+        sc.Increment(0)
+        self.assertEqual(sc.LogS, sLog)
+        sc.Increment(0, 1)
+        self.assertEqual(sc.LogS, sLog)
 
 if __name__ == '__main__':
     unittest.main()

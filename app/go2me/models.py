@@ -22,9 +22,9 @@ class Map(db.Model):
     
     # Relative scores for user interactions
     scoreView = 1
-    scoreComment = 7
     scoreFavorite = 2
-    scoreShare = 3
+    scoreShare = 2
+    scoreComment = 7
     
     # Schema version for conversion of old models
     schema = db.IntegerProperty(default=2)
@@ -186,8 +186,12 @@ class Map(db.Model):
             self.commentCount += 1
         self.put()
         
+        scoreUpdate = 0
         if fCount and local.requser.FAllow('score'):
-            self.ss.Update(self, self.scoreComment, dt=local.dtNow, tags=self.TopTags())
+            scoreUpdate = self.scoreComment
+
+        # Need to call update in case the tag list changes
+        self.ss.Update(self, scoreUpdate, dt=local.dtNow, tags=self.TopTags())
         
     def GetFavorite(self, username):
         if username == '':
