@@ -71,14 +71,14 @@ blackList = set([
      'shrink2one.com', 'poprl.com', 'adjix.com', 'url.ie', 'urlhawk.com', 'sqrl.it', 'fon.gs', 
      'dwarfurl.com', 'fexr.com', 'linkbun.ch', 'ilix.in', 'shorl.com', 'icanhaz.com', 'w3t.org', 
      'lin.cr', 'urlBorg.com', 'zipmyurl.com', 'spedr.com', 'kissa.be', 'twurl.cc', 'idek.net', 
-     'idek.net', 'decentURL.com', 'shrinkster.com', 'makeashorterlink.com', 'go2cut.com', 
-     'qicute.com', 'sharetabs.com', 'mavrev.com', 'shrinkify.com', 'urlzen.com', 
+     'decentURL.com', 'shrinkster.com', 'makeashorterlink.com', 'go2cut.com', 
+     'qicute.com', 'sharetabs.com', 'u.mavrev.com', 'shrinkify.com', 'urlzen.com', 
      'shrunkin.com', 'xaddr.com', 'short.to', 'dfl8.me', 'hurl.ws', 'urlcover.com', 
      'memurl.com', 'ln-s.net', 'twirl.at', '4url.cc', 'shorterlink.co.uk', 'fire.to', 'weturl.com', 
      'yweb.com', 'nsfw.in', 'bloat.me', 'hex.io', 'krunchd.com', 'thnlnk.com', 
      'notifyurl.com', 'QLNK.net', 'hurl.me', 'shrt.st', 'parv.us', 'makeitbrief.com', 'eweri.com', 
      'smarturl.eu', 'urlot.com', 'muhlink.org', 'hosturl.com', 'tinyuri.ca', 'voomr.com', 
-     'url9.com', 'plumurl.com', 'ix.lt', 'ru.ly', '1link.in', 'url360.me',
+     'url9.com', 'plumurl.com', 'ix.lt', 'ru.ly', '1link.in', 'url360.me', 'hugeurl.com',
      ])
 
 whiteList = set(['blog.go2.me'])
