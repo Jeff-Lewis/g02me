@@ -64,21 +64,31 @@ def NormalizeUrl(url):
 # TODO: Add a database model for blacklisted domains
 # Avoid self-referential and URL ping-pong with known URL redirection sites
 blackList = set([
-     'tinyurl.com', 'bit.ly', 'is.gd', 'snurl.com',
-     'short.to', 'cli.gs', 'snipurl.com', 'ff.im', 'tr.im',
-     'metamark.net', 'notlong.com', 'snurl.com', 'snipr.com',
-     'tiny.cc', 'budurl.com', 'doiop.com', 'zi.ma', 'moourl.com', 'tweetburner.com', 
-     'shrink2one.com', 'poprl.com', 'adjix.com', 'url.ie', 'urlhawk.com', 'sqrl.it', 'fon.gs', 
-     'dwarfurl.com', 'fexr.com', 'linkbun.ch', 'ilix.in', 'shorl.com', 'icanhaz.com', 'w3t.org', 
-     'lin.cr', 'urlBorg.com', 'zipmyurl.com', 'spedr.com', 'kissa.be', 'twurl.cc', 'idek.net', 
-     'decentURL.com', 'shrinkster.com', 'makeashorterlink.com', 'go2cut.com', 
-     'qicute.com', 'sharetabs.com', 'u.mavrev.com', 'shrinkify.com', 'urlzen.com', 
-     'shrunkin.com', 'xaddr.com', 'short.to', 'dfl8.me', 'hurl.ws', 'urlcover.com', 
-     'memurl.com', 'ln-s.net', 'twirl.at', '4url.cc', 'shorterlink.co.uk', 'fire.to', 'weturl.com', 
-     'yweb.com', 'nsfw.in', 'bloat.me', 'hex.io', 'krunchd.com', 'thnlnk.com', 
-     'notifyurl.com', 'QLNK.net', 'hurl.me', 'shrt.st', 'parv.us', 'makeitbrief.com', 'eweri.com', 
-     'smarturl.eu', 'urlot.com', 'muhlink.org', 'hosturl.com', 'tinyuri.ca', 'voomr.com', 
-     'url9.com', 'plumurl.com', 'ix.lt', 'ru.ly', '1link.in', 'url360.me', 'hugeurl.com',
+    # From http://spreadsheets.google.com/pub?key=pp1P7HxORyqvNwE0KHSu-Gw&gid=2
+    "tinyurl.com", "bit.ly", "is.gd", "ow.ly", "tr.im", "cli.gs", 
+    "snipurl.com", "tiny.cc", "digg.com", "budurl.com", "moourl.com", "shorturl.com", 
+    "metamark.net", "notlong.com", "simurl.com", "go2.me", "doiop.com", "zi.ma", 
+    "lnk.in", "tweetburner.com", "shrink2one.com", "tighturl.com", "poprl.com", "1link.in", 
+    "adjix.com", "url.ie", "tinyarro.ws", "urlhawk.com", "urlcut.com", "clickmeter.com", 
+    "sqrl.it", "fon.gs", "dwarfurl.com", "fexr.com", "kl.am", "linkbun.ch", 
+    "sturly.com", "ilix.in", "shorl.com", "yatuc.com", "icanhaz.com", "w3t.org", 
+    "short.ie", "yep.it", "lin.cr", "urlBorg.com", "zipmyurl.com", "easyuri.com", 
+    "spedr.com", "kissa.be", "minilien.com", "twurl.cc", "idek.net", "decentURL.com", 
+    "shrinkster.com", "6url.com", "makeashorterlink.com", "elfurl.com", "go2cut.com", "qicute.com", 
+    "u.mavrev.com", "sharetabs.com", "plurl.me", "u.mavrev.com", "shrinkify.com", "urlzen.com", 
+    "shrunkin.com", "shorturl.de", "xaddr.com", "short.to", "dfl8.me", "hurl.ws", 
+    "urlcover.com", "memurl.com", "ln-s.net", "twirl.at", "u6e.de", "shurl.net", 
+    "4url.cc", "digbig.com", "301url.com", "shorterlink.co.uk", "fire.to", "weturl.com", 
+    "yweb.com", "firsturl.de", "shortlinks.co.uk", "urlx.org", "tiny123.com", "nsfw.in", 
+    "bloat.me", "hex.io", "krunchd.com", "thnlnk.com", "lookleap.com", "notifyurl.com", 
+    "QLNK.net", "link.toolbot.com", "hurl.me", "shrt.st", "2big.at", "parv.us", 
+    "makeitbrief.com", "url360.me", "eweri.com", "smarturl.eu", "urlot.com", "muhlink.org", 
+    "hosturl.com", "tinyuri.ca", "ru.ly", "voomr.com", "url9.com", "plumurl.com", 
+    "ix.lt", 
+    
+    # Additional aliases
+    "snurl.com", "snipr.com", "sn.im",
+    "alturl.com", "2ya.com", "xrl.us", "iterasi.net",
      ])
 
 whiteList = set(['blog.go2.me'])
