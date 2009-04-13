@@ -76,7 +76,7 @@ def ToggleFavorite(req):
     if map == None:
         RaiseNotFound(id)
     if local.requser.username == '':
-        raise Error("You must sign in to favorite a link.");
+        raise Error("You must choose a Nickname to favorite a link.");
     
     comment = map.GetFavorite(local.requser.username)
     if comment is None:

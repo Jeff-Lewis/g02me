@@ -173,23 +173,25 @@ class Map(db.Model):
         comm.put()
 
         # No scoring/counting/tag accumulation for banished URL's or meta-comments
-        if self.Banished() or comment.startswith('__'):
+        if self.Banished():
             return
+        
+        scoreUpdate = 0
+        dComment = 0
+        if local.requser.FAllow('score'):
+            if comment == '__fave':
+                if local.requser.FOnce('fave.%s' % self.GetId()):
+                    scoreUpdate = self.scoreFavorite
+            elif not comment.startswith('__'):
+                if local.requser.FOnce('comment.%s' % self.GetId()):
+                    scoreUpdate = self.scoreComment
+                    dComment = 1
 
         self.AddTags(tags.split(','))
 
-        # Visible comment count is number of uniq users who have left a comment - may be double
-        # counted across multiple user sessions.
-        fCount = local.requser.FOnce('comment.%s' % self.GetId())
-
-        if fCount:
-            self.commentCount += 1
+        self.commentCount += dComment
         self.put()
         
-        scoreUpdate = 0
-        if fCount and local.requser.FAllow('score'):
-            scoreUpdate = self.scoreComment
-
         # Need to call update in case the tag list changes
         self.ss.Update(self, scoreUpdate, dt=local.dtNow, tags=self.TopTags())
         
