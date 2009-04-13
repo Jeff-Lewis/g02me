@@ -71,7 +71,7 @@ function KeyDown(evt)
 	    	{% endif %}
 	    	- <i>{{ comment.dateCreated|Age }}</i>
 	    	{% if comment.AllowDelete %}
-    			<img class="x" onclick="Go2.DeleteComment('{{comment.DelKey}}');" src="/images/x.png"/>
+    			<img class="x" onclick="Go2.DeleteComment(undefined,'{{comment.DelKey}}');" src="/images/x.png"/>
     		{% endif %}
 	    	</p></div>
 	    {% endif %}

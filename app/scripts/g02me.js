@@ -128,6 +128,9 @@ MapLoaded: function()
 
 ObjCallDefault: function()
 	{
+	if (!Go2.map)
+		Go2.map = {};
+
 	var objCall = {
 		id: Go2.map.id,
 		since: Go2.map.dateRequest,
@@ -219,6 +222,12 @@ OnIdle: function()
 	
 Notify: function(s)
 	{
+	if (!Go2.parts || !Go2.parts.comments)
+		{
+		alert(s);
+		return;
+		}
+
 	s = Go2.sSiteName + ": " + s;
 	var pNote = document.createElement('p');
 	var dNow = Go2.LocalToServerTime(new Date());
@@ -508,9 +517,15 @@ DeleteComment: function(id, sDelKey)
 		switch (obj.status)
 			{
 		case 'OK':
-			Go2.SetServerTime(obj.dateRequest, sd.dCall);
-			Go2.UpdateComments(obj);
-			$('#cmt_' + id).remove();
+			// Update page if on Map page (not on user.html)
+			if (id)
+				{
+				Go2.SetServerTime(obj.dateRequest, sd.dCall);
+				Go2.UpdateComments(obj);
+				$('#cmt_' + id).remove();
+				}
+			else
+				window.location.reload();
 			break;
 		default:
 			Go2.Notify(obj.message);
