@@ -89,9 +89,9 @@ class Score(db.Model):
     
     @classmethod
     def Create(cls, name=None, hrsHalf=None, model=None, tags=None):
-        logging.info("Hrs: %r" % hrsHalf)
         sc = calc.ScoreCalc(hrsHalf)
         score = Score(name=name, hrsHalf=hrsHalf, S=sc.S, LogS=sc.LogS, hrsLast=sc.tLast, model=model, tag=tags)
+        logging.info("Score created (%r): %d, %d"% (hrsHalf, score.S, score.LogS))
         return score
     
     def Update(self, value, dt=None, tags=None):

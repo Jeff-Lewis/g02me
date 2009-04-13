@@ -712,12 +712,14 @@ def SGetSigned(type, s, sSecret=None, sError="Failed Authentication"):
     # original (unsigned) string if succeeds.
     try:
         m = regSigned.match(s)
-        if SSign(type, m.group(2), sSecret) == s:
+        if type == m.group(1) and SSign(type, m.group(2), sSecret) == s:
             return m.group(2)
     except:
         pass
-    if s != '':
+
+    if m and s != '' and type == m.group(1):
         logging.warning("Signed failure: %s: %s" % (type, s))
+
     raise Error(sError, 'Fail/Auth')
 
 # --------------------------------------------------------------------

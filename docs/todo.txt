@@ -251,6 +251,14 @@ X Favorite (star)
 ! Home page show comments
 - Show links with users currently present
   - home, tag, and user pages
+- Change API to be more like twitter search api syntax?
+- Change the document.title on a 1 second timer to "flash" the tab when a new chat message is in the window (peter)
+- Allow setting to not IFRAME the link (author of link's preference or reader's preference).
+- "Personalized Link Shortening" - new Go2.me positioning
+  - Author-customized appearance (profile pic in header, colors, background image)
+  - "Powered by Go2.me" button to get referal sign-ups.
+  - Minimize frame to top bar (see Digg, FaceBook, Owly, BurnUrl designs) - expand for comments only.
+- Twitter or Facebook connect for login - get profile picture from those accounts
   
 ------------------------------------------------------------
         PLATFORMS, SYNDICATION, IMPORT/EXPORT
