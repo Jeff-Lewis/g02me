@@ -284,7 +284,9 @@ KeyDownComment: function(evt)
 	if (evt.keyCode == 13)
 		{
 		Go2.PostComment();
-		evt.preventDefault();
+		if (evt.preventDefault)
+			evt.preventDefault();
+		return false;
 		}
 	},
 	
@@ -1205,7 +1207,7 @@ AppendList: function()
 			}
 		}
 	return this;
-	},
+	}
 }; // Go2.StBuf
 
 
