@@ -278,6 +278,7 @@ OnResize: function()
 	
 KeyDownComment: function(evt)
 	{
+	evt = Go2.WrapEvent(evt);
 	Go2.UserPresent();
 	Go2.msTyping = Go2.msUserPresent;
 
@@ -645,6 +646,7 @@ InitPanels: function()
 		if (divHeader)
 			{
 			Go2.AddEventFn(divHeader, 'mousedown', function(evt) {
+				evt = Go2.WrapEvent(evt);
 				evt.preventDefault();
 				evt.stopPropagation();
 				});
@@ -657,6 +659,7 @@ InitPanels: function()
 	
 TogglePanel: function(evt, divBody)
 	{
+	evt = Go2.WrapEvent(evt);
 	var divExpander = evt.target;
 	if (divBody.style.height === '0px')
 		{
@@ -1045,6 +1048,18 @@ RemoveEventFn: function(ifn)
 		{
 		elem['on' + fnHand.evt] = undefined;
 		}
+	},
+
+// Wrap original event object to enable the Firefox event object model if not present (e.g., IE)	
+WrapEvent: function(evt)
+	{
+	evt = evt || window.evt || {};
+	if (!evt.preventDefault)
+		evt.preventDefault = function() {this.returnValue = false;};
+	if (!evt.stopPropagation)
+		evt.stopPropagation = function() {this.cancelBubble = true;};
+	evt.target = evt.target || evt.srcElement || document;
+	return evt;
 	},
 
 // Cookies can be quoted with "..." if they have spaces or other special characters.
@@ -1837,7 +1852,7 @@ ToDate: function(sISO, objExtra)
 };  // Go2.ISO
 
 //--------------------------------------------------------------------------
-// Some extensions to built-it JavaScript objects (sorry!)
+// Some extensions to built-in JavaScript objects (sorry!)
 //--------------------------------------------------------------------------
 
 // Wrap a method call in a function

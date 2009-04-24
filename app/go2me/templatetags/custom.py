@@ -232,3 +232,30 @@ def do_with(parser, token):
     parser.delete_first_token()
     return WithNode(var, name, nodelist)
 
+# --------------------------------------------------------------------
+# escapejs filter back-ported from Django 1.0
+# --------------------------------------------------------------------
+
+_base_js_escapes = (
+    ('\\', r'\x5C'),
+    ('\'', r'\x27'),
+    ('"', r'\x22'),
+    ('>', r'\x3E'),
+    ('<', r'\x3C'),
+    ('&', r'\x26'),
+    ('=', r'\x3D'),
+    ('-', r'\x2D'),
+    (';', r'\x3B')
+)
+
+# Escape every ASCII character with a value less than 32.
+_js_escapes = (_base_js_escapes +
+               tuple([('%c' % z, '\\x%02X' % z) for z in range(32)]))
+
+@register.filter(name='escapejs')
+@stringfilter
+def escapejs(value):
+    """Hex encodes characters for use in JavaScript strings."""
+    for bad, good in _js_escapes:
+        value = value.replace(bad, good)
+    return value

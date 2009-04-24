@@ -37,7 +37,6 @@ sSecretName = "secret.1"
 
 # Google Analytics Tracking Code
 sAnalyticsCode = "UA-5439059-1"
-sQuantcast = "p-f0LS6wj5tsxqc"
 
 # Google AdSense/AdManager Publisher ID
 sAdPublisherID = "ca-pub-0345330507104463"
