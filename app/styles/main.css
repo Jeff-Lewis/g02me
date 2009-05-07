@@ -228,6 +228,11 @@ width: 400px;
 overflow: hidden;
 }
 
+table.scores td.title div {
+width: 400px;
+overflow: hidden;
+}
+
 table.scores .num {
 text-align: center;
 }

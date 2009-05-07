@@ -565,7 +565,7 @@ DisplayBars: function(widthMax)
 	{
 	var scaleMax = 10.0;
 	var aBars = $('.bar');
-	var aBarHolders = $('.bar-holders');
+	var aBarHolders = $('.bar-holder');
 	
 	if (aBars.length === 0)
 		{
