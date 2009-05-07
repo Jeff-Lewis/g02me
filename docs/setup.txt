@@ -1,0 +1,30 @@
+# http://download.eclipse.org/tools/pdt/downloads/ (to download via browser)
+# To install: Help/Software Updates/Find and Install/Search New Features/New Remote Site
+
+    * http://download.eclipse.org/tools/pdt/updates/
+
+# http://pydev.sourceforge.net/download.html ; Python "perspective"
+# http://download.macromedia.com/pub/labs/jseclipse/autoinstall
+
+    * JSEclipse, very useful .js editor add-on for eclipse (was this already included in PDT??? - mck)
+
+    * http://www.interaktonline.com/Documentation/JSEclipse/jseclipse.htm#2000_installing.htm
+
+- Problem: Can't get Eclipse Run dialog enabled - problem with Python Project or Perspective?
+
+- Set up Run Configuration:
+  - Set Main module: C:\Program Files\Google\google_appengine\dev_appserver.py
+  - Arguments: -a devserver -p 80 --clear_datastore app
+  - Default Directory (other): C:\go2me\trunk
+
+# Python
+
+    * http://www.python.org/download/
+    
+    # Firebug
+
+    * https://addons.mozilla.org/en-US/firefox/addon/1843
+    
+http://code.google.com/appengine/downloads.html
+    * add c:\python25 to your PATH variable (Control Panel/System/Advanced/Environment Variables)
+    * add ;.PY;.PYW to your PATHEXT variable (will allow foo.py to be executed at command line as "foo" alone).
