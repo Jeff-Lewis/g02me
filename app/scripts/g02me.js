@@ -1058,7 +1058,8 @@ WrapEvent: function(evt)
 		evt.preventDefault = function() {this.returnValue = false;};
 	if (!evt.stopPropagation)
 		evt.stopPropagation = function() {this.cancelBubble = true;};
-	evt.target = evt.target || evt.srcElement || document;
+	if (!evt.target)
+		evt.target = evt.srcElement || document;
 	return evt;
 	},
 
