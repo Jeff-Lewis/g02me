@@ -35,7 +35,7 @@ function KeyDown(evt)
 
 {% cache 180 popular-11A %}
 <table class="scores">
-<tr><th>Title</th><th class="num">Visitors</th><th class="num">Commenters</th><th>Created</th><th>Score</th></tr>
+<tr><th>Title</th><th class="num">Visits</th><th class="num">Comments</th><th>Created</th><th>Score</th></tr>
 {% for page in pages %}
 	{% if page.ModelExists %}
 	<tr>
@@ -45,14 +45,14 @@ function KeyDown(evt)
 		</div></td>
 		<td class="num">{{page.model.viewCount|intcomma}}</td>
 		<td class="num">{{page.model.CommentCount|intcomma}}</td>
-		<td class="age">
+		<td class="age"><div>
 			{% if page.model.Creator %}
 				<a href="/user/{{page.model.Creator}}">
 					<img class="inline" src="/user/{{page.model.Creator}}/picture_thumb"></a>
 				<a href="/user/{{page.model.Creator}}">{{page.model.Creator}}</a> -
 			{% endif %}
 			{{page.model.dateCreated|Age}}
-		</td>
+		</div></td>
 		<td class="bar-td"><div class="bar-holder">
 			<div class="bar" bar_value="{{page.ScoreNow|floatformat:1}}"
 				 title="{{page.ScoreNow|floatformat:1}} points Today">&nbsp;

@@ -237,8 +237,10 @@ table.scores .num {
 text-align: center;
 }
 
-table.scores td.age {
+table.scores td.age div {
 white-space: nowrap;
+overflow: hidden;
+width: 200px;
 }
 
 table.scores td.bar-td {

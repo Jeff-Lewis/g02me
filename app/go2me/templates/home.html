@@ -97,7 +97,7 @@ function Shorten()
 	
 	<h2>Today's most popular links ({{total_pages|intcomma}} shared to date)</h2>		
 	<table class="scores">
-		<tr><th>Title</th><th class="num">Visitors</th><th>By</th><th>Score</th></tr>
+		<tr><th>Title</th><th class="num">Visits</th><th>By</th><th>Score</th></tr>
 		{% for page in pages %}
 			{% if page.ModelExists %}
 			<tr>

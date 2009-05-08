@@ -52,7 +52,7 @@ function KeyDown(evt)
 {% endif %}{% endif %}
 
 <table class="scores">
-<tr><th>Title</th><th>Visitors</th><th>Commenters</th><th>Created</th><th>Scores</th></tr>
+<tr><th>Title</th><th>Visits</th><th>Comments</th><th>Created</th><th>Scores</th></tr>
 {% for comment in comments %}
 	<tr>
 		<td class="title"><div>
@@ -78,7 +78,7 @@ function KeyDown(evt)
 		</div></td>
 		<td class="num">{{comment.map.viewCount|intcomma}}</td>
 		<td class="num">{{comment.map.CommentCount|intcomma}}</td>
-		<td class="age">
+		<td class="age"><div>
 			{% if comment.map.Creator %}
 				{% ifnotequal usernamePage comment.map.Creator %}
 				<a href="/user/{{comment.map.Creator}}">
@@ -87,7 +87,7 @@ function KeyDown(evt)
 				<a href="/user/{{comment.map.Creator}}">{{comment.map.Creator}}</a> -
 			{% endif %}
 			{{comment.map.dateCreated|Age}}
-		</td>
+		</div></td>
 		{% with comment.map.ScoresNamed.day as scoreDay %}
 		<td class="bar-td"><div class="bar-holder">
 			<div class="bar" bar_value="{{scoreDay|floatformat:1}}"
