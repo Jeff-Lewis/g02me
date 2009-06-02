@@ -125,7 +125,7 @@ def TrimString(st):
     return re.sub('[\000-\037]', '', str(st)).strip()
 
 def EscapeHTML(s):
-    # Escape test so it does not have embedded HTML sequences
+    # Escape text so it does not have embedded HTML sequences
     return s.replace('&', '&amp;').\
         replace('<', '&lt;').\
         replace('>', '&gt;').\
@@ -664,6 +664,7 @@ def FinalResponse():
         'profile': local.requser.profile,
         'is_anon': local.requser.fAnon,
         'is_admin': local.requser.FAllow('admin'),
+        'is_debug': settings.DEBUG,
 
         'site_name': settings.sSiteName,
         'site_host': settings.sSiteHost,

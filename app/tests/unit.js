@@ -9,7 +9,6 @@
 // ts.Run();
 // ts.Report();
 //
-// Requires: base.js, timer.js
 
 // UnitTest - Each unit test calls a function which in turn calls
 // back Assert's on the unit test object.
@@ -401,7 +400,7 @@ Reference: function(url)
     },
 
 // All asserts bottleneck to this function
-// Eror line pattern "N. [Trace] Note (Note2)"
+// Error line pattern "N. [Trace] Note (Note2)"
 Assert: function(f, stNote, stNote2)
     {
     // TODO: is there a way to get line numbers out of the callers?
@@ -587,7 +586,7 @@ AssertFn: function(fn)
     this.Assert(fn(), stFn);
     },
     
-// Useage: ut.AssertThrows(<type>, function(ut) {...});
+// Usage: ut.AssertThrows(<type>, function(ut) {...});
 AssertThrows: function(stExpected, fn)
 	{
 	try
@@ -785,7 +784,7 @@ AllComplete: function()
     
 DWOutputDiv: function()
     {
-    UT.DW("<DIV style=\"font-family: Courier;border:1px solid red;\" id=\"divUnit\">Unit Test Output</DIV>");
+    UT.DW("<div style=\"font-family: Courier;border:1px solid red;\" id=\"divUnit\">Unit Test Output</div>");
     },
 
 Out: function(st)

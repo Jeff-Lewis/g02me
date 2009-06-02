@@ -18,7 +18,7 @@ Map model (a URL link).
 -------------------------------------------------------------------"""
 
 class Map(db.Model):
-    ss = ScoreSet.GetSet("map")
+    ss = ScoreSet("map")
     
     # Relative scores for user interactions
     scoreView = 1

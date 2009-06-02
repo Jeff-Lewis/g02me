@@ -7,25 +7,24 @@ import math
 
 import calc
 
+# TODO: I don't like the circular import here - just for current time of request
 import util
 
-class ScoreSet(db.Model):
+hrsDay = 24
+hrsWeek = 7*24
+hrsYear = 365*24+6
+hrsMonth = hrsYear/12
+
+class ScoreSet():
     """ Configuration object for a collection of (comparable) scores.
     halfLife is a list of integers (unit=hours)
-    
-    Once initialized a ScoreSet should not be changed.
     """
-    # BUG: No need to persist ScoreSet's in the database!
-    name = db.StringProperty(required=True)
-    halfLives = db.ListProperty(int)
-    
-    @classmethod
-    def GetSet(cls, name, halfLives=None):
+    def __init__(self, name, halfLives=None):
+        self.name = name
         if halfLives is None:
             halfLives = [hrsDay, hrsWeek, hrsMonth, hrsYear]
-        ss = ScoreSet.get_or_insert(name, name=name, halfLives=halfLives)
-        return ss
-    
+        self.halfLives = halfLives
+                
     def Update(self, model, value, dt=None, tags=None):
         if dt is None:
             dt = util.local.dtNow
@@ -40,6 +39,7 @@ class ScoreSet(db.Model):
             s.Update(value, dt, tags=tags)
             
     def Best(self, hrsHalf=24, limit=50, tag=None):
+        # TODO: No need to store hrsHalf as a distinct property - just combine in name
         if tag:
             scores = Score.gql('WHERE name = :name AND hrsHalf = :hrsHalf AND tag = :tag ORDER BY LogS DESC', name=self.name, hrsHalf=hrsHalf, tag=tag)
         else:
@@ -91,7 +91,6 @@ class Score(db.Model):
     def Create(cls, name=None, hrsHalf=None, model=None, tags=None):
         sc = calc.ScoreCalc(hrsHalf)
         score = Score(name=name, hrsHalf=hrsHalf, S=sc.S, LogS=sc.LogS, hrsLast=sc.tLast, model=model, tag=tags)
-        logging.info("Score created (%r): %d, %d"% (hrsHalf, score.S, score.LogS))
         return score
     
     def Update(self, value, dt=None, tags=None):
@@ -110,7 +109,6 @@ class Score(db.Model):
             self.tag = tags;
         
         self.put()
-        logging.info("Update complete: %r" % self)
         
     def ScoreNow(self, dt=None):
         sc = calc.ScoreCalc(tHalf=self.hrsHalf, value=self.S, tLast=self.hrsLast)
@@ -136,12 +134,6 @@ class Score(db.Model):
     
     def ModelKey(self):
         return Score.model.get_value_for_datastore(self)
-    
-# Constants
-hrsDay = 24
-hrsWeek = 7*24
-hrsYear = 365*24+6
-hrsMonth = hrsYear/12
 
 # --------------------------------------------------------------------
 # Rate limiter helper
@@ -175,7 +167,9 @@ class Rate(object):
         
         f = self.S >= self.SMax
         
-        self.S += (1-self.k) * value
+        # Only update the score on success - allows minimum rate through
+        if f:
+            self.S += (1-self.k) * value
         
         return f
     

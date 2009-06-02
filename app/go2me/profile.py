@@ -18,7 +18,7 @@ class Profile(db.Model):
     """
     User Profile information for a logged-in user
     """
-    ss = ScoreSet.GetSet("karma", [hrsWeek, hrsMonth])
+    ss = ScoreSet("karma", [hrsWeek, hrsMonth])
     regUsername = re.compile(r"^[a-zA-Z0-9_\.\-]{1,20}$")
     regDate = re.compile(r"^\s*(?P<mon>\d{1,2})\s*(?:\.|-|/)\s*(?P<day>\d{1,2})\s*(?:\.|-|/)\s*(?P<year>\d{2}|\d{4})\s*$")
     
