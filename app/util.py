@@ -477,7 +477,7 @@ class ReqUser(object):
     def FOnce(self, key):
         if memcache.get('user.once.%s.%s' % (self.UserId(), key)):
             return False
-        memcache.set('user.once.%s.%s' % (self.UserId(), key), True, time=15*60)
+        memcache.set('user.once.%s.%s' % (self.UserId(), key), True)
         return True
 
     def UserId(self):
@@ -536,7 +536,7 @@ class MemRate(object):
 
         self.EnsureRate()
         self.fExceeded = self.rate.FExceeded()
-        memcache.set('rate.%s' % self.key, self.rate, 300)
+        memcache.set('rate.%s' % self.key, self.rate)
         if self.fExceeded:
             logging.info('MemRate exceeded: %1.2f/%d for %s (%s)' % (self.rate.S*60, self.rpmMax, self.key, self.fExceeded))
         return self.fExceeded
