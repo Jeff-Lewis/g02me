@@ -540,22 +540,29 @@ class Comment(db.Model):
     @staticmethod
     def ForUser(username):
         comments = Comment.gql("WHERE username = :username ORDER BY dateCreated DESC", username=username)
-        comments = comments.fetch(100)
+        comments = comments.fetch(50)
         clist = []
+        mapKeys = []
         dup = set()
         for comment in comments:
             key = comment.MapKey()
             if key in dup:
                 continue
             dup.add(key)
-            # Cleanup comments from expunged Maps
-            if not comment.MapExists():
-                logging.warning("Removing orphaned comment for %s." % comment.MapKey())
-                comment.delete()
-                continue
             clist.append(comment)
-            if len(clist) == 50:
-                break;
+            mapKeys.append(key)
+
+        # Do a batch load of all the map objects
+        maps = db.get(mapKeys)
+        imap = 0
+        # Replace the map element with the actual object (IS THIS ALLOWED???)
+        for comment in clist:
+            comment.map2 = maps[imap]
+            # Cleanup comments from expunged Maps
+            if comment.map2 is None:
+                logging.warning("Orphaned comment for %s." % comment.MapKey())
+                # comment.delete()
+            imap += 1
         return clist
     
     def MapKey(self):

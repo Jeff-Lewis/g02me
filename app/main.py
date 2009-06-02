@@ -54,5 +54,3 @@ main = real_main
     
 if __name__ == '__main__':
   main()
-
-logging.info(sys.path)

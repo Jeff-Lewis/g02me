@@ -56,8 +56,8 @@ function KeyDown(evt)
 {% for comment in comments %}
 	<tr>
 		<td class="title"><div>
-			<img class="favicon" src="http://{{comment.map.Domain}}/favicon.ico">
-			<a target="_blank" href="/{{comment.map.GetId}}" title="{{comment.map.url|escape}}">{{comment.map.title|escape}}</a>
+			<img class="favicon" src="http://{{comment.map2.Domain}}/favicon.ico">
+			<a target="_blank" href="/{{comment.map2.GetId}}" title="{{comment.map2.url|escape}}">{{comment.map2.title|escape}}</a>
 		{% if comment.comment or comment.tags %}<div class="table-comments"><p>
 			{% ifequal comment.comment "__share" %}
 				<i>Shared</i>
@@ -76,19 +76,19 @@ function KeyDown(evt)
 	    	</p></div>
 	    {% endif %}
 		</div></td>
-		<td class="num">{{comment.map.viewCount|intcomma}}</td>
-		<td class="num">{{comment.map.CommentCount|intcomma}}</td>
+		<td class="num">{{comment.map2.viewCount|intcomma}}</td>
+		<td class="num">{{comment.map2.CommentCount|intcomma}}</td>
 		<td class="age"><div>
-			{% if comment.map.Creator %}
-				{% ifnotequal usernamePage comment.map.Creator %}
-				<a href="/user/{{comment.map.Creator}}">
-					<img class="inline" src="/user/{{comment.map.Creator}}/picture_thumb"></a>
+			{% if comment.map2.Creator %}
+				{% ifnotequal usernamePage comment.map2.Creator %}
+				<a href="/user/{{comment.map2.Creator}}">
+					<img class="inline" src="/user/{{comment.map2.Creator}}/picture_thumb"></a>
 				{% endifnotequal %}
-				<a href="/user/{{comment.map.Creator}}">{{comment.map.Creator}}</a> -
+				<a href="/user/{{comment.map2.Creator}}">{{comment.map2.Creator}}</a> -
 			{% endif %}
-			{{comment.map.dateCreated|Age}}
+			{{comment.map2.dateCreated|Age}}
 		</div></td>
-		{% with comment.map.ScoresNamed.day as scoreDay %}
+		{% with comment.map2.ScoresNamed.day as scoreDay %}
 		<td class="bar-td"><div class="bar-holder">
 			<div class="bar" bar_value="{{scoreDay|floatformat:1}}"
 				 title="{{scoreDay|floatformat:1}} points per day">&nbsp;</div>

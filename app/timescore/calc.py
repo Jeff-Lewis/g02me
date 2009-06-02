@@ -25,7 +25,6 @@ class ScoreCalc():
         self.Increment(value, tLast)
         
     def Increment(self, value=0.0, t=0.0):
-        logging.info("Increment %d (@ %d) + %d @ %d" % (self.S, self.tLast, value, t))
         value = float(value)
         
         t = float(t)
@@ -43,8 +42,6 @@ class ScoreCalc():
             self.S = 1.0
             self.tLast = 0.0
             self.LogS = 0.0
-            
-        logging.info("= %f" % self.LogS)
 
 # --------------------------------------------------------------------
 # Unit Tests
