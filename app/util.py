@@ -556,7 +556,6 @@ class MemRate(object):
 class Block(db.Model):
     # Block requests for abuse by IP or User Auth key
     dateCreated = db.DateTimeProperty()
-    secsMem = 3*60
     
     @staticmethod
     def Create(sKey):
@@ -566,7 +565,7 @@ class Block(db.Model):
         sMemKey = Block.MemKey(sKey)
         block = Block.get_or_insert(key_name=sMemKey, dateCreated=local.dtNow)
         block.put()
-        memcache.set(sMemKey, self, Block.secsMem)
+        memcache.set(sMemKey, self)
         return block
         
     @staticmethod
@@ -577,7 +576,7 @@ class Block(db.Model):
             return block
         block = Block.get_by_key_name(sMemKey)
         if block is not None:
-            memcache.set(sMemKey, block, Block.secsMem)
+            memcache.set(sMemKey, block)
             return block
         return None
     
