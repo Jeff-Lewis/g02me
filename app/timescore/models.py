@@ -168,7 +168,7 @@ class Rate(object):
         f = self.S >= self.SMax
         
         # Only update the score on success - allows minimum rate through
-        if f:
+        if not f:
             self.S += (1-self.k) * value
         
         return f
