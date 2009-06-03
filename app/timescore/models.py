@@ -84,6 +84,11 @@ class Score(db.Model):
     tag = db.StringListProperty()
     
     @classmethod
+    def UpdateNow(cls, dt):
+        logging.info("UpdateNow: %s" % dt)
+        cls.dtNow = dt
+    
+    @classmethod
     def Create(cls, name=None, hrsHalf=None, model=None, tags=None):
         sc = calc.ScoreCalc(hrsHalf)
         score = Score(name=name, hrsHalf=hrsHalf, S=sc.S, LogS=sc.LogS, hrsLast=sc.tLast, model=model, tag=tags)
@@ -104,7 +109,9 @@ class Score(db.Model):
         
         self.put()
         
-    def ScoreNow(self, dt):
+    def ScoreNow(self, dt=None):
+        if dt is None:
+            dt = Score.dtNow
         sc = calc.ScoreCalc(tHalf=self.hrsHalf, value=self.S, tLast=self.hrsLast)
         sc.Increment(0, Score.Hours(dt))
         return sc.S

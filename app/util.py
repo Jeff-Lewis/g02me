@@ -7,7 +7,7 @@ from django.shortcuts import render_to_response
 from django.template import loader, Context, Template
 
 import settings
-from timescore.models import Rate
+import timescore
 
 import threading
 from urlparse import urlsplit, urlunsplit
@@ -202,6 +202,7 @@ class ReqFilter(object):
 
         local.ipAddress = req.META['REMOTE_ADDR']
         local.dtNow = datetime.now()
+        timescore.models.Score.UpdateNow(local.dtNow)
         host = req.META["HTTP_HOST"]
         local.sSecret = models.Globals.SGet(settings.sSecretName, "test server key")
         local.cookies = {}
@@ -551,7 +552,7 @@ class MemRate(object):
         if self.rate is None:
             self.rate = memcache.get('rate.%s' % self.key)
         if self.rate is None:
-            self.rate = Rate(self.rpmMax, 60)
+            self.rate = timescore.models.Rate(self.rpmMax, 60)
 
 class Block(db.Model):
     # Block requests for abuse by IP or User Auth key
