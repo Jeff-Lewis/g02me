@@ -275,7 +275,7 @@ class Map(db.Model):
                'favorite': self.GetFavorite(local.requser.username) is not None,
                'commenters':self.CommentCount(),
                'created':self.dateCreated,
-               'scores':self.ss.ScoresNamed(self),
+               'scores':self.ss.ScoresNamed(self, local.dtNow),
                'tags':self.TopTags(),
                'dateRequest': local.dtNow,
                'presence':self.Presence(sState=sState, sLocation=sLocation),
@@ -289,8 +289,8 @@ class Map(db.Model):
             obj['comments'] = rgComments
         return obj
     
-    def ScoresNamed(self):
-        return self.ss.ScoresNamed(self)
+    def ScoresNamed(self, dt):
+        return self.ss.ScoresNamed(self, dt)
     
     def Ban(self, fBan=True):
         self.fBan = fBan;

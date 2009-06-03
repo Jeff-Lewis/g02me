@@ -196,6 +196,11 @@ def Admin(req, command=None):
     if command:
         logging.info("admin command: %s" % command)
         local.requser.Require('api')
+        
+        if command == 'show-path':
+            import sys
+            for d in sys.path:
+                logging.info(d)
 
         if command == 'clean-broken':
             scores = Map.ss.Broken()

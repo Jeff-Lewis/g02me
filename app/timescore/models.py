@@ -7,9 +7,6 @@ import math
 
 import calc
 
-# TODO: I don't like the circular import here - just for current time of request
-import util
-
 hrsDay = 24
 hrsWeek = 7*24
 hrsYear = 365*24+6
@@ -19,15 +16,14 @@ class ScoreSet():
     """ Configuration object for a collection of (comparable) scores.
     halfLife is a list of integers (unit=hours)
     """
+    
     def __init__(self, name, halfLives=None):
         self.name = name
         if halfLives is None:
             halfLives = [hrsDay, hrsWeek, hrsMonth, hrsYear]
         self.halfLives = halfLives
                 
-    def Update(self, model, value, dt=None, tags=None):
-        if dt is None:
-            dt = util.local.dtNow
+    def Update(self, model, value, dt, tags=None):
         scores = self.ScoresForModel(model)
         if len(scores) == 0:
             scores = []
@@ -54,11 +50,11 @@ class ScoreSet():
     def ScoresForModel(self, model, limit=5):
         return Score.gql('WHERE name = :name AND model = :model', name=self.name, model=model).fetch(limit)
     
-    def ScoresNamed(self, model):
+    def ScoresNamed(self, model, dt):
         scores = self.ScoresForModel(model)
         obj = {}
         for score in scores:
-            obj[self.HalfName(score.hrsHalf)] = score.ScoreNow()
+            obj[self.HalfName(score.hrsHalf)] = score.ScoreNow(dt)
         return obj
     
     def DeleteScores(self, model):
@@ -93,10 +89,8 @@ class Score(db.Model):
         score = Score(name=name, hrsHalf=hrsHalf, S=sc.S, LogS=sc.LogS, hrsLast=sc.tLast, model=model, tag=tags)
         return score
     
-    def Update(self, value, dt=None, tags=None):
+    def Update(self, value, dt, tags=None):
         sc = calc.ScoreCalc(tHalf=self.hrsHalf, value=self.S, tLast=self.hrsLast)
-        if dt is None:
-            dt = util.local.dtNow
             
         sc.Increment(value, Score.Hours(dt))
 
@@ -110,10 +104,8 @@ class Score(db.Model):
         
         self.put()
         
-    def ScoreNow(self, dt=None):
+    def ScoreNow(self, dt):
         sc = calc.ScoreCalc(tHalf=self.hrsHalf, value=self.S, tLast=self.hrsLast)
-        if dt is None:
-            dt = util.local.dtNow
         sc.Increment(0, Score.Hours(dt))
         return sc.S
     
@@ -134,6 +126,15 @@ class Score(db.Model):
     
     def ModelKey(self):
         return Score.model.get_value_for_datastore(self)
+    
+"""
+class ScoreProperty(db.Property):
+    #logging.info("SP data type: %s" % data_type)
+    
+    def validate(self, value):
+        logging.info("validate: %s" % value)
+        db.Property(self)
+"""
 
 # --------------------------------------------------------------------
 # Rate limiter helper
@@ -141,7 +142,7 @@ class Score(db.Model):
 class Rate(object):
     # All date values must occur after this baseline date
     dtBase = datetime(2008,10,27)
-
+    
     def __init__(self, cMax, secs):
         # Max rate allowed
         self.SMax = float(cMax) / secs 
@@ -149,13 +150,11 @@ class Rate(object):
         self.secsLast = 0
         self.S = 0.0
         
-    def FExceeded(self, value=1.0, dt=None):
+    def FExceeded(self, dt, value=1.0):
         """
         Returns true if all prior calls exceed the established rate (always returns False on first call).
         Current rate is updated as a side effect.
         """
-        if dt is None:
-            dt = util.local.dtNow
         secs = self.Secs(dt)
         
         # Ignore times in the past

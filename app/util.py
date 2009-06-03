@@ -535,7 +535,7 @@ class MemRate(object):
             return self.fExceeded
 
         self.EnsureRate()
-        self.fExceeded = self.rate.FExceeded()
+        self.fExceeded = self.rate.FExceeded(local.dtNow)
         memcache.set('rate.%s' % self.key, self.rate)
         if self.fExceeded:
             logging.info('MemRate exceeded: %1.2f/%d for %s (%s)' % (self.rate.S*60, self.rpmMax, self.key, self.fExceeded))
@@ -723,5 +723,6 @@ def SGetSigned(type, s, sSecret=None, sError="Failed Authentication"):
 
 # --------------------------------------------------------------------
 # Per-request global variables stored in this thread-local global
+# TODO - move all this to the Request object?
 # --------------------------------------------------------------------
 local = threading.local()
