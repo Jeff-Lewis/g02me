@@ -35,12 +35,23 @@ class ScoreSet():
             s.Update(value, dt, tags=tags)
             
     def Best(self, hrsHalf=24, limit=50, tag=None):
-        # TODO: No need to store hrsHalf as a distinct property - just combine in name
         if tag:
             scores = Score.gql('WHERE name = :name AND hrsHalf = :hrsHalf AND tag = :tag ORDER BY LogS DESC', name=self.name, hrsHalf=hrsHalf, tag=tag)
         else:
             scores = Score.gql('WHERE name = :name AND hrsHalf = :hrsHalf ORDER BY LogS DESC', name=self.name, hrsHalf=hrsHalf)
-        return scores.fetch(limit)
+        
+        results = scores.fetch(limit)
+        
+        keys = [score.ModelKey() for score in results]
+        models = db.get(keys)
+        
+        # Add in (non-persisted) timescore as a phantom property of each model
+        i = 0
+        for model in models:
+            if model is not None:
+                model.timescore = results[i].ScoreNow()
+            i += 1
+        return [model for model in models if model is not None]
     
     def Broken(self, limit=100):
         # Return the broken links
@@ -134,15 +145,6 @@ class Score(db.Model):
     def ModelKey(self):
         return Score.model.get_value_for_datastore(self)
     
-"""
-class ScoreProperty(db.Property):
-    #logging.info("SP data type: %s" % data_type)
-    
-    def validate(self, value):
-        logging.info("validate: %s" % value)
-        db.Property(self)
-"""
-
 # --------------------------------------------------------------------
 # Rate limiter helper
 # --------------------------------------------------------------------

@@ -99,27 +99,25 @@ function Shorten()
 	<table class="scores">
 		<tr><th>Title</th><th class="num">Visits</th><th>By</th><th>Score</th></tr>
 		{% for page in pages %}
-			{% if page.ModelExists %}
 			<tr>
 				<td class="title"><div>
-					<img class="favicon" src="http://{{page.model.Domain}}/favicon.ico">
-					<a target="_blank" href="/{{page.model.GetId}}" title="{{page.model.url|escape}}">{{page.model.title|escape}}</a>
+					<img class="favicon" src="http://{{page.Domain}}/favicon.ico">
+					<a target="_blank" href="/{{page.GetId}}" title="{{page.url|escape}}">{{page.title|escape}}</a>
 				</div></td>
-				<td class="num">{{page.model.viewCount|intcomma}}</td>
+				<td class="num">{{page.viewCount|intcomma}}</td>
 				<td>
-					{% if page.model.Creator %}
-						<a href="/user/{{page.model.Creator}}" title="{{page.model.Creator}}">
-							<img class="inline" src="/user/{{page.model.Creator}}/picture_thumb">
+					{% if page.Creator %}
+						<a href="/user/{{page.Creator}}" title="{{page.Creator}}">
+							<img class="inline" src="/user/{{page.Creator}}/picture_thumb">
 						</a>
 					{% endif %}
 				</td>
 				<td class="bar-td"><div class="bar-holder">
-					<div class="bar" bar_value="{{page.ScoreNow|floatformat:1}}"
-						 title="{{page.ScoreNow|floatformat:1}} points Today">&nbsp;
+					<div class="bar" bar_value="{{page.timescore|floatformat:1}}"
+						 title="{{page.timescore|floatformat:1}} points Today">&nbsp;
 					 </div>
 				</div></td>
 			</tr>
-			{% endif %}
 		{% endfor %}
 	</table>
 	

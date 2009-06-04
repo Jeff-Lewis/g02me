@@ -3,17 +3,7 @@ import models
 import logging
 import sys
 
-for d in sys.path:
-    print d
-
-from google.appengine.ext import db
-
 import unittest
-
-"""
-class TSModel(db.model):
-    tsHalf = models.ScoreProperty()
-"""
 
 class TestTimeScore(unittest.TestCase):
     def test_Base(self):
@@ -54,6 +44,7 @@ class TestTimeScore(unittest.TestCase):
         self.assertEqual(sc.LogS, sLog)
         sc.Increment(0, 1)
         self.assertEqual(sc.LogS, sLog)
+        
 
 if __name__ == '__main__':
     unittest.main()

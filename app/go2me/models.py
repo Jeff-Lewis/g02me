@@ -144,12 +144,11 @@ class Map(db.Model):
     
     @classmethod
     def TopPages(cls, tag=None, limit=50):
-        return cls.ss.Best(tag=tag, limit=limit)
+        return [map for map in cls.ss.Best(tag=tag, limit=limit) if not map.Banished()]
     
     @classmethod
     def TopJSON(cls, tag=None):
-        return {'pages':[score.model.JSON() for score in cls.ss.Best(tag=tag) \
-             if score.ModelExists() and not score.model.Banished()]}
+        return {'pages':[map.JSON() for map in cls.TopPages()]}
     
     def GetId(self):
         return self.key().name()[2:]
