@@ -61,7 +61,9 @@ class ScoreSet():
     def ScoresForModel(self, model, limit=5):
         return Score.gql('WHERE name = :name AND model = :model', name=self.name, model=model).fetch(limit)
     
-    def ScoresNamed(self, model, dt):
+    def ScoresNamed(self, model, dt=None):
+        if dt is None:
+            dt = Score.dtNow
         scores = self.ScoresForModel(model)
         obj = {}
         for score in scores:
