@@ -569,9 +569,7 @@ ts.AddTest("Ban", function(ut)
 			},
 		function(ut)
 			{
-			console.log("1-------------");
 			new Go2.ScriptData("/comment/").Call({id:objInit.id, comment:"some score", apikey:sAPIKey}, ut.FnWrap(function (obj) {
-				console.log("2 ----------------");
 				ut.AssertContains(obj, {status:"OK"});
 				ut.NextFn();
 				}));

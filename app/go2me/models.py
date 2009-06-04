@@ -148,7 +148,7 @@ class Map(db.Model):
     
     @classmethod
     def TopJSON(cls, tag=None):
-        return {'pages':[map.JSON() for map in cls.TopPages()]}
+        return {'pages':[map.JSON() for map in cls.TopPages(tag)]}
     
     def GetId(self):
         return self.key().name()[2:]

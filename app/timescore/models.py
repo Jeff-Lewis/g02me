@@ -98,7 +98,6 @@ class Score(db.Model):
     
     @classmethod
     def UpdateNow(cls, dt):
-        logging.info("UpdateNow: %s" % dt)
         cls.dtNow = dt
     
     @classmethod
