@@ -288,7 +288,7 @@ class Map(db.Model):
             obj['comments'] = rgComments
         return obj
     
-    def ScoresNamed(self, dt):
+    def ScoresNamed(self, dt=None):
         return self.ss.ScoresNamed(self, dt)
     
     def Ban(self, fBan=True):
