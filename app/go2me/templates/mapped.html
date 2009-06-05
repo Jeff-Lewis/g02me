@@ -5,7 +5,6 @@
 {% block subTitle %}{{map.title|escape}}{% endblock %}
 
 {% block script %}
-// Google Ad Manager
 Go2.Init("{{username}}", "{{csrf}}");
 Go2.map = {{map.JSON|JSON}};
 
@@ -157,7 +156,16 @@ function Loaded()
 		</div>
 		<div class="panel-body">
 			<div style="height:250px">
-				<script>try {GA_googleFillSlot("map-bottom");} catch (e) {}</script>
+				<script>
+				try
+					{
+					var sSlot = "map-bottom";
+					if (Go2.map.banished)
+						sSlot += "-adult";
+					GA_googleFillSlot(sSlot);
+					}
+				catch (e) {}
+				</script>
 			</div>
 			<div style="text-align:center;">
 				<a href="http://code.google.com/p/g02me/wiki/AboutUs">About {{site_name}}</a> |

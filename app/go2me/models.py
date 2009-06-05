@@ -278,6 +278,7 @@ class Map(db.Model):
                'tags':self.TopTags(),
                'dateRequest': local.dtNow,
                'presence':self.Presence(sState=sState, sLocation=sLocation),
+               'banished':self.Banished(),
                }
         if dateSince:
             obj['since'] = dateSince

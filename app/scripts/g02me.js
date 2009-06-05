@@ -198,7 +198,7 @@ OnIdle: function()
 			// We lost our cross-site request - try to get an api key instead.
 			if (!Go2.apikey)
 				{
-				Go2.Notify("Lost authorization for chat...retrying");
+				Go2.TrackEvent("error/lost-auth");
 				sd = new Go2.ScriptData('/init/');
 				sd.Call({}, function (obj)
 					{
@@ -211,7 +211,7 @@ OnIdle: function()
 			break;
 		default:
 			// Tell the user there's a problem - an back off for 1 minute.
-			Go2.Notify(obj.message);
+			Go2.TrackEvent('error/' + obj.message);
 			Go2.msNextIdle = (new Date().getTime()) + 60*1000;
 			break;
 			}
