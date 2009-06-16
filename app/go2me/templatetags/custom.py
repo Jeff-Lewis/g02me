@@ -152,7 +152,7 @@ def SAgeReq(dt):
     return ms
 
 # --------------------------------------------------------------------
-# Convert object to JSON format for inclusing in web page
+# Convert object to JSON format for including in web page
 # --------------------------------------------------------------------
 @register.filter(name='JSON')
 def SJSON(obj):
