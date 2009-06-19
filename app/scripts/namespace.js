@@ -1,5 +1,8 @@
 /* Namespace.js
 
+   Version 1.0, June 2009
+   by Mike Koss - released into the public domain.
+
    Support for building modular namespaces in javascript.
    
    Globals:
@@ -51,8 +54,6 @@
            }
        };
    });
-   
-   TODO: Convert '-' to '_' in path names so they can be used with ns.ns.ns syntax
 */
 
 // Define stubs for FireBug objects if not present
@@ -84,6 +85,9 @@ if (!window.console || !console.firebug)
 
 	function Namespace(nsParent, sName)
 		{
+		if (sName)
+			sName = sName.replace(/-/g, '_');
+
 		this._nsParent = nsParent;
 		
 		if (this._nsParent)
@@ -100,7 +104,7 @@ if (!window.console || !console.firebug)
 		console.log("Creating namespace: '" + this._sPath + "'");
 		};
 	
-	Namespace.prototype.Extend = function(oDest, oSource)
+	Namespace.prototype.Extend = function(oDest)
 		{
 		for (var i = 1; i < arguments.length; i++)
 			{
@@ -118,6 +122,8 @@ if (!window.console || !console.firebug)
 	ns.Extend(Namespace.prototype, {
 	Define: function (sPath, fnCallback)
 		{
+		sPath = sPath.replace(/-/g, '_');
+
 		var aPath = sPath.split('.');
 		var nsCur = this;
 		for (var i = 0; i < aPath.length; i++)
