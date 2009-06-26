@@ -259,6 +259,11 @@ X Favorite (star)
   - "Powered by Go2.me" button to get referal sign-ups.
   - Minimize frame to top bar (see Digg, FaceBook, Owly, BurnUrl designs) - expand for comments only.
 - Twitter or Facebook connect for login - get profile picture from those accounts
+- Allow drawing annotation on top of the IFRAME [Scott]
+  - Drawing mode (to prevent clicks to the IFRAME)
+  - Red circle
+  - Arrow
+  - Text overlay (voice bubbles)
   
 ------------------------------------------------------------
         PLATFORMS, SYNDICATION, IMPORT/EXPORT
