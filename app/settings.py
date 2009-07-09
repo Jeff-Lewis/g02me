@@ -22,14 +22,14 @@ ADMINS = (
 # Version 1 (base 64) started at 1 through 2V (about 159)
 # Version 5 (base 57) starts at '32' (since there is no 0 or 1 in the alphabet)
 sSiteName = "Go2.me"
-sSiteHost = "Go2.me"
+sSiteHost = "u.Go2.me"
 sJSNamespace = "Go2"
 sTwitterSource = "go2me"
 sSiteTitle = "Link Shortening and Discussion Service"
 sSiteTagline = "Send a Link - Start a Conversation"
 # Link length calculation for first 100's thousands links
 nLinkLength = len("http://%s/" % sSiteHost) + 3 
-mpSiteAlternates = set(['www.go2.me', 'g02.me', 'www.g02.me'])
+mpSiteAlternates = set(['www.go2.me', 'g02.me', 'www.g02.me', 'go2.me', 'u.g02.me'])
 idMapBase = 57
 cPagesExtra = 159
 sMapName = "map.2"
