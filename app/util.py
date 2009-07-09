@@ -84,11 +84,14 @@ blackList = set([
     "QLNK.net", "link.toolbot.com", "hurl.me", "shrt.st", "2big.at", "parv.us", 
     "makeitbrief.com", "url360.me", "eweri.com", "smarturl.eu", "urlot.com", "muhlink.org", 
     "hosturl.com", "tinyuri.ca", "ru.ly", "voomr.com", "url9.com", "plumurl.com", 
-    "ix.lt", 
+    "ix.lt",
     
     # Additional aliases
     "snurl.com", "snipr.com", "sn.im",
     "alturl.com", "2ya.com", "xrl.us", "iterasi.net",
+    
+    # Abuse sites
+    "paypal.com",
      ])
 
 whiteList = set(['blog.go2.me'])
