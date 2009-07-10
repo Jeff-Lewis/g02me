@@ -8,7 +8,7 @@ jscomposer - Manage JavaScript includes and composing multiple files into one.
     - Generates <script> includes with version stamps to avoid cache conflicts.
     - You can define aliases for multiple javascript files to be included into one file
     - Minifies JavaScript files when not in DEBUG mode
-    - Stores 
+    - Stores minified script files in memcache for faster serving
     
 Usage:
     
