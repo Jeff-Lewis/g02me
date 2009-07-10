@@ -58,7 +58,7 @@
 
 // Define stubs for FireBug objects if not present
 // This is here because this will often be the very first javascript file loaded
-if (!window.console || !console.firebug)
+if (!window.console)
 	{
 	(function ()
 		{
@@ -100,8 +100,6 @@ if (!window.console || !console.firebug)
 			}
 		else
 			this._sPath = '';
-		
-		console.log("Creating namespace: '" + this._sPath + "'");
 		};
 	
 	Namespace.prototype.Extend = function(oDest)
@@ -135,18 +133,32 @@ if (!window.console || !console.firebug)
 			}
 		// In case a namespace is multiply loaded - we ignore the definition function
 		// for all but the first call.
-		if (fnCallback && !nsCur._fDefined)
+		if (fnCallback)
 			{
-			nsCur._fDefined = true;
-			fnCallback(nsCur);
+			if (!nsCur._fDefined)
+				{
+				nsCur._fDefined = true;
+				fnCallback(nsCur);
+				console.info("Namespace '" + nsCur._sPath + "' defined.");
+				}
+			else
+				console.warn("WARNING: Namespace '" + nsCur._sPath + "' redefinition.");
 			}
+		else if (!nsCur._fDefined)
+			console.warn("Namespace '" + nsCur._sPath + "' forward reference.");
 		return nsCur;
 		},
 	
 	Import: function(sPath)
 		{
 		return window.global_namespace.Define(sPath);
-		}
+		},
+		
+	SGlobalName: function(sInNamespace)
+		{
+		sInNamespace = sInNamespace.replace(/-/g, '_');
+		return sGlobal + '.' + this._sPath + '.' + sInNamespace;
+		},
 	});
 
 })();
