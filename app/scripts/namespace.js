@@ -158,7 +158,7 @@ if (!window.console)
 		{
 		sInNamespace = sInNamespace.replace(/-/g, '_');
 		return sGlobal + '.' + this._sPath + '.' + sInNamespace;
-		},
+		}
 	});
 
 })();
