@@ -19,21 +19,23 @@ class ScoreCalc():
         """
         self.tHalf = float(tHalf)
         self.k = 0.5 ** (1.0/self.tHalf)
-        self.S = 1.0
         self.tLast = 0.0
+        self.LogS = 0.0
         self.Increment(value, tLast)
         
     def Increment(self, value=0.0, t=0.0):
         value = float(value)
         
         t = float(t)
-
+        
         if t > self.tLast:
-            self.S =  value + (self.k ** (t - self.tLast)) * self.S
+            self.S = 2.0 ** (self.LogS - t/self.tHalf)
+            self.S += value
             self.tLast = t
         else:
+            self.S = 2.0 ** (self.LogS - self.tLast/self.tHalf)
             self.S += (self.k ** (self.tLast - t)) * value
-        
+
         try:    
             self.LogS = math.log(self.S)/math.log(2) + self.tLast/self.tHalf
         except:
