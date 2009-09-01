@@ -93,7 +93,7 @@ function Shorten()
 		<li><b>Shorter links</b> - {{site_name}} links are only {{link_length}} characters long - perfect for Twitter messages.</li>
 	</ul>
 	
-	{% cache 180 home-11 %}
+	{% cache 180 home app_version %}
 	
 	<h2>Today's most popular links ({{total_pages|intcomma}} shared to date)</h2>		
 	<table class="scores">
