@@ -1,0 +1,744 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<!-- saved from url=(0110)http://docs.google.com/a/mckoss.com/View?docID=0AcUE2vPPoFO7ZGc3andnZG5fMTA4cGttbTNrY24&revision=_latest&hgd=1 -->
+<HTML><HEAD><META http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<SCRIPT>function b(c){this.t={};this.tick=function(d,e,a){a=a?a:(new Date).getTime();this.t[d]=[a,e]};this.tick("start",null,c)}var f=new b;window.jstiming={Timer:b,load:f};try{window.jstiming.pt=window.gtbExternal&&window.gtbExternal.pageT()||window.external&&window.external.pageT}catch(g){};
+</SCRIPT>
+
+<META name="robots" content="noarchive">
+<!-- <BASE target="_top"> --><BASE href="." target="_top">
+<TITLE>Efficient Calculation of Time...</TITLE>
+<STYLE type="text/css">
+/* default css */
+table {
+font-size: 1em;
+line-height: inherit;
+border-collapse: collapse;
+}
+tr {
+text-align: left;
+}
+div, address, ol, ul, li, option, select {
+margin-top: 0px;
+margin-bottom: 0px;
+}
+p {
+margin: 0px;
+}
+pre {
+font-family: Courier New;
+white-space: pre-wrap;
+margin:0;
+}
+body {
+margin: 6px;
+padding: 0px;
+font-family: Verdana, sans-serif;
+font-size: 10pt;
+background-color: #ffffff;
+}
+img {
+-moz-force-broken-image-icon: 1;
+}
+@media screen {
+html.pageview {
+background-color: #f3f3f3 !important;
+}
+body {
+min-height: 1100px;
+counter-reset: __goog_page__;
+}
+* html body {
+height: 1100px;
+}
+.pageview body {
+border-top: 1px solid #ccc;
+border-left: 1px solid #ccc;
+border-right: 2px solid #bbb;
+border-bottom: 2px solid #bbb;
+width: 648px !important;
+margin: 15px auto 25px;
+padding: 40px 50px;
+}
+/* IE6 */
+* html {
+overflow-y: scroll;
+}
+* html.pageview body {
+overflow-x: auto;
+}
+/* Prevent repaint errors when scrolling in Safari. This "Star-7" css hack
+targets Safari 3.1, but not WebKit nightlies and presumably Safari 4.
+That's OK because this bug is fixed in WebKit nightlies/Safari 4 :-). */
+html*#wys_frame::before {
+content: '\A0';
+position: fixed;
+overflow: hidden;
+width: 0;
+height: 0;
+top: 0;
+left: 0;
+}
+.writely-callout-data {
+display: none;
+*display: inline-block;
+*width: 0;
+*height: 0;
+*overflow: hidden;
+}
+.writely-footnote-marker {
+background-image: url('images/footnote_doc_icon.gif');
+background-color: transparent;
+background-repeat: no-repeat;
+width: 7px;
+overflow: hidden;
+height: 16px;
+vertical-align: top;
+-moz-user-select: none;
+}
+.editor .writely-footnote-marker {
+cursor: move;
+}
+.writely-footnote-marker-highlight {
+background-position: -15px 0;
+-moz-user-select: text;
+}
+.writely-footnote-hide-selection ::-moz-selection, .writely-footnote-hide-selection::-moz-selection {
+background: transparent;
+}
+.writely-footnote-hide-selection ::selection, .writely-footnote-hide-selection::selection {
+background: transparent;
+}
+.writely-footnote-hide-selection {
+cursor: move;
+}
+.editor .writely-comment-yellow {
+background-color: #FF9;
+background-position: -240px 0;
+}
+.editor .writely-comment-yellow-hover {
+background-color: #FF0;
+background-position: -224px 0;
+}
+.editor .writely-comment-blue {
+background-color: #C0D3FF;
+background-position: -16px 0;
+}
+.editor .writely-comment-blue-hover {
+background-color: #6292FE;
+background-position: 0 0;
+}
+.editor .writely-comment-orange {
+background-color: #FFDEAD;
+background-position: -80px 0;
+}
+.editor .writely-comment-orange-hover {
+background-color: #F90;
+background-position: -64px 0;
+}
+.editor .writely-comment-green {
+background-color: #99FBB3;
+background-position: -48px 0;
+}
+.editor .writely-comment-green-hover {
+background-color: #00F442;
+background-position: -32px 0;
+}
+.editor .writely-comment-cyan {
+background-color: #CFF;
+background-position: -208px 0;
+}
+.editor .writely-comment-cyan-hover {
+background-color: #0FF;
+background-position: -192px 0;
+}
+.editor .writely-comment-purple {
+background-color: #EBCCFF;
+background-position: -144px 0;
+}
+.editor .writely-comment-purple-hover {
+background-color: #90F;
+background-position: -128px 0;
+}
+.editor .writely-comment-magenta {
+background-color: #FCF;
+background-position: -112px 0;
+}
+.editor .writely-comment-magenta-hover {
+background-color: #F0F;
+background-position: -96px 0;
+}
+.editor .writely-comment-red {
+background-color: #FFCACA;
+background-position: -176px 0;
+}
+.editor .writely-comment-red-hover {
+background-color: #FF7A7A;
+background-position: -160px 0;
+}
+.editor .writely-comment-marker {
+background-image: url('images/markericons_horiz.gif');
+background-color: transparent;
+padding-right: 11px;
+background-repeat: no-repeat;
+width: 16px;
+height: 16px;
+-moz-user-select: none;
+}
+.editor .writely-comment-hidden {
+padding: 0;
+background: none;
+}
+.editor .writely-comment-marker-hidden {
+background: none;
+padding: 0;
+width: 0;
+}
+.editor .writely-comment-none {
+opacity: .2;
+filter:progid:DXImageTransform.Microsoft.Alpha(opacity=20);
+-moz-opacity: .2;
+}
+.editor .writely-comment-none-hover {
+opacity: .2;
+filter:progid:DXImageTransform.Microsoft.Alpha(opacity=20);
+-moz-opacity: .2;
+}
+.br_fix span+br:not(:-moz-last-node) {
+position:relative;
+left: -1ex
+}
+#cb-p-tgt {
+font-size: 8pt;
+padding: .4em;
+background-color: #ddd;
+color: #333;
+}
+#cb-p-tgt-can {
+text-decoration: underline;
+color: #36c;
+font-weight: bold;
+margin-left: 2em;
+}
+#cb-p-tgt .spin {
+width: 16px;
+height: 16px;
+background: url(//ssl.gstatic.com/docs/clipboard/spin_16o.gif) no-repeat;
+}
+}
+h6 { font-size: 8pt }
+h5 { font-size: 8pt }
+h4 { font-size: 10pt }
+h3 { font-size: 12pt }
+h2 { font-size: 14pt }
+h1 { font-size: 18pt }
+blockquote {padding: 10px; border: 1px #DDD dashed }
+.webkit-indent-blockquote { border: none; }
+a img {border: 0}
+.pb {
+border-width: 0;
+page-break-after: always;
+/* We don't want this to be resizeable, so enforce a width and height
+using !important */
+height: 1px !important;
+width: 100% !important;
+}
+.editor .pb {
+border-top: 1px dashed #C0C0C0;
+border-bottom: 1px dashed #C0C0C0;
+}
+div.google_header, div.google_footer {
+position: relative;
+margin-top: 1em;
+margin-bottom: 1em;
+}
+/* Table of contents */
+.editor div.writely-toc {
+background-color: #f3f3f3;
+border: 1px solid #ccc;
+}
+.writely-toc > ol {
+padding-left: 3em;
+font-weight: bold;
+}
+ol.writely-toc-subheading {
+padding-left: 1em;
+font-weight: normal;
+}
+/* IE6 only */
+* html writely-toc ol {
+list-style-position: inside;
+}
+.writely-toc-none {
+list-style-type: none;
+}
+.writely-toc-decimal {
+list-style-type: decimal;
+}
+.writely-toc-upper-alpha {
+list-style-type: upper-alpha;
+}
+.writely-toc-lower-alpha {
+list-style-type: lower-alpha;
+}
+.writely-toc-upper-roman {
+list-style-type: upper-roman;
+}
+.writely-toc-lower-roman {
+list-style-type: lower-roman;
+}
+.writely-toc-disc {
+list-style-type: disc;
+}
+/* Ordered lists converted to numbered lists can preserve ordered types, and
+vice versa. This is confusing, so disallow it */
+ul[type="i"], ul[type="I"], ul[type="1"], ul[type="a"], ul[type="A"] {
+list-style-type: disc;
+}
+ol[type="disc"], ol[type="circle"], ol[type="square"] {
+list-style-type: decimal;
+}
+/* end default css */
+/* custom css */
+/* end custom css */
+/* ui edited css */
+body {
+font-family: Verdana;
+font-size: 12.0pt;
+line-height: normal;
+background-color: #ffffff;
+}
+/* end ui edited css */
+/* editor CSS */
+.editor a:visited {color: #551A8B}
+.editor table.zeroBorder {border: 1px dotted gray}
+.editor table.zeroBorder td {border: 1px dotted gray}
+.editor table.zeroBorder th {border: 1px dotted gray}
+.editor div.google_header, .editor div.google_footer {
+border: 2px #DDDDDD dashed;
+position: static;
+width: 100%;
+min-height: 2em;
+}
+.editor .misspell {background-color: yellow}
+.editor .writely-comment {
+font-size: 9pt;
+line-height: 1.4;
+padding: 1px;
+border: 1px dashed #C0C0C0
+}
+/* end editor CSS */
+</STYLE>
+<STYLE>
+body {
+margin: 0px;
+}
+#doc-contents {
+margin: 6px;
+}
+#google-view-footer {
+clear: both;
+border-top: thin solid;
+padding-top: 0.3em;
+padding-bottom: 0.3em;
+}
+a.google-small-link:link, a.google-small-link:visited {
+color:#112ABB;
+font-family:Arial,Sans-serif;
+font-size:11px !important;
+}
+body, p, div, td {
+direction: inherit;
+}
+@media print {
+#google-view-footer {
+display: none;
+}
+}
+</STYLE>
+<SCRIPT>
+function viewOnLoad() {
+if (document.location.href.indexOf('spi=1') != -1) {
+if (navigator.userAgent.toLowerCase().indexOf('msie') != -1) {
+window.print();
+} else {
+window.setTimeout(window.print, 10);
+}
+}
+if (document.location.href.indexOf('hgd=1') != -1) {
+var footer = document.getElementById("google-view-footer");
+if (footer) {
+footer.style.display = 'none';
+}
+}
+}
+</SCRIPT>
+</HEAD><BODY onload="window.jstiming.load.tick(&#39;ol&#39;); window.jstiming.report(window.jstiming.load, null, document.location.protocol == &#39;https:&#39; ? &#39;https://gg.google.com/csi&#39; : null);">
+<DIV id="doc-contents">
+<DIV id="bu-_" style="text-align: center;"><B>Efficient Calculation of Large Collections of Time-Weighted Sums</B><BR id="mmz6">
+Mike Koss<BR id="mmz60">Created: June 13, 2008</DIV><DIV id="nbyk" style="text-align: center;">Updated: Sept 20, 2008<BR>
+<BR>
+<DIV style="text-align: left;">
+<I>CONFIDENTIAL:&nbsp; The contents of this document are confidential and may not be disclosed or disseminated to any 3rd party without the prior written consent of the document author.</I><BR>
+</DIV>
+</DIV>
+<BR id="bb9q">
+<B id="uejs">Summary</B><BR id="vra8">
+<BR id="vra80">Time weighted sums using exponential decay are important for comparing time-dependent valuations.&nbsp; Just as net present value calculations can be used to determine the current value of cash flows, so can we use time weighted sums to determine the present value of any stream of valuable actions. &nbsp;For single variable statistics, exponential decay is simple to calculate (see below). &nbsp;But when a system uses a large population of time-weighted sums, which are each updated at different times, and must be compared or sorted, the standard calculation procedure can demand that every variable in the database be updated and normalized to the same time-base.<DIV><BR></DIV><DIV>For a large database, this can demand a lengthy scan and re-write of all the data in the database. &nbsp;In this invention, a method is explained that allows for:</DIV><DIV><BR></DIV><DIV><UL><LI>Simple calculation for updating individually stored time-weighted sums.</LI><LI>All sums are normalized to a single time-base, and are thus always comparable, can be indexed and sorted, w/o the need for any database scanning.</LI><LI>Controlling the precision of numbers needing to be stored so that overflow conditions will not arise, and do not necessitate re-normalization of stored data.</LI></UL><DIV><BR></DIV><DIV>In this disclosure I outline:<BR id="q9ps">
+<BR id="q9ps0">
+<UL id="q9ps1">
+<LI id="q9ps2">
+The definition of parameters used in calculating time-weighted sums.
+</LI>
+<LI id="q9ps3">
+Formulas for calculating time-weighted sums.
+</LI>
+<LI id="f1m-">
+A system for storing time weighted sums that are time invariant, and therefore can be stored in a database for use in sorting and filtering of database queries.
+</LI>
+</UL>
+<BR id="uejs0">
+<B id="uejs1">Definitions</B><BR id="uejs2">
+<BR id="uejs3">
+<DIV id="xp6c">
+<TABLE class="zeroBorder" id="h74l" border="0" cellpadding="3" cellspacing="0" width="592" height="132">
+<TBODY id="xp6c0">
+<TR id="xp6c1" align="center" bgcolor="#000000">
+<TD id="xp6c2" style="color: rgb(255, 255, 255); text-align: center;" align="center" valign="top" width="50%">
+Variable<BR id="xp6c3">
+</TD>
+<TD id="xp6c4" style="color: rgb(255, 255, 255); text-align: center;" width="50%">
+Definition<BR id="xp6c5">
+</TD>
+</TR>
+<TR id="xp6c6">
+<TD id="xp6c7" align="center" valign="top" width="50%">
+t<BR id="xp6c8">
+</TD>
+<TD id="xp6c9" width="50%">
+Time (e.g., units may be in days, begining with 0).<BR id="xp6c10">
+</TD>
+</TR>
+<TR id="xp6c11">
+<TD id="xp6c12" align="center" valign="top" width="50%">
+h<BR id="xp6c13">
+</TD>
+<TD id="xp6c14" width="50%">
+The characteristic half-life of a value.&nbsp; This <I id="x3eb">time constant</I> determines how valuable a past event is compared to a present event.<BR id="xp6c15">
+</TD>
+</TR>
+<TR id="xp6c16">
+<TD id="xp6c17" align="center" valign="top" width="50%">
+v(t)<BR id="xp6c18">
+</TD>
+<TD id="xp6c19" width="50%">
+The intrinsic (non time-weighted) value of an event or action (taken at time, t).<BR id="xp6c20">
+</TD>
+</TR>
+<TR id="xp6c21">
+<TD id="xp6c22" align="center" valign="top" width="50%">
+S(t)<BR id="xp6c23">
+</TD>
+<TD id="xp6c24" width="50%">
+The time-weighted, net present sum of all actions up to and including time, t.<BR id="xp6c25">
+</TD>
+</TR>
+<TR id="blpn">
+<TD id="blpn0" align="center" valign="top" width="50%">
+k<BR id="blpn1">
+</TD>
+<TD id="blpn2" width="50%">
+The depreciation factor over one unit of time:<BR id="blpn3">
+<DIV id="gp4_" style=" text-align: left;">
+<IMG id="v6c0" src="./Efficient Calculation of Time..._files/File" style="width: 108px; height: 39px;">
+</DIV>
+For example, when h=1, k=0.5.&nbsp; When h=7, k=0.906.
+<DIV id="i6x3" style=" text-align: left;">
+<IMG id="x_yh" src="./Efficient Calculation of Time..._files/File(1)" style="width: 68px; height: 12px;">
+</DIV>
+</TD>
+</TR>
+</TBODY>
+</TABLE>
+<BR id="j77b">
+<B id="lm9v">Formulation</B><BR id="cx5j">
+<BR id="cx5j0">
+</DIV>
+<DIV id="s2sh">Assuming descrete time (t, can take on values, 0, 1, 2, ... etc.), define the value of the stream of actions up to and including time t=n as:
+<DIV id="dfc0" style=" text-align: left;">
+<DIV id="j:sb" style="margin-left: 40px;">
+<IMG id="ucnm" src="./Efficient Calculation of Time..._files/File(2)" style="width: 310px; height: 91px;"><BR id="j:sb0">
+</DIV>
+<BR id="j:sb1">
+or, using a difference expression:<BR id="j:sb2">
+<BR id="j:sb3">
+<DIV id="j:sb4" style="margin-left: 40px;">
+<IMG id="odve" src="./Efficient Calculation of Time..._files/File(3)" style="width: 313px; height: 34px;">
+</DIV>
+</DIV><I>
+We apply the (1-k) scaling to normalize the long-term sum of a constant value, v, to be equal to v.</I></DIV><DIV id="cm-."><BR></DIV><DIV id="a_hh">More generally (even for continuous time, t), S(t) can be updated from any score last calculated at time, t1:<BR id="q3uh">
+<BR id="q3uh0">
+</DIV>
+<DIV id="j:sb5">
+<DIV id="nhb-" style=" text-align: left; margin-left: 40px;">
+<IMG id="q3uh2" src="./Efficient Calculation of Time..._files/File(4)" style="width: 341px; height: 37px;">
+</DIV>
+The difficulty in storing values, S(t) in a database, is that they are not time-invariant.&nbsp; They are only relevant at time t.&nbsp; In order to perform queries of the database all values have to be normalized to the same time, which would involve re-writing every record in the database.&nbsp; So, we introduce a time-invariant version of the time weighted sum, choosing time t=0, and escalating the value of all subsequent events.<BR id="l73t">
+<BR id="l73t0">
+<DIV id="qrg3" style="margin-left: 40px;">
+<DIV id="gh7-" style=" text-align: left;">
+<IMG id="w_r3" src="./Efficient Calculation of Time..._files/File(5)" style="width: 323px; height: 91px;">
+</DIV>
+</DIV>
+<DIV id="tfse">
+In the absence of subsequent events, the value of S' stays the same throughout time, so stored values need never be updated. &nbsp;A difficulty with this system is in storing these values without overflowing the numeric precision of the underlying numeric data representation.&nbsp; Over a long time period, K^t becomes vanishingly small, and we have to apply exponentially increasing scaling factors to the weights of new events. &nbsp;We can eliminate this problem by instead storing the logarithm of S'.&nbsp; Since logs are uniformly increasing functions, we can similarly compare (and use in query sort orders and indices) values of log(S') to determine relative net present value.<BR id="csc_0">
+</DIV>
+<DIV id="v:6g" style=" text-align: left;">
+<DIV id="s95x" style=" text-align: left; margin-left: 40px;">
+<IMG id="cjnd0" src="./Efficient Calculation of Time..._files/File(6)" style="width: 522px; height: 69px;"><BR id="q7v:">
+<DIV id="jm67" style=" text-align: left;">
+<IMG id="q7v:0" src="./Efficient Calculation of Time..._files/File(7)" style="width: 177px; height: 57px;">
+</DIV>
+</DIV>
+<BR id="umz-">
+Note that while S' grows exceedingly large, k^t grows exceedingly small.&nbsp; S'*k^t = S, which is a reasonable sized number for calculation.<BR id="g7:x">
+<BR id="g7:x0">
+<B id="g7:x1">Calculation</B><BR id="g7:x2">
+<BR id="g7:x3">
+To organize the calculation of log(S'), we need store to following values for each activity stream:</DIV><DIV id="vbbh" style=" text-align: left;"><OL><LI>S - current time weighted sum, at time of latest update</LI><LI>tL - time of lates update</LI><LI>log(S') - log (base 2) of zero-time based time weighted sum (time invariant)</LI></OL>
+<BR id="dl5o0">
+<BLOCKQUOTE id="dl5o1">
+// Untested pseudo-code (JavaScript)<BR id="kzhg">
+<BR id="kzhg0">
+// Time scale constants based on selected half-life time-constant<BR id="kbau">
+Score.h = 3;<BR id="mhi3">
+Score.k = Math.pow(1/2, 1/Score.h);<BR><BR id="xkm:">
+Score.log2 = Math.log(2);<BR id="kbau0">
+<BR id="kbau1">
+function Score()<BR id="bika">
+{<BR id="bika0">
+&nbsp;&nbsp;&nbsp; this.S = 0;<BR id="bika1">
+&nbsp;&nbsp;&nbsp; this.LogSp = 1;<BR id="bika2">
+&nbsp;&nbsp;&nbsp; this.tL= 0;<BR id="bika3">
+}<BR id="f1gz">
+<BR id="jtfn">
+// Designed to work even if calls come out of order (t make decrease between calls)<BR id="jtfn2">
+Score.prototype.Update = function(v, t)<BR id="jtfn3">
+{<BR id="exa5">
+&nbsp;&nbsp;&nbsp; if (t &gt; this.tL)<BR id="exa50">
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; {<BR id="jtfn4">
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; this.S = (1-Score.k)*v + Math.pow(Score.k, t-this.tL) * this.S;<BR id="uprm">
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; this.tLast = t;<BR id="jtfn5">
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; }<BR id="uprm0">
+&nbsp;&nbsp;&nbsp; else<BR id="g6dn">
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; {<BR id="g6dn0">
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; // We're getting an old score - don't reset this.tL<BR id="exa54">
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; this.S += (1-Score.k)*Math.pow(Score.k, this.tL-t)*v;<BR id="g6dn1">
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; }<BR id="nj9a">
+&nbsp;&nbsp;&nbsp;<BR id="g6dn2">
+&nbsp;&nbsp;&nbsp;&nbsp;this.LogSp = Math.log(this.S)/Score.log2 + this.tL/Score.h;<BR id="jtfn7">
+}<BR id="fid9">
+</BLOCKQUOTE>
+</DIV>
+</DIV>
+<DIV id="ks8s">
+<B id="lobu">
+<DIV id="gvz:" style=" text-align: left;">
+<IMG id="de7x" src="./Efficient Calculation of Time..._files/File(8)" style="width: 680px; height: 870px;">
+</DIV>
+<BR id="de7x0">
+<BR id="de7x1">
+Applications<BR id="lobu0">
+<BR id="lobu1"></B>Time weighted sums are especially useful in applications where events can accumulate value over time, and yet where recent (later time) events have a higher value than older events. &nbsp;For example:</DIV><DIV id="wt7k"><BR></DIV><DIV id="zqaq"><OL><LI>Sequences of credits and debits over time into interest-bearing or inflation adjusted accounts.</LI><LI>Sequences of events that are indicators of the <I>popularity</I>&nbsp;of web sites, movies, books, news stories, blog posts, products, services, etc.</LI><LI>Sequences of requests that are made for resource utilization, where a net present resource demand is desired.</LI></OL></DIV><DIV id="osbd"><BR></DIV><DIV id="r1re">An information community is a group of people who share common interests in a given topic and desire to use a social medium to participate in sourcing, ranking, and reading the best available information on that topic.<BR id="pec5">
+<BR id="pec50">
+We develop the techniques of a social scoring system that has the following attributes:<BR id="d4gi">
+<BR id="d4gi0">
+<UL id="hzox">
+<LI id="d4gi2">
+Ranking popularity of content through group voting
+</LI>
+<LI id="ak9l">
+Categorization of content by tagging
+</LI>
+<LI id="ak9l0">
+Automatic adjustment of filter parameters based on user preferences
+</LI>
+<LI id="ak9l1">
+Limiting information stream on a "best-available" basis to each user
+</LI>
+<LI id="ak9l2">
+Adjustment of quantity of information stream based on each user's consumption rates
+</LI>
+<LI id="ak9l3">
+For task-based communities, distribution of work according to ability and availability
+</LI>
+<LI id="ak9l4">
+Presumption of time-based relevance and automatic decay of popularity weighting
+</LI>
+<LI id="ak9l5">
+Correlation of a user's actions against the norm - Karma ranking relative to topics and users<BR id="tx5a">
+</LI>
+</UL>
+<BR id="iq8d">
+This system can be used across a wide variety of content types to automatically filter:<BR id="msig">
+<BR id="msig0">
+<UL id="msig1">
+<LI id="msig2">
+Forums
+</LI>
+<LI id="msig3">
+Bookmarks
+</LI>
+<LI id="msig4">
+Micro-blogs/tweets
+</LI>
+<LI id="msig5">
+Products
+</LI>
+<LI id="ak9l6">
+Advertisements
+</LI>
+<LI id="ak9l7">
+Email mailing lists
+</LI>
+<LI id="ak9l8">
+Search terms and search results<BR id="hi6l">
+</LI>
+</UL>
+<BR id="t:-q">
+<B id="t:-q0">User Gestures</B><BR id="t:-q1">
+<BR id="t:-q2">
+The primary input to a Social Scoring system are the <I id="t:-q3">gestures</I> that users make in interacting with the information stream they are presented with.&nbsp; The primary gestures this system will consider are:<BR id="t:-q4">
+<BR id="t:-q5">
+<UL id="t:-q6">
+<LI id="t:-q7">
+Vote up or vote down (request more like this or less like this)
+</LI>
+<LI id="ak9l9">
+Silence/block (explicit block of a user, topic, or information source)
+</LI>
+<LI id="ak9l10">
+Unfiltered stream request (show all information from a user or source)<BR id="qfc8">
+</LI>
+<LI id="ak9l11">
+Request to read more (see beyond snippet, click-through of a bookmark)
+</LI>
+<LI id="ak9l12">
+Saving/collecting in personal information database (Favoriting)
+</LI>
+<LI id="ak9l13">
+Passing along to friends or adding additional topics
+</LI>
+<LI id="yq7d">
+Commenting (to the author or community)<BR id="yq7d0">
+</LI>
+</UL>
+<BR id="tjm_">
+<B id="bzro1">Auditioning<BR id="ur.q">
+<BR id="ur.q0">
+</B>The purpose of a ranking and relevance engine is to filter content so that users are seeing only the most interesting or relevant content.&nbsp; The catch 22 is that if no one sees the content, you don't know how valuable it is.&nbsp; So, its important to have a system of randomly auditioning potential content to the group of possible subscribers.&nbsp; Initial scores are then generated from user interactions with the auditioned content.<BR id="f_p3">
+<BR id="f_p30">
+Scores should be attributed on a proportional basis.&nbsp; The system should measure the ability of the content to attract valuable gestures based on the number of views (and even based on the placement of those views on a page).<BR id="dh72">
+<BR id="ehrp">
+For each information source, there are a community of users who have opted in to that source at different frequency levels:<BR id="rqrf">
+<BR id="ehrp0">
+<UL id="ehrp1">
+<LI id="ehrp2">
+Show all (raw stream)
+</LI>
+<LI id="ehrp3">
+n/day/week/month limit
+</LI>
+<LI id="rqrf0">
+Allow delay (may be old content, but higher ranked)
+</LI>
+</UL>
+<BR>
+<B>References</B><BR>
+<BR>
+I made a search of Google Patents and Google scholar looking for prior art using search terms:<BR>
+<BR>
+<DIV style="margin-left: 40px;">
+<I>time decay, scoring, database, exponential<BR>
+<BR>
+</I>
+</DIV>
+The only related patent I find is the following (ungranted) application:<BR>
+<OL>
+<LI><H2 class="title"><FONT size="3"><SPAN style="font-weight: normal;">System and method for searching using a temporal dimension</SPAN>, <SPAN style="font-weight: normal;">http://www.google.com/patents?id=98-WAAAAEBAJ</SPAN></FONT><BR><FONT style="font-weight: normal;" size="3">I se</FONT><FONT size="3"><SPAN style="font-weight: normal;">e no mention of storing exponential time decay values in a database - may need further examination.</SPAN></FONT><BR>
+</H2></LI>
+</OL>
+</DIV>
+<DIV id="cdui">
+<BR id="mmz65">
+</DIV>
+<BR></DIV></DIV><BR>
+<BR clear="all">
+</DIV>
+<DIV id="google-view-footer" style="display: none; ">
+<DIV id="maybecanedit" style="float:right">
+<A class="google-small-link" id="editpermissionlink" href="http://docs.google.com/a/mckoss.com/Doc?tab=edit&dr=true&id=dg7jwgdn_108pkmm3kcn" title="Edit this page">
+Edit this page (if you have permission)</A>
+<SPAN style="color:#676767;">|</SPAN>
+<INPUT id="report-abuse-button" type="button" value="Report abuse" onclick="reportAbuse();">
+</DIV>
+<DIV style="float:left">
+<A title="Learn more about Google Docs" class="google-small-link" href="http://docs.google.com/a/mckoss.com/">
+Google Docs -- Web word processing, presentations and spreadsheets.</A>
+</DIV>
+<P> &nbsp;
+</P></DIV>
+<SCRIPT><!--
+    viewOnLoad();
+    if(window.jstiming){window.jstiming.a={};window.jstiming.c=1;function g(a,b,f){var c=a.t[b];if(!c)return undefined;c=a.t[b][0];if(f!=undefined)a=f;else a=a.t.start[0];return c-a}window.jstiming.report=function(a,b,f){var c="";if(window.jstiming.pt){c+="&srt="+window.jstiming.pt;delete window.jstiming.pt}try{if(window.external&&window.external.tran)c+="&tran="+window.external.tran;else if(window.gtbExternal&&window.gtbExternal.tran)c+="&tran="+window.gtbExternal.tran()}catch(o){}if(a.b)c+="&"+a.b;
+var e=a.t,n=e.start,k=[],h=[],i=[];for(var d in e)if(!(d=="start"))if(!(d.indexOf("_")==0)){var j=e[d][1];if(j){if(e[j]){h.push(d+"."+g(a,d,e[j][0]));i.push(g(a,d))}}else n&&k.push(d+"."+g(a,d))}delete e.start;if(b)for(var l in b)c+="&"+l+"="+b[l];a=[f?f:"http://csi.gstatic.com/csi","?v=3","&s="+(window.jstiming.sn||"writely")+"&action=",a.name,h.length?"&it="+h.join(","):"",i.length?"&irt="+i.join(","):"",c,"&rt=",k.join(",")].join("");b=new Image;var m=window.jstiming.c++;window.jstiming.a[m]=b;
+b.onload=b.onerror=function(){delete window.jstiming.a[m]};b.src=a;b=null;return a}};
+
+    window.jstiming.load.name = 'published';
+    
+    
+    var urchinPage = "/View";
+
+    
+    function getXHR() {
+      if (typeof XMLHttpRequest != "undefined") {
+        return new XMLHttpRequest();
+      }
+      try { return new ActiveXObject("Msxml2.XMLHTTP.6.0") } catch(e) {}
+      try { return new ActiveXObject("Msxml2.XMLHTTP.3.0") } catch(e) {}
+      try { return new ActiveXObject("Msxml2.XMLHTTP") } catch(e) {}
+      try { return new ActiveXObject("Microsoft.XMLHTTP") } catch(e) {}
+      return null;
+    }
+
+    function reportAbuse() {
+      var req = getXHR();
+      if (req) {
+        
+          var docid = 'dg7jwgdn_108pkmm3kcn';
+          var posttoken = 'Hc5ZMCQBAAA.cqrxyKYmLQjYDfvOMGBW5w.9WIx2nbGDFs_FPL7PfVAOg';
+        
+        req.onreadystatechange = function() {
+          try {
+            if (req.readyState == 4 && req.status == 200) {
+              var button = document.getElementById("report-abuse-button");
+              button.value = 'Thank you!';
+              button.disabled = true;
+            }
+          } catch (ex) {
+            
+          }
+        }
+        try {
+          req.open('POST', 'MiscCommands', true);
+          req.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded; charset=UTF-8');
+          req.send('command=report_abuse&abuseDoc=' + encodeURIComponent(docid) +
+                   '&POST_TOKEN=' + encodeURIComponent(posttoken));
+        } catch (ex) {
+          
+        }
+      }
+    }
+  --></SCRIPT>
+
+
+</BODY></HTML>

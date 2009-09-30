@@ -1,0 +1,573 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<!-- saved from url=(0104)http://docs.google.com/a/mckoss.com/View?docID=0AcUE2vPPoFO7ZGc3andnZG5fMTQzY21qNzI0Zmc&revision=_latest -->
+<HTML><HEAD><META http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<SCRIPT>function b(c){this.t={};this.tick=function(d,e,a){a=a?a:(new Date).getTime();this.t[d]=[a,e]};this.tick("start",null,c)}var f=new b;window.jstiming={Timer:b,load:f};try{window.jstiming.pt=window.gtbExternal&&window.gtbExternal.pageT()||window.external&&window.external.pageT}catch(g){};
+</SCRIPT>
+
+<META name="robots" content="noarchive">
+<!-- <BASE target="_top"> --><BASE href="." target="_top">
+<TITLE>Provisional: Efficient Proces...</TITLE>
+<STYLE type="text/css">
+/* default css */
+table {
+font-size: 1em;
+line-height: inherit;
+border-collapse: collapse;
+}
+tr {
+text-align: left;
+}
+div, address, ol, ul, li, option, select {
+margin-top: 0px;
+margin-bottom: 0px;
+}
+p {
+margin: 0px;
+}
+pre {
+font-family: Courier New;
+white-space: pre-wrap;
+margin:0;
+}
+body {
+margin: 6px;
+padding: 0px;
+font-family: Verdana, sans-serif;
+font-size: 10pt;
+background-color: #ffffff;
+}
+img {
+-moz-force-broken-image-icon: 1;
+}
+@media screen {
+html.pageview {
+background-color: #f3f3f3 !important;
+}
+body {
+min-height: 1100px;
+counter-reset: __goog_page__;
+}
+* html body {
+height: 1100px;
+}
+.pageview body {
+border-top: 1px solid #ccc;
+border-left: 1px solid #ccc;
+border-right: 2px solid #bbb;
+border-bottom: 2px solid #bbb;
+width: 648px !important;
+margin: 15px auto 25px;
+padding: 40px 50px;
+}
+/* IE6 */
+* html {
+overflow-y: scroll;
+}
+* html.pageview body {
+overflow-x: auto;
+}
+/* Prevent repaint errors when scrolling in Safari. This "Star-7" css hack
+targets Safari 3.1, but not WebKit nightlies and presumably Safari 4.
+That's OK because this bug is fixed in WebKit nightlies/Safari 4 :-). */
+html*#wys_frame::before {
+content: '\A0';
+position: fixed;
+overflow: hidden;
+width: 0;
+height: 0;
+top: 0;
+left: 0;
+}
+.writely-callout-data {
+display: none;
+*display: inline-block;
+*width: 0;
+*height: 0;
+*overflow: hidden;
+}
+.writely-footnote-marker {
+background-image: url('images/footnote_doc_icon.gif');
+background-color: transparent;
+background-repeat: no-repeat;
+width: 7px;
+overflow: hidden;
+height: 16px;
+vertical-align: top;
+-moz-user-select: none;
+}
+.editor .writely-footnote-marker {
+cursor: move;
+}
+.writely-footnote-marker-highlight {
+background-position: -15px 0;
+-moz-user-select: text;
+}
+.writely-footnote-hide-selection ::-moz-selection, .writely-footnote-hide-selection::-moz-selection {
+background: transparent;
+}
+.writely-footnote-hide-selection ::selection, .writely-footnote-hide-selection::selection {
+background: transparent;
+}
+.writely-footnote-hide-selection {
+cursor: move;
+}
+.editor .writely-comment-yellow {
+background-color: #FF9;
+background-position: -240px 0;
+}
+.editor .writely-comment-yellow-hover {
+background-color: #FF0;
+background-position: -224px 0;
+}
+.editor .writely-comment-blue {
+background-color: #C0D3FF;
+background-position: -16px 0;
+}
+.editor .writely-comment-blue-hover {
+background-color: #6292FE;
+background-position: 0 0;
+}
+.editor .writely-comment-orange {
+background-color: #FFDEAD;
+background-position: -80px 0;
+}
+.editor .writely-comment-orange-hover {
+background-color: #F90;
+background-position: -64px 0;
+}
+.editor .writely-comment-green {
+background-color: #99FBB3;
+background-position: -48px 0;
+}
+.editor .writely-comment-green-hover {
+background-color: #00F442;
+background-position: -32px 0;
+}
+.editor .writely-comment-cyan {
+background-color: #CFF;
+background-position: -208px 0;
+}
+.editor .writely-comment-cyan-hover {
+background-color: #0FF;
+background-position: -192px 0;
+}
+.editor .writely-comment-purple {
+background-color: #EBCCFF;
+background-position: -144px 0;
+}
+.editor .writely-comment-purple-hover {
+background-color: #90F;
+background-position: -128px 0;
+}
+.editor .writely-comment-magenta {
+background-color: #FCF;
+background-position: -112px 0;
+}
+.editor .writely-comment-magenta-hover {
+background-color: #F0F;
+background-position: -96px 0;
+}
+.editor .writely-comment-red {
+background-color: #FFCACA;
+background-position: -176px 0;
+}
+.editor .writely-comment-red-hover {
+background-color: #FF7A7A;
+background-position: -160px 0;
+}
+.editor .writely-comment-marker {
+background-image: url('images/markericons_horiz.gif');
+background-color: transparent;
+padding-right: 11px;
+background-repeat: no-repeat;
+width: 16px;
+height: 16px;
+-moz-user-select: none;
+}
+.editor .writely-comment-hidden {
+padding: 0;
+background: none;
+}
+.editor .writely-comment-marker-hidden {
+background: none;
+padding: 0;
+width: 0;
+}
+.editor .writely-comment-none {
+opacity: .2;
+filter:progid:DXImageTransform.Microsoft.Alpha(opacity=20);
+-moz-opacity: .2;
+}
+.editor .writely-comment-none-hover {
+opacity: .2;
+filter:progid:DXImageTransform.Microsoft.Alpha(opacity=20);
+-moz-opacity: .2;
+}
+.br_fix span+br:not(:-moz-last-node) {
+position:relative;
+left: -1ex
+}
+#cb-p-tgt {
+font-size: 8pt;
+padding: .4em;
+background-color: #ddd;
+color: #333;
+}
+#cb-p-tgt-can {
+text-decoration: underline;
+color: #36c;
+font-weight: bold;
+margin-left: 2em;
+}
+#cb-p-tgt .spin {
+width: 16px;
+height: 16px;
+background: url(//ssl.gstatic.com/docs/clipboard/spin_16o.gif) no-repeat;
+}
+}
+h6 { font-size: 8pt }
+h5 { font-size: 8pt }
+h4 { font-size: 10pt }
+h3 { font-size: 12pt }
+h2 { font-size: 14pt }
+h1 { font-size: 18pt }
+blockquote {padding: 10px; border: 1px #DDD dashed }
+.webkit-indent-blockquote { border: none; }
+a img {border: 0}
+.pb {
+border-width: 0;
+page-break-after: always;
+/* We don't want this to be resizeable, so enforce a width and height
+using !important */
+height: 1px !important;
+width: 100% !important;
+}
+.editor .pb {
+border-top: 1px dashed #C0C0C0;
+border-bottom: 1px dashed #C0C0C0;
+}
+div.google_header, div.google_footer {
+position: relative;
+margin-top: 1em;
+margin-bottom: 1em;
+}
+/* Table of contents */
+.editor div.writely-toc {
+background-color: #f3f3f3;
+border: 1px solid #ccc;
+}
+.writely-toc > ol {
+padding-left: 3em;
+font-weight: bold;
+}
+ol.writely-toc-subheading {
+padding-left: 1em;
+font-weight: normal;
+}
+/* IE6 only */
+* html writely-toc ol {
+list-style-position: inside;
+}
+.writely-toc-none {
+list-style-type: none;
+}
+.writely-toc-decimal {
+list-style-type: decimal;
+}
+.writely-toc-upper-alpha {
+list-style-type: upper-alpha;
+}
+.writely-toc-lower-alpha {
+list-style-type: lower-alpha;
+}
+.writely-toc-upper-roman {
+list-style-type: upper-roman;
+}
+.writely-toc-lower-roman {
+list-style-type: lower-roman;
+}
+.writely-toc-disc {
+list-style-type: disc;
+}
+/* Ordered lists converted to numbered lists can preserve ordered types, and
+vice versa. This is confusing, so disallow it */
+ul[type="i"], ul[type="I"], ul[type="1"], ul[type="a"], ul[type="A"] {
+list-style-type: disc;
+}
+ol[type="disc"], ol[type="circle"], ol[type="square"] {
+list-style-type: decimal;
+}
+/* end default css */
+/* custom css */
+/* end custom css */
+/* ui edited css */
+body {
+font-family: Verdana;
+font-size: 12.0pt;
+line-height: normal;
+background-color: #ffffff;
+}
+/* end ui edited css */
+/* editor CSS */
+.editor a:visited {color: #551A8B}
+.editor table.zeroBorder {border: 1px dotted gray}
+.editor table.zeroBorder td {border: 1px dotted gray}
+.editor table.zeroBorder th {border: 1px dotted gray}
+.editor div.google_header, .editor div.google_footer {
+border: 2px #DDDDDD dashed;
+position: static;
+width: 100%;
+min-height: 2em;
+}
+.editor .misspell {background-color: yellow}
+.editor .writely-comment {
+font-size: 9pt;
+line-height: 1.4;
+padding: 1px;
+border: 1px dashed #C0C0C0
+}
+/* end editor CSS */
+</STYLE>
+<STYLE>
+body {
+margin: 0px;
+}
+#doc-contents {
+margin: 6px;
+}
+#google-view-footer {
+clear: both;
+border-top: thin solid;
+padding-top: 0.3em;
+padding-bottom: 0.3em;
+}
+a.google-small-link:link, a.google-small-link:visited {
+color:#112ABB;
+font-family:Arial,Sans-serif;
+font-size:11px !important;
+}
+body, p, div, td {
+direction: inherit;
+}
+@media print {
+#google-view-footer {
+display: none;
+}
+}
+</STYLE>
+<SCRIPT>
+function viewOnLoad() {
+if (document.location.href.indexOf('spi=1') != -1) {
+if (navigator.userAgent.toLowerCase().indexOf('msie') != -1) {
+window.print();
+} else {
+window.setTimeout(window.print, 10);
+}
+}
+if (document.location.href.indexOf('hgd=1') != -1) {
+var footer = document.getElementById("google-view-footer");
+if (footer) {
+footer.style.display = 'none';
+}
+}
+}
+</SCRIPT>
+</HEAD><BODY onload="window.jstiming.load.tick(&#39;ol&#39;); window.jstiming.report(window.jstiming.load, null, document.location.protocol == &#39;https:&#39; ? &#39;https://gg.google.com/csi&#39; : null);">
+<DIV id="doc-contents">
+<DIV id="bu-_" style="text-align: center;"><B>Efficient Processing of Time Weighted Scoring Events</B><BR id="mmz6">
+Mike Koss<BR><BR id="mmz60">Created: Sept 22, 2008</DIV><DIV id="nbyk" style="text-align: center;">Updated: October 1, 2008<BR>
+<BR>
+<DIV style="text-align: left;">
+<I>CONFIDENTIAL:&nbsp; The contents of this document are confidential and may not be disclosed or disseminated to any 3rd party without the prior written consent of the document author.</I><BR><BR><B>Background</B><BR><BR>Diverse systems have a requirement to calculate relative "popularity" or "relevance" scores based on a sequence of time-based events.&nbsp; The general pattern assigns a score or weight to different events that can occur in the system, and then accumulates those scores over time to calculate a relative popularity of a given object, piece of content, user, or the like.&nbsp; These systems can then report on the most popular pieces of content over distinct time periods (e.g., today, this week, this month, this year).<BR><BR>For example, a shopping web site can record purchase events for individual products in their catalog.&nbsp; By accumulating these scores, they can then display the most popular products that are currently being sold, making it easier for their customers to find the most likely products to be purchased.<BR><BR>The current state of the art for calculating popularity scores entails tabulating individual scoring events in a database.&nbsp; In order to discriminate recent scores from past scores, a log is maintained that counts all events for each object and for each time period.&nbsp; The log can then be queried to return the sum of the counts for the time period of interest (e.g., "the last 7 days").<BR><BR>This solution has several inefficiencies.&nbsp; Data storage is required for each time interval and object of interest.&nbsp; Storage can be reclaimed by periodically scanning all the old data and either removing it or summarizing it into larger time intervals but at the cost and complexity and of reading and re-writing a potentially large database file.&nbsp; A potentially complex query is required to retrieve the data for a given time interval.&nbsp; For example, displaying the most popular products over the last 30 days, would require storing data for each individual day for each individual product, adding the counts for the last 30 days, and sorting those values into descending order (highest to lowest).<BR><BR>An alternate method entails storing time-weighted, exponentially decaying values to each object to be scored.&nbsp; In this embodiment, a single value, a cumulative score, is maintained for each object.&nbsp; The score is updated by adding the value of new scoring events to the cumulative score.&nbsp; At the end of each time interval of interest the current scores are all updated by multiplying them by a constant scaling factor, k, between 0 and 1.&nbsp; For example, if k = 0.5, older values are depreciated by 1/2 during each time interval.&nbsp; In effect, the older scoring events will become less and less valuable in increasing the reported popularity over time, in favor of scoring for more recent events.<BR><BR>This alternate solution has the benefit of requiring only a single unit of storage for each object to be scored, but has the drawback of requiring that all the scores be updated each time interval in order to apply the depreciating scale factor.&nbsp; When the population of objects become large, this can represent a large data processing cost to update the entire database on a daily basis.<BR><BR>News sites (like Digg and Reddit) use algorithms so that recency of submission is a dominant factor.&nbsp; Their goal is to show only the most popular NEW stories on their front pages.&nbsp; The Digg algorithm appears to use a weighted average of the number of up votes (diggs) and down votes (burys) in order to determine popularity of a story.&nbsp; The date of submission of a story is used to filter all stories that were submitted today, this week, this month, or this year.&nbsp; Reddit's scoring function is based on the log of the number of votes plus a factor based on the date of the submission (log(v) + t/K).&nbsp; It has the advantage that each story's score can be updated in real time, stored and indexed by the underlying (Postgres) database.&nbsp; Because each submission is achored to a fixed submission date, the weight for all voting events for a particular story is equal, regardless of the recency of the vote.<BR><BR>Reference: http://www.seomoz.org/blog/reddit-stumbleupon-delicious-and-hacker-news-algorithms-exposed<BR>
+</DIV>
+</DIV>
+<BR id="bb9q">
+<B>Definitions</B><DIV><BR></DIV><DIV>An <I>object</I>&nbsp;is a data representation of a physical or logical entity for the purposes of performing data processing about the entity. &nbsp;Objects can represent people, content items (news stories, blog posts, products, web pages, and the like), products, services, tags, keywords, and the like.<BR></DIV><DIV><BR></DIV><DIV>An <I>event</I> is any action, whether user generated or automatic, that occurs at particular time. &nbsp;Events can be differentiated by type and may be associated with one or more objects. &nbsp;Examples include a user clicking on a hyperlink, voting "up" or "down" a news story, accessing a web page, silencing or blocking a user or topic, marking content as a "favorite", sending content to a fiend, or commenting on content.</DIV><DIV><BR></DIV><DIV>An <I>event stream</I> is a time-ordered sequence of events.<BR></DIV><DIV><BR></DIV><DIV>A <I>score</I>&nbsp;is a numeric value that is associated with an event. &nbsp;The size of the score can depend on the type of event as well as by attributes of the objects with which the event is associated.</DIV><DIV><BR></DIV><DIV>A <I>cumulative score</I>&nbsp;is a weighted sum of scores in an event stream that apply to a particular object. &nbsp;The weights are determined by the time at which each event occurs.</DIV><DIV><BR></DIV><DIV>A <I>half-life</I>&nbsp;is a time interval in which the weights of cumulative scores at the beginning of the interval are 1/2 the value of weights of cumulative scores at the end of the interval.</DIV><DIV><DIV><BR></DIV><DIV><B>Summary<BR><BR></B><DIV>In order to calculate an estimate of the cumulative score over time, a time-weighted coefficient is assigned to each past score. The time-weight is based on a exponential decay function such that events that occur in the past have an exponentially decreasing coefficient, based on their age. &nbsp;Events that occur t units in the past, have a coefficient of 0.5^(t/h), where h is the half-life of the cumulative score. &nbsp;Events that occur h units in the past have a coefficient of 1/2. &nbsp;Events that occur 2*h units in the past have a coefficient of 1/4, etc.</DIV><DIV><BR></DIV><DIV>The present embodiment calculates cumulative time-weighted scores from an event stream, for a collection of objects. In order to compare cumulative scores in a database, the present embodiment additionally stores a time-normalized form of the cumulative score. &nbsp;A starting time is chosen for the system as one which is earlier than all scoring events that will occur in the system. &nbsp;The weight for events that occur at the starting time are assigned as "1", and exponentially increase (double) each h units of time. &nbsp;So that time-weights are calculated as 2^((t-start)/h). &nbsp;In order to bound the size of the data storage requirement for exponentially increasing time-weighted scores, the log (base 2) of the cumulative score is stored. &nbsp;Since the log(x) is an increasing function of x, comparison of log(a) &lt; log(b) has the same truth value of comparing a &lt; b. &nbsp;These time-normalized values can be stored in a database table, indexed and sorted to allow for efficient retrieval of objects with the highest (and lowest) cumulative scores.</DIV><DIV><BR></DIV><DIV>The embodiment can also compute as estimate of the rate of scoring values being accumulated by any single object over a recent time interval.</DIV><DIV><BR></DIV><DIV>For example, a news service can assign a score of "1" to a news story whenever it is read by a subscriber.&nbsp; Over time, some stories accumulate higher scores than others.&nbsp; If the subscribers (or publishers) of the news service desire to see the most popular stories over the past "day", "week", "month", or "year", this embodiment can efficiently retrieve that list. &nbsp;For a given news story, the news service could display an estimate of the number of times that story has been read over the last day, week, month or year.<BR><BR></DIV><DIV><P>Only a constant amount of storage is required for each object being scored, yet, no re-writing of the database representation is required beyond the calculation of individual scoring events.&nbsp; Standard database indexing and querying can be used to retrieve the objects with the highest score over a desired time interval.&nbsp; The characteristic half-life of a scoring event can be tuned for different applications.&nbsp; Multiple distinct half-lives can be maintained simultaneously with only constant storage required for each object.<BR></P><DIV><BR></DIV><DIV><DIV><B>Definition of Variables</B><BR id="uejs2">
+<BR id="uejs3">
+<DIV id="xp6c">
+<TABLE class="zeroBorder" id="h74l" border="0" cellpadding="3" cellspacing="0" width="592" height="132">
+<TBODY id="xp6c0">
+<TR id="xp6c1" align="center" bgcolor="#000000">
+<TD id="xp6c2" style="color: rgb(255, 255, 255); text-align: center;" align="center" valign="top" width="50%">
+Variable<BR id="xp6c3">
+</TD>
+<TD id="xp6c4" style="color: rgb(255, 255, 255); text-align: center;" width="50%">
+Definition<BR id="xp6c5">
+</TD>
+</TR>
+<TR id="xp6c6">
+<TD id="xp6c7" align="center" valign="top" width="50%">
+t<BR id="xp6c8">
+</TD>
+<TD id="xp6c9" width="50%">
+Time (e.g., units may be in days, beginning with 0).<BR id="xp6c10">
+</TD>
+</TR>
+<TR id="xp6c11">
+<TD id="xp6c12" align="center" valign="top" width="50%">
+h<BR id="xp6c13">
+</TD>
+<TD id="xp6c14" width="50%">
+The characteristic half-life of a value.&nbsp; This <I id="x3eb">time constant</I> determines how valuable a past event is compared to a present event.<BR id="xp6c15">
+</TD>
+</TR>
+<TR id="xp6c16">
+<TD id="xp6c17" align="center" valign="top" width="50%">
+v(t)<BR id="xp6c18">
+</TD>
+<TD id="xp6c19" width="50%">
+The intrinsic (non time-weighted) score of an event or action (taken at time, t).<BR id="xp6c20">
+</TD>
+</TR>
+<TR id="xp6c21">
+<TD id="xp6c22" align="center" valign="top" width="50%">
+S(t)<BR id="xp6c23">
+</TD>
+<TD id="xp6c24" width="50%">
+The time-weighted, net present sum of all actions up to and including time, t.<BR id="xp6c25">
+</TD>
+</TR>
+<TR id="blpn">
+<TD id="blpn0" align="center" valign="top" width="50%">
+k<BR id="blpn1">
+</TD>
+<TD id="blpn2" width="50%">
+The depreciation factor over one unit of time:<BR id="blpn3">
+<DIV id="gp4_" style=" text-align: left;">
+<IMG id="v6c0" src="./Efficient Proces..._files/File" style="width: 108px; height: 39px;">
+</DIV>
+For example, when h=1, k=0.5.&nbsp; When h=7, k=0.906.
+<DIV id="i6x3" style=" text-align: left;">
+<IMG id="x_yh" src="./Efficient Proces..._files/File(1)" style="width: 68px; height: 12px;">
+</DIV>
+</TD>
+</TR>
+</TBODY>
+</TABLE>
+<BR id="j77b">
+<B id="lm9v">Formulation</B><BR id="cx5j">
+<BR id="cx5j0">
+</DIV>
+<DIV id="j4j7">The cumulative score is calculated as:<BR><DIV id="dfc0" style=" text-align: left;">
+<DIV id="j:sb" style="margin-left: 40px;">
+<IMG id="ucnm" src="./Efficient Proces..._files/File(2)" style="width: 310px; height: 91px;"><BR id="j:sb0">
+</DIV>
+<BR id="j:sb1"></DIV></DIV><DIV id="j:sb5">
+The time-normalized cumulative score is calculated as:<BR id="l73t0">
+<DIV id="qrg3" style="margin-left: 40px;">
+<DIV id="gh7-" style=" text-align: left;">
+<IMG id="w_r3" src="./Efficient Proces..._files/File(3)" style="width: 323px; height: 91px;">
+</DIV>
+</DIV>
+<DIV id="tfse">The log (base 2) of the time-normalized cumulative score is calculated as:
+</DIV>
+<DIV id="v:6g" style=" text-align: left;">
+<DIV id="s95x" style=" text-align: left; margin-left: 40px;">
+<IMG id="cjnd0" src="./Efficient Proces..._files/File(4)" style="width: 522px; height: 69px;"><BR id="q7v:">
+<DIV id="jm67" style=" text-align: left;">
+<IMG id="q7v:0" src="./Efficient Proces..._files/File(5)" style="width: 177px; height: 57px;">
+</DIV>
+</DIV>
+<BR id="umz-">
+<B id="g7:x1">Calculation</B><BR id="g7:x2">
+<BR id="g7:x3">
+To organize the calculation of log(S'), the following values are stored for each scored object (in a database or in-memory data structure):</DIV><DIV id="vbbh" style=" text-align: left;"><OL><LI>S - the cumulative score at time of latest update</LI><LI>Last - time of last update</LI><LI>LogSp - log (base 2) of the time normalized cumulative score</LI></OL>
+<BR id="dl5o0">
+<BLOCKQUOTE id="dl5o1">// Time scale constants based on selected half-life time-constant<BR id="kbau">
+Score.h = 3;<BR id="mhi3">
+Score.k = Math.pow(1/2, 1/Score.h);<BR><BR id="xkm:">
+Score.log2 = Math.log(2);<BR id="kbau0"><BR>
+// Initialization<BR id="kbau1">
+function Score()<BR id="bika">
+{<BR id="bika0">
+&nbsp;&nbsp;&nbsp; this.S = 0;<BR id="bika1">&nbsp;&nbsp; &nbsp;this.Last= 0;<BR>&nbsp;&nbsp;&nbsp; this.LogSp = 1;<BR id="bika3">
+}<BR id="f1gz"><BR>
+// Update the cumulative score for an event scoring value, v, at time, t.<BR id="jtfn">Score.prototype.Update = function(v, t)<BR id="jtfn3">
+{<BR>&nbsp;&nbsp; &nbsp;// Scoring event more recent than any past event<BR id="exa5">
+&nbsp;&nbsp;&nbsp; if (t &gt; this.Last)<BR id="exa50">
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; {<BR id="jtfn4">
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; this.S = (1-Score.k)*v + Math.pow(Score.k, t-this.Last) * this.S;<BR id="uprm">
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; this.Last = t;<BR id="jtfn5">
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; }<BR>&nbsp;&nbsp; &nbsp;// Scoring event older than the most recent scoring event<BR id="uprm0">
+&nbsp;&nbsp;&nbsp; else<BR id="g6dn">
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; {<BR id="g6dn0">&nbsp;&nbsp; &nbsp; &nbsp; &nbsp;this.S += (1-Score.k) * Math.pow(Score.k, this.Last-t) * v;<BR id="g6dn1">
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; }<BR id="nj9a">
+&nbsp;&nbsp;&nbsp; <BR>&nbsp;&nbsp;&nbsp; this.LogSp = Math.log(Math.abs(this.S))/Score.log2 + this.Last/Score.h;<BR>&nbsp;&nbsp;&nbsp; if (this.S &lt; 0) this.LogSp *= -1;<BR id="jtfn7">
+}<BR id="fid9">
+</BLOCKQUOTE>
+</DIV>
+</DIV>
+<DIV id="w_r31">
+<B id="lobu">
+<DIV id="n7h5" style=" text-align: left;"><SPAN style="font-weight: normal;">Retrieving the objects with the highest valued cumulative scores is as simple as executing a standard SQL query such as:</SPAN></DIV><BLOCKQUOTE><SPAN style="font-weight: normal;">SELECT * FROM Scores ORDER BY LogSp DESC LIMIT 100;</SPAN></BLOCKQUOTE><DIV id="shi-" style=" text-align: left;">Variations</DIV><DIV id="x48n" style=" text-align: left;"><SPAN style="font-weight: normal;">An embodiment may use an in-memory data structure, such as a heap, or a priority queue, to store cumulative scores. &nbsp;This would allow for very fast (constant time) calculation of the highest (or lowest) scoring objects. &nbsp;An embodiment may store cumulative scores in a SQL database (such as MySQL, or SQL Server, or the like), and create clustered indices such that querying for the highest (or lowest) scoring objects is optimized for fastest retrieval. &nbsp;An embodiment may store cumulative scores in a distributed database (such as Google AppEngine or AWS Simple Table). &nbsp;</SPAN></DIV><DIV id="s_se" style=" text-align: left;"><SPAN style="font-weight: normal;">Event scoring can be performed online (in real time) by writing directly to an online database of cumulative object scores. &nbsp;Alternatively, scoring events can be logged and applied by an offline (batch) process.</SPAN></DIV><DIV id="jnkk" style=" text-align: left;"><SPAN style="font-weight: normal;">An embodiment may shard the cumulative scores among distributed database records to increase scalability and reduce contention. Components of the cumulative sum can be stored in distinct storage locations (possibly located on different processing units). A combined cumulative score can be calculated by the following method:</SPAN></DIV><BLOCKQUOTE><SPAN style="font-weight: normal;">// Combine cumulative scores from distributed cumulative scores</SPAN><BR><SPAN style="font-weight: normal;">Score.prototype.CombineScores(a)<BR>{<BR>&nbsp;&nbsp; &nbsp;for (var i = 0; i &lt; a.length; i++)<BR>&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;this.Update(a.S, a.Last);<BR>}<BR></SPAN></BLOCKQUOTE></B></DIV>
+<B>Trend Data</B><BR><BR>In addition to raw popularity, trend information can be extracted by comparing scores for different time scales.&nbsp; The scores at different time scales are already normalized to the average value per unit time. By storing differences or ratios of the scores, the database can be queried to find the scores that have increased (or decreased) the most in the most recent time interval, compared to the longer time-scale interval.<BR><BR><BLOCKQUOTE>[insert formulas and code]<BR></BLOCKQUOTE><BR></DIV></DIV><B>Applications</B></DIV><DIV><BR></DIV><DIV>Time weighted scoring can be used in a broad variety of applications, including the following examples:</DIV><DIV><BR></DIV><DIV><OL><LI>Ranking the popularity of news stories on a news web site.</LI><LI>Ranking the popularity of blog posts in a blog or on a collection of blogs.</LI><LI>Ranking the popularity of products on a shopping web site or collection of shopping web sites.</LI><LI>Ranking the popularity of a web site in a social bookmarking service.</LI><LI>Ranking the popularity of content created by a user in a forum.</LI><LI>Ranking the popularity of search terms on a search engine.</LI><LI>Ranking the popularity of tags used to categories bookmarks, blogs, or news stories.</LI><LI>Ranking the frequency of requests of an IP address in an network intrusion detection system.</LI><LI>Ranking the click-through and revenue rates of ads in an advertising distribution network.</LI><LI>Ranking the activity level of users in a social network or social network group.</LI><LI>Calculating the resource usage of a customer by a network service provider.</LI><LI>Ranking the response time of pages on a web site.</LI><LI>Generating analytics information about the most requested pages on a web site.</LI></OL></DIV></DIV></DIV><BR>
+<BR clear="all">
+</DIV>
+<DIV id="google-view-footer">
+<DIV id="maybecanedit" style="float:right">
+<A class="google-small-link" id="editpermissionlink" href="http://docs.google.com/a/mckoss.com/Doc?tab=edit&dr=true&id=dg7jwgdn_143cmj724fg" title="Edit this page">
+Edit this page (if you have permission)</A>
+<SPAN style="color:#676767;">|</SPAN>
+<INPUT id="report-abuse-button" type="button" value="Report abuse" onclick="reportAbuse();">
+</DIV>
+<DIV style="float:left">
+<A title="Learn more about Google Docs" class="google-small-link" href="http://docs.google.com/a/mckoss.com/">
+Google Docs -- Web word processing, presentations and spreadsheets.</A>
+</DIV>
+<P> &nbsp;
+</P></DIV>
+<SCRIPT><!--
+    viewOnLoad();
+    if(window.jstiming){window.jstiming.a={};window.jstiming.c=1;function g(a,b,f){var c=a.t[b];if(!c)return undefined;c=a.t[b][0];if(f!=undefined)a=f;else a=a.t.start[0];return c-a}window.jstiming.report=function(a,b,f){var c="";if(window.jstiming.pt){c+="&srt="+window.jstiming.pt;delete window.jstiming.pt}try{if(window.external&&window.external.tran)c+="&tran="+window.external.tran;else if(window.gtbExternal&&window.gtbExternal.tran)c+="&tran="+window.gtbExternal.tran()}catch(o){}if(a.b)c+="&"+a.b;
+var e=a.t,n=e.start,k=[],h=[],i=[];for(var d in e)if(!(d=="start"))if(!(d.indexOf("_")==0)){var j=e[d][1];if(j){if(e[j]){h.push(d+"."+g(a,d,e[j][0]));i.push(g(a,d))}}else n&&k.push(d+"."+g(a,d))}delete e.start;if(b)for(var l in b)c+="&"+l+"="+b[l];a=[f?f:"http://csi.gstatic.com/csi","?v=3","&s="+(window.jstiming.sn||"writely")+"&action=",a.name,h.length?"&it="+h.join(","):"",i.length?"&irt="+i.join(","):"",c,"&rt=",k.join(",")].join("");b=new Image;var m=window.jstiming.c++;window.jstiming.a[m]=b;
+b.onload=b.onerror=function(){delete window.jstiming.a[m]};b.src=a;b=null;return a}};
+
+    window.jstiming.load.name = 'published';
+    
+    
+    var urchinPage = "/View";
+
+    
+    function getXHR() {
+      if (typeof XMLHttpRequest != "undefined") {
+        return new XMLHttpRequest();
+      }
+      try { return new ActiveXObject("Msxml2.XMLHTTP.6.0") } catch(e) {}
+      try { return new ActiveXObject("Msxml2.XMLHTTP.3.0") } catch(e) {}
+      try { return new ActiveXObject("Msxml2.XMLHTTP") } catch(e) {}
+      try { return new ActiveXObject("Microsoft.XMLHTTP") } catch(e) {}
+      return null;
+    }
+
+    function reportAbuse() {
+      var req = getXHR();
+      if (req) {
+        
+          var docid = 'dg7jwgdn_143cmj724fg';
+          var posttoken = 'Qn5cMCQBAAA.cqrxyKYmLQjYDfvOMGBW5w.k9O7ngeX_-3_RV20vowEMA';
+        
+        req.onreadystatechange = function() {
+          try {
+            if (req.readyState == 4 && req.status == 200) {
+              var button = document.getElementById("report-abuse-button");
+              button.value = 'Thank you!';
+              button.disabled = true;
+            }
+          } catch (ex) {
+            
+          }
+        }
+        try {
+          req.open('POST', 'MiscCommands', true);
+          req.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded; charset=UTF-8');
+          req.send('command=report_abuse&abuseDoc=' + encodeURIComponent(docid) +
+                   '&POST_TOKEN=' + encodeURIComponent(posttoken));
+        } catch (ex) {
+          
+        }
+      }
+    }
+  --></SCRIPT>
+
+
+</BODY></HTML>
