@@ -152,7 +152,7 @@ if (!window.console)
 	
 	Import: function(sPath)
 		{
-		return window.global_namespace.Define(sPath);
+		return window[sGlobal].Define(sPath);
 		},
 		
 	SGlobalName: function(sInNamespace)
