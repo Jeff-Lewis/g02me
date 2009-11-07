@@ -81,8 +81,7 @@ if (!window.console)
 	if (window[sGlobal])
 		return;
 	
-	var ns = window[sGlobal] = new Namespace(null); 
-
+	/** @constructor **/
 	function Namespace(nsParent, sName)
 		{
 		if (sName)
@@ -102,7 +101,7 @@ if (!window.console)
 			this._sPath = '';
 		};
 	
-	Namespace.prototype.Extend = function(oDest)
+	Namespace.prototype.Extend = function(oDest, var_args)
 		{
 		for (var i = 1; i < arguments.length; i++)
 			{
@@ -116,7 +115,9 @@ if (!window.console)
 	
 		return oDest;
 		};
-		
+
+	var ns = window[sGlobal] = new Namespace(null);
+
 	ns.Extend(Namespace.prototype, {
 	Define: function (sPath, fnCallback)
 		{
@@ -160,5 +161,12 @@ if (!window.console)
 		return sGlobal + '.' + this._sPath + '.' + sInNamespace;
 		}
 	});
+	
+	// Export names (for Google Closure optimizer)
+	var p = Namespace.prototype;
+	p['Extend'] = p.Extend;
+	p['Define'] = p.Define;
+	p['Import'] = p.Import;
+	p['SGlobalName'] = p.SGlobalName;
 
 })();
