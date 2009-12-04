@@ -1,12 +1,78 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html>
 <head>
 <title>Exponentially decaying counter demonstration</title>
 <style>
 body {
-width:900px;
+width:1000px;
+margin:auto;
 }
 </style>
+<script src="scripts/namespace.js"></script>
+<script src="scripts/timescore.js"></script>
+
+
+<script type="text/javascript" src="http://www.google.com/jsapi"></script>
+<script>
+google.load('visualization', '1', {packages:['linechart']});
+
+DEMO = global_namespace.Define('startpad.timscore.demo', function (NS) {
+	TimeScore = NS.Import('startpad.timescore');
+
+NS.Extend(NS, {
+Init: function()
+	{
+	setInterval(NS.UpdateChart, 1000);
+	},
+	
+UpdateChart: function()
+	{
+	console.log("update chart");
+	},
+	
+DrawChart: function()
+	{
+	var data = new google.visualization.DataTable();
+	data.addColumn('time', 'Seconds');
+	data.addColumn('number', 'Count');
+	data.addColumn('number', 'Timescore');
+
+	var sum = 0;
+	// Report rate limit with a 15 minute half-life
+	var rate = new NS.RateLimit(0, 60*15);
+	for (var i = NS.results.length-1; i >= 0; i--)
+		{
+		var res = NS.results[i];
+		sum += 1;
+		var sUser;
+		var user = NS.mUsers[res.from_user];
+		if (user.aAllChildren.length > 5)
+			{
+			sUser = user.name;
+			console.log("user: " + sUser);
+			}
+		else
+			sUser = undefined;
+		var dateCreated = new Date(res.created_at);
+		var tph = rate.current_value(dateCreated.getTime()/1000, 1);
+		var row = [dateCreated, tph, sum, sUser];
+		data.addRow(row);
+		}
+		
+	var chart = new google.visualization.AnnotatedTimeLine(document.getElementById('chart'));
+	chart.draw(data, {
+		displayAnnotations: true, scaleType: 'allmaximized', scaleColumns:[0, 1, 3],
+		thickness: 3, displayZoomButtons: false
+		});
+	}
+});
+
+}); // demo.timescore
+
+</script>
 </head>
 <body>
 <h1><script>document.write(document.title);</script></h1>
+<div id="chart" style="width:800px;height:600px;"></div>
+<script>DEMO.Init()</script>
 </body>
