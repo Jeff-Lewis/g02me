@@ -11,7 +11,7 @@ except:
 DEBUG = (ENVIRONMENT == "local")
 #DEBUG = True
 TEMPLATE_DEBUG = DEBUG
-CACHE_ON = not DEBUG
+CACHE_ON = False # Back-port of Cache from Django 1.1 not working ... missing symbols
 
 ADMINS = (
     ('Mike Koss', 'admin@go2.me'),
@@ -28,7 +28,7 @@ sTwitterSource = "go2me"
 sSiteTitle = "Link Shortening and Discussion Service"
 sSiteTagline = "Send a Link - Start a Conversation"
 # Link length calculation for first 100's thousands links
-nLinkLength = len("http://%s/" % sSiteHost) + 3 
+nLinkLength = len("http://%s/" % sSiteHost) + 3
 mpSiteAlternates = set(['www.go2.me', 'g02.me', 'www.g02.me', 'go2.me', 'u.g02.me'])
 idMapBase = 57
 cPagesExtra = 159

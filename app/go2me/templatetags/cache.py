@@ -1,7 +1,6 @@
 # File copied from Django 1.0 distribution
 
 from django.template import Library, Node, TemplateSyntaxError, VariableDoesNotExist, resolve_variable
-from django.template import resolve_variable
 from google.appengine.api import memcache as cache
 import settings
 
