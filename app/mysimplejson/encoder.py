@@ -4,7 +4,7 @@ Implementation of JSONEncoder
 import re
 
 try:
-    from simplejson._speedups import encode_basestring_ascii as c_encode_basestring_ascii
+    from mysimplejson._speedups import encode_basestring_ascii as c_encode_basestring_ascii
 except ImportError:
     pass
 
@@ -81,7 +81,7 @@ try:
     encode_basestring_ascii = c_encode_basestring_ascii
 except NameError:
     encode_basestring_ascii = py_encode_basestring_ascii
-    
+
 class Atomic():
     pass
 
@@ -90,7 +90,7 @@ class JSONEncoder(object):
     Extensible JSON <http://json.org> encoder for Python data structures.
 
     Supports the following objects and types by default:
-    
+
     +-------------------+---------------+
     | Python            | JSON          |
     +===================+===============+
@@ -335,7 +335,7 @@ class JSONEncoder(object):
 
         For example, to support arbitrary iterators, you could
         implement default like this::
-            
+
             def default(self, o):
                 try:
                     iterable = iter(o)
@@ -358,7 +358,7 @@ class JSONEncoder(object):
         if isinstance(o, basestring):
             if isinstance(o, str):
                 _encoding = self.encoding
-                if (_encoding is not None 
+                if (_encoding is not None
                         and not (_encoding == 'utf-8')):
                     o = o.decode(_encoding)
             if self.ensure_ascii:
@@ -375,9 +375,9 @@ class JSONEncoder(object):
         """
         Encode the given object and yield each string
         representation as available.
-        
+
         For example::
-            
+
             for chunk in JSONEncoder().iterencode(bigobject):
                 mysocket.write(chunk)
         """

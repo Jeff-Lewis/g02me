@@ -34,9 +34,9 @@ def real_main():
 
     # Run the WSGI CGI handler with that application.
     util.run_wsgi_app(application)
-    
+
 def profile_main():
-    # This is the main function for profiling 
+    # This is the main function for profiling
     # We've renamed our original main() above to real_main()
     import cProfile, pstats, StringIO
     prof = cProfile.Profile()
@@ -49,8 +49,8 @@ def profile_main():
     # stats.print_callees()
     # stats.print_callers()
     logging.info("Profile data:\n%s", stream.getvalue())
- 
+
 main = real_main
-    
+
 if __name__ == '__main__':
   main()

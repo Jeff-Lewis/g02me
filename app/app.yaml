@@ -1,5 +1,5 @@
 application: g02me
-version: 16
+version: 17
 runtime: python
 api_version: 1
 default_expiration: 1h
@@ -17,7 +17,7 @@ handlers:
 
 - url: /images
   static_dir: images
-    
+
 - url: /favicon.ico
   static_files: images/favicon.ico
   upload: images/favicon.ico
@@ -26,11 +26,11 @@ handlers:
 - url: /static
   static_dir: static
 
-# For Google Webmaster Tools domain validation  
+# For Google Webmaster Tools domain validation
 - url: /google9eab28331a1ab405.html
   static_files: static/google9eab28331a1ab405.html
   upload: static/google9eab28331a1ab405.html
-  
+
 - url: /robots.txt
   static_files: static/robots.txt
   upload: static/robots.txt
@@ -40,7 +40,7 @@ handlers:
 - url: /shell.*
   script: shell.py
   login: admin
-  
+
 # Django handler
 # Note that paths not designated in urls.py will throw a FileNotFound exception
 - url: /.*

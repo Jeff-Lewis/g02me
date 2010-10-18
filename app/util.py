@@ -12,7 +12,7 @@ import timescore
 import threading
 from urlparse import urlsplit, urlunsplit
 import logging
-import simplejson
+import mysimplejson
 from hashlib import sha1
 import re
 import sys
@@ -47,7 +47,7 @@ def NormalizeUrl(url):
         rgURL = list(urlsplit(url))
     # Invalid protocol
     if rgURL[0] != "http" and rgURL[0] != "https":
-        raise Error("Invalid protocol: %s" % rgURL[0]) 
+        raise Error("Invalid protocol: %s" % rgURL[0])
     # Invalid domain
     if rgURL[1]:
         rgURL[1] = rgURL[1].lower()
@@ -65,31 +65,31 @@ def NormalizeUrl(url):
 # Avoid self-referential and URL ping-pong with known URL redirection sites
 blackList = set([
     # From http://spreadsheets.google.com/pub?key=pp1P7HxORyqvNwE0KHSu-Gw&gid=2
-    "tinyurl.com", "bit.ly", "is.gd", "ow.ly", "tr.im", "cli.gs", 
-    "snipurl.com", "tiny.cc", "digg.com", "budurl.com", "moourl.com", "shorturl.com", 
-    "metamark.net", "notlong.com", "simurl.com", "go2.me", "doiop.com", "zi.ma", 
-    "lnk.in", "tweetburner.com", "shrink2one.com", "tighturl.com", "poprl.com", "1link.in", 
-    "adjix.com", "url.ie", "tinyarro.ws", "urlhawk.com", "urlcut.com", "clickmeter.com", 
-    "sqrl.it", "fon.gs", "dwarfurl.com", "fexr.com", "kl.am", "linkbun.ch", 
-    "sturly.com", "ilix.in", "shorl.com", "yatuc.com", "icanhaz.com", "w3t.org", 
-    "short.ie", "yep.it", "lin.cr", "urlBorg.com", "zipmyurl.com", "easyuri.com", 
-    "spedr.com", "kissa.be", "minilien.com", "twurl.cc", "idek.net", "decentURL.com", 
-    "shrinkster.com", "6url.com", "makeashorterlink.com", "elfurl.com", "go2cut.com", "qicute.com", 
-    "u.mavrev.com", "sharetabs.com", "plurl.me", "u.mavrev.com", "shrinkify.com", "urlzen.com", 
-    "shrunkin.com", "shorturl.de", "xaddr.com", "short.to", "dfl8.me", "hurl.ws", 
-    "urlcover.com", "memurl.com", "ln-s.net", "twirl.at", "u6e.de", "shurl.net", 
-    "4url.cc", "digbig.com", "301url.com", "shorterlink.co.uk", "fire.to", "weturl.com", 
-    "yweb.com", "firsturl.de", "shortlinks.co.uk", "urlx.org", "tiny123.com", "nsfw.in", 
-    "bloat.me", "hex.io", "krunchd.com", "thnlnk.com", "lookleap.com", "notifyurl.com", 
-    "QLNK.net", "link.toolbot.com", "hurl.me", "shrt.st", "2big.at", "parv.us", 
-    "makeitbrief.com", "url360.me", "eweri.com", "smarturl.eu", "urlot.com", "muhlink.org", 
-    "hosturl.com", "tinyuri.ca", "ru.ly", "voomr.com", "url9.com", "plumurl.com", 
+    "tinyurl.com", "bit.ly", "is.gd", "ow.ly", "tr.im", "cli.gs",
+    "snipurl.com", "tiny.cc", "digg.com", "budurl.com", "moourl.com", "shorturl.com",
+    "metamark.net", "notlong.com", "simurl.com", "go2.me", "doiop.com", "zi.ma",
+    "lnk.in", "tweetburner.com", "shrink2one.com", "tighturl.com", "poprl.com", "1link.in",
+    "adjix.com", "url.ie", "tinyarro.ws", "urlhawk.com", "urlcut.com", "clickmeter.com",
+    "sqrl.it", "fon.gs", "dwarfurl.com", "fexr.com", "kl.am", "linkbun.ch",
+    "sturly.com", "ilix.in", "shorl.com", "yatuc.com", "icanhaz.com", "w3t.org",
+    "short.ie", "yep.it", "lin.cr", "urlBorg.com", "zipmyurl.com", "easyuri.com",
+    "spedr.com", "kissa.be", "minilien.com", "twurl.cc", "idek.net", "decentURL.com",
+    "shrinkster.com", "6url.com", "makeashorterlink.com", "elfurl.com", "go2cut.com", "qicute.com",
+    "u.mavrev.com", "sharetabs.com", "plurl.me", "u.mavrev.com", "shrinkify.com", "urlzen.com",
+    "shrunkin.com", "shorturl.de", "xaddr.com", "short.to", "dfl8.me", "hurl.ws",
+    "urlcover.com", "memurl.com", "ln-s.net", "twirl.at", "u6e.de", "shurl.net",
+    "4url.cc", "digbig.com", "301url.com", "shorterlink.co.uk", "fire.to", "weturl.com",
+    "yweb.com", "firsturl.de", "shortlinks.co.uk", "urlx.org", "tiny123.com", "nsfw.in",
+    "bloat.me", "hex.io", "krunchd.com", "thnlnk.com", "lookleap.com", "notifyurl.com",
+    "QLNK.net", "link.toolbot.com", "hurl.me", "shrt.st", "2big.at", "parv.us",
+    "makeitbrief.com", "url360.me", "eweri.com", "smarturl.eu", "urlot.com", "muhlink.org",
+    "hosturl.com", "tinyuri.ca", "ru.ly", "voomr.com", "url9.com", "plumurl.com",
     "ix.lt",
-    
+
     # Additional aliases
     "snurl.com", "snipr.com", "sn.im",
     "alturl.com", "2ya.com", "xrl.us", "iterasi.net",
-    
+
     # Abuse sites
     "paypal.com",
      ])
@@ -106,7 +106,7 @@ def CheckBlacklist(sHost):
         if sHost == settings.sSiteHost.lower() or sHost in settings.mpSiteAlternates or sHost.startswith('localhost'):
             raise Error(sDomainError %
                 {'siteName': settings.sSiteName, 'host':settings.sSiteHost}, 'Warning/Domain')
-        
+
         if sHost in whiteList:
             return
 
@@ -134,9 +134,9 @@ def EscapeHTML(s):
         replace('>', '&gt;').\
         replace('"', '&quot;').\
         replace("'", '&#39;')
-    
 
-# Convert runs of all non-alphanumeric characters to single dashes 
+
+# Convert runs of all non-alphanumeric characters to single dashes
 regNonchar = re.compile(r"[^\w]")
 regDashes = re.compile(r"[\-]+")
 regPrePostDash = re.compile(r"(^-+)|(-+$)")
@@ -147,8 +147,8 @@ def Slugify(s):
     s = regPrePostDash.sub('', s)
     return s
 
-from simplejson import JSONEncoder
-from simplejson.encoder import Atomic
+from mysimplejson import JSONEncoder
+from mysimplejson.encoder import Atomic
 from datetime import datetime, timedelta
 
 # --------------------------------------------------------------------
@@ -160,25 +160,25 @@ class JavaScriptEncoder(JSONEncoder):
         if isinstance(obj, datetime):
             return ISODate(obj)
         return JSONEncoder.default(self, obj)
-    
+
 class ISODate(Atomic):
     def __init__(self, dt):
         self.dt = dt
-        
+
     def __str__(self):
         return "%s.ISO.ToDate(\"%sZ\")" % (settings.sJSNamespace, self.dt.isoformat())
-    
+
 class JavaScript(Atomic):
     def __init__(self, st):
         self.st = st;
-        
+
     def __str__(self):
         return self.st;
 
 # Parse ISO-8601: YYYY-MM-DDTHH:MM:SS.ssssssZ
-#                          1      2      3      4      5       6      7  
+#                          1      2      3      4      5       6      7
 regISO = re.compile(r"^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2}):(\d{2})(\.\d{0,6})?Z$")
-    
+
 def DateFromISO(s):
     # TODO: Allow just date w/o full fractional time - or partial times
     m = regISO.match(s)
@@ -189,17 +189,17 @@ def DateFromISO(s):
     if m.group(7):
         dt += timedelta(microseconds=int(float('0'+m.group(7))*1000000))
     return dt
-    
+
 # --------------------------------------------------------------------
 # Django request filter middleware
 # --------------------------------------------------------------------
-    
+
 class ReqFilter(object):
     """
     Setup global (thread local) variables for the request and handle exceptions thrown
     in the views.
     """
-    
+
     def process_request(self, req):
         from go2me import models
 
@@ -224,7 +224,7 @@ class ReqFilter(object):
                 return HttpResponsePermanentRedirect('http://blog.go2.me%s' % req.get_full_path())
 
         local.requser = requser = ReqUser(req)
-        
+
         """
         Add additional permissions to ReqUser object:
 
@@ -234,17 +234,17 @@ class ReqFilter(object):
         'view-count': Can update the view count of a link
         'comment': Can add or delete a comment
         'api': Can make a data-modification request via JSON or POST api
-        
+
         Note that multiple permission can be required to perform operations like 'comment'.
         """
-        
+
         requser.SetMaxRate('write', local.ipAddress, 1)
         if requser.fAnon:
             requser.Allow('share')
         else:
             requser.Allow('share', 'score', 'view-count', 'comment', 'presence')
             requser.SetMaxRate('write', requser.uid, 10)
-            
+
         if req.method == 'GET':
             local.mpParams = req.GET
         else:
@@ -259,11 +259,11 @@ class ReqFilter(object):
                 requser.SetMaxRate('write', requser.uid, 10)
                 requser.Allow('api', 'post')
         except: pass
-        
+
         # Static apikey: dev~rate~yyyy-mm-dd (expiration date)
         try:
             sAPI = SGetSigned('api', local.mpParams['apikey'])
-            
+
             rgAPI = sAPI.split('~')
             dev = str(rgAPI[0])
             rate = int(rgAPI[1])
@@ -272,7 +272,7 @@ class ReqFilter(object):
                 requser.SetMaxRate('write', dev, rate)
                 requser.Allow('api')
         except: pass
-        
+
         # Client apikey: ip~rate
         try:
             sAPI = SGetSigned('apiIP', local.mpParams['apikey'])
@@ -283,12 +283,12 @@ class ReqFilter(object):
             if local.ipAddress == ip:
                 requser.SetMaxRate('write', ip, rate)
                 requser.Allow('api')
-        except: pass        
-        
+        except: pass
+
         # Redirect from home to the profile page if the user profile is not complete
         if not local.fJSON and requser.profile and not requser.profile.IsValid() and req.path == '/':
-             return HttpResponseRedirect("/profile/")  
-        
+             return HttpResponseRedirect("/profile/")
+
     def process_response(self, req, resp):
         # If the user has no valid userAuth token, given them one for the next request
         try:
@@ -304,26 +304,26 @@ class ReqFilter(object):
         # resp['Cache-Control'] = 'no-cache'
         # resp['Expires'] = '0'
         return resp
-        
+
     def process_exception(self, req, e):
         if isinstance(e, DirectResponse):
             return e.resp
         sBacktrace = ''.join(traceback.format_list(traceback.extract_tb(sys.exc_info()[2])))
-        
+
         if isinstance(e, Error):
             logging.info("Exception: %r" % e)
             logging.info(sBacktrace)
             return HttpError(req, e.obj['message'], obj=e.obj)
-        
+
         logging.error("Unknown exception: %r" % e)
         logging.error(sBacktrace)
         if not settings.DEBUG:
             return HttpError(req, "Application Error", {'status': 'Fail'})
-        
+
 def IsJSON():
     # BUG: Remove
     return local.fJSON;
-        
+
 # --------------------------------------------------------------------
 # User information for the request.
 # - Authentication
@@ -338,12 +338,12 @@ class ReqUser(object):
     """
     Manage permissions for the user who is making this request.
     Looks for (and sets) cookies: userAuth and username
-    
+
     Built in permissions: 'read', 'admin', 'user', presence
     """
 
     def __init__(self, req):
-        from go2me.profile import Profile        
+        from go2me.profile import Profile
 
         self.req = req
         self.fAnon = True
@@ -351,7 +351,7 @@ class ReqUser(object):
         self.username = ''
         self.usernameSigned = ''
         self.profile = None
-        
+
         # Nothing allowed by default!
         self.mpPermit = set()
 
@@ -370,7 +370,7 @@ class ReqUser(object):
             logging.info("Anon-new: %s" % self.uid)
 
         self.Allow('read')
-        
+
         # If we have lost Google Auth - see if we have the longer lived
         # signin cookie instead.
         user = users.get_current_user()
@@ -384,12 +384,12 @@ class ReqUser(object):
                 if self.profile:
                     self.usernameSigned = sSignin
             except: pass
-        
-        if not self.profile:    
+
+        if not self.profile:
             try:
                 self.SetOpenUsername(req.COOKIES.get('username', ''), fForce=True)
             except: pass
-            
+
         # Logout any banned usernames
         if self.profile and self.profile.fBanned:
             self.profile = None
@@ -404,13 +404,13 @@ class ReqUser(object):
                 self.usernameSigned = SSign('signin', self.profile.username)
             if self.profile.fAdmin or users.is_current_user_admin():
                 self.Allow('admin')
-            
+
     def SetMaxRate(self, sName, sScope=None, rpm=None):
         # Set the maximum request rate (per minute) for a given activity
         # If mulitple calls are made, the last set rate applies.
         self.Allow(sName)
         self.mpRates[sName] = MemRate('%s.%s' % (sScope, sName), rpm)
-        
+
     def RateExceeded(self, sPerm):
         # If a rate is exceeded, return the one that is exceeded
         if sPerm not in self.mpRates:
@@ -427,32 +427,32 @@ class ReqUser(object):
             self.mpVars[name] = value
             self.mpVarPri[name] = priority
         return self.mpVars[name]
-    
+
     def GetVar(self, name, default=None):
         if name not in self.mpVars:
             return default
         return self.mpVars[name]
-            
+
     def Allow(self, *args):
         for sPerm in args:
             self.mpPermit.add(sPerm)
-            
+
     def Disallow(self, *args):
         for sPerm in args:
             self.mpPermit.discard(sPerm)
-    
+
     def Require(self, *args):
         if not self.FAllow(*args):
             if not local.fJSON:
                 if self.sPermFail in ['user', 'admin']:
                     if self.profile is None or self.profile.fBanned:
                         raise DirectResponse(HttpResponseRedirect(users.create_login_url(local.req.get_full_path())))
-                    raise DirectResponse(HttpResponseRedirect(users.create_logout_url(local.req.get_full_path())))               
+                    raise DirectResponse(HttpResponseRedirect(users.create_logout_url(local.req.get_full_path())))
 
             if self.sPermFail in ['user', 'admin']:
                 raise Error(self.message, self.code, {'urlLogin': JSONLoginURL()})
             raise Error(self.message, self.code)
-    
+
     def FAllow(self, *args):
         # Not thread safe - uses instance variables to store last error message
         for sPerm in args:
@@ -461,7 +461,7 @@ class ReqUser(object):
                 self.code = "Fail/Auth/%s" % sPerm
                 self.sPermFail = sPerm
                 return False
-                
+
             rate = self.RateExceeded(sPerm)
             if rate is not None:
                 self.message = "Maximum request rate exceeded (%1.1f per minute - %d allowed for %s)" % \
@@ -477,7 +477,7 @@ class ReqUser(object):
             return True
         except:
             return False
-            
+
     def FOnce(self, key):
         if memcache.get('user.once.%s.%s' % (self.UserId(), key)):
             return False
@@ -488,19 +488,19 @@ class ReqUser(object):
         if self.fAnon:
             return local.ipAddress
         return self.uid
-    
+
     @staticmethod
     def SGenUID():
         # Generate a unique user ID: IP~Date~Random
         import random
         return "~".join((local.ipAddress, local.dtNow.strftime('%m/%d/%Y %H:%M'), str(random.randint(0, 10000))))
-    
+
     def UserCookies(self):
         return {'userAuth': self.uidSigned,
                 'username': self.username,
                 'signin': self.usernameSigned,
                 }
-        
+
     def SetOpenUsername(self, username, fSetEmpty=True, fForce=False):
         # Will only set username that is "available" (not used in an unbanned Profile, and will only allow
         # setting of names already used in comments if fForce is True)
@@ -511,10 +511,10 @@ class ReqUser(object):
                 return;
             self.username = '';
             self.usernameSigned = ''
-        
+
         if username == self.username:
             return
-        
+
         profile = Profile.Lookup(username)
         if profile and not profile.fBanned:
             if IsJSON():
@@ -525,7 +525,7 @@ class ReqUser(object):
         if not fForce and Comment.FUsernameUsed(username):
             raise Error("Username (%s) already in use" % username, 'Fail/Auth/Used')
 
-        self.username = username        
+        self.username = username
 
 class MemRate(object):
     def __init__(self, key, rpmMax=None):
@@ -533,7 +533,7 @@ class MemRate(object):
         self.key = key
         self.rpmMax = rpmMax
         self.fExceeded = None
-        
+
     def FExceeded(self):
         if self.fExceeded is not None:
             return self.fExceeded
@@ -544,13 +544,13 @@ class MemRate(object):
         if self.fExceeded:
             logging.info('MemRate exceeded: %1.2f/%d for %s (%s)' % (self.rate.S*60, self.rpmMax, self.key, self.fExceeded))
         return self.fExceeded
-    
+
     def RPM(self):
         # Return current number of requests per minute
         if self.rate is None:
             return 0.0
         return self.rate.S * 60.0
-    
+
     def EnsureRate(self):
         if self.rate is None:
             self.rate = memcache.get('rate.%s' % self.key)
@@ -560,7 +560,7 @@ class MemRate(object):
 class Block(db.Model):
     # Block requests for abuse by IP or User Auth key
     dateCreated = db.DateTimeProperty()
-    
+
     @staticmethod
     def Create(sKey):
         block = Block.Blocked(sKey)
@@ -571,7 +571,7 @@ class Block(db.Model):
         block.put()
         memcache.set(sMemKey, self)
         return block
-        
+
     @staticmethod
     def Blocked(sKey):
         sMemKey = Block.MemKey(sKey)
@@ -583,11 +583,11 @@ class Block(db.Model):
             memcache.set(sMemKey, block)
             return block
         return None
-    
+
     @staticmethod
     def MemKey(sKey):
         return 'block.%s' % sKey
-    
+
 
 # --------------------------------------------------------------------
 # Response object for error reporting - handles JSON calls as well
@@ -606,7 +606,7 @@ def HttpError(req, stError, obj=None):
     http_status = 200
     if obj['status'] == 'Fail/NotFound':
         http_status = 404
-        
+
     t = loader.get_template('error.html')
     logging.info("Error: %r" % obj)
     AddToResponse(obj)
@@ -624,17 +624,17 @@ class Error(Exception):
             obj['status'] = status
         obj['message'] = message
         self.obj = obj
-        
+
 def JSONLoginURL():
     return users.create_login_url(local.mpParams.get('urlLogin', '/'))
 
 def JSONLogoutURL():
     return users.create_logout_url(local.mpParams.get('urlLogin', '/'))
-        
+
 class DirectResponse(Exception):
     def __init__(self, resp):
         self.resp = resp
-        
+
 def RaiseNotFound(id):
     raise Error("The %s page, %s%s, does not exist" % (settings.sSiteName, local.stHost, id), obj={'id':id, 'status':'Fail/NotFound'})
 
@@ -648,12 +648,12 @@ def HttpJSON(req, obj=None):
     obj['secsResponse'] = str(ResponseTime())
     obj['dateRequest'] = local.dtNow
     obj['idClient'] = Slugify(local.requser.uid)
-    resp = HttpResponse("%s(%s);" % (req.GET["callback"], simplejson.dumps(obj, cls=JavaScriptEncoder, indent=4)), mimetype="application/x-javascript")
+    resp = HttpResponse("%s(%s);" % (req.GET["callback"], mysimplejson.dumps(obj, cls=JavaScriptEncoder, indent=4)), mimetype="application/x-javascript")
     return resp
 
 def AddToResponse(mp):
     local.mpResponse.update(mp)
-    
+
 def FinalResponse():
     AddToResponse({
         # Elapsed time evaluates when USED
@@ -681,14 +681,14 @@ def FinalResponse():
         'ad_publisher_id': settings.sAdPublisherID,
         })
     return local.mpResponse
-    
+
 class ResponseTime(object):
     # Object looks like a string object - evaluates with time since start of request
     def __str__(self):
-        ddt = datetime.now() - local.dtNow 
+        ddt = datetime.now() - local.dtNow
         sec = ddt.seconds + float(ddt.microseconds)/1000000
         return "%1.2f" % sec
-        
+
 def RunInTransaction(func):
     # Function decorator to wrap entire function in an App Engine transaction
     def _transaction(*args, **kwargs):

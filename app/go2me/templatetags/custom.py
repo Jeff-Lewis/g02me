@@ -3,7 +3,7 @@ from django.template.defaultfilters import stringfilter
 
 import util
 import settings
-import simplejson
+import mysimplejson
 from datetime import datetime, timedelta
 
 import re
@@ -24,7 +24,7 @@ def ellipsis(value, arg):
         return value[:length] + "..."
     else:
         return value
-    
+
 @register.filter(name='mult')
 def MultFilter(value, arg):
     try:
@@ -56,21 +56,21 @@ def urlize(text, trim_url_limit=None, nofollow=False, target=None, extra=None, F
     trim_url_limit characters.
 
     If nofollow is True, the URLs in link text will get a rel="nofollow" attribute.
-    
+
     If target is given, set as target attribute of link (e.g., _blank, _top, or <frame_name>)
     """
     trim_url = lambda x, limit=trim_url_limit: limit is not None and (x[:limit] + (len(x) >=limit and '...' or ''))  or x
     words = word_split_re.split(text)
     nofollow_attr = nofollow and ' rel="nofollow"' or ''
-    
+
     sTarget = ''
     if target is not None:
         sTarget = ' target="%s"' % target
-        
+
     sPattern = '<a onclick="return Go2.LoadFrame(\'%(href)s\');" href="%(href)s"%(nofollow)s%(target)s>%(trim)s</a>'
     if extra:
         sPatternExtra = sPattern + extra
-        
+
     for i, word in enumerate(words):
         match = punctuation_re.match(word)
         if match:
@@ -107,7 +107,7 @@ def NotBlacklisted(url):
         return True
     except:
         return False
-    
+
 # --------------------------------------------------------------------
 # String utilities - format date as an "age"
 # --------------------------------------------------------------------
@@ -126,7 +126,7 @@ def SAgeDdt(ddt):
     if years >= 1:
         return "%d year%s ago" % (years, SPlural(years))
     if months >= 3:
-        return "%d months ago" % months 
+        return "%d months ago" % months
     if ddt.days == 1:
         return "yesterday"
     if ddt.days > 1:
@@ -156,7 +156,7 @@ def SAgeReq(dt):
 # --------------------------------------------------------------------
 @register.filter(name='JSON')
 def SJSON(obj):
-    return simplejson.dumps(obj, cls=util.JavaScriptEncoder, indent=4)
+    return mysimplejson.dumps(obj, cls=util.JavaScriptEncoder, indent=4)
 
 # --------------------------------------------------------------------
 # setvar tag from Django issue: http://code.djangoproject.com/ticket/1322
@@ -168,13 +168,13 @@ class SetVariable(template.Node):
         self.nodelist = nodelist
 
     def render(self,context):
-        context[self.varname] = self.nodelist.render(context) 
+        context[self.varname] = self.nodelist.render(context)
         return ''
 
 @register.tag(name='setvar')
 def setvar(parser, token):
     """
-    Set value to content of a rendered block. 
+    Set value to content of a rendered block.
     {% setvar var_name %}
      ....
     {% endsetvar
