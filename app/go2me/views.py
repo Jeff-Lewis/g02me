@@ -21,7 +21,7 @@ def Home(req):
 def Popular(req):
     if IsJSON():
         return HttpJSON(req, Map.TopJSON())
-    
+
     AddToResponse({
        'pages': Map.TopPages(),
        'total_pages': Globals.IdGet(settings.sMapName, settings.idMapBase) -
@@ -51,7 +51,7 @@ def Lookup(req):
 def SetUsername(req):
     if not IsJSON():
         raise Error("Can only use API to set nickname.")
-    
+
     local.requser.SetOpenUsername(req.REQUEST.get('username', ''), fForce=req.GET.get('force', False))
 
     if local.requser.profile is not None and local.requser.username != local.requser.profile.username:
@@ -71,19 +71,19 @@ def ToggleFavorite(req):
     local.requser.Require('api', 'write', 'comment')
 
     id = local.mpParams.get('id', "").strip()
-    
+
     map = Map.Lookup(id)
     if map == None:
         RaiseNotFound(id)
     if local.requser.username == '':
         raise Error("You must choose a Nickname to favorite a link.");
-    
+
     comment = map.GetFavorite(local.requser.username)
     if comment is None:
         map.AddComment(username=local.requser.username, comment='__fave')
     else:
         comment.Delete()
-    
+
     dateSince = local.mpParams.get('since', None)
     if dateSince:
         dateSince = DateFromISO(dateSince)
@@ -93,7 +93,7 @@ def DoComment(req, command=None):
     if not IsJSON():
         raise Error("Can only use API to edit comments.")
     local.requser.Require('api', 'write', 'comment')
-    
+
     if command == 'delete':
         delkey = local.mpParams.get('delkey', '').strip()
         try:
@@ -105,25 +105,25 @@ def DoComment(req, command=None):
             raise Error("Comment id=%d does not exists" % cid, 'Fail/NotFound')
         map = comment.map
         comment.Delete()
-        
+
     if command is None:
         id = local.mpParams.get('id', "").strip()
-        
+
         map = Map.Lookup(id)
         if map == None:
             RaiseNotFound(id)
-        
+
         parts = Comment.Parse(local.mpParams.get('username', ''), local.mpParams.get('comment', ''))
-        
+
         local.requser.SetOpenUsername(parts['username'], fSetEmpty=False, fForce=req.GET.get('force', False))
-        
+
         map.AddComment(username=local.requser.username, comment=parts['comment'], tags=parts['tags'])
 
     dateSince = local.mpParams.get('since', None)
     if dateSince:
         dateSince = DateFromISO(dateSince)
     return HttpJSON(req, obj=map.JSON(dateSince=dateSince))
-    
+
 def HeadRedirect(req, id):
     # http://go2.me/info/N
     sExtra = ''
@@ -144,7 +144,7 @@ def LinkPage(req, id):
             dateSince = DateFromISO(dateSince)
         sLocation = local.mpParams.get('location', None)
         sState = local.mpParams.get('state', None)
-        
+
         return HttpJSON(req, obj=map.JSON(dateSince=dateSince, sState=sState, sLocation=sLocation))
 
     AddToResponse({'map':map, 'TopTags':map.TopTags()})
@@ -191,12 +191,12 @@ def TagView(req, tag):
 
 def Admin(req, command=None):
     local.requser.Require('admin')
-    
+
     # BUG - Add CSRF required field
     if command:
         logging.info("admin command: %s" % command)
         local.requser.Require('api')
-        
+
         if command == 'show-path':
             import sys
             for d in sys.path:
@@ -207,44 +207,44 @@ def Admin(req, command=None):
             logging.info("Removing %d broken scores" % len(scores))
             for score in scores:
                 score.delete()
-                
+
         if command == 'clean-comments':
             comments = Comment.BadComments()
             logging.info("Removing %d empty comments" % len(comments))
             for comment in comments:
                 comment.Delete()
-                
+
         if command == 'clean-broken-comments':
             comments = Comment.Broken()
             logging.info("Removing %d broken comments" % len(comments))
             for comment in comments:
                 comment.Delete()
-                
+
         if command == 'scope-comments':
             comments = Comment.Unscoped()
             logging.info("Scoping %d comments." % len(comments))
             for comment in comments:
                 comment.scope = '__public'
                 comment.put()
-                
+
         if command == 'fix-tag-counts':
             maps = Map.FindBadTagCounts()
             logging.info("Fixing %d bad tag counts" % len(maps))
             Map.FixTagCounts(maps)
-            
+
         if command == 'fix-missing-creators':
             comments = Comment.MissingCreator()
             logging.info("Fixing %d missing creators" % len(comments))
             Comment.FixMissingCreators(comments)
-            
+
         if command == 'flush-memcache':
             memcache.flush_all()
-            
+
         if command == 'create-api-key':
             logging.info('CAK')
             key = '~'.join((local.mpParams['dev'], local.mpParams['rate'], local.mpParams['exp']))
             raise Error('Signed API key: %s' % SSign('api', key), 'OK')
-        
+
         if command == 'ban-id':
             try:
                 map = Map.Lookup(local.mpParams['id'])
@@ -274,4 +274,4 @@ def Admin(req, command=None):
            'MemCache': mpMem
            })
     return render_to_response('admin.html', FinalResponse())
-          
+

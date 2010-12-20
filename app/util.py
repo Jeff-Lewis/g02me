@@ -92,6 +92,14 @@ blackList = set([
 
     # Abuse sites
     "paypal.com",
+
+    # Spam sites
+    'hea1th-rxna.com', 'hea1th-rxry.com', 'hea1th-rxo.com', 'discountsforrxonline.ru',
+    'hea1th-rxwp.com', 'act0prx.com', 'safe-me9zon.ru', 'safe-me9zri.ru',
+    'greansiteshop.com', 'productrx-online.ru', 'online-product.ru', 'blue-rxblog.com',
+    'myblue-rx.com', 'theblue-rx.com', 'redstoreshop.com', 'mediesrxtoday.com',
+    'eliterxstuff.com', 'mediesrxblog.com',
+
      ])
 
 whiteList = set(['blog.go2.me'])
