@@ -1,6 +1,5 @@
 blacklist:
-- subnet: 173.234.255.118/24
+- subnet: 173.234.255.118/16
   description: Malware 12/20/2010
-- subnet: 216.151.201.45
+- subnet: 216.151.201.45/16
   description: Malware 12/20/2010
-
